@@ -1,0 +1,7 @@
+{
+  "query": "Update belief on conversion rate",
+  "bayesian_inference": {
+    "successes": 42,
+    "trials": 100
+  }
+}

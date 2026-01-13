@@ -1,0 +1,283 @@
+# CARF - Complex-Adaptive Reasoning Fabric
+
+A production-grade Neuro-Symbolic-Causal agentic system with epistemic awareness.
+
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red.svg)](https://streamlit.io/)
+
+## Overview
+
+CARF bridges the "trust gap" in AI systems by enforcing **epistemic awareness**. The system explicitly distinguishes what it knows, what it infers, and what it does not know.
+
+### Key Features
+
+- **Cynefin-based routing**: Classifies queries into Clear, Complicated, Complex, Chaotic, or Disorder domains
+- **Causal inference**: DAG discovery, effect estimation, and refutation testing
+- **Bayesian exploration**: Prior beliefs, safe-to-fail probes, uncertainty quantification
+- **Guardian policy layer**: Human-in-the-loop enforcement with audit trails
+- **Modern dashboard**: Three-view cockpit (End-User, Developer, Executive)
+
+## Quick Start
+
+### Option 1: Local Development (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/projectcarf.git
+cd projectcarf
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -e ".[dev,dashboard]"
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# Start the API server
+python -m src.main
+
+# In a new terminal, start the dashboard
+streamlit run src/dashboard/app.py
+```
+
+### Option 2: Docker Compose (Full Stack)
+
+```bash
+# Start all services (API, Dashboard, Neo4j, Kafka, OPA)
+docker compose up --build
+
+# With demo data seeding
+docker compose --profile demo up --build
+```
+
+**Services:**
+- API: http://localhost:8000
+- Dashboard: http://localhost:8501
+- Neo4j Browser: http://localhost:7474
+- OPA: http://localhost:8181
+
+### Option 3: Test Mode (No API Keys Required)
+
+```bash
+# Set test mode to use offline stubs
+export CARF_TEST_MODE=1
+
+# Run with mocked LLM responses
+python -m src.main
+```
+
+## Configuration
+
+Create a `.env` file in the project root:
+
+```bash
+# Required: LLM Provider
+LLM_PROVIDER=deepseek          # or "openai"
+DEEPSEEK_API_KEY=sk-...        # Your DeepSeek API key
+# OPENAI_API_KEY=sk-...        # If using OpenAI
+
+# Optional: Human-in-the-Loop
+HUMANLAYER_API_KEY=hl-...      # For Slack/Email approvals
+
+# Optional: Observability
+LANGSMITH_API_KEY=ls-...       # For LangSmith tracing
+
+# Optional: Data Storage
+CARF_DATA_DIR=./var            # Dataset storage location
+
+# Optional: Services
+NEO4J_URI=bolt://localhost:7687
+KAFKA_ENABLED=false
+OPA_ENABLED=false
+```
+
+## Core Architecture
+
+```
+Query -> Cynefin Router -> [Clear | Complicated | Complex | Chaotic | Disorder]
+  Clear        -> Deterministic Runner (lookup)
+  Complicated  -> Causal Inference Engine (DoWhy/EconML)
+  Complex      -> Bayesian Active Inference (PyMC)
+  Chaotic      -> Circuit Breaker (emergency stop)
+  Disorder     -> Human Escalation
+
+All paths -> Guardian (policy check) -> [Approve | Reject | Escalate to Human]
+```
+
+### Cynefin Domains
+
+| Domain | Description | Handler | Use Case |
+|--------|-------------|---------|----------|
+| Clear | Cause-effect obvious | Deterministic automation | Standard procedures |
+| Complicated | Requires expert analysis | Causal inference engine | Impact estimation |
+| Complex | Emergent, probe required | Bayesian active inference | Uncertainty exploration |
+| Chaotic | Crisis mode | Circuit breaker | Emergency response |
+| Disorder | Cannot classify | Human escalation | Ambiguous inputs |
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | System health check |
+| `/query` | POST | Process query through CARF pipeline |
+| `/domains` | GET | List Cynefin domains |
+| `/scenarios` | GET | List demo scenarios |
+| `/scenarios/{id}` | GET | Fetch scenario payload |
+| `/datasets` | POST | Upload dataset to registry |
+| `/datasets` | GET | List stored datasets |
+| `/datasets/{id}/preview` | GET | Preview dataset rows |
+
+### Example API Calls
+
+**Simple Query:**
+```bash
+curl -X POST http://localhost:8000/query \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Why did our costs increase by 15%?"}'
+```
+
+**Causal Analysis:**
+```bash
+curl -X POST http://localhost:8000/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Estimate impact of discount on churn",
+    "causal_estimation": {
+      "treatment": "discount",
+      "outcome": "churn",
+      "covariates": ["region", "tenure"],
+      "data": [
+        {"discount": 0.1, "churn": 0, "region": "NA", "tenure": 12},
+        {"discount": 0.0, "churn": 1, "region": "EU", "tenure": 3}
+      ]
+    }
+  }'
+```
+
+**Bayesian Inference:**
+```bash
+curl -X POST http://localhost:8000/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Update belief on conversion rate",
+    "bayesian_inference": {
+      "successes": 42,
+      "trials": 100
+    }
+  }'
+```
+
+## Demo Scenarios
+
+CARF includes pre-built demo scenarios for testing:
+
+| Scenario | Description | Domain |
+|----------|-------------|--------|
+| Scope 3 Attribution | Supplier sustainability impact | Complicated |
+| Discount vs Churn | Causal impact of discounts | Complicated |
+| Conversion Belief | Bayesian rate estimation | Complex |
+| Renewable Energy ROI | Solar investment analysis | Complicated |
+| Shipping Carbon | Freight mode emissions | Complicated |
+
+**Load a scenario in the dashboard** or via API:
+```bash
+curl http://localhost:8000/scenarios/scope3_attribution
+```
+
+## Project Structure
+
+```
+projectcarf/
+├── src/
+│   ├── core/           # State schemas, LLM config
+│   ├── services/       # Causal, Bayesian, HumanLayer
+│   ├── workflows/      # LangGraph nodes and graph
+│   ├── dashboard/      # Streamlit UI
+│   └── main.py         # FastAPI entry point
+├── config/             # YAML configs (policies, prompts)
+├── demo/               # Demo scenarios and sample data
+├── tests/              # Unit and integration tests
+├── docs/               # Documentation
+└── docker-compose.yml  # Full stack deployment
+```
+
+## Testing
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ -v --cov=src --cov-report=term-missing
+
+# Run manual test suite
+python test_carf.py
+
+# Type checking
+mypy src/ --strict
+
+# Linting
+ruff check src/ tests/
+```
+
+## Dashboard Views
+
+### End-User View
+- Query input with suggested queries
+- Simulation controls (sliders)
+- Cynefin classification with domain scores
+- Bayesian belief state with distribution chart
+- Causal DAG visualization
+- Guardian policy check with approval workflow
+
+### Developer View
+- Execution trace timeline
+- Performance metrics
+- DAG structure explorer
+- State snapshots (JSON)
+
+### Executive View
+- Expected impact hero card
+- KPI dashboard
+- Proposed action summary
+- Policy compliance overview
+
+## Documentation
+
+- [Quick Start Guide](docs/QUICKSTART.md) - Get running in 5 minutes
+- [PRD and Blueprint](docs/PRD.md) - Product requirements
+- [Data Layer](docs/DATA_LAYER.md) - Data architecture
+- [UI/UX Guidelines](docs/CARF_UIX_INTERACTION_GUIDELINES.md) - Design system
+- [OPA Policy](docs/OPA_POLICY.md) - Enterprise policy setup
+- [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) - Step-by-step demo
+- [End-User Testing Guide](docs/END_USER_TESTING_GUIDE.md) - Validate the demo flow and integrations
+- [Security Guidelines](docs/SECURITY_GUIDELINES.md) - Release readiness checklist
+- [LLM Agentic Strategy](docs/LLM_AGENTIC_STRATEGY.md) - LLM roles, guardrails, model selection
+- [Self-Healing Architecture](docs/SELF_HEALING_ARCHITECTURE.md) - Reflection, human escalation, adaptive recovery
+- [End-to-End Context Flow](docs/END_TO_END_CONTEXT_FLOW.md) - State propagation and memory/audit integration
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make changes and run tests: `pytest tests/ -v`
+4. Commit: `git commit -m "Add my feature"`
+5. Push: `git push origin feature/my-feature`
+6. Open a Pull Request
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Acknowledgments
+
+- [LangGraph](https://github.com/langchain-ai/langgraph) - Workflow orchestration
+- [DoWhy](https://github.com/py-why/dowhy) - Causal inference
+- [PyMC](https://github.com/pymc-devs/pymc) - Bayesian modeling
+- [HumanLayer](https://humanlayer.dev/) - Human-in-the-loop SDK

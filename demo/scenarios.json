@@ -1,0 +1,32 @@
+[
+  {
+    "id": "scope3_attribution",
+    "name": "Scope 3 Attribution",
+    "description": "Analyze supplier sustainability programs impact on Scope 3 emissions reduction.",
+    "payload_path": "demo/payloads/scope3_attribution.json"
+  },
+  {
+    "id": "causal_discount_churn",
+    "name": "Discount vs Churn",
+    "description": "Estimate the causal impact of discount on churn.",
+    "payload_path": "demo/payloads/causal_estimation.json"
+  },
+  {
+    "id": "bayesian_conversion_rate",
+    "name": "Conversion Belief Update",
+    "description": "Update belief on conversion rate with binomial data.",
+    "payload_path": "demo/payloads/bayesian_inference.json"
+  },
+  {
+    "id": "renewable_energy_roi",
+    "name": "Renewable Energy ROI",
+    "description": "Estimate ROI from renewable energy investments across facilities.",
+    "payload_path": "demo/payloads/renewable_energy_roi.json"
+  },
+  {
+    "id": "shipping_carbon_footprint",
+    "name": "Shipping Mode Analysis",
+    "description": "Analyze how shipping mode changes affect carbon footprint.",
+    "payload_path": "demo/payloads/shipping_carbon.json"
+  }
+]

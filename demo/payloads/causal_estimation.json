@@ -1,0 +1,9 @@
+{
+  "query": "Estimate impact of discount on churn",
+  "causal_estimation": {
+    "treatment": "discount",
+    "outcome": "churn",
+    "covariates": ["region", "tenure"],
+    "csv_path": "demo/data/causal_sample.csv"
+  }
+}

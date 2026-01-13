@@ -1,0 +1,28 @@
+{
+  "query": "Which suppliers have the highest emissions reduction potential?",
+  "context": {
+    "scenario": "scope3_attribution",
+    "domain_hint": "complicated"
+  },
+  "causal_estimation": {
+    "treatment": "supplier_program",
+    "outcome": "scope3_emissions",
+    "covariates": ["region", "market_conditions", "energy_mix"],
+    "effect_modifiers": ["supplier_size", "baseline_emissions"],
+    "data": [
+      {"supplier_program": 1, "scope3_emissions": -85, "region": "EU", "market_conditions": 0.5, "energy_mix": 0.3, "supplier_size": "large", "baseline_emissions": 1000},
+      {"supplier_program": 1, "scope3_emissions": -72, "region": "NA", "market_conditions": 0.6, "energy_mix": 0.4, "supplier_size": "medium", "baseline_emissions": 800},
+      {"supplier_program": 0, "scope3_emissions": 10, "region": "EU", "market_conditions": 0.5, "energy_mix": 0.35, "supplier_size": "large", "baseline_emissions": 950},
+      {"supplier_program": 0, "scope3_emissions": 15, "region": "APAC", "market_conditions": 0.7, "energy_mix": 0.5, "supplier_size": "small", "baseline_emissions": 600},
+      {"supplier_program": 1, "scope3_emissions": -90, "region": "APAC", "market_conditions": 0.65, "energy_mix": 0.45, "supplier_size": "large", "baseline_emissions": 1100},
+      {"supplier_program": 1, "scope3_emissions": -65, "region": "EU", "market_conditions": 0.55, "energy_mix": 0.32, "supplier_size": "small", "baseline_emissions": 500},
+      {"supplier_program": 0, "scope3_emissions": 8, "region": "NA", "market_conditions": 0.58, "energy_mix": 0.38, "supplier_size": "medium", "baseline_emissions": 750},
+      {"supplier_program": 1, "scope3_emissions": -78, "region": "NA", "market_conditions": 0.62, "energy_mix": 0.42, "supplier_size": "large", "baseline_emissions": 920}
+    ]
+  },
+  "bayesian_inference": {
+    "prior_mean": -650.0,
+    "prior_std": 120.0,
+    "observations": [-75, -82, -68, -91, -77, -85, -70, -88]
+  }
+}

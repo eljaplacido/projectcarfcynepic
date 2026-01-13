@@ -1,0 +1,110 @@
+# CARF Agent Definitions
+# Declarative configuration for the Cognitive Mesh agents
+
+version: "1.0"
+
+# =============================================================================
+# LAYER 1: ROUTER
+# =============================================================================
+router:
+  name: "CynefinRouter"
+  description: "Classifies incoming signals into Cynefin domains"
+  model: "gpt-4o-mini"  # Fast, cost-effective for classification
+  temperature: 0.1  # Low temperature for consistent classification
+
+  classification_threshold: 0.85  # Below this → Disorder
+  entropy_threshold_chaotic: 0.9  # Above this → Chaotic
+
+  domains:
+    clear:
+      description: "Cause and effect are self-evident"
+      indicators:
+        - "simple lookup"
+        - "standard procedure"
+        - "known answer"
+    complicated:
+      description: "Requires expert analysis"
+      indicators:
+        - "root cause analysis"
+        - "optimization required"
+        - "multiple factors"
+    complex:
+      description: "Emergent, cause-effect in retrospect"
+      indicators:
+        - "novel situation"
+        - "high uncertainty"
+        - "probe required"
+    chaotic:
+      description: "System in crisis"
+      indicators:
+        - "emergency"
+        - "critical failure"
+        - "immediate action needed"
+
+# =============================================================================
+# LAYER 2: COGNITIVE MESH AGENTS
+# =============================================================================
+agents:
+  deterministic_runner:
+    name: "DeterministicRunner"
+    domain: "Clear"
+    description: "Executes validated, deterministic scripts and lookups"
+    capabilities:
+      - "database_query"
+      - "api_call"
+      - "script_execution"
+    max_execution_time_seconds: 30
+
+  causal_analyst:
+    name: "CausalAnalyst"
+    domain: "Complicated"
+    description: "Performs root cause analysis using causal inference"
+    model: "gpt-4o"
+    temperature: 0.3
+    capabilities:
+      - "causal_discovery"
+      - "effect_estimation"
+      - "refutation_testing"
+    # Phase 2: DoWhy/EconML integration
+
+  bayesian_explorer:
+    name: "BayesianExplorer"
+    domain: "Complex"
+    description: "Navigates uncertainty via Active Inference"
+    model: "gpt-4o"
+    temperature: 0.7  # Higher for exploration
+    capabilities:
+      - "probe_design"
+      - "posterior_update"
+      - "information_gain_calculation"
+    max_probes: 3
+    # Phase 2: PyMC integration
+
+  circuit_breaker:
+    name: "CircuitBreaker"
+    domain: "Chaotic"
+    description: "Emergency stabilization protocol"
+    capabilities:
+      - "halt_operations"
+      - "alert_humans"
+      - "rollback"
+    auto_escalate: true
+
+# =============================================================================
+# HUMAN ESCALATION
+# =============================================================================
+human_escalation:
+  name: "HumanEscalationHandler"
+  domain: "Disorder"
+  description: "Routes ambiguous inputs to human operators via HumanLayer"
+
+  channels:
+    primary: "slack"
+    fallback: "email"
+
+  timeout_seconds: 300  # 5 minutes
+
+  notification_template:
+    what: "{{ proposed_action }}"
+    why: "{{ causal_justification }}"
+    risk: "{{ policy_context }}"

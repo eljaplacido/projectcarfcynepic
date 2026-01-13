@@ -1,0 +1,30 @@
+{
+  "query": "What is the expected ROI from investing in solar panels at our facilities?",
+  "context": {
+    "scenario": "renewable_energy_roi",
+    "domain_hint": "complicated"
+  },
+  "causal_estimation": {
+    "treatment": "solar_investment",
+    "outcome": "energy_cost_savings",
+    "covariates": ["facility_size", "grid_price", "sun_hours"],
+    "effect_modifiers": ["roof_area", "local_incentives"],
+    "data": [
+      {"solar_investment": 1, "energy_cost_savings": 45000, "facility_size": "large", "grid_price": 0.12, "sun_hours": 5.5, "roof_area": 10000, "local_incentives": 1},
+      {"solar_investment": 1, "energy_cost_savings": 38000, "facility_size": "medium", "grid_price": 0.11, "sun_hours": 5.0, "roof_area": 6000, "local_incentives": 1},
+      {"solar_investment": 0, "energy_cost_savings": 2000, "facility_size": "large", "grid_price": 0.12, "sun_hours": 5.5, "roof_area": 10000, "local_incentives": 1},
+      {"solar_investment": 0, "energy_cost_savings": 1500, "facility_size": "medium", "grid_price": 0.10, "sun_hours": 4.8, "roof_area": 5500, "local_incentives": 0},
+      {"solar_investment": 1, "energy_cost_savings": 52000, "facility_size": "large", "grid_price": 0.14, "sun_hours": 6.0, "roof_area": 12000, "local_incentives": 1},
+      {"solar_investment": 1, "energy_cost_savings": 28000, "facility_size": "small", "grid_price": 0.13, "sun_hours": 5.2, "roof_area": 3500, "local_incentives": 0},
+      {"solar_investment": 0, "energy_cost_savings": 1800, "facility_size": "medium", "grid_price": 0.11, "sun_hours": 5.1, "roof_area": 5800, "local_incentives": 0},
+      {"solar_investment": 1, "energy_cost_savings": 41000, "facility_size": "medium", "grid_price": 0.12, "sun_hours": 5.3, "roof_area": 6500, "local_incentives": 1},
+      {"solar_investment": 0, "energy_cost_savings": 2200, "facility_size": "large", "grid_price": 0.13, "sun_hours": 5.4, "roof_area": 9500, "local_incentives": 1},
+      {"solar_investment": 1, "energy_cost_savings": 35000, "facility_size": "medium", "grid_price": 0.10, "sun_hours": 4.9, "roof_area": 5200, "local_incentives": 0}
+    ]
+  },
+  "bayesian_inference": {
+    "prior_mean": 35000.0,
+    "prior_std": 8000.0,
+    "observations": [45000, 38000, 52000, 28000, 41000, 35000]
+  }
+}

@@ -1,0 +1,113 @@
+# CARF Policy Definitions
+# Immutable constraints enforced by the Guardian layer
+#
+# WARNING: Changes to this file require human review.
+# See AGENTS.md for modification protocol.
+
+version: "1.0"
+
+# =============================================================================
+# FINANCIAL POLICIES
+# =============================================================================
+financial:
+  auto_approval_limit:
+    description: "Maximum transaction amount without human approval"
+    value: 100000  # USD
+    currency: "USD"
+    action: "require_escalation"
+
+  daily_limit:
+    description: "Maximum daily transaction volume"
+    value: 500000
+    currency: "USD"
+    action: "reject"
+
+  approved_vendors:
+    description: "Transactions only to pre-approved vendors"
+    action: "reject"
+    message: "Vendor not in approved list. Requires procurement review."
+
+# =============================================================================
+# DATA POLICIES
+# =============================================================================
+data:
+  pii_handling:
+    description: "Personally Identifiable Information must be masked"
+    fields:
+      - "email"
+      - "phone"
+      - "ssn"
+      - "address"
+    action: "reject"
+    message: "PII detected. Data must be anonymized before processing."
+
+  data_residency:
+    description: "Data must not leave approved regions"
+    approved_regions:
+      - "us-east-1"
+      - "eu-west-1"
+    action: "reject"
+
+  retention:
+    description: "Data retention policy"
+    max_retention_days: 90
+    action: "warn"
+
+# =============================================================================
+# OPERATIONAL POLICIES
+# =============================================================================
+operational:
+  max_reflection_attempts:
+    description: "Maximum self-correction loops before human escalation"
+    value: 3
+    action: "escalate"
+
+  timeout:
+    description: "Maximum execution time for any single operation"
+    value_seconds: 300
+    action: "abort"
+
+  rate_limiting:
+    description: "API call rate limits"
+    max_calls_per_minute: 60
+    action: "throttle"
+
+# =============================================================================
+# RISK THRESHOLDS
+# =============================================================================
+risk:
+  confidence_threshold:
+    description: "Minimum confidence for autonomous action"
+    value: 0.85
+    below_action: "escalate"
+
+  entropy_alert:
+    description: "High entropy triggers Circuit Breaker"
+    threshold: 0.9
+    action: "circuit_break"
+
+  unknown_domain:
+    description: "Unclassified inputs require human review"
+    action: "escalate"
+
+# =============================================================================
+# HUMAN ESCALATION RULES
+# =============================================================================
+escalation:
+  always_escalate:
+    description: "Actions that always require human approval"
+    actions:
+      - "delete_data"
+      - "modify_policy"
+      - "external_api_write"
+      - "production_deployment"
+
+  escalation_channels:
+    primary: "slack"
+    secondary: "email"
+    emergency: "pagerduty"
+
+  timeout_action:
+    description: "What to do if human doesn't respond"
+    default: "abort"
+    timeout_seconds: 300
