@@ -1054,11 +1054,18 @@ def render_bayesian_belief_state(belief: dict | None = None) -> None:
     import pandas as pd
     import altair as alt
 
-    # Use ROI-like values for the chart (matching screenshot: 2-5 range)
-    roi_mean = 3.20
-    roi_std = 0.45
-    prior_mean = 3.0
-    prior_std = 0.6
+    # Use real data from belief if available, otherwise use defaults
+    if belief and "posterior_mean" in belief:
+        roi_mean = belief.get("posterior_mean", 3.20)
+        prior_mean = roi_mean * 0.9  # Estimate prior from posterior
+        ci_range = abs(belief.get("ci_high", 4) - belief.get("ci_low", 2))
+        roi_std = ci_range / 4  # Approximate std from CI
+        prior_std = roi_std * 1.3
+    else:
+        roi_mean = 3.20
+        prior_mean = 3.0
+        roi_std = 0.45
+        prior_std = 0.6
 
     x = np.linspace(2, 5, 100)
     prior_y = (1/(prior_std * np.sqrt(2*np.pi))) * np.exp(-0.5*((x - prior_mean)/prior_std)**2)
@@ -1080,20 +1087,28 @@ def render_bayesian_belief_state(belief: dict | None = None) -> None:
     )
     st.altair_chart((area + prior).properties(height=150), use_container_width=True)
 
+    # Use real values from belief if available
+    posterior_mean = belief.get("posterior_mean", 3.20) if belief else 3.20
+    ci_low = belief.get("ci_low", 2) if belief else 2
+    ci_high = belief.get("ci_high", 4) if belief else 4
+    epistemic = belief.get("epistemic_uncertainty", 0.20) if belief else 0.20
+    aleatoric = belief.get("aleatoric_uncertainty", 0.09) if belief else 0.09
+    total_unc = (epistemic + aleatoric) / 2 if belief else 0.17
+
     col1, col2 = st.columns(2)
     with col1:
         st.caption("Posterior Mean")
-        st.markdown("**3.20**")
-        st.caption("+/- 0.45 std")
+        st.markdown(f"**{posterior_mean:.2f}**")
+        st.caption(f"+/- {roi_std:.2f} std")
     with col2:
         st.caption("95% CI")
-        st.markdown("**[2, 4]**")
+        st.markdown(f"**[{ci_low:.1f}, {ci_high:.1f}]**")
 
     st.markdown("**Uncertainty Decomposition**")
     for label, value in [
-        ("Epistemic", 0.20),
-        ("Aleatoric", 0.09),
-        ("Total", 0.17),
+        ("Epistemic", epistemic),
+        ("Aleatoric", aleatoric),
+        ("Total", total_unc),
     ]:
         col1, col2, col3 = st.columns([2, 5, 1])
         with col1:
@@ -1103,7 +1118,14 @@ def render_bayesian_belief_state(belief: dict | None = None) -> None:
         with col3:
             st.caption(f"{int(value * 100)}%")
 
-    st.success("High confidence. Strong positive ROI expected with narrow confidence interval.")
+    # Dynamic confidence message from belief data
+    conf_level = belief.get("confidence_level", "medium") if belief else "medium"
+    if conf_level == "high":
+        st.success("High confidence. Strong positive estimate with narrow confidence interval.")
+    elif conf_level == "medium":
+        st.info("Medium confidence. Estimate is reasonable but more data would help.")
+    else:
+        st.warning("Low confidence. High uncertainty - consider gathering more data.")
 
     with st.expander("How to interpret this belief state", expanded=False):
         st.markdown(
@@ -1694,17 +1716,32 @@ def main() -> None:
         # End-User View - Three-column layout
         col_left, col_center, col_right = st.columns([3, 6, 3], gap="medium")
 
+        # Extract analytical results from API response
+        causal_result = None
+        bayesian_result = None
+        guardian_result = None
+        if analysis_result:
+            causal_result = analysis_result.get("causal_result")
+            bayesian_result = analysis_result.get("bayesian_result")
+            guardian_result = analysis_result.get("guardian_result")
+
         with col_left:
             render_guided_walkthrough(selected_scenario_id, key_prefix="enduser")
             query_eu, analyze_eu = render_query_input(key_prefix="enduser")
             render_simulation_controls(key_prefix="enduser")
             render_cynefin_classification(domain=domain, confidence=confidence)
-            render_bayesian_belief_state()
+            render_bayesian_belief_state(belief=bayesian_result)
 
         with col_center:
             render_causal_dag()
-            render_causal_analysis_results()
-            render_guardian_policy_check()
+            render_causal_analysis_results(result=causal_result)
+            # Build policies from guardian result
+            policies = None
+            if guardian_result:
+                policies = [
+                    {"name": "Policy Evaluation", "desc": "Guardian policy check", "status": "pass" if guardian_result.get("verdict") == "approved" else "pending", "version": "v1.0"}
+                ] + [{"name": v, "desc": "Violation", "status": "fail", "version": "v1.0"} for v in guardian_result.get("violations", [])]
+            render_guardian_policy_check(policies=policies)
 
         with col_right:
             render_execution_trace(trace=execution_trace if execution_trace else None)

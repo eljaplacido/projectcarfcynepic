@@ -296,6 +296,7 @@ curl -X POST http://localhost:8000/query \
 ```bash
 pytest tests/unit/ -v
 ```
+Targeted coverage includes `tests/unit/test_api.py` and `tests/unit/test_dashboard_utils.py`.
 
 ### Integration Tests
 ```bash

@@ -23,8 +23,9 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
 from src.core.llm import get_explorer_model
-from src.core.state import ConfidenceLevel, EpistemicState
+from src.core.state import BayesianEvidence, ConfidenceLevel, EpistemicState
 from src.utils.resiliency import async_retry_with_backoff, retry_with_backoff
+from src.utils.cache import async_lru_cache
 
 logger = logging.getLogger("carf.bayesian")
 
@@ -336,6 +337,7 @@ Respond with a JSON object:
         return -probability * math.log2(probability) - (1 - probability) * math.log2(1 - probability)
 
     @async_retry_with_backoff(max_attempts=2, exceptions=(Exception,))
+    @async_lru_cache(maxsize=100)
     async def establish_priors(
         self,
         query: str,
@@ -398,6 +400,7 @@ Respond with a JSON object:
             ], 1.0
 
     @async_retry_with_backoff(max_attempts=2, exceptions=(Exception,))
+    @async_lru_cache(maxsize=100)
     async def design_probes(
         self,
         beliefs: list[BayesianBelief],
@@ -501,6 +504,7 @@ Design probes that would help us learn more."""),
             confidence_interval=(max(0, posterior - 0.15), min(1, posterior + 0.15)),
         )
 
+    @async_lru_cache(maxsize=100)
     async def explore(
         self,
         query: str,
@@ -661,6 +665,21 @@ async def run_active_inference(
         state.overall_confidence = ConfidenceLevel.MEDIUM
     else:
         state.overall_confidence = ConfidenceLevel.LOW
+
+    # Store full Bayesian evidence for dashboard
+    state.bayesian_evidence = BayesianEvidence(
+        posterior_mean=result.updated_belief.posterior,
+        credible_interval=result.updated_belief.confidence_interval,
+        uncertainty_before=result.uncertainty_before,
+        uncertainty_after=result.uncertainty_after,
+        epistemic_uncertainty=result.uncertainty_after * 0.7,  # Estimate
+        aleatoric_uncertainty=result.uncertainty_after * 0.3,  # Estimate
+        hypothesis=result.updated_belief.hypothesis,
+        confidence_level=state.overall_confidence.value,
+        interpretation=result.interpretation,
+        probes_designed=len(result.probes_designed),
+        recommended_probe=result.recommended_probe.description if result.recommended_probe else None,
+    )
 
     # Set proposed action (the recommended probe)
     if result.recommended_probe:

@@ -1,0 +1,89 @@
+{
+    "id": "supply_chain_lead_time",
+    "name": "Supply Chain Lead Time Optimization",
+    "description": "Analyze the causal effect of supplier diversification on lead time variability",
+    "domain": "supply_chain",
+    "expected_classification": "complex",
+    "query": "Does increasing supplier diversification reduce lead time variability?",
+    "context": {
+        "hypothesis": "More diversified supplier base reduces lead time variability",
+        "treatment_variable": "supplier_count",
+        "outcome_variable": "lead_time_std_dev",
+        "confounders": [
+            "geographic_spread",
+            "contract_length_avg",
+            "order_frequency"
+        ]
+    },
+    "data": [
+        {
+            "supplier_count": 2,
+            "lead_time_std_dev": 8.5,
+            "geographic_spread": 1,
+            "contract_length_avg": 12,
+            "order_frequency": 4
+        },
+        {
+            "supplier_count": 3,
+            "lead_time_std_dev": 7.2,
+            "geographic_spread": 2,
+            "contract_length_avg": 10,
+            "order_frequency": 6
+        },
+        {
+            "supplier_count": 4,
+            "lead_time_std_dev": 5.8,
+            "geographic_spread": 3,
+            "contract_length_avg": 8,
+            "order_frequency": 8
+        },
+        {
+            "supplier_count": 5,
+            "lead_time_std_dev": 4.9,
+            "geographic_spread": 3,
+            "contract_length_avg": 6,
+            "order_frequency": 10
+        },
+        {
+            "supplier_count": 6,
+            "lead_time_std_dev": 4.2,
+            "geographic_spread": 4,
+            "contract_length_avg": 6,
+            "order_frequency": 12
+        },
+        {
+            "supplier_count": 7,
+            "lead_time_std_dev": 3.8,
+            "geographic_spread": 4,
+            "contract_length_avg": 4,
+            "order_frequency": 14
+        },
+        {
+            "supplier_count": 8,
+            "lead_time_std_dev": 3.5,
+            "geographic_spread": 5,
+            "contract_length_avg": 4,
+            "order_frequency": 16
+        },
+        {
+            "supplier_count": 10,
+            "lead_time_std_dev": 3.1,
+            "geographic_spread": 5,
+            "contract_length_avg": 3,
+            "order_frequency": 20
+        }
+    ],
+    "expected_results": {
+        "effect_range": [
+            -0.8,
+            -0.4
+        ],
+        "confidence_min": 0.7,
+        "refutation_robustness": true
+    },
+    "validation_criteria": {
+        "effect_direction": "negative",
+        "statistical_significance": 0.1,
+        "min_observations": 8
+    }
+}

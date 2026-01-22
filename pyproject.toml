@@ -35,6 +35,10 @@ dependencies = [
     # API Framework (MVP)
     "fastapi>=0.109.0",
     "uvicorn>=0.27.0",
+    "python-multipart>=0.0.6",  # For file uploads
+
+    # Data Processing
+    "pandas>=2.0.0",
 
     # Configuration
     "pyyaml>=6.0",
@@ -68,6 +72,11 @@ dashboard = [
     # Streamlit cockpit
     "streamlit>=1.32.0",
 ]
+files = [
+    # File parsing support
+    "pypdf>=4.0.0",
+    "openpyxl>=3.1.0",
+]
 kafka = [
     # Audit trail
     "confluent-kafka>=2.3.0",
@@ -94,7 +103,7 @@ observability = [
     "opentelemetry-sdk>=1.22.0",
 ]
 all = [
-    "carf[dev,causal,bayesian,dashboard,kafka,router,databases,observability]",
+    "carf[dev,causal,bayesian,dashboard,files,kafka,router,databases,observability]",
 ]
 
 [project.scripts]

@@ -26,6 +26,7 @@ from pydantic import BaseModel, Field
 from src.core.llm import get_analyst_model
 from src.core.state import CausalEvidence, ConfidenceLevel, EpistemicState
 from src.utils.resiliency import async_retry_with_backoff
+from src.utils.cache import async_lru_cache
 
 if TYPE_CHECKING:
     from src.services.neo4j_service import Neo4jService
@@ -235,6 +236,7 @@ Respond with a JSON object:
 }"""
 
     @async_retry_with_backoff(max_attempts=2, exceptions=(Exception,))
+    @async_lru_cache(maxsize=100)
     async def discover_causal_structure(
         self,
         query: str,
@@ -354,7 +356,17 @@ Respond with a JSON object:
             data = store.load_dataset_data(config.dataset_id)
             df = pd.DataFrame(data)
         elif config.csv_path:
-            df = pd.read_csv(config.csv_path)
+            # Optimize: only load needed columns if specified
+            usecols = None
+            if config.treatment and config.outcome:
+                 cols = [config.treatment, config.outcome]
+                 if config.covariates:
+                     cols.extend(config.covariates)
+                 if config.effect_modifiers:
+                     cols.extend(config.effect_modifiers)
+                 usecols = list(set(cols)) # Deduplicate
+            
+            df = pd.read_csv(config.csv_path, usecols=usecols)
         else:
             df = pd.DataFrame(config.data)
 
@@ -449,6 +461,7 @@ Respond with a JSON object:
             interpretation=interpretation,
         )
 
+    @async_lru_cache(maxsize=100)
     async def estimate_effect(
         self,
         hypothesis: CausalHypothesis,
@@ -664,6 +677,12 @@ async def run_causal_analysis(
         confidence_interval=result.confidence_interval,
         refutation_passed=result.passed_refutation,
         confounders_checked=result.hypothesis.confounders,
+        p_value=result.p_value,
+        refutation_results=result.refutation_results,
+        interpretation=result.interpretation,
+        treatment=result.hypothesis.treatment,
+        outcome=result.hypothesis.outcome,
+        mechanism=result.hypothesis.mechanism,
     )
 
     state.current_hypothesis = result.interpretation

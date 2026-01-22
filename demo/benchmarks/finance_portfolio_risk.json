@@ -1,0 +1,89 @@
+{
+    "id": "finance_portfolio_risk",
+    "name": "Portfolio Risk Exposure",
+    "description": "Analyze the causal relationship between asset allocation and portfolio volatility",
+    "domain": "finance",
+    "expected_classification": "complicated",
+    "query": "How does increasing equity allocation affect portfolio volatility?",
+    "context": {
+        "hypothesis": "Higher equity allocation increases portfolio volatility",
+        "treatment_variable": "equity_allocation_pct",
+        "outcome_variable": "portfolio_volatility",
+        "confounders": [
+            "interest_rate",
+            "market_cap_weighted",
+            "sector_concentration"
+        ]
+    },
+    "data": [
+        {
+            "equity_allocation_pct": 20,
+            "portfolio_volatility": 5.2,
+            "interest_rate": 3.5,
+            "market_cap_weighted": 0.8,
+            "sector_concentration": 0.3
+        },
+        {
+            "equity_allocation_pct": 30,
+            "portfolio_volatility": 7.1,
+            "interest_rate": 3.5,
+            "market_cap_weighted": 0.75,
+            "sector_concentration": 0.35
+        },
+        {
+            "equity_allocation_pct": 40,
+            "portfolio_volatility": 9.3,
+            "interest_rate": 3.0,
+            "market_cap_weighted": 0.7,
+            "sector_concentration": 0.4
+        },
+        {
+            "equity_allocation_pct": 50,
+            "portfolio_volatility": 11.8,
+            "interest_rate": 2.5,
+            "market_cap_weighted": 0.65,
+            "sector_concentration": 0.45
+        },
+        {
+            "equity_allocation_pct": 60,
+            "portfolio_volatility": 14.2,
+            "interest_rate": 2.5,
+            "market_cap_weighted": 0.6,
+            "sector_concentration": 0.5
+        },
+        {
+            "equity_allocation_pct": 70,
+            "portfolio_volatility": 16.5,
+            "interest_rate": 2.0,
+            "market_cap_weighted": 0.55,
+            "sector_concentration": 0.55
+        },
+        {
+            "equity_allocation_pct": 80,
+            "portfolio_volatility": 18.9,
+            "interest_rate": 2.0,
+            "market_cap_weighted": 0.5,
+            "sector_concentration": 0.6
+        },
+        {
+            "equity_allocation_pct": 90,
+            "portfolio_volatility": 21.3,
+            "interest_rate": 1.5,
+            "market_cap_weighted": 0.45,
+            "sector_concentration": 0.65
+        }
+    ],
+    "expected_results": {
+        "effect_range": [
+            0.18,
+            0.28
+        ],
+        "confidence_min": 0.8,
+        "refutation_robustness": true
+    },
+    "validation_criteria": {
+        "effect_direction": "positive",
+        "statistical_significance": 0.05,
+        "min_observations": 8
+    }
+}

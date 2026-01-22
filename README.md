@@ -1,6 +1,5 @@
-# CARF - Complex-Adaptive Reasoning Fabric
-
-A production-grade Neuro-Symbolic-Causal agentic system with epistemic awareness.
+# CYNEPIC Architecture 0.5
+**CYNefin-EPIstemic Cockpit** - A production-grade Neuro-Symbolic-Causal agentic system
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,7 +8,7 @@ A production-grade Neuro-Symbolic-Causal agentic system with epistemic awareness
 
 ## Overview
 
-CARF bridges the "trust gap" in AI systems by enforcing **epistemic awareness**. The system explicitly distinguishes what it knows, what it infers, and what it does not know.
+CYNEPIC bridges the "trust gap" in AI systems by enforcing **epistemic awareness**. The system explicitly distinguishes what it knows, what it infers, and what it does not know.
 
 ### Key Features
 
@@ -66,7 +65,12 @@ docker compose --profile demo up --build
 
 ```bash
 # Set test mode to use offline stubs
+
+# Linux/macOS:
 export CARF_TEST_MODE=1
+
+# Windows PowerShell:
+$env:CARF_TEST_MODE="1"
 
 # Run with mocked LLM responses
 python -m src.main
@@ -260,7 +264,10 @@ ruff check src/ tests/
 - [Security Guidelines](docs/SECURITY_GUIDELINES.md) - Release readiness checklist
 - [LLM Agentic Strategy](docs/LLM_AGENTIC_STRATEGY.md) - LLM roles, guardrails, model selection
 - [Self-Healing Architecture](docs/SELF_HEALING_ARCHITECTURE.md) - Reflection, human escalation, adaptive recovery
+- [Self-Healing Architecture](docs/SELF_HEALING_ARCHITECTURE.md) - Reflection, human escalation, adaptive recovery
 - [End-to-End Context Flow](docs/END_TO_END_CONTEXT_FLOW.md) - State propagation and memory/audit integration
+- [Integration Guide](docs/INTEGRATION_GUIDE.md) - Enterprise integration patterns (ERP, Cloud)
+- [Future Roadmap](docs/FUTURE_ROADMAP.md) - Development path and vision
 
 ## Contributing
 

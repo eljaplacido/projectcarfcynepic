@@ -1,62 +1,94 @@
 # CARF Research Demo Walkthrough
 
-This guide walks through running the full demo stack locally with Neo4j, Kafka, OPA, and the Streamlit cockpit.
+A step-by-step guide for demonstrating CARF's capabilities.
 
-## 1. Start the Stack
+## Quick Start (React Cockpit)
+
+```bash
+# Terminal 1: Start backend
+cd c:\Users\35845\Desktop\DIGICISU\projectcarf
+python -m uvicorn src.main:app --reload --port 8000
+
+# Terminal 2: Start React frontend
+cd carf-cockpit
+npm run dev
+```
+
+**Access:**
+- **React Cockpit**: http://localhost:5173
+- **API Docs**: http://localhost:8000/docs
+
+## Demo Scenarios
+
+| Scenario | Domain | Demo Focus |
+|----------|--------|------------|
+| Scope 3 Attribution | Complicated | Causal DAG, supplier impact |
+| Discount vs Churn | Complicated | Effect estimation, refutation |
+| Renewable Energy ROI | Complicated | Investment analysis |
+| Conversion Belief | Complex | Bayesian inference |
+| Shipping Carbon | Complicated | Mode emissions comparison |
+
+## Walkthrough Steps
+
+### 1. Select a Scenario
+- Open React cockpit at http://localhost:5173
+- Click a scenario card (e.g., "Scope 3 Attribution")
+- See welcome message and suggested queries
+
+### 2. Submit a Query
+- Click a suggested query or type your own
+- Watch the progress indicator during analysis
+- Results display in the main panel
+
+### 3. Explore Results
+- **Cynefin Panel**: Domain classification with confidence
+- **Causal DAG**: Interactive graph with treatment/outcome nodes
+- **Causal Analysis**: Effect estimate, p-value, refutation tests
+- **Bayesian Panel**: Prior/posterior distributions
+- **Guardian Panel**: Policy checks and verdict
+
+### 4. Use Developer View
+- Switch to Developer view mode (tab at top)
+- View execution trace timeline
+- Inspect architecture flow and state
+
+### 5. Chat with CARF
+- Use the chat panel for follow-up questions
+- Try slash commands: `/help`, `/history`, `/analyze`
+- Socratic mode asks clarifying questions
+
+## Docker Full Stack (Optional)
 
 ```bash
 docker compose up --build
-```
-
-Services:
-- CARF API: http://localhost:8000
-- Streamlit Cockpit: http://localhost:8501
-- Neo4j Browser: http://localhost:7474
-- OPA: http://localhost:8181
-- Kafka (host): localhost:29092
-
-## 2. Seed Demo Data
-
-Seed Neo4j and publish a demo Kafka event:
-
-```bash
 docker compose --profile demo run --rm seed
 ```
 
-## 3. Run a Live Query
+Services: API (8000), Streamlit (8501), Neo4j (7474), OPA (8181)
 
-Use the Streamlit cockpit or curl:
+## API Examples
 
 ```bash
+# Simple query
+curl -X POST http://localhost:8000/query \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What causes customer churn?"}'
+
+# Causal analysis
 curl -X POST http://localhost:8000/query \
   -H "Content-Type: application/json" \
   -d @demo/payloads/causal_estimation.json
+
+# Chat message
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"messages": [{"role": "user", "content": "Explain the results"}]}'
 ```
 
-Demo payloads:
-- `demo/payloads/causal_estimation.json` (discount -> churn causal estimate)
-- `demo/payloads/bayesian_inference.json` (conversion belief update)
+## Key Features Demonstrated
 
-## 4. Explore the Cockpit
-
-In Streamlit:
-- Pick a scenario from the header dropdown (e.g., Renewable Energy ROI).
-- Click a suggested query to populate the input, then run **Analyze**.
-- Run a live `/query` call from the UI and review the reasoning chain.
-
-Bring your data (small CSV):
-- Upload CSV in the Data Sources panel, then map columns and apply dataset selection.
-- Keep datasets at or below 5000 rows.
-- Uploaded datasets are stored locally under `var/` (bind-mounted in compose).
-
-## 5. Optional: OPA Policy Check
-
-Enable OPA in `.env`:
-
-```bash
-OPA_ENABLED=true
-OPA_URL=http://localhost:8181
-OPA_POLICY_PATH=/v1/data/carf/guardian/allow
-```
-
-See `docs/OPA_POLICY.md` for the sample policy.
+- **AI Act Transparency**: Explainable results with confidence levels
+- **Causal Reasoning**: DAG discovery and effect estimation
+- **Uncertainty Quantification**: Bayesian belief updates
+- **Human-in-the-Loop**: Guardian policy enforcement
+- **Developer Visibility**: Full execution trace and state inspection

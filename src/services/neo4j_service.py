@@ -478,6 +478,125 @@ class Neo4jService:
 
         return neighbors
 
+    async def invalidate_session_cache(self, session_id: str) -> None:
+        """Clear cached computations for a session, forcing regeneration.
+        
+        This method removes all derived/cached properties from analysis nodes
+        and relationships associated with a session, ensuring fresh computation
+        when the session is re-accessed.
+        
+        Args:
+            session_id: Session identifier to invalidate
+        """
+        async with self.session() as session:
+            # Remove cached properties from analysis node
+            await session.run("""
+                MATCH (a:CausalAnalysis {session_id: $session_id})
+                REMOVE a.cached_visualization_data,
+                       a.cached_kpi_summary,
+                       a.last_regenerated
+                SET a.cache_invalidated_at = datetime()
+            """, {"session_id": session_id})
+            
+            # Mark relationships for recomputation
+            await session.run("""
+                MATCH (a:CausalAnalysis {session_id: $session_id})-[:INCLUDES]->(v:CausalVariable)
+                MATCH (v)-[r:CAUSES]->()
+                WHERE r.session_id = $session_id OR r.last_session_id = $session_id
+                REMOVE r.cached_strength_score
+                SET r.needs_recomputation = true
+            """, {"session_id": session_id})
+            
+            logger.info(f"Invalidated cache for session: {session_id}")
+
+    async def link_analysis_sessions(
+        self,
+        parent_id: str,
+        child_id: str,
+        relationship_type: str = "DERIVED_FROM"
+    ) -> None:
+        """Create interconnection between related analyses.
+        
+        This enables tracking of analysis lineage, such as:
+        - Simulation scenarios derived from baseline analysis
+        - Refined analyses based on previous iterations
+        - What-if scenarios branching from original query
+        
+        Args:
+            parent_id: Session ID of the parent analysis
+            child_id: Session ID of the derived/child analysis
+            relationship_type: Type of relationship (DERIVED_FROM, REFINES, SIMULATES, etc.)
+        """
+        async with self.session() as session:
+            await session.run(f"""
+                MATCH (parent:CausalAnalysis {{session_id: $parent_id}})
+                MATCH (child:CausalAnalysis {{session_id: $child_id}})
+                MERGE (child)-[r:{relationship_type}]->(parent)
+                ON CREATE SET
+                    r.created_at = datetime(),
+                    r.link_metadata = {{}}
+                RETURN r
+            """, {
+                "parent_id": parent_id,
+                "child_id": child_id
+            })
+            
+            logger.info(f"Linked sessions: {child_id} -{relationship_type}-> {parent_id}")
+
+    async def get_session_lineage(self, session_id: str) -> dict[str, Any]:
+        """Get the full lineage tree for an analysis session.
+        
+        Args:
+            session_id: Session ID to trace
+            
+        Returns:
+            Dict with parent and child sessions
+        """
+        async with self.session() as session:
+            # Get parent sessions
+            parent_result = await session.run("""
+                MATCH (child:CausalAnalysis {session_id: $session_id})-[r]->(parent:CausalAnalysis)
+                RETURN parent.session_id as session_id,
+                       parent.query as query,
+                       type(r) as relationship,
+                       parent.created_at as created_at
+                ORDER BY parent.created_at DESC
+            """, {"session_id": session_id})
+            
+            parents = []
+            async for record in parent_result:
+                parents.append({
+                    "session_id": record["session_id"],
+                    "query": record["query"],
+                    "relationship": record["relationship"],
+                    "created_at": record["created_at"]
+                })
+            
+            # Get child sessions
+            child_result = await session.run("""
+                MATCH (parent:CausalAnalysis {session_id: $session_id})<-[r]-(child:CausalAnalysis)
+                RETURN child.session_id as session_id,
+                       child.query as query,
+                       type(r) as relationship,
+                       child.created_at as created_at
+                ORDER BY child.created_at DESC
+            """, {"session_id": session_id})
+            
+            children = []
+            async for record in child_result:
+                children.append({
+                    "session_id": record["session_id"],
+                    "query": record["query"],
+                    "relationship": record["relationship"],
+                    "created_at": record["created_at"]
+                })
+            
+            return {
+                "session_id": session_id,
+                "parents": parents,
+                "children": children
+            }
+
     async def health_check(self) -> dict[str, Any]:
         """Check Neo4j connection health and return statistics."""
         try:

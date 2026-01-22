@@ -67,6 +67,35 @@ class CausalEvidence(BaseModel):
     confounders_checked: list[str] = Field(
         default_factory=list, description="List of confounders tested"
     )
+    # Full structured result for UIX panels
+    p_value: float | None = Field(default=None, description="Statistical p-value")
+    refutation_results: dict[str, bool] = Field(
+        default_factory=dict, description="Individual refutation test results"
+    )
+    interpretation: str = Field(default="", description="Human-readable interpretation")
+    treatment: str = Field(default="", description="Treatment variable name")
+    outcome: str = Field(default="", description="Outcome variable name")
+    mechanism: str = Field(default="", description="Causal mechanism description")
+
+
+class BayesianEvidence(BaseModel):
+    """Evidence from Bayesian active inference analysis."""
+
+    posterior_mean: float = Field(..., description="Posterior mean estimate")
+    credible_interval: tuple[float, float] = Field(
+        ..., description="95% credible interval"
+    )
+    uncertainty_before: float = Field(default=1.0, description="Initial uncertainty")
+    uncertainty_after: float = Field(default=1.0, description="Final uncertainty")
+    epistemic_uncertainty: float = Field(default=0.0, description="Reducible uncertainty")
+    aleatoric_uncertainty: float = Field(default=0.0, description="Irreducible uncertainty")
+    hypothesis: str = Field(default="", description="Primary hypothesis")
+    confidence_level: str = Field(default="low", description="Confidence level")
+    interpretation: str = Field(default="", description="Human-readable interpretation")
+    probes_designed: int = Field(default=0, description="Number of probes designed")
+    recommended_probe: str | None = Field(default=None, description="Recommended next action")
+
+
 
 
 class HumanVerificationMetadata(BaseModel):
@@ -90,6 +119,7 @@ class ReasoningStep(BaseModel):
     input_summary: str = Field(..., description="Summary of inputs")
     output_summary: str = Field(..., description="Summary of outputs")
     confidence: ConfidenceLevel = Field(default=ConfidenceLevel.MEDIUM)
+    duration_ms: int = Field(default=0, description="Execution duration in ms")
 
 
 class EpistemicState(BaseModel):
@@ -120,6 +150,18 @@ class EpistemicState(BaseModel):
         ge=0.0,
         description="Entropy measure from signal analysis",
     )
+    router_key_indicators: list[str] = Field(
+        default_factory=list,
+        description="Key indicators that led to domain classification",
+    )
+    domain_scores: dict[str, float] = Field(
+        default_factory=dict,
+        description="Confidence scores for each Cynefin domain",
+    )
+    triggered_method: str = Field(
+        default="",
+        description="Analysis method triggered by classification (causal/bayesian/circuit_breaker)",
+    )
 
     # --- Input & Task ---
     user_input: str = Field(default="", description="Original user request")
@@ -138,6 +180,9 @@ class EpistemicState(BaseModel):
     )
     causal_evidence: Optional[CausalEvidence] = Field(
         default=None, description="Evidence from causal analysis"
+    )
+    bayesian_evidence: Optional[BayesianEvidence] = Field(
+        default=None, description="Evidence from Bayesian active inference"
     )
 
     # --- Uncertainty Tracking ---
@@ -204,6 +249,7 @@ class EpistemicState(BaseModel):
         input_summary: str,
         output_summary: str,
         confidence: ConfidenceLevel = ConfidenceLevel.MEDIUM,
+        duration_ms: int = 0,
     ) -> None:
         """Add a step to the reasoning chain for audit trail."""
         step = ReasoningStep(
@@ -212,6 +258,7 @@ class EpistemicState(BaseModel):
             input_summary=input_summary,
             output_summary=output_summary,
             confidence=confidence,
+            duration_ms=duration_ms,
         )
         self.reasoning_chain.append(step)
         self.updated_at = datetime.utcnow()

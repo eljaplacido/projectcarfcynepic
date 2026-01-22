@@ -188,22 +188,49 @@ Example approval flow:
 - Model selection: policy-based (cost/latency/risk); tiers (local/distilled vs. stronger); log model choice; prefer local for privacy/offline.
 ## 4. Implementation Roadmap and Strategy
 
-### Phase 1: Foundation (Months 1-3)
+### Phase 1: Foundation ✅ COMPLETE
 
-- Deploy LangGraph with Cynefin router.
-- Integrate HumanLayer for Disorder routing and approvals.
-- Hire systems architect.
+- [x] Deployed LangGraph with Cynefin router.
+- [x] Integrated HumanLayer for Disorder routing and approvals.
 
-### Phase 2: Discovery and the Brain (Months 4-9)
+### Phase 2: Discovery and the Brain ✅ COMPLETE
 
-- Implement PyWhy causal discovery.
-- Deploy priority proof-of-concepts.
+- [x] Implemented PyWhy causal discovery (DoWhy/EconML).
+- [x] Deployed Bayesian Active Inference (PyMC).
 
-### Phase 3: The Guardian and Verification (Months 10-15)
+### Phase 3: The Guardian and Verification ✅ COMPLETE
 
-- Implement OPA constraints (optional integration now available).
-- Ensure HumanLayer approvals generate signed receipts and are persisted to the audit log (planned).
+- [x] Implemented OPA constraints (optional integration available).
+- [x] Kafka audit trail for decision logging.
+- [x] Neo4j persistence for causal graphs.
 
-### Phase 4: Scaling and the Mesh (Months 16-24)
+### Phase 4: Research Demo UIX ✅ COMPLETE
 
-- Scale active inference agents and self-healing loops.
+- [x] Streamlit Epistemic Cockpit with 3 view modes.
+- [x] Scenario and dataset registry.
+- [x] Self-healing loop with Reflector and HumanLayer escalation.
+
+### Phase 5: Platform UIX (PLANNING → EXECUTION)
+
+**Status**: 📋 Implementation Plan Complete (2026-01-15)
+
+**Timeline**: 17-24 days (3-4 weeks Sprint)
+
+**Deliverables**:
+- [ ] React cockpit for high-fidelity visualization (10-phase development plan)
+  - Foundation & Layout (Vite + React + TypeScript + Tailwind + shadcn/ui)
+  - Query Input & Scenario Registry
+  - Cynefin Router & Classification Display
+  - Interactive Causal DAG (react-flow with Markov blanket highlighting)
+  - Causal Analysis Results Panel (effect estimates, refutation tests)
+  - Bayesian Panel (Recharts distributions, uncertainty decomposition)
+  - Guardian Panel (3-Point Context, policy violations)
+  - Execution Trace (vertical timeline, JSON export)
+  - Response & Summary Panel (badges, key insights, next steps)
+  - Mock Data & API Layer (TypeScript types, React Query hooks, 5 scenario payloads)
+- [ ] Org-level workspace model for multi-tenant support
+- [ ] HumanLayer approval UI integration (in-app notification center)
+- [ ] Dataset registry enhancements (tags, search, richer previews)
+
+**Reference**: See `REACT_IMPLEMENTATION_PLAN.md` for detailed phase breakdown
+

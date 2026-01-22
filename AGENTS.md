@@ -30,6 +30,12 @@ Core Architecture: 4-layer cognitive stack
 - Wrap external API calls in tenacity retry decorators
 - Log all state transitions for audit trail
 
+### EXPLAINABILITY REQUIREMENTS (Phase 6)
+- Every analytical result MUST link to its data source
+- Confidence scores MUST be decomposable (show what contributes)
+- All panels MUST answer: "Why this?" + "How confident?" + "Based on what?"
+- Drill-down capability MUST be available for all insights
+
 ---
 
 ## Testing Commands
@@ -134,13 +140,28 @@ def my_node(state: EpistemicState) -> EpistemicState:
 
 ```
 projectcarf/
+  carf-cockpit/           # React Platform Cockpit (Vite + TypeScript + Tailwind)
+    src/
+      components/carf/    # Core UI components (10 implemented)
+        BayesianPanel.tsx
+        CausalAnalysisCard.tsx
+        CausalDAG.tsx
+        CynefinRouter.tsx
+        DashboardHeader.tsx
+        DashboardLayout.tsx
+        ExecutionTrace.tsx
+        GuardianPanel.tsx
+        QueryInput.tsx
+        ResponsePanel.tsx
+      services/           # API client layer
+      types/              # TypeScript type definitions
   src/
     core/               # Base classes, state schemas (NO external deps)
     services/           # External integrations (Neo4j, HumanLayer, Kafka, OPA)
     workflows/          # LangGraph definitions (the wiring)
     tools/              # Atomic tools (Pydantic schemas required)
     utils/              # Telemetry, resiliency decorators
-    dashboard/          # Streamlit Epistemic Cockpit
+    dashboard/          # Streamlit Epistemic Cockpit (legacy)
   config/               # YAML config and OPA policy
     opa/
   docs/                 # Architecture docs, walkthroughs
@@ -204,18 +225,40 @@ The "3-Point Context" for notifications:
 
 ---
 
-## Current Phase: Phase 4 - Research Demo
+## Current Phase: Phase 6 - Enhanced UIX & Explainability
 
-In scope:
+### In Scope (Phase 6):
+- **Explainability & Transparency**
+  - Drill-down modals for all analytical results
+  - Confidence decomposition (data/model/validation components)
+  - Data provenance links from results to source rows
+  - "Why not?" alternative path visibility
+
+- **Enhanced UIX Components** (React Cockpit - `carf-cockpit/`)
+  - `OnboardingOverlay.tsx` - First-run scenario selection
+  - `DataOnboardingWizard.tsx` - 5-step data upload flow
+  - `ConversationalResponse.tsx` - Dialog-based results with confidence zones
+  - `FloatingChatTab.tsx` - Bottom-right persistent chat
+  - `WalkthroughManager.tsx` - Multi-track guided tours
+  - `MethodologyModal.tsx` - Transparency drill-downs
+
+- **Interactive Walkthrough**
+  - Quick Demo track (2-3 min)
+  - Analyst Onboarding track (5-7 min)
+  - Contributor Guide track (10-15 min)
+  - Production Deployment track (5-10 min)
+
+### Completed (Phases 1-5):
 - Full Cynefin router and cognitive mesh
 - Neo4j persistence + query utilities
 - DoWhy/EconML and PyMC optional inference paths
 - Streamlit Epistemic Cockpit
+- React Cockpit foundation (10 core components)
 - Kafka audit trail (optional)
 - OPA Guardian integration (optional)
 - Docker Compose demo stack + seed scripts
 
-Out of scope:
+### Out of Scope:
 - Production autoscaling and Kubernetes
 - Enterprise-grade observability beyond demo
 

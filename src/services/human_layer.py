@@ -50,6 +50,35 @@ class HumanResponse(BaseModel):
     response_timestamp: datetime | None = None
 
 
+class Escalation(BaseModel):
+    """An escalation requiring human review."""
+
+    id: str = Field(..., description="Unique escalation ID")
+    session_id: str = Field(..., description="Related session UUID")
+    reason: str = Field(..., description="Why this was escalated")
+    reason_type: str = Field(
+        default="low_confidence",
+        description="low_confidence, policy_violation, disorder, high_risk"
+    )
+    context: NotificationContext
+    state_snapshot: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Snapshot of epistemic state at escalation time"
+    )
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    resolved_at: datetime | None = None
+    resolution: str | None = Field(
+        default=None,
+        description="approve, reject, clarify"
+    )
+    resolver_notes: str | None = None
+    resolver_email: str | None = None
+
+
+# In-memory escalation store (replace with DB in production)
+_escalation_store: dict[str, Escalation] = {}
+
+
 class HumanLayerService:
     """Service for human-in-the-loop interactions via HumanLayer.
 
@@ -384,3 +413,94 @@ async def human_escalation_node(state: EpistemicState) -> EpistemicState:
         state, response = await service.request_clarification(state)
 
     return service.update_state_from_response(state, response)
+
+
+# ============================================================================
+# Escalation CRUD Functions
+# ============================================================================
+
+
+def create_escalation(
+    state: EpistemicState,
+    reason: str,
+    reason_type: str = "low_confidence",
+) -> Escalation:
+    """Create and store a new escalation.
+
+    Args:
+        state: Current epistemic state
+        reason: Human-readable reason for escalation
+        reason_type: Category (low_confidence, policy_violation, disorder, high_risk)
+
+    Returns:
+        The created Escalation object
+    """
+    import uuid
+
+    service = get_human_layer_service()
+    context = service._build_notification_context(state, reason_type)
+
+    escalation = Escalation(
+        id=f"esc_{uuid.uuid4().hex[:12]}",
+        session_id=str(state.session_id),
+        reason=reason,
+        reason_type=reason_type,
+        context=context,
+        state_snapshot={
+            "user_input": state.user_input,
+            "cynefin_domain": state.cynefin_domain.value,
+            "domain_confidence": state.domain_confidence,
+            "overall_confidence": state.overall_confidence.value,
+            "policy_violations": state.policy_violations,
+            "current_hypothesis": state.current_hypothesis,
+        },
+    )
+
+    _escalation_store[escalation.id] = escalation
+    logger.info(f"Created escalation {escalation.id} for session {state.session_id}")
+    return escalation
+
+
+def get_pending_escalations() -> list[Escalation]:
+    """Get all unresolved escalations."""
+    return [e for e in _escalation_store.values() if e.resolved_at is None]
+
+
+def get_escalation(escalation_id: str) -> Escalation | None:
+    """Get an escalation by ID."""
+    return _escalation_store.get(escalation_id)
+
+
+def resolve_escalation(
+    escalation_id: str,
+    resolution: str,
+    notes: str | None = None,
+    resolver_email: str | None = None,
+) -> Escalation | None:
+    """Resolve an escalation with a human decision.
+
+    Args:
+        escalation_id: The escalation to resolve
+        resolution: Decision (approve, reject, clarify)
+        notes: Optional notes from the human
+        resolver_email: Email of the person resolving
+
+    Returns:
+        The updated Escalation, or None if not found
+    """
+    escalation = _escalation_store.get(escalation_id)
+    if not escalation:
+        return None
+
+    escalation.resolved_at = datetime.utcnow()
+    escalation.resolution = resolution
+    escalation.resolver_notes = notes
+    escalation.resolver_email = resolver_email
+
+    logger.info(f"Resolved escalation {escalation_id} with decision: {resolution}")
+    return escalation
+
+
+def get_all_escalations() -> list[Escalation]:
+    """Get all escalations (for admin/history view)."""
+    return list(_escalation_store.values())

@@ -1,0 +1,151 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "18"
+  CARF_TEST_MODE: "1"
+
+jobs:
+  # Backend Python Tests
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,dashboard]"
+
+      - name: Run linting
+        run: |
+          pip install ruff
+          ruff check src/ tests/
+
+      - name: Run type checking
+        run: |
+          pip install mypy
+          mypy src/ --ignore-missing-imports --no-error-summary || true
+
+      - name: Run tests with coverage
+        run: |
+          pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: backend
+          name: backend-coverage
+          fail_ci_if_error: false
+
+  # Frontend React Tests
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: carf-cockpit/package-lock.json
+
+      - name: Install dependencies
+        working-directory: carf-cockpit
+        run: npm ci
+
+      - name: Run TypeScript type check
+        working-directory: carf-cockpit
+        run: npx tsc --noEmit
+
+      - name: Run build
+        working-directory: carf-cockpit
+        run: npm run build
+
+  # Security Scan
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+
+      - name: Run Bandit security scan
+        run: bandit -r src/ -ll --skip B101 || true
+
+      - name: Check for known vulnerabilities
+        run: |
+          pip install -e ".[dev]"
+          safety check || true
+
+  # Docker Build Test
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: carf:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # All checks pass gate
+  ci-success:
+    name: CI Success
+    needs: [backend-tests, frontend-tests, security-scan]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs passed
+        run: |
+          if [[ "${{ needs.backend-tests.result }}" != "success" ]]; then
+            echo "Backend tests failed"
+            exit 1
+          fi
+          if [[ "${{ needs.frontend-tests.result }}" != "success" ]]; then
+            echo "Frontend tests failed"
+            exit 1
+          fi
+          echo "All CI checks passed!"

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 from pathlib import Path
 
@@ -107,21 +108,28 @@ def main() -> None:
         batched=True,
     )
 
-    training_args = TrainingArguments(
-        output_dir=str(output_dir),
-        num_train_epochs=args.epochs,
-        per_device_train_batch_size=args.batch_size,
-        per_device_eval_batch_size=args.batch_size,
-        evaluation_strategy="epoch",
-        save_strategy="epoch",
-        load_best_model_at_end=True,
-        metric_for_best_model="f1",
-        logging_dir=str(output_dir / "logs"),
-        logging_steps=50,
-        seed=args.seed,
-        save_total_limit=2,
-        report_to=[],
-    )
+    training_kwargs = {
+        "output_dir": str(output_dir),
+        "num_train_epochs": args.epochs,
+        "per_device_train_batch_size": args.batch_size,
+        "per_device_eval_batch_size": args.batch_size,
+        "load_best_model_at_end": True,
+        "metric_for_best_model": "f1",
+        "logging_dir": str(output_dir / "logs"),
+        "logging_steps": 50,
+        "seed": args.seed,
+        "save_total_limit": 2,
+        "report_to": [],
+    }
+    training_sig = inspect.signature(TrainingArguments.__init__)
+    if "eval_strategy" in training_sig.parameters:
+        training_kwargs["eval_strategy"] = "epoch"
+    else:
+        training_kwargs["evaluation_strategy"] = "epoch"
+    if "save_strategy" in training_sig.parameters:
+        training_kwargs["save_strategy"] = "epoch"
+
+    training_args = TrainingArguments(**training_kwargs)
 
     trainer = Trainer(
         model=model,

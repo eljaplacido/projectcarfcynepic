@@ -360,6 +360,26 @@ Respond with a JSON object only, no other text:
         state.domain_confidence = final_confidence
         state.overall_confidence = self._determine_confidence_level(final_confidence)
         state.current_hypothesis = classification.reasoning
+        state.router_key_indicators = classification.key_indicators
+        
+        # Compute triggered method based on domain
+        method_map = {
+            CynefinDomain.CLEAR: "deterministic_runner",
+            CynefinDomain.COMPLICATED: "causal_inference",
+            CynefinDomain.COMPLEX: "bayesian_inference",
+            CynefinDomain.CHAOTIC: "circuit_breaker",
+            CynefinDomain.DISORDER: "human_escalation",
+        }
+        state.triggered_method = method_map.get(final_domain, "unknown")
+        
+        # Generate domain scores (primary domain gets confidence, others split remainder)
+        remaining = 1.0 - final_confidence
+        other_domains = [d for d in CynefinDomain if d != final_domain]
+        per_domain = remaining / len(other_domains) if other_domains else 0
+        state.domain_scores = {
+            d.value: (final_confidence if d == final_domain else per_domain)
+            for d in CynefinDomain
+        }
 
         # Step 6: Record reasoning step
         state.add_reasoning_step(
@@ -402,3 +422,4 @@ async def cynefin_router_node(state: EpistemicState) -> EpistemicState:
     """
     router = get_router()
     return await router.classify(state)
+

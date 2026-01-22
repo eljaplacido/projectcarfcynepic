@@ -1237,6 +1237,97 @@ const stepDelays = [400, 600, 1200, 800, 500];  // ms per step
 
 ## Implementation Status
 
+### Current Phase: Phase 5 - React Platform Cockpit Development
+
+**Status**: 📋 Implementation Plan Complete, Ready for Development
+
+**Timeline**: 17-24 days (3-4 weeks)
+
+### 10-Phase Development Plan
+
+1. **Phase 1: Foundation & Layout** (2-3 days)
+   - Vite + React + TypeScript setup
+   - Tailwind CSS + shadcn/ui configuration
+   - Dashboard shell with 3-6-3 grid layout
+   - CARF design system (purple #7C3AED, green #10B981)
+
+2. **Phase 2: Query Input & Scenario Registry** (2 days)
+   - Query input component with auto-resize
+   - Scenario selector with 5 demo scenarios
+   - Suggested queries as clickable badges
+   - Optional guided walkthrough
+
+3. **Phase 3: Cynefin Router & Classification** (1-2 days)
+   - Domain classification display
+   - Confidence meter and entropy indicator
+   - Solver recommendation
+   - Domain scores accordion
+
+4. **Phase 4: Interactive Causal DAG** (3-4 days)
+   - react-flow integration
+   - Custom node types (variable, confounder, intervention, outcome)
+   - Edge annotations with effect sizes
+   - Markov blanket highlighting on node click
+   - Zoom/pan controls with backdoor path toggle
+
+5. **Phase 5: Causal Analysis Results** (2 days)
+   - Effect estimate card with CI visualization
+   - Refutation test accordion (5 tests)
+   - Confounder control section
+   - Evidence base metadata
+
+6. **Phase 6: Bayesian Panel** (2-3 days)
+   - Prior/Posterior distribution charts (Recharts)
+   - Belief stats table with credible intervals
+   - Uncertainty decomposition (epistemic vs. aleatoric)
+   - Confidence level badges
+   - Probe recommendations
+
+7. **Phase 7: Guardian Panel** (2 days)
+   - Verdict badges (approved/rejected/pending)
+   - 3-Point Context Card (What/Why/Risk)
+   - Policy violation cards with severity
+   - Approval action buttons (mock, ready for HumanLayer)
+
+8. **Phase 8: Execution Trace** (2 days)
+   - Vertical timeline with workflow steps
+   - Collapsible step cards with JSON inputs/outputs
+   - Session ID display with copy button
+   - Export trace as JSON
+
+9. **Phase 9: Response & Summary Panel** (1-2 days)
+   - Response badges (domain, verdict, confidence)
+   - Markdown-formatted main response
+   - Confidence indicator (color-coded)
+   - Key insights and next steps
+
+10. **Phase 10: Mock Data & API Layer** (2-3 days)
+    - TypeScript type definitions for all CARF entities
+    - Mock service layer with realistic responses
+    - 5 complete scenario payloads
+   - React Query hooks for API calls
+    - Environment toggle: `VITE_USE_MOCK_DATA=true|false`
+
+### Backend API Alignment ✅
+
+**Verified Compatibility** (2026-01-15):
+- 8 API endpoints fully implemented
+- 73+ unit tests passing
+- Complete response schemas match React type definitions:
+  - `QueryResponse` with causal/bayesian/guardian results
+  - `CausalResult` with effect, CI, refutations
+  - `BayesianResult` with uncertainties and probes
+  - `GuardianResult` with verdict and violations
+- Mock data layer mirrors backend structure
+
+### Implementation Artifacts
+
+- **Plan**: `REACT_IMPLEMENTATION_PLAN.md` (comprehensive 10-phase guide)
+- **Backend Status**: All dependencies verified, tests passing
+- **Design Reference**: Streamlit cockpit light theme
+
+## Implementation Status
+
 ### ✅ Completed (Streamlit Epistemic Cockpit v2.0)
 
 The dashboard has been fully refactored to a modern UI/UX following the target design specifications.
@@ -1362,5 +1453,52 @@ src/
 
 ---
 
-*Generated for CARF Epistemic Cockpit v2.0.0*
-*Two-Speed Cognitive Model Integration*
+## Phase 6: Enhanced UIX & Explainability Components
+
+> **Status**: Planning Complete — Implementation Ready  
+> **Reference**: See `critical_analysis.md` for full rationale
+
+### New Component Requirements
+
+| Component | Purpose | Complexity |
+|-----------|---------|------------|
+| `OnboardingOverlay.tsx` | First-run scenario discovery with cards | Medium |
+| `DataOnboardingWizard.tsx` | 5-step guided data upload flow | High |
+| `ConversationalResponse.tsx` | Dialog-style results with confidence zones | High |
+| `FloatingChatTab.tsx` | Persistent chat in bottom-right corner | Medium |
+| `WalkthroughManager.tsx` | Multi-track guided tour system | High |
+| `MethodologyModal.tsx` | Drill-down transparency for any result | Medium |
+| `ConfidenceDecomposition.tsx` | Stacked bar showing data/model/validation | Medium |
+| `SuggestedQuestions.tsx` | Clickable follow-up question cards | Low |
+| `DataProvenanceLink.tsx` | Inline link to source data rows | Low |
+| `SpotlightOverlay.tsx` | Element highlighting for tours | Medium |
+
+### Explainability Principles
+
+Every panel must answer:
+1. **Why this?** — What led to this conclusion
+2. **How confident?** — Decomposed confidence sources
+3. **Based on what?** — Link to source data/methodology
+
+### Walkthrough Tracks
+
+| Track | Target | Duration |
+|-------|--------|----------|
+| 🎯 Quick Demo | Evaluators | 2-3 min |
+| 📊 Analyst Onboarding | Data Scientists | 5-7 min |
+| 🔧 Contributor Guide | Developers | 10-15 min |
+| 🏢 Production Path | Enterprise | 5-10 min |
+
+### Transparency Enhancements
+
+| Element | Current | Enhanced |
+|---------|---------|----------|
+| Effect estimate | Number + CI | + [View Methodology] link |
+| Confidence score | Color badge | Decomposed bar |
+| Guardian verdict | Pass/Fail | + Policy rule text |
+| Cynefin domain | Badge | + Alternative scores |
+
+---
+
+*Generated for CARF Epistemic Cockpit v2.1.0*
+*Phase 6: Enhanced UIX & Explainability*

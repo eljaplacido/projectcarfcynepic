@@ -1,7 +1,7 @@
 # CARF Development Reference
 
-> Last Updated: 2026-01-11
-> Current Phase: Phase 4 Complete - Research Demo Ready
+> Last Updated: 2026-01-16
+> Current Phase: Phase 5 Complete - Phase 6 (Enhanced UIX & Explainability) Starting
 
 ## Quick Start
 
@@ -51,6 +51,8 @@ projectcarf/
   docs/
     PRD.md                    # Product requirements
     DATA_LAYER.md             # Data architecture
+    UI_UIX_CURRENT_STREAMLIT.md  # Current Streamlit implementation
+    UI_UIX_VISION_REACT.md       # Future React architecture vision
     DEV_PRACTICES_AND_LIVING_DOCS.md
     CARF_UIX_INTERACTION_GUIDELINES.md
 
@@ -268,6 +270,49 @@ Demo payloads live in `demo/payloads/`.
 
 ---
 
+## Simulated Use Cases
+
+The platform includes pre-configured **demo scenarios** that run real analysis workflows with simulated data - no mockups or hardcoded values.
+
+### Available Scenarios
+
+| ID | Name | Description |
+|---|---|---|
+| `scope3_attribution` | Scope 3 Attribution | Causal analysis of supplier sustainability programs |
+| `causal_discount_churn` | Discount vs Churn | Causal effect of discount offers on customer churn |
+| `bayesian_conversion_rate` | Conversion Belief Update | Bayesian inference on website conversion rates |
+
+### How to Use Scenarios
+
+**Via Dashboard (UI):**
+1. Launch dashboard: `streamlit run src/dashboard/app.py`
+2. Select a scenario from the dropdown in the header
+3. Enter a query (or use suggested query)
+4. Click "Analyze" to run the full analysis pipeline
+5. View real results in Cynefin, Causal, Bayesian, and Guardian panels
+
+**Via API:**
+```bash
+# Get available scenarios
+curl http://localhost:8000/scenarios
+
+# Get scenario payload
+curl http://localhost:8000/scenarios/scope3_attribution
+
+# Run analysis with scenario payload
+curl -X POST http://localhost:8000/query \
+  -H "Content-Type: application/json" \
+  -d @demo/payloads/scope3_attribution.json
+```
+
+### Adding New Scenarios
+
+1. Create payload JSON in `demo/payloads/`
+2. Register in `demo/scenarios.json`
+3. Include `query`, `context`, and optionally `causal_estimation` / `bayesian_inference` configs
+
+---
+
 ## Docker Compose Demo Stack
 
 ```bash
@@ -343,21 +388,27 @@ python test_carf.py
 
 ---
 
-## Next Development Steps (Phase 5)
+## Next Development Steps (Phase 6 - Enhanced UIX & Explainability)
 
-1. Dataset registry enhancements:
-   - Tags, search, and richer previews.
-   - Guardrails for column typing and missing values.
+**Explainability & Transparency:**
+- Drill-down modals for all analytical results
+- Confidence decomposition (data/model/validation sources)
+- Data provenance links from results to source data
+- "Why not?" alternative Cynefin paths
 
-2. Platform UIX:
-   - Org-level workspace model for multi-tenant support.
-   - Use-case templates per business unit.
-   - React cockpit for high-fidelity visualization.
-   - HumanLayer approval UI integration.
+**Enhanced React Components:**
+- `OnboardingOverlay.tsx` - First-run scenario discovery
+- `DataOnboardingWizard.tsx` - 5-step data upload flow
+- `ConversationalResponse.tsx` - Dialog with confidence zones
+- `FloatingChatTab.tsx` - Persistent bottom-right chat
+- `WalkthroughManager.tsx` - Multi-track guided tours
 
-3. Release readiness:
-   - Add demo screenshots and README walkthrough.
-   - Smoke tests for docker compose stack.
+**Release Readiness:**
+- LICENSE, SECURITY.md, CONTRIBUTING.md
+- GitHub Actions CI workflow
+- Demo GIF and live deployment
+
+**Reference**: See `docs/CARF UI Development.md` and `docs/UI_UIX_VISION_REACT.md` for detailed specifications.
 
 ---
 
@@ -393,7 +444,7 @@ python test_carf.py
 
 ### Modified Files
 - `src/dashboard/app.py` - Response badges, color-coded confidence, improved reasoning chain
-- `docs/UI_UIX.md` - Added implementation status checkboxes, marked Phase 4 complete
+- `docs/UI_UIX_VISION_REACT.md` - Added implementation status checkboxes, marked Phase 4 complete
 - `CURRENT_STATUS.md` - Updated Phase 4 to complete, added 2026-01-11 session log
 - `DEV_REFERENCE.md` - Updated Phase 4 status, next steps for Phase 5
 
@@ -410,7 +461,7 @@ python test_carf.py
 - `src/main.py` - Dataset/scenario endpoints, dataset selection handling
 - `src/services/causal.py` - Dataset ID support for causal estimation
 - `src/dashboard/app.py` - Scenario selector + data onboarding UI
-- `docs/UI_UIX.md` - UIX plan aligned with implemented features
+- `docs/UI_UIX_VISION_REACT.md` - UIX plan aligned with implemented features
 - `README.md` - Updated endpoints and data onboarding notes
 - `CURRENT_STATUS.md` - Updated Phase 4 UIX progress
 

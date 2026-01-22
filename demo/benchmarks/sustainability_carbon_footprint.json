@@ -1,0 +1,89 @@
+{
+    "id": "sustainability_carbon_footprint",
+    "name": "Carbon Footprint Analysis",
+    "description": "Analyze the causal impact of renewable energy adoption on carbon emissions",
+    "domain": "sustainability",
+    "expected_classification": "complicated",
+    "query": "What is the causal effect of renewable energy percentage on carbon emissions per capita?",
+    "context": {
+        "hypothesis": "Higher renewable energy adoption leads to lower carbon emissions",
+        "treatment_variable": "renewable_energy_pct",
+        "outcome_variable": "carbon_emissions_per_capita",
+        "confounders": [
+            "gdp_per_capita",
+            "industrialization_index",
+            "population_density"
+        ]
+    },
+    "data": [
+        {
+            "renewable_energy_pct": 10,
+            "carbon_emissions_per_capita": 12.5,
+            "gdp_per_capita": 45000,
+            "industrialization_index": 0.8,
+            "population_density": 350
+        },
+        {
+            "renewable_energy_pct": 15,
+            "carbon_emissions_per_capita": 11.2,
+            "gdp_per_capita": 48000,
+            "industrialization_index": 0.75,
+            "population_density": 380
+        },
+        {
+            "renewable_energy_pct": 25,
+            "carbon_emissions_per_capita": 9.8,
+            "gdp_per_capita": 52000,
+            "industrialization_index": 0.7,
+            "population_density": 400
+        },
+        {
+            "renewable_energy_pct": 35,
+            "carbon_emissions_per_capita": 8.1,
+            "gdp_per_capita": 55000,
+            "industrialization_index": 0.65,
+            "population_density": 420
+        },
+        {
+            "renewable_energy_pct": 45,
+            "carbon_emissions_per_capita": 6.5,
+            "gdp_per_capita": 58000,
+            "industrialization_index": 0.6,
+            "population_density": 450
+        },
+        {
+            "renewable_energy_pct": 55,
+            "carbon_emissions_per_capita": 5.2,
+            "gdp_per_capita": 62000,
+            "industrialization_index": 0.55,
+            "population_density": 480
+        },
+        {
+            "renewable_energy_pct": 65,
+            "carbon_emissions_per_capita": 4.1,
+            "gdp_per_capita": 65000,
+            "industrialization_index": 0.5,
+            "population_density": 500
+        },
+        {
+            "renewable_energy_pct": 75,
+            "carbon_emissions_per_capita": 3.2,
+            "gdp_per_capita": 68000,
+            "industrialization_index": 0.45,
+            "population_density": 520
+        }
+    ],
+    "expected_results": {
+        "effect_range": [
+            -0.15,
+            -0.08
+        ],
+        "confidence_min": 0.75,
+        "refutation_robustness": true
+    },
+    "validation_criteria": {
+        "effect_direction": "negative",
+        "statistical_significance": 0.05,
+        "min_observations": 8
+    }
+}

@@ -65,3 +65,39 @@ Color coding:
 - Graphs must be interactive.
 - Clicking a node highlights its Markov blanket (parents, children, parents of children).
 - Edges must show effect size and refutation status (Pass/Fail).
+
+---
+
+## 4. Phase 6 Explainability Standards
+
+> Every analytical result must be **traceable, transparent, and explainable**.
+
+### 4.1 Core Principles
+
+Every panel in the cockpit must answer:
+1. **"Why this?"** — What led to this conclusion
+2. **"How confident?"** — Decomposed confidence sources (data/model/validation)
+3. **"Based on what?"** — Link to source data and methodology
+
+### 4.2 Drill-Down Requirements
+
+All analytical outputs must support drill-down:
+- **Effect Estimates** → Show data source, method, sample size, refutation status
+- **Confidence Scores** → Show component breakdown (not just a single number)
+- **Guardian Verdicts** → Show policy rule text and threshold values
+- **Cynefin Classification** → Show alternative domain scores and entropy
+
+### 4.3 Transparency Components
+
+| Component | Purpose |
+|-----------|---------|
+| `MethodologyModal` | Drill-down for any analytical result |
+| `ConfidenceDecomposition` | Stacked bar showing confidence sources |
+| `DataProvenanceLink` | Inline link back to source data rows |
+
+### 4.4 Conversational Questioning
+
+Responses should be grouped by confidence level:
+- 🟢 **High Confidence**: Strong evidence, actionable
+- 🟡 **Medium Confidence**: Moderate evidence, possible confounders
+- 🔴 **Needs More Information**: Specific gaps identified with suggested follow-ups

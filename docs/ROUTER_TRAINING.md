@@ -29,6 +29,7 @@ Train a base model on domain-agnostic data, then fine-tune with a smaller domain
 
 ### Colab notebook
 Use `modeltraining/router_training_colab.ipynb` for a hosted GPU run.
+If the repo is private, set a GitHub token in the notebook and use it in the clone URL.
 
 ### Install router training dependencies
 ```bash
@@ -75,6 +76,7 @@ Use `scripts/train_router_model.py`:
 - Load JSONL data
 - Map labels to ids: Clear=0, Complicated=1, Complex=2, Chaotic=3, Disorder=4
 - Use Hugging Face Trainer for fine-tuning
+- Handle `TrainingArguments` compatibility across Transformers versions (for example, `evaluation_strategy` vs `eval_strategy`)
 - Save model to `models/router_distilbert/`
 - Save label mappings to `models/router_distilbert/label_mappings.json`
 
