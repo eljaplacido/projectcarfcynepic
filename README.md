@@ -37,6 +37,15 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 
 <img width="2752" height="1536" alt="Dataflow blueprint" src="https://github.com/user-attachments/assets/e0eecb39-5813-4b83-9a42-0e735ba0dee8" />
 
+### User interface samples
+
+<img width="1920" height="1833" alt="Data onboarding" src="https://github.com/user-attachments/assets/02563ff0-db92-4565-ad8b-b40d7d6ef7d3" />
+<img width="1527" height="1158" alt="Simulation1" src="https://github.com/user-attachments/assets/9c44d7d5-55e3-481a-a495-4ecbab5ed3e7" />
+<img width="3096" height="1779" alt="Frontpage" src="https://github.com/user-attachments/assets/e8f18a22-1280-46e5-83b6-6473cb244a55" />
+<img width="366" height="1170" alt="Explanations" src="https://github.com/user-attachments/assets/95b7e1ad-b35e-4491-9872-c94a2fb021bc" />
+<img width="2409" height="1671" alt="Executive" src="https://github.com/user-attachments/assets/ed0b07b9-ac62-4d64-a7f1-8bdf48b9bd39" />
+
+
 ## Quick Start
 
 ### Option 1: Local Development (Recommended)
