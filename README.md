@@ -1,10 +1,12 @@
-# Project CARF: CYNEPIC Architecture 0.5
+<img width="2752" height="1536" alt="CARF architecture" src="https://github.com/user-attachments/assets/890f0bcd-a0bb-4404-a963-e56a35604211" /># Project CARF: CYNEPIC Architecture 0.5
 **Complexity-Adaptive Reasoning Fabric** - A research grade Architectural Blueprint & Decision Intelligence Simulation to develop Neuro-Symbolic-Causal data-driven decision making an Agentic AI Systems.  
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red.svg)](https://streamlit.io/)
+
+<img width="2752" height="1536" alt="CARF architecture" src="https://github.com/user-attachments/assets/46631f78-1c72-43a2-aee3-c37c61cddb9c" />
 
 ## Overview
 
@@ -29,6 +31,10 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 - **Bayesian Exploration**: Quantify uncertainty and update beliefs with new evidence via PyMC.
 - **Guardian Policy Layer**: Human-in-the-loop enforcement, Slack/Email notifications, and full audit trails.
 - **Three-View Dashboard**: Tailored views for Analysts, Developers, and Executives.
+
+### Data & Analytical Flows in CARF architecture 
+
+<img width="2752" height="1536" alt="Dataflow blueprint" src="https://github.com/user-attachments/assets/e0eecb39-5813-4b83-9a42-0e735ba0dee8" />
 
 ## Quick Start
 
