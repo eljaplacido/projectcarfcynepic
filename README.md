@@ -1,5 +1,6 @@
 # Project CARF: CYNEPIC Architecture 0.5
-**Complexity-Adaptive Reasoning Fabric** - A research grade Architectural Blueprint & Decision Intelligence Simulation to develop Neuro-Symbolic-Causal data-driven decision making an Agentic AI Systems.  
+**Complexity-Adaptive Reasoning Fabric** - A research grade Architectural Blueprint & Decision Intelligence Simulation for more reliable and transparent data-driven decision making and Agentic AI Systems, combining complexity & context adaptability, causal inference, bayesian methods to quantify uncertainty & complexity
+and epistemic awareness. 
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
