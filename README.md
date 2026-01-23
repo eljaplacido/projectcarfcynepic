@@ -1,4 +1,4 @@
-<img width="2752" height="1536" alt="CARF architecture" src="https://github.com/user-attachments/assets/890f0bcd-a0bb-4404-a963-e56a35604211" /># Project CARF: CYNEPIC Architecture 0.5
+# Project CARF: CYNEPIC Architecture 0.5
 **Complexity-Adaptive Reasoning Fabric** - A research grade Architectural Blueprint & Decision Intelligence Simulation to develop Neuro-Symbolic-Causal data-driven decision making an Agentic AI Systems.  
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
