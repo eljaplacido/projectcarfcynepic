@@ -235,6 +235,20 @@ export async function getConfigStatus(): Promise<ConfigStatus> {
     return withRetry(() => apiFetch('/config/status'));
 }
 
+export async function validateConfig(provider: string, apiKey?: string, baseUrl?: string): Promise<{ valid: boolean; message: string }> {
+    return withRetry(() => apiFetch('/config/validate', {
+        method: 'POST',
+        body: JSON.stringify({ provider, api_key: apiKey, base_url: baseUrl }),
+    }));
+}
+
+export async function updateConfig(provider: string, apiKey?: string, baseUrl?: string): Promise<any> {
+    return withRetry(() => apiFetch('/config/update', {
+        method: 'POST',
+        body: JSON.stringify({ provider, api_key: apiKey, base_url: baseUrl }),
+    }));
+}
+
 // ============================================================================
 // Scenarios API
 // ============================================================================
@@ -537,6 +551,8 @@ const api = {
     // Health & Config
     checkHealth,
     getConfigStatus,
+    validateConfig,
+    updateConfig,
 
     // Scenarios
     listScenarios,

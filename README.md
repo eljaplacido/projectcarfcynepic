@@ -1,5 +1,5 @@
 # CYNEPIC Architecture 0.5
-**CYNefin-EPIstemic Cockpit** - A production-grade Neuro-Symbolic-Causal agentic system
+**Complexity-Adaptive Reasoning Fabric** - A research grade Architectural Blueprint & Decision Intelligence Simulation to develop Neuro-Symbolic-Causal data-driven decision making an Agentic AI Systems.  
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -8,15 +8,27 @@
 
 ## Overview
 
-CYNEPIC bridges the "trust gap" in AI systems by enforcing **epistemic awareness**. The system explicitly distinguishes what it knows, what it infers, and what it does not know.
+Modern AI systems often act as black boxes, producing confident-sounding outputs without clarifying their reasoning, certainty level, or the nature of the problem they're addressing. This creates a **"trust gap"**: users cannot easily distinguish whether an AI answer is based on solid causal evidence, a probabilistic inference, or a simple guess.
+
+**CYNEPIC (CYNefin-EPIstemic Cockpit)** solves this by enforcing **epistemic awareness**. The system explicitly classifies every query by its inherent complexity using the [Cynefin Framework](https://en.wikipedia.org/wiki/Cynefin_framework), then routes it to the appropriate analytical engine—ensuring the right tool is used for the right problem.
+
+| Problem Type | Analysis Method | Example |
+|--------------|-----------------|----------|
+| **Clear** (Obvious) | Rule lookup | "What is the capital of France?" |
+| **Complicated** (Knowable) | Causal Inference (DoWhy) | "Does offering a discount reduce churn?" |
+| **Complex** (Emergent) | Bayesian Inference (PyMC) | "What is the likely conversion rate?" |
+| **Chaotic** (Crisis) | Circuit Breaker | System alert, require human action |
+| **Disorder** (Ambiguous) | Human Escalation | Input is unclear or contradictory |
+
+All outputs are filtered through a **Guardian Layer** that enforces organizational policies (e.g., "require human approval for decisions affecting >$1M budget") and logs an audit trail for compliance (e.g., EU AI Act).
 
 ### Key Features
 
-- **Cynefin-based routing**: Classifies queries into Clear, Complicated, Complex, Chaotic, or Disorder domains
-- **Causal inference**: DAG discovery, effect estimation, and refutation testing
-- **Bayesian exploration**: Prior beliefs, safe-to-fail probes, uncertainty quantification
-- **Guardian policy layer**: Human-in-the-loop enforcement with audit trails
-- **Modern dashboard**: Three-view cockpit (End-User, Developer, Executive)
+- **Cynefin-based Routing**: Automatic classification of query complexity.
+- **Causal Inference Engine**: Discover DAGs, estimate effects, and run refutation tests via DoWhy/EconML.
+- **Bayesian Exploration**: Quantify uncertainty and update beliefs with new evidence via PyMC.
+- **Guardian Policy Layer**: Human-in-the-loop enforcement, Slack/Email notifications, and full audit trails.
+- **Three-View Dashboard**: Tailored views for Analysts, Developers, and Executives.
 
 ## Quick Start
 
@@ -177,22 +189,44 @@ curl -X POST http://localhost:8000/query \
   }'
 ```
 
-## Demo Scenarios
+---
 
-CARF includes pre-built demo scenarios for testing:
+## 🚀 Get Started: Test the Platform
 
-| Scenario | Description | Domain |
-|----------|-------------|--------|
-| Scope 3 Attribution | Supplier sustainability impact | Complicated |
-| Discount vs Churn | Causal impact of discounts | Complicated |
-| Conversion Belief | Bayesian rate estimation | Complex |
-| Renewable Energy ROI | Solar investment analysis | Complicated |
-| Shipping Carbon | Freight mode emissions | Complicated |
+> [!TIP]
+> The platform is **ready to test** with built-in demo scenarios or your own data. No complex setup needed—just start the servers and explore.
 
-**Load a scenario in the dashboard** or via API:
-```bash
-curl http://localhost:8000/scenarios/scope3_attribution
-```
+### Option A: Run a Pre-Built Demo Scenario
+
+CYNEPIC includes pre-built scenarios that cover the main analytical domains:
+
+| Scenario | Analysis Type | What It Tests |
+|----------|---------------|---------------|
+| **Scope 3 Attribution** | Causal | Supplier sustainability impact estimation |
+| **Discount vs Churn** | Causal | Effect estimation w/ refutation tests |
+| **Conversion Belief** | Bayesian | Prior/posterior belief updates |
+| **Supply Chain Resilience** | Causal | Full E2E with custom data (see Option B) |
+
+**To run a demo:**
+1. Open the React dashboard: `http://localhost:5175`
+2. Select a scenario card from the list.
+3. Click a suggested query to run the analysis.
+4. Explore the **Cynefin classification**, **Causal DAG**, and **Guardian Panel**.
+
+See [docs/DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) for a step-by-step guide.
+
+### Option B: Onboard Your Own Data
+
+Bring your own CSV to run causal analysis:
+
+1. **Generate Sample Data** (optional): `python generate_chain_data.py` to create `supply_chain_resilience.csv`.
+2. **Open Data Onboarding**: In the dashboard, click "Upload your own data".
+3. **Map Variables**: Identify the **Treatment** (e.g., `climate_stress_index`), **Outcome** (e.g., `disruption_risk_percent`), and **Confounders**.
+4. **Run Analysis**: The platform will automatically classify the query, build a causal model, and display results.
+
+See [docs/END_USER_TESTING_GUIDE.md](docs/END_USER_TESTING_GUIDE.md) for detailed instructions.
+
+---
 
 ## Project Structure
 
@@ -269,14 +303,26 @@ ruff check src/ tests/
 - [Integration Guide](docs/INTEGRATION_GUIDE.md) - Enterprise integration patterns (ERP, Cloud)
 - [Future Roadmap](docs/FUTURE_ROADMAP.md) - Development path and vision
 
-## Contributing
+## For Contributors
 
-1. Fork the repository
+We welcome contributions! Please review the following guides based on your interest:
+
+| I want to... | Start here |
+|--------------|------------|
+| **Add a new demo use case** | [docs/RFC_UIX_001_SCENARIO_REGISTRY.md](docs/RFC_UIX_001_SCENARIO_REGISTRY.md) - How to add new scenarios to the registry. |
+| **Integrate CYNEPIC with another system** (ERP, Cloud) | [docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md) - API usage, data ingestion patterns, security. |
+| **Test the platform demos end-to-end** | [docs/DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) and [docs/END_USER_TESTING_GUIDE.md](docs/END_USER_TESTING_GUIDE.md) |
+| **Understand the future vision** | [docs/FUTURE_ROADMAP.md](docs/FUTURE_ROADMAP.md) - Planned features and areas for improvement. |
+| **Review contribution guidelines** | [CONTRIBUTING.md](CONTRIBUTING.md) - Code standards, commit messages, PR process. |
+
+### Quick Contribution Steps
+
+1. Fork the repository.
 2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Make changes and run tests: `pytest tests/ -v`
-4. Commit: `git commit -m "Add my feature"`
+4. Commit with a descriptive message: `git commit -m "Add my feature"`
 5. Push: `git push origin feature/my-feature`
-6. Open a Pull Request
+6. Open a Pull Request.
 
 ## License
 

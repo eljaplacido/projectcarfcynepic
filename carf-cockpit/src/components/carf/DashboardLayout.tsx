@@ -17,6 +17,7 @@ import ConversationalQueryFlow from './ConversationalQueryFlow';
 import FileAnalysisModal from './FileAnalysisModal';
 import DeveloperView from './DeveloperView';
 import SimulationArena from './SimulationArena';
+import SettingsModal from './SettingsModal';
 import DomainVisualization from './DomainVisualization';
 import ExecutiveKPIPanel from './ExecutiveKPIPanel';
 import { MOCK_SCENARIOS, SCENARIO_QUERIES, MOCK_CAUSAL_DAG, MOCK_QUERY_RESPONSE, SCENARIO_RESPONSES, SCENARIO_DAGS } from '../../services/mockData';
@@ -69,6 +70,7 @@ const DashboardLayout: React.FC = () => {
     const [showFileAnalysisModal, setShowFileAnalysisModal] = useState<boolean>(false);
     const [fileAnalysisResult, setFileAnalysisResult] = useState<FileAnalysisResult | null>(null);
     const [comparisonSessions, setComparisonSessions] = useState<[AnalysisSession, AnalysisSession] | null>(null);
+    const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
 
     // API hooks
     const { config: _config, isDemoMode } = useConfigStatus();
@@ -517,12 +519,25 @@ const DashboardLayout: React.FC = () => {
                 <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-center">
                     <span className="text-amber-800 text-sm">
                         Running in Demo Mode - Using synthetic data.{' '}
-                        <span className="font-medium text-amber-900 ml-1">
+                        <button
+                            onClick={() => setShowSettingsModal(true)}
+                            className="font-medium text-amber-900 ml-1 hover:underline focus:outline-none"
+                        >
                             (Connect backend API for production use)
-                        </span>
+                        </button>
                     </span>
                 </div>
             )}
+
+            {/* Settings Modal */}
+            <SettingsModal
+                isOpen={showSettingsModal}
+                onClose={() => setShowSettingsModal(false)}
+                onConfigUpdated={() => {
+                    // Refresh page to pick up new config state
+                    window.location.reload();
+                }}
+            />
 
             {/* Header with Help Button */}
             <header className="glass-strong border-b sticky top-0 z-40">

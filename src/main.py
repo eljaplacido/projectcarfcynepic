@@ -212,6 +212,100 @@ async def validate_config(request: LLMConfigValidateRequest) -> dict:
         return {"valid": False, "message": f"Unknown provider: {provider}"}
 
 
+class LLMConfigUpdateRequest(BaseModel):
+    """Request to update LLM configuration."""
+
+    provider: str = Field(description="LLM provider: openai, anthropic, deepseek, local")
+    api_key: str | None = Field(default=None, description="API key (not needed for local)")
+    base_url: str | None = Field(default=None, description="Custom base URL for local/ollama")
+
+
+@app.post("/config/update", tags=["Configuration"])
+async def update_config(request: LLMConfigUpdateRequest) -> LLMConfigStatus:
+    """Update LLM configuration and persist to .env.
+
+    1. Validates the new configuration
+    2. Updates environment variables
+    3. Clears LLM client cache
+    4. Writes to .env file
+    """
+    # 1. Validate
+    validation = await validate_config(
+        LLMConfigValidateRequest(
+            provider=request.provider,
+            api_key=request.api_key,
+            base_url=request.base_url,
+        )
+    )
+    if not validation["valid"]:
+        raise HTTPException(status_code=400, detail=validation["message"])
+
+    # 2. Update Environment
+    provider = request.provider.lower()
+    from src.core.llm import PROVIDER_CONFIGS, get_chat_model
+
+    # Determine env key to set
+    env_key = None
+    if provider == "openai":
+        env_key = "OPENAI_API_KEY"
+    elif provider == "deepseek":
+        env_key = "DEEPSEEK_API_KEY"
+    elif provider == "anthropic":
+        env_key = "ANTHROPIC_API_KEY"
+
+    # Set new variables
+    os.environ["LLM_PROVIDER"] = provider
+    if env_key and request.api_key:
+        os.environ[env_key] = request.api_key
+        # Ensure we don't have conflicting keys set
+        for k in ["OPENAI_API_KEY", "DEEPSEEK_API_KEY", "ANTHROPIC_API_KEY"]:
+            if k != env_key and k in os.environ:
+                del os.environ[k]
+
+    # 3. Clear Cache
+    get_chat_model.cache_clear()
+    logger.info(f"Updated LLM config to {provider} and cleared cache")
+
+    # 4. Persist to .env
+    env_path = PROJECT_ROOT / ".env"
+    try:
+        current_env = {}
+        if env_path.exists():
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if "=" in line and not line.strip().startswith("#"):
+                        k, v = line.strip().split("=", 1)
+                        current_env[k] = v
+
+        # Update values
+        current_env["LLM_PROVIDER"] = provider
+        if env_key and request.api_key:
+            current_env[env_key] = request.api_key
+            # Remove others to avoid confusion
+            for k in ["OPENAI_API_KEY", "DEEPSEEK_API_KEY", "ANTHROPIC_API_KEY"]:
+                if k != env_key and k in current_env:
+                    del current_env[k]
+        
+        # Write back
+        with open(env_path, "w", encoding="utf-8") as f:
+            for k, v in current_env.items():
+                f.write(f"{k}={v}\n")
+            
+            # Preserve comments? (Simplification: just writing kv pairs for now, 
+            # ideally we'd use python-dotenv but we want to avoid deps if possible)
+            # Checking if file was empty or new
+            if not current_env:
+                f.write(f"LLM_PROVIDER={provider}\n")
+                if env_key and request.api_key:
+                    f.write(f"{env_key}={request.api_key}\n")
+
+    except Exception as e:
+        logger.error(f"Failed to write .env: {e}")
+        # Non-fatal, just means it won't persist across restarts
+
+    return await get_config_status()
+
+
 class DatasetCreateRequest(BaseModel):
     """Dataset upload payload for the registry."""
 

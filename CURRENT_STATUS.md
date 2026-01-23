@@ -199,9 +199,11 @@ pytest tests/ -v --cov=src
 ## Historical Decisions
 
 ### 2026-01-22
-- Backend schema alignment (snake_case response aliased to camelCase)
-- Removed duplicate simulation endpoints
-- Enhanced all major frontend components for transparency and UX
+- **Phase 10 (Usability Polish)**: Implemented on-the-fly API key configuration.
+  - Added `SettingsModal` for dynamic LLM provider switching.
+  - Implemented backend hot-reload of LLM clients (`/config/update`).
+  - Backend schema alignment and duplicate endpoint cleanup.
+  - Enhanced all major frontend components for transparency and UX.
 
 ### 2026-01-21
 - Production Release Enhancements (Phase A-K) completed
