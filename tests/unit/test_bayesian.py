@@ -453,24 +453,17 @@ class TestActiveInferenceEngine:
         assert all(isinstance(p, ExplorationProbe) for p in probes)
 
     @pytest.mark.asyncio
-    async def test_explore_full_pipeline(self):
-        """Test full Active Inference exploration pipeline."""
+    async def test_explore_raises_without_data(self):
+        """Test that explore raises ValueError when no data is provided."""
         from src.services.bayesian import ActiveInferenceEngine
         engine = ActiveInferenceEngine()
 
-        result = await engine.explore(
-            "What factors determine customer loyalty?"
-        )
-
-        assert result is not None
-        assert result.initial_belief is not None
-        assert result.updated_belief is not None
-        assert result.uncertainty_before >= result.uncertainty_after
-        assert result.interpretation is not None
+        with pytest.raises(ValueError, match="No data provided"):
+            await engine.explore("What factors determine customer loyalty?")
 
     @pytest.mark.asyncio
-    async def test_explore_with_context(self):
-        """Test exploration with context."""
+    async def test_explore_raises_with_empty_context(self):
+        """Test that explore raises ValueError with context but no data."""
         from src.services.bayesian import ActiveInferenceEngine
         engine = ActiveInferenceEngine()
 
@@ -479,13 +472,11 @@ class TestActiveInferenceEngine:
             "customer_segment": "premium",
         }
 
-        result = await engine.explore(
-            "How will pricing changes affect demand?",
-            context=context,
-        )
-
-        assert result is not None
-        assert result.probes_designed is not None
+        with pytest.raises(ValueError, match="No data provided"):
+            await engine.explore(
+                "How will pricing changes affect demand?",
+                context=context,
+            )
 
 
 class TestGetBayesianEngine:
@@ -523,10 +514,10 @@ class TestRunActiveInference:
     """Tests for run_active_inference function."""
 
     @pytest.mark.asyncio
-    async def test_updates_epistemic_state(self):
-        """Test that run_active_inference updates epistemic state."""
+    async def test_raises_without_data(self):
+        """Test that run_active_inference raises ValueError without data."""
         from src.services.bayesian import run_active_inference
-        from src.core.state import EpistemicState, ConfidenceLevel
+        from src.core.state import EpistemicState
         import src.services.bayesian as bayesian_module
 
         bayesian_module._engine_instance = None
@@ -535,57 +526,7 @@ class TestRunActiveInference:
             user_input="What is the probability of project success?"
         )
 
-        result = await run_active_inference(state)
-
-        assert result.bayesian_evidence is not None
-        assert result.current_hypothesis is not None
-        assert result.final_response is not None
-        assert result.proposed_action is not None
-
-        bayesian_module._engine_instance = None
-
-    @pytest.mark.asyncio
-    async def test_sets_confidence_level(self):
-        """Test that run_active_inference sets confidence level."""
-        from src.services.bayesian import run_active_inference
-        from src.core.state import EpistemicState, ConfidenceLevel
-        import src.services.bayesian as bayesian_module
-
-        bayesian_module._engine_instance = None
-
-        state = EpistemicState(
-            user_input="Test exploration query"
-        )
-
-        result = await run_active_inference(state)
-
-        assert result.overall_confidence in [
-            ConfidenceLevel.HIGH,
-            ConfidenceLevel.MEDIUM,
-            ConfidenceLevel.LOW,
-        ]
-
-        bayesian_module._engine_instance = None
-
-    @pytest.mark.asyncio
-    async def test_sets_bayesian_evidence(self):
-        """Test that run_active_inference sets bayesian evidence."""
-        from src.services.bayesian import run_active_inference
-        from src.core.state import EpistemicState
-        import src.services.bayesian as bayesian_module
-
-        bayesian_module._engine_instance = None
-
-        state = EpistemicState(
-            user_input="Analyze uncertainty in market conditions"
-        )
-
-        result = await run_active_inference(state)
-
-        assert result.bayesian_evidence is not None
-        assert result.bayesian_evidence.posterior_mean is not None
-        assert result.bayesian_evidence.credible_interval is not None
-        assert result.bayesian_evidence.uncertainty_before is not None
-        assert result.bayesian_evidence.uncertainty_after is not None
+        with pytest.raises(ValueError, match="No data provided"):
+            await run_active_inference(state)
 
         bayesian_module._engine_instance = None

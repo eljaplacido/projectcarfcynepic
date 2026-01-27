@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -133,14 +134,14 @@ class KafkaAuditService:
         self._producer.produce(self.config.topic, payload.encode("utf-8"))
         self._producer.flush(5)
 
-    def log_state(self, state: EpistemicState) -> None:
+    async def log_state(self, state: EpistemicState) -> None:
         """Publish an audit event for the given state."""
         if not self._producer:
             return
 
         event = KafkaAuditEvent.from_state(state)
         payload = json.dumps(event.model_dump(mode="json"), ensure_ascii=True)
-        self._produce(payload)
+        await asyncio.to_thread(self._produce, payload)
 
 
 _kafka_audit_instance: KafkaAuditService | None = None
@@ -154,7 +155,7 @@ def get_kafka_audit_service() -> KafkaAuditService:
     return _kafka_audit_instance
 
 
-def log_state_to_kafka(state: EpistemicState) -> None:
+async def log_state_to_kafka(state: EpistemicState) -> None:
     """Convenience wrapper to log state if Kafka is configured."""
     service = get_kafka_audit_service()
-    service.log_state(state)
+    await service.log_state(state)

@@ -1,0 +1,19 @@
+{
+  "query": "What is the causal impact of climate stress on supply chain disruption risk?",
+  "context": {
+    "scenario": "supply_chain_resilience",
+    "domain_hint": "complicated"
+  },
+  "causal_estimation": {
+    "treatment": "climate_stress_index",
+    "outcome": "disruption_risk_percent",
+    "covariates": ["operational_maturity", "inventory_days"],
+    "effect_modifiers": ["supplier_region", "supplier_tier"],
+    "csv_path": "demo/data/supply_chain_resilience.csv"
+  },
+  "bayesian_inference": {
+    "prior_mean": 15.0,
+    "prior_std": 8.0,
+    "observations": [7.36, 10.93, 38.65, 2.18, 22.41, 5.12, 31.07, 14.88, 9.55, 27.63]
+  }
+}

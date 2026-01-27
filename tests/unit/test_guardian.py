@@ -16,20 +16,27 @@ class TestPolicyEngine:
 
     def test_financial_limit_below(self, engine):
         """Test amount below limit passes."""
-        violation = engine.check_financial_limit(50000)
-        assert violation is None
+        violations = engine.check_financial_limit(50000)
+        assert violations == []
 
     def test_financial_limit_above(self, engine):
         """Test amount above limit triggers violation."""
-        violation = engine.check_financial_limit(150000)
-        assert violation is not None
-        assert violation.policy_name == "auto_approval_limit"
-        assert violation.severity == "high"
+        violations = engine.check_financial_limit(150000)
+        assert len(violations) == 1
+        assert violations[0].policy_name == "auto_approval_limit"
+        assert violations[0].severity == "high"
 
     def test_financial_limit_exact(self, engine):
         """Test exact limit passes."""
-        violation = engine.check_financial_limit(100000)
-        assert violation is None
+        violations = engine.check_financial_limit(100000)
+        assert violations == []
+
+    def test_financial_limit_currency_mismatch(self, engine):
+        """Test currency mismatch is flagged as violation."""
+        violations = engine.check_financial_limit(50000, currency="JPY")
+        assert len(violations) == 1
+        assert violations[0].policy_name == "currency_mismatch"
+        assert violations[0].severity == "medium"
 
     def test_always_escalate_delete(self, engine):
         """Test delete_data triggers escalation."""
@@ -73,26 +80,28 @@ class TestGuardian:
         """Create a Guardian instance."""
         return Guardian()
 
-    def test_approve_clean_state(self, guardian):
+    @pytest.mark.asyncio
+    async def test_approve_clean_state(self, guardian):
         """Test clean state gets approved."""
         state = EpistemicState(
             domain_confidence=0.95,
             reflection_count=0,
         )
 
-        decision = guardian.evaluate(state)
+        decision = await guardian.evaluate(state)
         assert decision.verdict == GuardianVerdict.APPROVED
         assert len(decision.violations) == 0
         assert decision.risk_level == "low"
 
-    def test_reject_low_confidence(self, guardian):
+    @pytest.mark.asyncio
+    async def test_reject_low_confidence(self, guardian):
         """Test low confidence triggers escalation."""
         state = EpistemicState(
             domain_confidence=0.5,
             reflection_count=0,
         )
 
-        decision = guardian.evaluate(state)
+        decision = await guardian.evaluate(state)
         # Low confidence should require escalation
         assert decision.verdict in [
             GuardianVerdict.REJECTED,
@@ -100,7 +109,8 @@ class TestGuardian:
         ]
         assert len(decision.violations) > 0
 
-    def test_escalate_high_amount(self, guardian):
+    @pytest.mark.asyncio
+    async def test_escalate_high_amount(self, guardian):
         """Test high transaction amount requires escalation."""
         state = EpistemicState(
             domain_confidence=0.95,
@@ -111,11 +121,12 @@ class TestGuardian:
             },
         )
 
-        decision = guardian.evaluate(state)
+        decision = await guardian.evaluate(state)
         assert decision.verdict == GuardianVerdict.REQUIRES_ESCALATION
         assert any("auto_approval_limit" in v.policy_name for v in decision.violations)
 
-    def test_escalate_dangerous_action(self, guardian):
+    @pytest.mark.asyncio
+    async def test_escalate_dangerous_action(self, guardian):
         """Test dangerous action types require escalation."""
         state = EpistemicState(
             domain_confidence=0.95,
@@ -124,17 +135,18 @@ class TestGuardian:
             },
         )
 
-        decision = guardian.evaluate(state)
+        decision = await guardian.evaluate(state)
         assert decision.verdict == GuardianVerdict.REQUIRES_ESCALATION
 
-    def test_escalate_max_reflections(self, guardian):
+    @pytest.mark.asyncio
+    async def test_escalate_max_reflections(self, guardian):
         """Test max reflections triggers escalation."""
         state = EpistemicState(
             domain_confidence=0.95,
             reflection_count=3,
         )
 
-        decision = guardian.evaluate(state)
+        decision = await guardian.evaluate(state)
         assert decision.verdict == GuardianVerdict.REQUIRES_ESCALATION
 
     @pytest.mark.asyncio

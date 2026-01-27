@@ -118,7 +118,7 @@ class DeveloperService:
         self._start_time = time.time()
         self._max_logs = max_logs  # Store for testing
         self._logs: deque[LogEntry] = deque(maxlen=max_logs)
-        self._execution_steps: list[ExecutionStep] = []
+        self._execution_steps: deque[ExecutionStep] = deque(maxlen=max_logs)
         self._current_session_id: str | None = None
         self._is_processing = False
         self._current_layer: str | None = None

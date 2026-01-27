@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -66,11 +67,8 @@ class OPAService:
         return False
 
     @retry_with_backoff(max_attempts=3, exceptions=(Exception,))
-    def evaluate(self, input_data: dict[str, Any]) -> OPAEvaluation:
-        """Evaluate a policy decision against OPA."""
-        if not self.config.enabled:
-            return OPAEvaluation(allow=True, raw_result={})
-
+    def _evaluate_sync(self, input_data: dict[str, Any]) -> OPAEvaluation:
+        """Synchronous OPA evaluation (runs network I/O)."""
         url = self._build_url()
         payload = json.dumps({"input": input_data}).encode("utf-8")
         req = request.Request(
@@ -87,6 +85,13 @@ class OPAService:
 
         allow = self._parse_allow(data)
         return OPAEvaluation(allow=allow, raw_result=data)
+
+    async def evaluate(self, input_data: dict[str, Any]) -> OPAEvaluation:
+        """Evaluate a policy decision against OPA without blocking the event loop."""
+        if not self.config.enabled:
+            return OPAEvaluation(allow=True, raw_result={})
+
+        return await asyncio.to_thread(self._evaluate_sync, input_data)
 
 
 _opa_service: OPAService | None = None

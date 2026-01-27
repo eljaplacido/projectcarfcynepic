@@ -1,5 +1,9 @@
 {
   "query": "Estimate impact of discount on churn",
+  "context": {
+    "scenario": "causal_discount_churn",
+    "domain_hint": "complicated"
+  },
   "causal_estimation": {
     "treatment": "discount",
     "outcome": "churn",

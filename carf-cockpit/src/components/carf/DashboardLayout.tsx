@@ -20,7 +20,6 @@ import SimulationArena from './SimulationArena';
 import SettingsModal from './SettingsModal';
 import DomainVisualization from './DomainVisualization';
 import ExecutiveKPIPanel from './ExecutiveKPIPanel';
-import { MOCK_SCENARIOS, SCENARIO_QUERIES, MOCK_CAUSAL_DAG, MOCK_QUERY_RESPONSE, SCENARIO_RESPONSES, SCENARIO_DAGS } from '../../services/mockData';
 import { useQuery, useScenarios, useConfigStatus } from '../../hooks/useCarfApi';
 import api from '../../services/apiService';
 import type { ChatMessage, ViewMode, AnalysisSession, SlashCommand, QueryResponse } from '../../types/carf';
@@ -48,7 +47,8 @@ const DashboardLayout: React.FC = () => {
         `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
     );
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
-    const [queryResponse, setQueryResponse] = useState<typeof MOCK_QUERY_RESPONSE | null>(null);
+    const [queryResponse, setQueryResponse] = useState<QueryResponse | null>(null);
+    const [apiError, setApiError] = useState<string | null>(null);
     const [_queryStartTime, setQueryStartTime] = useState<number>(0);
 
     // Phase 7: View mode state
@@ -74,7 +74,7 @@ const DashboardLayout: React.FC = () => {
 
     // API hooks
     const { config: _config, isDemoMode } = useConfigStatus();
-    const { scenarios: _apiScenarios } = useScenarios();
+    const { scenarios: apiScenarios } = useScenarios();
     const { submitQuery: apiSubmitQuery, loading: apiLoading, progress: apiProgress } = useQuery();
 
     // Chat state
@@ -99,6 +99,7 @@ const DashboardLayout: React.FC = () => {
     const handleScenarioChange = useCallback(async (scenarioId: string) => {
         setSelectedScenario(scenarioId);
         setQueryResponse(null);
+        setApiError(null);
         setShowOnboarding(false);
         setFileAnalysisResult(null);
         localStorage.setItem('carf-visited', 'true');
@@ -106,54 +107,39 @@ const DashboardLayout: React.FC = () => {
         // Clear chat messages for new scenario
         setChatMessages([]);
 
-        // Try to fetch scenario details from API
-        if (scenarioId) {
-            try {
-                const scenarioDetail = await api.getScenario(scenarioId);
-                if (scenarioDetail.scenario) {
-                    // Set dynamic suggested queries from API
-                    if (scenarioDetail.scenario.suggestedQueries) {
-                        setDynamicSuggestedQueries(scenarioDetail.scenario.suggestedQueries);
-                        setCurrentQuery(scenarioDetail.scenario.suggestedQueries[0] || '');
-                    }
-                    // Store scenario context for query
-                    setScenarioContext(scenarioDetail.payload || null);
+        if (!scenarioId) return;
 
-                    // Add welcome message for the scenario
-                    const welcomeMessage: ChatMessage = {
-                        id: `msg_${Date.now()}_system`,
-                        role: 'system',
-                        content: `Switched to "${scenarioDetail.scenario.name}" scenario. ${scenarioDetail.scenario.description || ''}\n\nTry one of the suggested queries or ask your own question.`,
-                        timestamp: new Date(),
-                    };
-                    setChatMessages([welcomeMessage]);
-                    return;
+        try {
+            const scenarioDetail = await api.getScenario(scenarioId);
+            if (scenarioDetail.scenario) {
+                if (scenarioDetail.scenario.suggested_queries) {
+                    setDynamicSuggestedQueries(scenarioDetail.scenario.suggested_queries);
+                    setCurrentQuery(scenarioDetail.scenario.suggested_queries[0] || '');
                 }
-            } catch (error) {
-                console.warn('Failed to fetch scenario from API, using mock data:', error);
+                setScenarioContext(scenarioDetail.payload || null);
+
+                const welcomeMessage: ChatMessage = {
+                    id: `msg_${Date.now()}_system`,
+                    role: 'system',
+                    content: `Switched to "${scenarioDetail.scenario.name}" scenario. ${scenarioDetail.scenario.description || ''}\n\nTry one of the suggested queries or ask your own question.`,
+                    timestamp: new Date(),
+                };
+                setChatMessages([welcomeMessage]);
             }
-        }
-
-        // Fallback to mock data
-        const queries = SCENARIO_QUERIES[scenarioId];
-        if (queries && queries.length > 0) {
-            setDynamicSuggestedQueries(queries);
-            setCurrentQuery(queries[0]);
-        } else {
+        } catch (error) {
+            console.error('Failed to fetch scenario from API:', error);
+            setApiError('Backend unavailable. Please ensure the API server is running.');
             setDynamicSuggestedQueries([]);
-        }
-        setScenarioContext(null);
+            setScenarioContext(null);
 
-        // Add welcome message for mock scenario
-        const scenario = MOCK_SCENARIOS.find(s => s.id === scenarioId);
-        if (scenario) {
-            const welcomeMessage: ChatMessage = {
+            // Show error as system message
+            const errorMessage: ChatMessage = {
                 id: `msg_${Date.now()}_system`,
                 role: 'system',
-                content: `Switched to "${scenario.name}" scenario. ${scenario.description || ''}\n\nTry one of the suggested queries or ask your own question.`,
+                content: 'Could not load scenario from backend. Please verify the API server is running at the configured URL.',
                 timestamp: new Date(),
             };
-            setChatMessages([welcomeMessage]);
+            setChatMessages([errorMessage]);
         }
     }, []);
 
@@ -242,7 +228,7 @@ const DashboardLayout: React.FC = () => {
                     triggeredMethod: apiResponse.triggeredMethod,
                 };
 
-                setQueryResponse(formattedResponse as typeof MOCK_QUERY_RESPONSE);
+                setQueryResponse(formattedResponse as QueryResponse);
                 setIsProcessing(false);
 
                 // Save to analysis history
@@ -271,51 +257,18 @@ const DashboardLayout: React.FC = () => {
                 return;
             }
         } catch (error) {
-            console.warn('API call failed, falling back to mock data:', error);
-        }
+            console.error('API call failed:', error);
+            setIsProcessing(false);
+            setApiError('Analysis failed. Please check that the backend API is running.');
 
-        // Fallback to mock data if API fails - use scenario-specific response
-        const mockResponse = selectedScenario && SCENARIO_RESPONSES[selectedScenario]
-            ? SCENARIO_RESPONSES[selectedScenario]
-            : MOCK_QUERY_RESPONSE;
-
-        setTimeout(() => {
-            const partialResponse = {
-                ...mockResponse,
-                response: null,
-                causalResult: null,
-                bayesianResult: null,
+            const errorMessage: ChatMessage = {
+                id: `msg_${Date.now()}_system`,
+                role: 'system',
+                content: `Analysis request failed: ${error instanceof Error ? error.message : 'Backend unavailable'}. Please ensure the API server is running.`,
+                timestamp: new Date(),
             };
-            setQueryResponse(partialResponse as typeof MOCK_QUERY_RESPONSE);
-
-            setTimeout(() => {
-                const duration = Date.now() - startTime;
-                setQueryResponse(mockResponse);
-                setIsProcessing(false);
-
-                const analysisSession: AnalysisSession = {
-                    id: `analysis_${Date.now()}`,
-                    timestamp: new Date().toISOString(),
-                    query: query,
-                    scenarioId: selectedScenario || undefined,
-                    domain: mockResponse.domain,
-                    confidence: mockResponse.domainConfidence,
-                    result: mockResponse,
-                    duration: duration || 2000,
-                };
-                saveAnalysis(analysisSession);
-
-                const assistantMessage: ChatMessage = {
-                    id: `msg_${Date.now()}_assistant`,
-                    role: 'assistant',
-                    content: mockResponse.response || 'Analysis complete. The causal effect has been estimated with high confidence.',
-                    timestamp: new Date(),
-                    confidence: mockResponse.domainConfidence >= 0.8 ? 'high' : mockResponse.domainConfidence >= 0.5 ? 'medium' : 'low',
-                    linkedPanel: 'causal-results',
-                };
-                setChatMessages(prev => [...prev, assistantMessage]);
-            }, 1500);
-        }, 500);
+            setChatMessages(prev => [...prev, errorMessage]);
+        }
     }, [selectedScenario, saveAnalysis, apiSubmitQuery, fileAnalysisResult, scenarioContext]);
 
     // Phase 7: Handle intelligent chat messages with slash commands
@@ -441,17 +394,14 @@ const DashboardLayout: React.FC = () => {
         });
     };
 
-    // Use dynamic queries if available, otherwise fall back to mock data
-    const suggestedQueries = dynamicSuggestedQueries.length > 0
-        ? dynamicSuggestedQueries
-        : (selectedScenario ? SCENARIO_QUERIES[selectedScenario] || [] : []);
+    const suggestedQueries = dynamicSuggestedQueries;
 
     return (
         <div className="min-h-screen bg-[--bg-page]">
             {/* Onboarding Overlay - First Run Experience */}
             {showOnboarding && (
                 <OnboardingOverlay
-                    scenarios={MOCK_SCENARIOS}
+                    scenarios={apiScenarios}
                     onSelectScenario={handleScenarioChange}
                     onUploadData={() => {
                         setShowOnboarding(false);
@@ -529,6 +479,21 @@ const DashboardLayout: React.FC = () => {
                 </div>
             )}
 
+            {/* API Error Banner */}
+            {apiError && (
+                <div className="bg-red-50 border-b border-red-200 px-4 py-2 text-center">
+                    <span className="text-red-800 text-sm">
+                        {apiError}{' '}
+                        <button
+                            onClick={() => setApiError(null)}
+                            className="font-medium text-red-900 ml-1 hover:underline focus:outline-none"
+                        >
+                            Dismiss
+                        </button>
+                    </span>
+                </div>
+            )}
+
             {/* Settings Modal */}
             <SettingsModal
                 isOpen={showSettingsModal}
@@ -580,7 +545,7 @@ const DashboardLayout: React.FC = () => {
                                 className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary min-w-[200px]"
                             >
                                 <option value="">Select Scenario...</option>
-                                {MOCK_SCENARIOS.map((scenario) => (
+                                {apiScenarios.map((scenario) => (
                                     <option key={scenario.id} value={scenario.id}>
                                         {scenario.emoji} {scenario.name}
                                     </option>
@@ -705,8 +670,8 @@ const DashboardLayout: React.FC = () => {
                             <div className="card min-h-[350px]" data-tour="results-area" id="dag-viewer">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Causal DAG</h2>
                                 <CausalDAG
-                                    nodes={queryResponse ? (SCENARIO_DAGS[selectedScenario] || MOCK_CAUSAL_DAG).nodes : []}
-                                    edges={queryResponse ? (SCENARIO_DAGS[selectedScenario] || MOCK_CAUSAL_DAG).edges : []}
+                                    nodes={queryResponse?.causalResult ? [] : []}
+                                    edges={queryResponse?.causalResult ? [] : []}
                                     onNodeClick={(id) => console.log('Node clicked:', id)}
                                 />
                             </div>
@@ -920,8 +885,8 @@ const DashboardLayout: React.FC = () => {
                             <div className="card min-h-[450px]" data-tour="results-area" id="dag-viewer">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Causal DAG</h2>
                                 <CausalDAG
-                                    nodes={queryResponse ? (SCENARIO_DAGS[selectedScenario] || MOCK_CAUSAL_DAG).nodes : []}
-                                    edges={queryResponse ? (SCENARIO_DAGS[selectedScenario] || MOCK_CAUSAL_DAG).edges : []}
+                                    nodes={queryResponse?.causalResult ? [] : []}
+                                    edges={queryResponse?.causalResult ? [] : []}
                                     onNodeClick={(id) => console.log('Node clicked:', id)}
                                 />
                             </div>

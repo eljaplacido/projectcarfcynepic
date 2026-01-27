@@ -7,14 +7,16 @@ your own data and integrations.
 ```bash
 cd C:\Users\35845\Desktop\DIGICISU\projectcarf
 
-# API
+# API (Terminal 1)
 .\.venv\Scripts\python.exe -m uvicorn src.main:app --host 0.0.0.0 --port 8000
 
-# Dashboard (in a new terminal)
-.\.venv\Scripts\python.exe -m streamlit run src\dashboard\app.py --server.port 8501
+# React Cockpit (Terminal 2)
+cd carf-cockpit
+npm install
+npm run dev
 ```
 
-Open the dashboard at `http://localhost:8501`.
+Open the cockpit at `http://localhost:5175`.
 
 ## 2) Run the End-to-End Demo
 1. Select a scenario from the top dropdown, e.g. "Renewable Energy ROI".

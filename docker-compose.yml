@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        EXTRAS: "dashboard,kafka"
+        EXTRAS: "kafka"
     environment:
       CARF_TEST_MODE: "1"
       LLM_PROVIDER: "deepseek"
@@ -35,28 +35,14 @@ services:
       zookeeper:
         condition: service_started
 
-  streamlit:
+  cockpit:
     build:
-      context: .
+      context: ./carf-cockpit
       dockerfile: Dockerfile
-      args:
-        EXTRAS: "dashboard,kafka"
-    environment:
-      CARF_API_URL: "http://app:8000"
-      NEO4J_URI: "bolt://neo4j:7687"
-      NEO4J_USERNAME: "neo4j"
-      NEO4J_PASSWORD: "carf_password"
-      NEO4J_DATABASE: "neo4j"
-      KAFKA_ENABLED: "true"
-      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      KAFKA_TOPIC: "carf_decisions"
-    command: ["streamlit", "run", "src/dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
     ports:
-      - "8501:8501"
+      - "5175:5175"
     depends_on:
       - app
-      - neo4j
-      - kafka
 
   seed:
     profiles: ["demo"]
@@ -64,7 +50,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        EXTRAS: "dashboard,kafka"
+        EXTRAS: "kafka"
     environment:
       CARF_TEST_MODE: "1"
       CARF_DATA_DIR: "/app/var"

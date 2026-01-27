@@ -13,7 +13,9 @@ Domains:
 
 import json
 import logging
+import math
 import os
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -182,10 +184,10 @@ Respond with a JSON object only, no other text:
 - Vague or philosophical questions should bias toward Complex or Disorder"""
 
     def _calculate_entropy(self, text: str, context: dict[str, Any]) -> float:
-        """Calculate signal entropy as a proxy for system stability.
+        """Calculate Shannon entropy over the token distribution of the input.
 
-        Higher entropy indicates more uncertainty/volatility.
-        This is a simplified heuristic - Phase 2 will use proper information theory.
+        Higher entropy indicates a more diverse/complex vocabulary, which serves
+        as a proxy for input complexity and uncertainty.
 
         Args:
             text: The input text
@@ -194,33 +196,29 @@ Respond with a JSON object only, no other text:
         Returns:
             Entropy score between 0 and 1
         """
-        entropy = 0.3  # Base entropy
+        tokens = text.lower().split()
+        vocab_size = len(set(tokens))
 
-        # Heuristic: Emergency/crisis keywords increase entropy
-        crisis_keywords = {
-            "emergency", "urgent", "critical", "down", "crash", "breach",
-            "failure", "broken", "error", "alert", "warning", "immediately"
-        }
-        text_lower = text.lower()
-        crisis_count = sum(1 for kw in crisis_keywords if kw in text_lower)
-        entropy += min(crisis_count * 0.15, 0.6)
+        if vocab_size <= 1:
+            # A single unique token (or empty input) carries no distributional entropy;
+            # treat as maximum uncertainty since we have almost no signal.
+            shannon = 1.0
+        else:
+            counts = Counter(tokens)
+            total = len(tokens)
+            raw = -sum(
+                (c / total) * math.log2(c / total) for c in counts.values()
+            )
+            # Normalize to [0, 1] by dividing by the theoretical maximum
+            shannon = raw / math.log2(vocab_size)
 
-        # Heuristic: Question marks and uncertainty language
-        uncertainty_keywords = {"maybe", "might", "could", "possibly", "uncertain", "unknown"}
-        uncertainty_count = sum(1 for kw in uncertainty_keywords if kw in text_lower)
-        entropy += min(uncertainty_count * 0.1, 0.2)
-
-        # Heuristic: Very short inputs have higher entropy (less information)
-        if len(text.split()) < 5:
-            entropy += 0.1
-
-        # Context can provide stability signals
+        # Context signals act as additive modifiers
         if context.get("historical_pattern_known"):
-            entropy -= 0.2
+            shannon -= 0.2
         if context.get("system_stable"):
-            entropy -= 0.1
+            shannon -= 0.1
 
-        return max(0.0, min(1.0, entropy))
+        return max(0.0, min(1.0, shannon))
 
     @async_retry_with_backoff(max_attempts=3, exceptions=(Exception,))
     async def _classify_with_llm(self, text: str) -> DomainClassification:
@@ -315,27 +313,17 @@ Respond with a JSON object only, no other text:
         """
         logger.info(f"Router classifying input: {state.user_input[:100]}...")
 
-        # Step 1: Calculate signal entropy
+        # Step 1: Calculate signal entropy (informational metadata, not a hard gate)
         entropy = round(
             self._calculate_entropy(state.user_input, state.context),
             2,
         )
         state.domain_entropy = entropy
 
-        # Step 2: Check for immediate Chaotic classification based on entropy
-        if entropy >= self.entropy_threshold_chaotic:
-            logger.warning(f"High entropy ({entropy:.2f}) detected - routing to Chaotic")
-            state.cynefin_domain = CynefinDomain.CHAOTIC
-            state.domain_confidence = 0.95
-            state.overall_confidence = ConfidenceLevel.HIGH
-            state.add_reasoning_step(
-                node_name="router",
-                action="Classified as CHAOTIC due to high entropy",
-                input_summary=f"Entropy: {entropy:.2f}",
-                output_summary="Domain: Chaotic (emergency protocol)",
-                confidence=ConfidenceLevel.HIGH,
-            )
-            return state
+        # Step 2: Check for domain_hint from scenario context
+        domain_hint = state.context.get("domain_hint")
+        if domain_hint:
+            logger.info(f"Domain hint provided: {domain_hint}")
 
         # Step 3: Model or LLM classification
         if self.mode == "distilbert":
@@ -343,7 +331,26 @@ Respond with a JSON object only, no other text:
         else:
             classification = await self._classify_with_llm(state.user_input)
 
-        # Step 4: Apply confidence threshold
+        # Step 4: Apply domain hint override when present and LLM agrees or is uncertain
+        if domain_hint:
+            try:
+                hint_domain = CynefinDomain(domain_hint.capitalize())
+                # Use the hint if the LLM classification doesn't strongly disagree
+                if classification.confidence < 0.9 or classification.domain == hint_domain:
+                    logger.info(
+                        f"Applying domain hint: {hint_domain.value} "
+                        f"(LLM said {classification.domain.value} @ {classification.confidence:.2f})"
+                    )
+                    classification = DomainClassification(
+                        domain=hint_domain,
+                        confidence=max(classification.confidence, 0.88),
+                        reasoning=f"Scenario domain hint ({domain_hint}): {classification.reasoning}",
+                        key_indicators=classification.key_indicators + [f"domain_hint={domain_hint}"],
+                    )
+            except ValueError:
+                logger.warning(f"Invalid domain_hint value: {domain_hint}")
+
+        # Step 5: Apply confidence threshold
         if classification.confidence < self.confidence_threshold:
             logger.info(
                 f"Low confidence ({classification.confidence:.2f}) - "
@@ -355,13 +362,13 @@ Respond with a JSON object only, no other text:
             final_domain = classification.domain
             final_confidence = classification.confidence
 
-        # Step 5: Update state
+        # Step 6: Update state
         state.cynefin_domain = final_domain
         state.domain_confidence = final_confidence
         state.overall_confidence = self._determine_confidence_level(final_confidence)
         state.current_hypothesis = classification.reasoning
         state.router_key_indicators = classification.key_indicators
-        
+
         # Compute triggered method based on domain
         method_map = {
             CynefinDomain.CLEAR: "deterministic_runner",
@@ -371,7 +378,7 @@ Respond with a JSON object only, no other text:
             CynefinDomain.DISORDER: "human_escalation",
         }
         state.triggered_method = method_map.get(final_domain, "unknown")
-        
+
         # Generate domain scores (primary domain gets confidence, others split remainder)
         remaining = 1.0 - final_confidence
         other_domains = [d for d in CynefinDomain if d != final_domain]
@@ -381,7 +388,7 @@ Respond with a JSON object only, no other text:
             for d in CynefinDomain
         }
 
-        # Step 6: Record reasoning step
+        # Step 7: Record reasoning step
         state.add_reasoning_step(
             node_name="router",
             action=f"Classified as {final_domain.value}",
@@ -389,6 +396,7 @@ Respond with a JSON object only, no other text:
             output_summary=(
                 f"Domain: {final_domain.value}, "
                 f"Confidence: {final_confidence:.2f}, "
+                f"Entropy: {entropy:.2f}, "
                 f"Indicators: {classification.key_indicators}"
             ),
             confidence=state.overall_confidence,
@@ -396,7 +404,7 @@ Respond with a JSON object only, no other text:
 
         logger.info(
             f"Classification complete: {final_domain.value} "
-            f"(confidence: {final_confidence:.2f})"
+            f"(confidence: {final_confidence:.2f}, entropy: {entropy:.2f})"
         )
 
         return state

@@ -25,6 +25,7 @@ from src.services.dataset_store import DatasetMetadata, get_dataset_store
 from src.services.developer import DeveloperState, LogEntry, get_developer_service
 from src.services.explanations import ExplanationComponent, ExplanationRequest, ExplanationResponse, get_explanation_service
 from src.services.file_analyzer import FileAnalysisResult, get_file_analyzer
+from src.utils.telemetry import init_telemetry
 from src.workflows.graph import run_carf
 
 # Load environment variables
@@ -45,11 +46,45 @@ async def lifespan(app: FastAPI):
     logger.info("CARF System Starting...")
     logger.info("Phase 1 MVP - Cognitive Spine Active")
 
+    # Initialise observability
+    init_telemetry()
+
     # Validate required environment
     if not os.getenv("OPENAI_API_KEY"):
         logger.warning("OPENAI_API_KEY not set - LLM features will fail")
 
+    # Initialise Neo4j and wire it into the causal engine
+    prod_mode = os.getenv("PROD_MODE", "").lower() in ("1", "true", "yes")
+    neo4j_service = None
+    try:
+        from src.services.neo4j_service import get_neo4j_service, shutdown_neo4j
+        from src.services.causal import get_causal_engine
+
+        neo4j_service = get_neo4j_service()
+        await neo4j_service.connect()
+        logger.info("Neo4j connected and ready")
+
+        # Enable graph persistence in the causal engine
+        causal_engine = get_causal_engine()
+        causal_engine.enable_neo4j(neo4j_service)
+    except Exception as exc:
+        if prod_mode:
+            logger.error("PROD_MODE: Neo4j is required but unreachable — aborting startup")
+            raise RuntimeError(
+                f"Neo4j is required in PROD_MODE but failed to connect: {exc}"
+            ) from exc
+        logger.warning(f"Neo4j unavailable (non-production): {exc}")
+
     yield
+
+    # Shutdown Neo4j cleanly
+    if neo4j_service is not None:
+        try:
+            from src.services.neo4j_service import shutdown_neo4j
+
+            await shutdown_neo4j()
+        except Exception:
+            pass
     logger.info("CARF System Shutting Down...")
 
 
@@ -347,6 +382,7 @@ class ScenarioMetadata(BaseModel):
     name: str
     description: str
     payload_path: str
+    suggested_queries: list[str] | None = None
 
 
 class ScenarioListResponse(BaseModel):
@@ -680,6 +716,9 @@ async def process_query(request: QueryRequest):
 
     except HTTPException:
         raise
+    except ValueError as e:
+        logger.warning(f"CARF pipeline validation error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"CARF pipeline error: {e}", exc_info=True)
         raise HTTPException(
@@ -1370,8 +1409,9 @@ async def get_benchmark(benchmark_id: str) -> dict:
 async def run_benchmark(benchmark_id: str) -> BenchmarkResult:
     """Run a benchmark and compare results against expected values.
 
-    This endpoint loads the benchmark data, runs the causal analysis,
-    and validates the results against the expected criteria.
+    This endpoint loads the benchmark data, runs the CARF pipeline with the
+    benchmark's query and data context, then validates the real result against
+    the expected criteria.
     """
     file_path = BENCHMARKS_DIR / f"{benchmark_id}.json"
 
@@ -1381,31 +1421,59 @@ async def run_benchmark(benchmark_id: str) -> BenchmarkResult:
     with open(file_path) as f:
         benchmark = json.load(f)
 
-    # For MVP: Return a simulated result
-    # Full implementation would run actual causal analysis
     expected_range = benchmark["expected_results"]["effect_range"]
     expected_confidence = benchmark["expected_results"]["confidence_min"]
     expected_direction = benchmark["validation_criteria"]["effect_direction"]
 
-    # Simulate a passing result (in production, run actual analysis)
-    simulated_effect = (expected_range[0] + expected_range[1]) / 2
-    simulated_confidence = expected_confidence + 0.05
+    # Run the actual CARF pipeline with benchmark query and data
+    context: dict[str, Any] = {}
+    if "data" in benchmark:
+        context["benchmark_data"] = benchmark["data"]
+    if "dataset_selection" in benchmark:
+        context["dataset_selection"] = benchmark["dataset_selection"]
 
-    direction_match = (simulated_effect < 0 and expected_direction == "negative") or \
-                      (simulated_effect > 0 and expected_direction == "positive")
+    try:
+        final_state = await run_carf(
+            user_input=benchmark["query"],
+            context=context,
+        )
+    except ValueError as exc:
+        return BenchmarkResult(
+            benchmark_id=benchmark_id,
+            passed=False,
+            message=f"Engine error: {exc}",
+        )
 
-    passed = (
-        expected_range[0] <= simulated_effect <= expected_range[1]
-        and simulated_confidence >= expected_confidence
-        and direction_match
+    # Extract actual results from pipeline output
+    actual_effect = None
+    actual_confidence = final_state.domain_confidence
+
+    if final_state.proposed_action:
+        actual_effect = final_state.proposed_action.get("effect_size")
+
+    # Validate against expected criteria
+    effect_in_range = (
+        actual_effect is not None
+        and expected_range[0] <= actual_effect <= expected_range[1]
     )
+    confidence_met = actual_confidence >= expected_confidence
+
+    direction_match = None
+    if actual_effect is not None:
+        direction_match = (
+            (actual_effect < 0 and expected_direction == "negative")
+            or (actual_effect > 0 and expected_direction == "positive")
+            or (actual_effect == 0 and expected_direction == "neutral")
+        )
+
+    passed = effect_in_range and confidence_met and bool(direction_match)
 
     return BenchmarkResult(
         benchmark_id=benchmark_id,
         passed=passed,
-        actual_effect=simulated_effect,
+        actual_effect=actual_effect,
         expected_range=expected_range,
-        actual_confidence=simulated_confidence,
+        actual_confidence=actual_confidence,
         expected_confidence_min=expected_confidence,
         effect_direction_match=direction_match,
         message="Benchmark passed" if passed else "Benchmark failed validation criteria",

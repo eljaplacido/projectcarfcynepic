@@ -53,27 +53,23 @@ class TestCynefinRouter:
         assert router.confidence_threshold == 0.85
         assert router.entropy_threshold_chaotic == 0.9
 
-    def test_entropy_calculation_base(self, router):
-        """Test base entropy for normal text."""
+    def test_entropy_calculation_range(self, router):
+        """Test entropy is always within [0, 1]."""
         entropy = router._calculate_entropy("What is the status of order 123?", {})
         assert 0 <= entropy <= 1
-        assert entropy < 0.5  # Normal query should have low entropy
 
-    def test_entropy_calculation_crisis_keywords(self, router):
-        """Test entropy increases with crisis keywords."""
-        normal_entropy = router._calculate_entropy("Check status", {})
-        crisis_entropy = router._calculate_entropy(
-            "EMERGENCY: System is down! Critical failure!", {}
+    def test_entropy_unique_tokens_high(self, router):
+        """Test that all-unique tokens yield high Shannon entropy."""
+        entropy = router._calculate_entropy(
+            "each word here is completely unique and different", {}
         )
-        assert crisis_entropy > normal_entropy
+        assert entropy > 0.8  # Unique vocabulary → high entropy
 
-    def test_entropy_calculation_uncertainty(self, router):
-        """Test entropy increases with uncertainty language."""
-        certain = router._calculate_entropy("The answer is 42", {})
-        uncertain = router._calculate_entropy(
-            "Maybe it could possibly be unknown", {}
-        )
-        assert uncertain > certain
+    def test_entropy_repeated_tokens_lower(self, router):
+        """Test that repetitive input has lower Shannon entropy."""
+        diverse = router._calculate_entropy("one two three four five six", {})
+        repetitive = router._calculate_entropy("help help help help help me", {})
+        assert repetitive < diverse
 
     def test_entropy_context_stability(self, router):
         """Test context can reduce entropy."""
@@ -104,64 +100,61 @@ class TestCynefinRouter:
 
 
 class TestRouterHighEntropy:
-    """Tests for high-entropy (Chaotic) routing."""
+    """Tests for high-entropy routing.
+
+    Entropy is informational metadata, not a hard gate. The LLM (or test stub)
+    determines the domain classification regardless of entropy value.
+    """
 
     @pytest.fixture
     def router(self):
         return CynefinRouter(entropy_threshold_chaotic=0.9)
 
     @pytest.mark.asyncio
-    async def test_high_entropy_routes_to_chaotic(self, router):
-        """Test that very high entropy triggers Chaotic classification."""
+    async def test_high_entropy_recorded_as_metadata(self, router):
+        """Test that high entropy is computed and stored, not used as a gate."""
         state = EpistemicState(
             user_input="EMERGENCY CRITICAL URGENT: System crash failure alert warning immediately!"
         )
 
-        # This should trigger chaotic due to high entropy
         result = await router.classify(state)
 
-        # High entropy should trigger chaotic
+        # Entropy should be computed and stored
         assert result.domain_entropy >= 0.8
-        # Either Chaotic from entropy or Disorder from confidence
-        assert result.cynefin_domain in [CynefinDomain.CHAOTIC, CynefinDomain.DISORDER]
+        # Classification should come from LLM, not entropy gate
+        assert result.cynefin_domain is not None
+        assert result.domain_confidence > 0
 
 
-class TestRouterKeywordPatterns:
-    """Tests for keyword-based pattern matching in router."""
+class TestRouterEntropyPatterns:
+    """Tests for Shannon entropy patterns in router."""
 
     @pytest.fixture
     def router(self):
         return CynefinRouter()
 
-    def test_causal_keywords_detected(self, router):
-        """Test detection of causal keywords."""
-        causal_queries = [
+    def test_entropy_bounded(self, router):
+        """Test entropy is bounded for various inputs."""
+        queries = [
             "What is the effect of X on Y?",
             "Does treatment cause improvement?",
             "Estimate the causal impact",
             "What drives customer churn?",
-        ]
-        for query in causal_queries:
-            entropy = router._calculate_entropy(query, {})
-            assert entropy < 0.9  # Should not be chaotic
-
-    def test_bayesian_keywords_detected(self, router):
-        """Test detection of Bayesian keywords."""
-        bayesian_queries = [
             "What is the probability of success?",
-            "Update my belief about the parameter",
-            "What is the uncertainty?",
-            "How confident should I be?",
         ]
-        for query in bayesian_queries:
+        for query in queries:
             entropy = router._calculate_entropy(query, {})
-            assert entropy < 0.9
+            assert 0 <= entropy <= 1
 
-    def test_crisis_keywords_increase_entropy(self, router):
-        """Test that crisis keywords increase entropy."""
-        normal = router._calculate_entropy("Check the status", {})
-        crisis = router._calculate_entropy("EMERGENCY: System down!", {})
-        assert crisis > normal
+    def test_repetitive_text_lower_entropy(self, router):
+        """Test that repetitive text yields lower entropy."""
+        repetitive = router._calculate_entropy(
+            "status status status status check check", {}
+        )
+        diverse = router._calculate_entropy(
+            "emergency critical urgent crash failure alert", {}
+        )
+        assert repetitive < diverse
 
 
 class TestRouterEdgeCases:
@@ -292,8 +285,8 @@ class TestRouterClassification:
         assert result.cynefin_domain is not None
 
     @pytest.mark.asyncio
-    async def test_classify_high_entropy_routes_to_chaotic(self):
-        """Test that high entropy routes to Chaotic."""
+    async def test_classify_records_entropy_as_metadata(self):
+        """Test that entropy is recorded but does not override LLM classification."""
         router = CynefinRouter(entropy_threshold_chaotic=0.5)
         state = EpistemicState(
             user_input="EMERGENCY! URGENT! CRITICAL! System crash failure alert!"
@@ -301,9 +294,11 @@ class TestRouterClassification:
 
         result = await router.classify(state)
 
-        # High entropy should trigger Chaotic
+        # Entropy should be computed
         assert result.domain_entropy >= 0.5
-        assert result.cynefin_domain == CynefinDomain.CHAOTIC
+        # Classification comes from LLM, not entropy gate
+        assert result.cynefin_domain is not None
+        assert result.domain_confidence > 0
 
     @pytest.mark.asyncio
     async def test_classify_with_context(self, router):
@@ -318,8 +313,8 @@ class TestRouterClassification:
 
         result = await router.classify(state)
 
-        # Context should reduce entropy
-        assert result.domain_entropy < 0.5
+        # Context should reduce entropy vs base Shannon entropy (1.0 for unique tokens)
+        assert result.domain_entropy < 1.0
 
 
 class TestGetRouter:

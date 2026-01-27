@@ -68,10 +68,6 @@ bayesian = [
     "pymc>=5.10.0",
     "arviz>=0.17.0",
 ]
-dashboard = [
-    # Streamlit cockpit
-    "streamlit>=1.32.0",
-]
 files = [
     # File parsing support
     "pypdf>=4.0.0",
@@ -103,7 +99,7 @@ observability = [
     "opentelemetry-sdk>=1.22.0",
 ]
 all = [
-    "carf[dev,causal,bayesian,dashboard,files,kafka,router,databases,observability]",
+    "carf[dev,causal,bayesian,files,kafka,router,databases,observability]",
 ]
 
 [project.scripts]

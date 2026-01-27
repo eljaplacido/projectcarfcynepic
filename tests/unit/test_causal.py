@@ -342,8 +342,8 @@ class TestCausalInferenceEngine:
         assert hypothesis.treatment is not None
 
     @pytest.mark.asyncio
-    async def test_estimate_effect_llm_fallback(self):
-        """Test effect estimation using LLM fallback."""
+    async def test_estimate_effect_raises_without_data(self):
+        """Test that estimate_effect raises ValueError when no data is provided."""
         from src.services.causal import CausalInferenceEngine
         engine = CausalInferenceEngine()
 
@@ -354,42 +354,24 @@ class TestCausalInferenceEngine:
             confidence=0.7,
         )
 
-        result = await engine.estimate_effect(hypothesis)
-
-        assert result is not None
-        assert result.effect_estimate is not None
-        assert result.confidence_interval is not None
-        assert result.interpretation is not None
+        with pytest.raises(ValueError, match="No data provided"):
+            await engine.estimate_effect(hypothesis)
 
     @pytest.mark.asyncio
-    async def test_analyze_full_pipeline(self):
-        """Test full causal analysis pipeline."""
+    async def test_estimate_effect_raises_with_empty_config(self):
+        """Test that estimate_effect raises ValueError with config but no data."""
         from src.services.causal import CausalInferenceEngine
         engine = CausalInferenceEngine()
 
-        result, graph = await engine.analyze(
-            "Does price increase cause customer churn?",
-            persist=False,
+        hypothesis = CausalHypothesis(
+            treatment="x",
+            outcome="y",
+            mechanism="test",
         )
+        config = CausalEstimationConfig(treatment="x", outcome="y")
 
-        assert result is not None
-        assert result.hypothesis is not None
-        assert result.effect_estimate is not None
-        assert graph is not None
-
-    @pytest.mark.asyncio
-    async def test_analyze_with_session_id(self):
-        """Test analysis with custom session ID."""
-        from src.services.causal import CausalInferenceEngine
-        engine = CausalInferenceEngine()
-
-        result, graph = await engine.analyze(
-            "Test query",
-            session_id="custom-session-123",
-            persist=False,
-        )
-
-        assert result is not None
+        with pytest.raises(ValueError, match="No data provided"):
+            await engine.estimate_effect(hypothesis, estimation_config=config)
 
     @pytest.mark.asyncio
     async def test_find_historical_analyses_no_neo4j(self):
@@ -436,10 +418,10 @@ class TestRunCausalAnalysis:
     """Tests for run_causal_analysis function."""
 
     @pytest.mark.asyncio
-    async def test_updates_epistemic_state(self):
-        """Test that run_causal_analysis updates epistemic state."""
-        from src.services.causal import run_causal_analysis, get_causal_engine
-        from src.core.state import EpistemicState, ConfidenceLevel
+    async def test_raises_without_data(self):
+        """Test that run_causal_analysis raises ValueError without data."""
+        from src.services.causal import run_causal_analysis
+        from src.core.state import EpistemicState
         import src.services.causal as causal_module
 
         causal_module._engine_instance = None
@@ -448,35 +430,7 @@ class TestRunCausalAnalysis:
             user_input="Does marketing spend affect customer acquisition?"
         )
 
-        result = await run_causal_analysis(state)
-
-        assert result.causal_evidence is not None
-        assert result.current_hypothesis is not None
-        assert result.final_response is not None
-        assert result.proposed_action is not None
-        assert result.proposed_action["action_type"] == "causal_recommendation"
-
-        causal_module._engine_instance = None
-
-    @pytest.mark.asyncio
-    async def test_sets_confidence_level(self):
-        """Test that run_causal_analysis sets confidence level."""
-        from src.services.causal import run_causal_analysis
-        from src.core.state import EpistemicState, ConfidenceLevel
-        import src.services.causal as causal_module
-
-        causal_module._engine_instance = None
-
-        state = EpistemicState(
-            user_input="Test causal query"
-        )
-
-        result = await run_causal_analysis(state)
-
-        assert result.overall_confidence in [
-            ConfidenceLevel.HIGH,
-            ConfidenceLevel.MEDIUM,
-            ConfidenceLevel.LOW,
-        ]
+        with pytest.raises(ValueError, match="No data provided"):
+            await run_causal_analysis(state)
 
         causal_module._engine_instance = None

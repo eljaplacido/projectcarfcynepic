@@ -15,7 +15,7 @@ COPY config /app/config
 COPY demo /app/demo
 COPY scripts /app/scripts
 
-ARG EXTRAS="dashboard,kafka"
+ARG EXTRAS="kafka"
 RUN pip install --upgrade pip \
     && pip install -e ".[${EXTRAS}]"
 

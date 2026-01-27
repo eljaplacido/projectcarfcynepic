@@ -31,6 +31,7 @@ from src.services.bayesian import run_active_inference
 from src.services.causal import run_causal_analysis
 from src.services.human_layer import human_escalation_node
 from src.services.kafka_audit import log_state_to_kafka
+from src.utils.telemetry import traced
 from src.workflows.guardian import guardian_node
 from src.workflows.router import cynefin_router_node
 
@@ -42,6 +43,7 @@ logger = logging.getLogger("carf.graph")
 # =============================================================================
 
 
+@traced(name="carf.node.deterministic_runner", attributes={"layer": "mesh"})
 async def deterministic_runner_node(state: EpistemicState) -> EpistemicState:
     """Clear domain handler - executes deterministic operations.
 
@@ -69,6 +71,7 @@ async def deterministic_runner_node(state: EpistemicState) -> EpistemicState:
     return state
 
 
+@traced(name="carf.node.causal_analyst", attributes={"layer": "mesh"})
 async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     """Complicated domain handler - performs causal analysis.
 
@@ -97,6 +100,7 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     return state
 
 
+@traced(name="carf.node.bayesian_explorer", attributes={"layer": "mesh"})
 async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
     """Complex domain handler - navigates uncertainty via Active Inference.
 
@@ -126,6 +130,7 @@ async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
     return state
 
 
+@traced(name="carf.node.circuit_breaker", attributes={"layer": "mesh"})
 async def circuit_breaker_node(state: EpistemicState) -> EpistemicState:
     """Chaotic domain handler - emergency stabilization.
 
@@ -154,24 +159,32 @@ async def circuit_breaker_node(state: EpistemicState) -> EpistemicState:
     return state
 
 
+@traced(name="carf.node.reflector", attributes={"layer": "mesh"})
 async def reflector_node(state: EpistemicState) -> EpistemicState:
     """Self-correction node - attempts to fix rejected actions.
 
-    Called when Guardian rejects an action. Tries to modify the approach
-    before escalating to human.
+    Called when Guardian rejects an action. Feeds the violation reasons back
+    into the context so the domain agent can adapt its approach.
     """
     logger.info(f"Reflector attempting self-correction (attempt {state.reflection_count + 1})")
 
     state.reflection_count += 1
 
-    # MVP: Simple reflection - acknowledge rejection and prepare for retry
     violations = state.policy_violations or []
+
+    # Feed rejection reasons into context so the domain agent can adapt
+    rejections = state.context.get("guardian_rejections", [])
+    rejections.append({
+        "attempt": state.reflection_count,
+        "violations": violations,
+    })
+    state.context["guardian_rejections"] = rejections
 
     state.add_reasoning_step(
         node_name="reflector",
         action=f"Self-correction attempt {state.reflection_count}",
         input_summary=f"Violations: {violations}",
-        output_summary="Adjusting approach for retry",
+        output_summary=f"Feeding {len(violations)} violation(s) back to domain agent for retry",
         confidence=ConfidenceLevel.MEDIUM,
     )
 
@@ -219,7 +232,7 @@ def route_after_guardian(
         if isinstance(verdict, str):
             verdict = GuardianVerdict(verdict)
         reflection_count = state.get("reflection_count", 0)
-        max_reflections = state.get("max_reflections", 3)
+        max_reflections = state.get("max_reflections", 2)
     else:
         verdict = state.guardian_verdict
         reflection_count = state.reflection_count
@@ -353,6 +366,7 @@ def get_carf_graph():
     return _compiled_graph
 
 
+@traced(name="carf.pipeline.run_carf")
 async def run_carf(
     user_input: str,
     context: dict | None = None,
@@ -391,8 +405,20 @@ async def run_carf(
     else:
         final_state = result
 
+    # Record domain and verdict as span attributes for observability
     try:
-        log_state_to_kafka(final_state)
+        from opentelemetry import trace
+
+        span = trace.get_current_span()
+        if span.is_recording():
+            span.set_attribute("cynefin_domain", final_state.cynefin_domain.value)
+            if final_state.guardian_verdict:
+                span.set_attribute("guardian_verdict", final_state.guardian_verdict.value)
+    except Exception:
+        pass  # OTel not available — non-critical
+
+    try:
+        await log_state_to_kafka(final_state)
     except Exception as exc:
         logger.warning(f"Kafka audit logging failed: {exc}")
 

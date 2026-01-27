@@ -216,7 +216,7 @@ class EpistemicState(BaseModel):
         default=0, ge=0, description="Number of self-correction attempts"
     )
     max_reflections: int = Field(
-        default=3, description="Max reflections before human escalation"
+        default=2, description="Max reflections before human escalation"
     )
 
     # --- Human-in-the-Loop (HumanLayer) ---

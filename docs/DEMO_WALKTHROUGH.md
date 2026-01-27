@@ -15,7 +15,7 @@ npm run dev
 ```
 
 **Access:**
-- **React Cockpit**: http://localhost:5173
+- **React Cockpit**: http://localhost:5175
 - **API Docs**: http://localhost:8000/docs
 
 ## Demo Scenarios
@@ -31,7 +31,7 @@ npm run dev
 ## Walkthrough Steps
 
 ### 1. Select a Scenario
-- Open React cockpit at http://localhost:5173
+- Open React cockpit at http://localhost:5175
 - Click a scenario card (e.g., "Scope 3 Attribution")
 - See welcome message and suggested queries
 
@@ -64,7 +64,7 @@ docker compose up --build
 docker compose --profile demo run --rm seed
 ```
 
-Services: API (8000), Streamlit (8501), Neo4j (7474), OPA (8181)
+Services: API (8000), React Cockpit (5175), Neo4j (7474), OPA (8181)
 
 ## API Examples
 

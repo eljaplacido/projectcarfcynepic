@@ -27,7 +27,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Install with all extras
-pip install -e ".[dev,dashboard,causal,bayesian]"
+pip install -e ".[dev,causal,bayesian]"
 ```
 
 ### Configure Environment
@@ -66,13 +66,13 @@ python -m src.main
 ```
 API will be available at http://localhost:8000
 
-**Terminal 2 - Dashboard:**
+**Terminal 2 - React Cockpit:**
 ```bash
-cd projectcarf
-source .venv/bin/activate
-streamlit run src/dashboard/app.py
+cd projectcarf/carf-cockpit
+npm install
+npm run dev
 ```
-Dashboard will open at http://localhost:8501
+Cockpit will open at http://localhost:5175
 
 ### Option B: Docker Compose (Full Stack)
 
@@ -82,19 +82,19 @@ docker compose up --build
 
 Services:
 - API: http://localhost:8000
-- Dashboard: http://localhost:8501
+- React Cockpit: http://localhost:5175 (run separately via `cd carf-cockpit && npm run dev`)
 - Neo4j: http://localhost:7474 (user: neo4j, password: carf_password)
 
 ## 3. Test the Demo Scenarios
 
 ### Via Dashboard (Recommended)
 
-1. Open http://localhost:8501
-2. Select a scenario from the dropdown (top-right)
-3. Click "Analyze" to run the pipeline
+1. Open http://localhost:5175
+2. Select a scenario card from the list
+3. Click a suggested query or type your own to run the analysis
 4. Explore the results across three views:
-   - **End-User**: Query, simulation controls, analysis results
-   - **Developer**: Execution trace, DAG structure, state snapshots
+   - **Analyst**: Query, simulation controls, analysis results
+   - **Developer**: Execution trace, architecture flow, state inspection
    - **Executive**: KPIs, proposed actions, policy summary
 
 ### Via API (curl)
@@ -227,10 +227,10 @@ curl -X POST http://localhost:8000/query \
   }'
 ```
 
-### Option C: Upload via Dashboard
+### Option C: Upload via React Cockpit
 
-1. Open the dashboard at http://localhost:8501
-2. In the **End-User** view, look for "Data Sources" section
+1. Open the cockpit at http://localhost:5175
+2. Click "Upload your own data" in the dashboard
 3. Upload your CSV file
 4. Map columns to treatment, outcome, and covariates
 5. Run analysis
@@ -296,7 +296,7 @@ curl -X POST http://localhost:8000/query \
 ```bash
 pytest tests/unit/ -v
 ```
-Targeted coverage includes `tests/unit/test_api.py` and `tests/unit/test_dashboard_utils.py`.
+Targeted coverage includes `tests/unit/test_api.py` and service-level tests.
 
 ### Integration Tests
 ```bash
@@ -332,14 +332,15 @@ lsof -i :8000
 python -m src.main 2>&1 | tee carf.log
 ```
 
-### Dashboard Connection Error
+### React Cockpit Connection Error
 ```bash
 # Ensure API is running first
 curl http://localhost:8000/health
 
-# Set API URL if different
-export CARF_API_URL=http://localhost:8000
-streamlit run src/dashboard/app.py
+# Start React cockpit (ensure npm dependencies are installed)
+cd carf-cockpit
+npm install
+npm run dev
 ```
 
 ### LLM Errors
@@ -354,7 +355,7 @@ export CARF_TEST_MODE=1
 ### Import Errors
 ```bash
 # Reinstall dependencies
-pip install -e ".[dev,dashboard,causal,bayesian]" --force-reinstall
+pip install -e ".[dev,causal,bayesian]" --force-reinstall
 ```
 
 ## 9. Next Steps

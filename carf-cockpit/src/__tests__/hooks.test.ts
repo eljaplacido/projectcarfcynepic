@@ -66,8 +66,8 @@ describe('useCarfApi Hooks', () => {
         it('should fetch scenarios on mount', async () => {
             const mockScenarios = {
                 scenarios: [
-                    { id: 'scope3', name: 'Scope 3 Attribution', description: 'Sustainability analysis', payloadPath: '/data/scope3.json' },
-                    { id: 'churn', name: 'Customer Churn', description: 'Business analysis', payloadPath: '/data/churn.json' },
+                    { id: 'scope3', name: 'Scope 3 Attribution', description: 'Sustainability analysis', payload_path: '/data/scope3.json' },
+                    { id: 'churn', name: 'Customer Churn', description: 'Business analysis', payload_path: '/data/churn.json' },
                 ],
             };
 
@@ -94,7 +94,7 @@ describe('useCarfApi Hooks', () => {
 
             // Update mock for refresh
             vi.mocked(api.listScenarios).mockResolvedValue({
-                scenarios: [{ id: 'new', name: 'New Scenario', description: 'New', payloadPath: '/data/new.json' }],
+                scenarios: [{ id: 'new', name: 'New Scenario', description: 'New', payload_path: '/data/new.json' }],
             });
 
             act(() => {

@@ -467,92 +467,38 @@ Respond with a JSON object:
         hypothesis: CausalHypothesis,
         estimation_config: CausalEstimationConfig | None = None,
     ) -> CausalAnalysisResult:
-        """Estimate the causal effect.
+        """Estimate the causal effect using DoWhy/EconML.
 
-        In production, this uses DoWhy/EconML when data is available.
-        For MVP, it falls back to LLM-based estimation with uncertainty.
+        Requires a valid ``CausalEstimationConfig`` with real data.
+        If no data is supplied the method raises ``ValueError`` so the
+        caller can return a proper 400 response — no LLM hallucination.
 
         Args:
             hypothesis: The causal hypothesis to test
-            estimation_config: Optional statistical estimation configuration
+            estimation_config: Statistical estimation configuration (required)
 
         Returns:
             CausalAnalysisResult with effect estimate and confidence intervals
+
+        Raises:
+            ValueError: When no data is provided for estimation.
+            RuntimeError: When DoWhy is not installed or estimation fails.
         """
         logger.info(f"Estimating effect: {hypothesis.treatment} -> {hypothesis.outcome}")
 
-        if estimation_config and estimation_config.has_data():
-            try:
-                result = await self._estimate_effect_statistical(
-                    hypothesis=hypothesis,
-                    config=estimation_config,
-                )
-                logger.info("DoWhy estimation succeeded")
-                return result
-            except Exception as exc:
-                logger.warning(f"DoWhy estimation failed, falling back to LLM: {exc}")
-
-        messages = [
-            SystemMessage(content=self._analysis_prompt),
-            HumanMessage(content=f"""Analyze this causal hypothesis:
-
-Treatment: {hypothesis.treatment}
-Outcome: {hypothesis.outcome}
-Mechanism: {hypothesis.mechanism}
-Confounders: {hypothesis.confounders}
-Prior Confidence: {hypothesis.confidence}
-
-Provide an interpretation and assessment."""),
-        ]
-
-        response = await self.model.ainvoke(messages)
-        content = response.content
-
-        try:
-            if "```json" in content:
-                content = content.split("```json")[1].split("```")[0]
-            elif "```" in content:
-                content = content.split("```")[1].split("```")[0]
-
-            data = json.loads(content.strip())
-
-            # Determine effect estimate based on confidence
-            conf_level = data.get("confidence_level", "medium")
-            if conf_level == "high":
-                effect = 0.5
-                ci = (0.3, 0.7)
-                passed = True
-            elif conf_level == "medium":
-                effect = 0.3
-                ci = (0.1, 0.5)
-                passed = True
-            else:
-                effect = 0.1
-                ci = (-0.1, 0.3)
-                passed = False
-
-            return CausalAnalysisResult(
-                hypothesis=hypothesis,
-                effect_estimate=effect,
-                confidence_interval=ci,
-                refutation_results={
-                    "placebo_treatment": passed,
-                    "random_common_cause": passed,
-                    "data_subset": True,
-                },
-                passed_refutation=passed,
-                interpretation=data.get("interpretation", "Analysis complete"),
+        if not estimation_config or not estimation_config.has_data():
+            raise ValueError(
+                "No data provided for causal estimation. "
+                "Supply a dataset via causal_estimation config "
+                "(inline data, csv_path, or dataset_id)."
             )
 
-        except (json.JSONDecodeError, KeyError, ValueError) as e:
-            logger.warning(f"Failed to parse analysis response: {e}")
-            return CausalAnalysisResult(
-                hypothesis=hypothesis,
-                effect_estimate=0.0,
-                confidence_interval=(-0.5, 0.5),
-                passed_refutation=False,
-                interpretation="Could not complete causal analysis",
-            )
+        result = await self._estimate_effect_statistical(
+            hypothesis=hypothesis,
+            config=estimation_config,
+        )
+        logger.info("DoWhy estimation succeeded")
+        return result
 
     def enable_neo4j(self, neo4j_service: "Neo4jService") -> None:
         """Enable Neo4j persistence after initialization.
@@ -662,10 +608,13 @@ async def run_causal_analysis(
 
     Returns:
         Updated epistemic state with causal evidence
+
+    Raises:
+        ValueError: When no data is provided for causal estimation.
     """
     engine = get_causal_engine()
 
-    # Run analysis
+    # Run analysis — propagate ValueError so the API layer can return 400
     result, graph = await engine.analyze(
         query=state.user_input,
         context=state.context,

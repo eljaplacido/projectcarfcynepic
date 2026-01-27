@@ -6,7 +6,7 @@ and epistemic awareness.
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red.svg)](https://streamlit.io/)
+[![React](https://img.shields.io/badge/React-18.3+-61DAFB.svg)](https://react.dev/)
 
 <img width="2752" height="1536" alt="CARF architecture" src="https://github.com/user-attachments/assets/46631f78-1c72-43a2-aee3-c37c61cddb9c" />
 
@@ -61,7 +61,7 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
-pip install -e ".[dev,dashboard]"
+pip install -e ".[dev]"
 
 # Configure environment
 cp .env.example .env
@@ -70,8 +70,10 @@ cp .env.example .env
 # Start the API server
 python -m src.main
 
-# In a new terminal, start the dashboard
-streamlit run src/dashboard/app.py
+# In a new terminal, start the React cockpit
+cd carf-cockpit
+npm install
+npm run dev
 ```
 
 ### Option 2: Docker Compose (Full Stack)
@@ -86,7 +88,7 @@ docker compose --profile demo up --build
 
 **Services:**
 - API: http://localhost:8000
-- Dashboard: http://localhost:8501
+- React Cockpit: http://localhost:5175
 - Neo4j Browser: http://localhost:7474
 - OPA: http://localhost:8181
 
@@ -253,8 +255,9 @@ projectcarf/
 │   ├── core/           # State schemas, LLM config
 │   ├── services/       # Causal, Bayesian, HumanLayer
 │   ├── workflows/      # LangGraph nodes and graph
-│   ├── dashboard/      # Streamlit UI
+│   ├── utils/          # Telemetry, caching, resiliency
 │   └── main.py         # FastAPI entry point
+├── carf-cockpit/       # React (Vite + TypeScript) dashboard
 ├── config/             # YAML configs (policies, prompts)
 ├── demo/               # Demo scenarios and sample data
 ├── tests/              # Unit and integration tests
@@ -314,7 +317,6 @@ ruff check src/ tests/
 - [End-User Testing Guide](docs/END_USER_TESTING_GUIDE.md) - Validate the demo flow and integrations
 - [Security Guidelines](docs/SECURITY_GUIDELINES.md) - Release readiness checklist
 - [LLM Agentic Strategy](docs/LLM_AGENTIC_STRATEGY.md) - LLM roles, guardrails, model selection
-- [Self-Healing Architecture](docs/SELF_HEALING_ARCHITECTURE.md) - Reflection, human escalation, adaptive recovery
 - [Self-Healing Architecture](docs/SELF_HEALING_ARCHITECTURE.md) - Reflection, human escalation, adaptive recovery
 - [End-to-End Context Flow](docs/END_TO_END_CONTEXT_FLOW.md) - State propagation and memory/audit integration
 - [Integration Guide](docs/INTEGRATION_GUIDE.md) - Enterprise integration patterns (ERP, Cloud)

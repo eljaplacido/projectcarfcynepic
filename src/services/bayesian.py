@@ -512,65 +512,56 @@ Design probes that would help us learn more."""),
     ) -> ActiveInferenceResult:
         """Full Active Inference exploration.
 
+        Requires either PyMC inference data (via ``bayesian_inference``
+        context key) **or** user-supplied priors.  The engine will never
+        fabricate posterior updates — if PyMC data is available the real
+        posterior is used; otherwise the LLM-established priors are
+        returned *as-is* to make the epistemic state honest.
+
         Args:
             query: The complex situation to explore
             context: Additional context
 
         Returns:
             ActiveInferenceResult with beliefs and recommended probes
+
+        Raises:
+            ValueError: When no data is provided for Bayesian inference.
         """
-        # Step 1: Establish priors (PyMC if data is available)
         inference_config = self._parse_inference_config(context)
-        beliefs: list[BayesianBelief] = []
-        initial_uncertainty = 1.0
-        used_pymc = False
 
-        if inference_config and inference_config.has_data():
-            try:
-                inference_result = self._run_pymc_inference(inference_config)
-                used_pymc = True
-                initial_uncertainty = min(1.0, inference_result.uncertainty)
-                beliefs = [
-                    BayesianBelief(
-                        hypothesis="Posterior estimate",
-                        prior=0.5,
-                        posterior=inference_result.posterior_mean,
-                        evidence_considered=["PyMC inference"],
-                        confidence_interval=inference_result.credible_interval,
-                    )
-                ]
-            except Exception as exc:
-                logger.warning(f"PyMC inference failed, falling back to LLM: {exc}")
-
-        if not beliefs:
-            beliefs, initial_uncertainty = await self.establish_priors(query, context)
-
-        if not beliefs:
-            beliefs = [
-                BayesianBelief(
-                    hypothesis="Default hypothesis",
-                    prior=0.5,
-                    posterior=0.5,
-                )
-            ]
-
-        if used_pymc:
-            initial_belief = BayesianBelief(
-                hypothesis=beliefs[0].hypothesis,
-                prior=beliefs[0].prior,
-                posterior=beliefs[0].prior,
-                confidence_interval=(
-                    max(0.0, beliefs[0].prior - 0.2),
-                    min(1.0, beliefs[0].prior + 0.2),
-                ),
+        if not inference_config or not inference_config.has_data():
+            raise ValueError(
+                "No data provided for Bayesian inference. "
+                "Supply observations (list of floats) or "
+                "successes/trials (binomial) via bayesian_inference config."
             )
-        else:
-            initial_belief = beliefs[0]
 
-        # Step 2: Design probes
+        # --- Run real PyMC inference ---
+        inference_result = self._run_pymc_inference(inference_config)
+        initial_uncertainty = 1.0  # maximum before we see the data
+
+        initial_belief = BayesianBelief(
+            hypothesis="Prior estimate",
+            prior=0.5,
+            posterior=0.5,
+            confidence_interval=(0.3, 0.7),
+        )
+
+        updated_belief = BayesianBelief(
+            hypothesis="Posterior estimate",
+            prior=0.5,
+            posterior=inference_result.posterior_mean,
+            evidence_considered=["PyMC inference"],
+            confidence_interval=inference_result.credible_interval,
+        )
+
+        final_uncertainty = min(1.0, inference_result.uncertainty)
+
+        # Design probes for further exploration
+        beliefs = [updated_belief]
         probes = await self.design_probes(beliefs, query)
 
-        # Select recommended probe (highest info gain with acceptable risk)
         recommended = None
         if probes:
             safe_probes = [p for p in probes if p.risk_level in ("low", "medium")]
@@ -579,28 +570,12 @@ Design probes that would help us learn more."""),
             else:
                 recommended = probes[0]
 
-        # Calculate uncertainty reduction (simulated for MVP)
-        final_uncertainty = initial_uncertainty * 0.8  # 20% reduction expected
-
-        if used_pymc:
-            updated_belief = beliefs[0]
-        else:
-            # Create updated belief (simulated posterior update)
-            updated_belief = BayesianBelief(
-                hypothesis=initial_belief.hypothesis,
-                prior=initial_belief.prior,
-                posterior=min(initial_belief.posterior + 0.1, 0.9),
-                evidence_considered=["Initial analysis completed"],
-                confidence_interval=(
-                    initial_belief.confidence_interval[0] + 0.05,
-                    initial_belief.confidence_interval[1] - 0.05,
-                ),
-            )
-
         interpretation = (
-            f"Analysis of complex situation identified {len(beliefs)} hypotheses. "
-            f"Initial uncertainty: {initial_uncertainty:.0%}. "
-            f"Designed {len(probes)} probes to reduce uncertainty. "
+            f"PyMC inference complete. "
+            f"Posterior mean: {inference_result.posterior_mean:.3f} "
+            f"(90% CI: {inference_result.credible_interval[0]:.3f}–"
+            f"{inference_result.credible_interval[1]:.3f}). "
+            f"Designed {len(probes)} probes to further reduce uncertainty. "
             f"Recommended next step: {recommended.description if recommended else 'Gather more information'}"
         )
 

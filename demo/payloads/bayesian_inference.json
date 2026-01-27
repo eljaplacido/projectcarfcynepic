@@ -1,5 +1,9 @@
 {
   "query": "Update belief on conversion rate",
+  "context": {
+    "scenario": "bayesian_conversion_rate",
+    "domain_hint": "complex"
+  },
   "bayesian_inference": {
     "successes": 42,
     "trials": 100

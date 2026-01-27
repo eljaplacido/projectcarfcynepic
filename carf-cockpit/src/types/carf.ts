@@ -147,10 +147,10 @@ export interface ScenarioMetadata {
     id: string;
     name: string;
     description: string;
-    payloadPath: string;
+    payload_path: string;
     emoji?: string;
     domain?: CynefinDomain;
-    suggestedQueries?: string[];
+    suggested_queries?: string[];
 }
 
 export interface ScenarioPayload {

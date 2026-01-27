@@ -95,7 +95,7 @@ class PolicyEngine:
                 "auto_approval_limit": {"value": 100000, "currency": "USD"},
             },
             "operational": {
-                "max_reflection_attempts": {"value": 3},
+                "max_reflection_attempts": {"value": 2},
                 "timeout": {"value_seconds": 300},
             },
             "risk": {
@@ -116,28 +116,41 @@ class PolicyEngine:
         self,
         amount: float,
         currency: str = "USD",
-    ) -> PolicyViolation | None:
+    ) -> list[PolicyViolation]:
         """Check if amount exceeds financial auto-approval limit."""
         policy = self.get_policy("financial", "auto_approval_limit")
         if not policy:
-            return None
+            return []
 
+        violations: list[PolicyViolation] = []
         limit = policy.get("value", float("inf"))
         policy_currency = policy.get("currency", "USD")
 
-        # Simple currency check (real system would do conversion)
         if currency != policy_currency:
-            logger.warning(f"Currency mismatch: {currency} vs {policy_currency}")
+            violations.append(PolicyViolation(
+                policy_name="currency_mismatch",
+                policy_category="financial",
+                description=(
+                    f"Currency mismatch: action uses {currency} "
+                    f"but policy limit is in {policy_currency}"
+                ),
+                severity="medium",
+                suggested_fix=(
+                    f"Convert amount to {policy_currency} or "
+                    f"specify the amount in {policy_currency}"
+                ),
+            ))
 
         if amount > limit:
-            return PolicyViolation(
+            violations.append(PolicyViolation(
                 policy_name="auto_approval_limit",
                 policy_category="financial",
-                description=f"Amount ${amount:,.2f} exceeds auto-approval limit of ${limit:,.2f}",
+                description=f"Amount {amount:,.2f} {currency} exceeds auto-approval limit of {limit:,.2f} {policy_currency}",
                 severity="high",
-                suggested_fix=f"Reduce amount to ${limit:,.2f} or request human approval",
-            )
-        return None
+                suggested_fix=f"Reduce amount to {limit:,.2f} {policy_currency} or request human approval",
+            ))
+
+        return violations
 
     def check_always_escalate(self, action_type: str) -> PolicyViolation | None:
         """Check if action type requires mandatory human escalation."""
@@ -240,7 +253,7 @@ class Guardian:
         # Medium/low violations might still pass with warning
         return GuardianVerdict.REQUIRES_ESCALATION
 
-    def _apply_opa(
+    async def _apply_opa(
         self,
         state: EpistemicState,
         decision: GuardianDecision,
@@ -261,7 +274,7 @@ class Guardian:
         }
 
         try:
-            evaluation = service.evaluate(input_data)
+            evaluation = await service.evaluate(input_data)
         except Exception as exc:
             violations = list(decision.violations)
             violations.append(
@@ -304,7 +317,7 @@ class Guardian:
             requires_human_override=False,
         )
 
-    def evaluate(self, state: EpistemicState) -> GuardianDecision:
+    async def evaluate(self, state: EpistemicState) -> GuardianDecision:
         """Evaluate the current state against all policies.
 
         Args:
@@ -342,12 +355,11 @@ class Guardian:
             # Check financial limits
             amount = action.get("amount") or action.get("parameters", {}).get("amount")
             if amount is not None:
-                financial_violation = self.policy_engine.check_financial_limit(
+                financial_violations = self.policy_engine.check_financial_limit(
                     float(amount),
                     action.get("currency", "USD"),
                 )
-                if financial_violation:
-                    violations.append(financial_violation)
+                violations.extend(financial_violations)
 
         # Assess overall risk
         risk_level = self._assess_risk_level(violations)
@@ -370,7 +382,7 @@ class Guardian:
             requires_human_override=(verdict == GuardianVerdict.REQUIRES_ESCALATION),
         )
 
-        return self._apply_opa(state, decision)
+        return await self._apply_opa(state, decision)
 
     async def check(self, state: EpistemicState) -> EpistemicState:
         """Check the state against policies and update it.
@@ -385,7 +397,7 @@ class Guardian:
         """
         logger.info(f"Guardian evaluating session {state.session_id}")
 
-        decision = self.evaluate(state)
+        decision = await self.evaluate(state)
 
         # Update state
         state.guardian_verdict = decision.verdict
