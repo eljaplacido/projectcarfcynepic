@@ -20,6 +20,10 @@ import SimulationArena from './SimulationArena';
 import SettingsModal from './SettingsModal';
 import DomainVisualization from './DomainVisualization';
 import ExecutiveKPIPanel from './ExecutiveKPIPanel';
+import InterventionSimulator from './InterventionSimulator';
+import SensitivityPlot from './SensitivityPlot';
+import PromptGuidancePanel from './PromptGuidancePanel';
+import type { Suggestion } from './PromptGuidancePanel';
 import { useQuery, useScenarios, useConfigStatus } from '../../hooks/useCarfApi';
 import api from '../../services/apiService';
 import type { ChatMessage, ViewMode, AnalysisSession, SlashCommand, QueryResponse } from '../../types/carf';
@@ -95,6 +99,62 @@ const DashboardLayout: React.FC = () => {
     // Dynamic suggested queries based on scenario
     const [dynamicSuggestedQueries, setDynamicSuggestedQueries] = useState<string[]>([]);
     const [scenarioContext, setScenarioContext] = useState<Record<string, unknown> | null>(null);
+
+    // Phase 8: Agentic Guidance
+    const [aiSuggestions, setAiSuggestions] = useState<Suggestion[]>([]);
+
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            try {
+                // Ensure we send a valid payload even for initial empty state
+                const contextPayload = {
+                    current_query: _currentQuery || '',
+                    last_domain: queryResponse?.domain || null,
+                    last_confidence: queryResponse?.domainConfidence || null,
+                    available_columns: []
+                };
+
+                // Use the correct backend URL
+                const response = await fetch('http://localhost:8000/agent/suggest-improvements', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(contextPayload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setAiSuggestions(data);
+                } else {
+                    console.warn("AI Suggestions endpoint returned status:", response.status);
+                    // Fallback for demo if API fails/404s
+                    if (!_currentQuery) {
+                        setAiSuggestions([
+                            { id: 'fallback_1', type: 'prompt_refinement', text: 'Analyze causal effect of [Treatment] on [Outcome]' },
+                            { id: 'fallback_2', type: 'prompt_refinement', text: 'Drill down by Region' }
+                        ]);
+                    } else {
+                        setAiSuggestions([]);
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to fetch suggestions:", e);
+                // Fallback for demo if network fails
+                if (!_currentQuery) {
+                    setAiSuggestions([
+                        { id: 'fallback_1', type: 'prompt_refinement', text: 'Analyze causal effect of [Treatment] on [Outcome]' },
+                        { id: 'fallback_2', type: 'prompt_refinement', text: 'Drill down by Region' }
+                    ]);
+                }
+            }
+        };
+        fetchSuggestions();
+    }, [queryResponse, selectedScenario, _currentQuery]);
+
+    const handleApplySuggestion = (suggestion: Suggestion) => {
+        if (suggestion.action_payload) {
+            handleQuerySubmit(suggestion.action_payload);
+        }
+    };
 
     const handleScenarioChange = useCallback(async (scenarioId: string) => {
         setSelectedScenario(scenarioId);
@@ -774,6 +834,21 @@ const DashboardLayout: React.FC = () => {
                                     )}
                                 </div>
 
+                                {/* Executive KPI Panel with Dynamic Visualization */}
+                                <div className="card">
+                                    <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                        <span className="text-xl">📊</span> Analysis Board
+                                    </h2>
+                                    <ExecutiveKPIPanel
+                                        queryResponse={queryResponse}
+                                        causalResult={queryResponse?.causalResult || null}
+                                        bayesianResult={queryResponse?.bayesianResult || null}
+                                        guardianResult={queryResponse?.guardianResult || null}
+                                        context={queryResponse?.domain || 'general'}
+                                        onDrillDown={() => setViewMode('analyst')}
+                                    />
+                                </div>
+
                                 <div className="card">
                                     <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
                                         <span className="text-xl">🎯</span> Recommended Actions
@@ -859,6 +934,17 @@ const DashboardLayout: React.FC = () => {
                                 )}
                             </div>
 
+                            {/* AI Guidance Panel */}
+                            {aiSuggestions.length > 0 && (
+                                <div className="mb-4">
+                                    <PromptGuidancePanel
+                                        suggestions={aiSuggestions}
+                                        onApplySuggestion={handleApplySuggestion}
+                                        isLoading={false}
+                                    />
+                                </div>
+                            )}
+
                             <div className="card" id="cynefin-panel">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Cynefin Router</h2>
                                 <CynefinRouter
@@ -896,6 +982,17 @@ const DashboardLayout: React.FC = () => {
                                 <CausalAnalysisCard result={queryResponse?.causalResult || null} />
                             </div>
 
+                            <div className="card" id="intervention-sim">
+                                <InterventionSimulator
+                                    treatment={queryResponse?.causalResult?.treatment || 'Treatment'}
+                                    outcome={queryResponse?.causalResult?.outcome || 'Outcome'}
+                                    baseTreatmentValue={10.0}
+                                    baseOutcomeValue={50.0}
+                                    effectSize={queryResponse?.causalResult?.effect || 0.5}
+                                    unit={queryResponse?.causalResult?.unit}
+                                />
+                            </div>
+
                             <div className="card" id="guardian-panel">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Guardian Panel</h2>
                                 <GuardianPanel decision={queryResponse?.guardianResult || null} />
@@ -914,6 +1011,11 @@ const DashboardLayout: React.FC = () => {
 
                         {/* Right Sidebar (3 columns) */}
                         <div className="col-span-3 space-y-4">
+                            <div className="card h-[300px]">
+                                <SensitivityPlot
+                                    gamma={1.5}
+                                />
+                            </div>
                             <div className="card min-h-[600px]">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Execution Trace</h2>
                                 <ExecutionTrace

@@ -6,12 +6,16 @@
  * - Live log streaming via WebSocket
  * - State inspection
  * - Execution timeline
+ * - Experience buffer for learning replay
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import type { ExecutionTraceStep, QueryResponse } from '../../types/carf';
 import { useDeveloperState } from '../../hooks/useCarfApi';
 import api, { type LogEntry, type DeveloperState } from '../../services/apiService';
+import ExperienceBufferPanel from './ExperienceBufferPanel';
+import DataFlowPanel from './DataFlowPanel';
+import DataLayerInspector from './DataLayerInspector';
 
 interface DeveloperViewProps {
     response: QueryResponse | null;
@@ -38,10 +42,13 @@ const LOG_LEVEL_COLORS = {
 
 // Architecture Panel Component with Real-time Status
 // Architecture Panel Component - Enhanced Flow Graph
+// Architecture Panel Component - Enhanced Flow Graph
 const ArchitecturePanel: React.FC<{
     activeLayer?: string;
     systemState?: DeveloperState['system'] | null;
-}> = ({ activeLayer, systemState }) => {
+    onLayerSelect?: (layerId: string) => void;
+    selectedLayer?: string | null;
+}> = ({ activeLayer, systemState, onLayerSelect, selectedLayer }) => {
     const layers = [
         {
             id: 'router',
@@ -111,11 +118,16 @@ const ArchitecturePanel: React.FC<{
                 <div className="space-y-6">
                     {layers.map((layer, idx) => {
                         const isActive = activeLayer === layer.id || systemState?.current_layer === layer.id;
+                        const isSelected = selectedLayer === layer.id;
 
                         return (
-                            <div key={layer.id} className="relative flex items-start gap-4 group">
+                            <div
+                                key={layer.id}
+                                className="relative flex items-start gap-4 group cursor-pointer"
+                                onClick={() => onLayerSelect && onLayerSelect(layer.id)}
+                            >
                                 {/* Node Icon */}
-                                <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${isActive
+                                <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${isActive || isSelected
                                     ? `bg-white border-${layer.color}-500 shadow-md scale-110`
                                     : `bg-gray-50 border-gray-200 grayscale`
                                     }`}>
@@ -126,20 +138,22 @@ const ArchitecturePanel: React.FC<{
                                 </div>
 
                                 {/* Node Content */}
-                                <div className={`flex-1 p-3 rounded-lg border transition-all duration-300 ${isActive
+                                <div className={`flex-1 p-3 rounded-lg border transition-all duration-300 ${isActive || isSelected
                                     ? `bg-${layer.color}-50 border-${layer.color}-200 shadow-sm translate-x-1`
                                     : 'bg-white border-gray-100 opacity-80'
                                     }`}>
                                     <div className="flex justify-between items-start mb-1">
                                         <div className="font-medium text-sm text-gray-900">{layer.name}</div>
-                                        {isActive && <div className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Active</div>}
+                                        {(isActive || isSelected) && <div className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                                            {isActive ? 'Active' : 'Inspecting'}
+                                        </div>}
                                     </div>
                                     <div className="text-xs text-gray-500 mb-2">{layer.description}</div>
 
                                     {/* Sub-components badges */}
                                     <div className="flex gap-1.5 flex-wrap">
                                         {layer.components.map(c => (
-                                            <span key={c} className={`text-[10px] px-1.5 py-0.5 rounded border ${isActive
+                                            <span key={c} className={`text-[10px] px-1.5 py-0.5 rounded border ${isActive || isSelected
                                                 ? `bg-white border-${layer.color}-200 text-${layer.color}-700`
                                                 : 'bg-gray-50 border-gray-200 text-gray-400'
                                                 }`}>
@@ -147,6 +161,31 @@ const ArchitecturePanel: React.FC<{
                                             </span>
                                         ))}
                                     </div>
+
+                                    {/* Expanded Details (Drill Down) */}
+                                    {isSelected && (
+                                        <div className="mt-3 pt-3 border-t border-gray-200 animate-in slide-in-from-top-2 duration-200">
+                                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                                <div>
+                                                    <span className="font-semibold text-gray-600 block mb-1">Inputs</span>
+                                                    <div className="bg-white p-1.5 rounded border border-gray-200 text-gray-500 font-mono">
+                                                        {'{ "query": "..." }'}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-gray-600 block mb-1">Outputs</span>
+                                                    <div className="bg-white p-1.5 rounded border border-gray-200 text-gray-500 font-mono">
+                                                        {'{ "status": "ok" }'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 text-right">
+                                                <button className="text-[10px] text-blue-600 hover:underline">
+                                                    View {layer.components.length} components →
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Connection Arrow for active step */}
@@ -536,7 +575,8 @@ const StateInspector: React.FC<{ response: QueryResponse | null }> = ({ response
 
 // Main Developer View Component
 const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace, isProcessing }) => {
-    const [activePanel, setActivePanel] = useState<'architecture' | 'logs' | 'timeline' | 'state'>('architecture');
+    const [activePanel, setActivePanel] = useState<'architecture' | 'logs' | 'timeline' | 'state' | 'experience' | 'dataflow' | 'datalayer'>('architecture');
+    const [selectedLayer, setSelectedLayer] = useState<string | null>(null);
     const { state: developerState, loading, error, fetchState } = useDeveloperState();
 
     // Auto-refresh developer state when processing
@@ -556,9 +596,11 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
 
     const panels = [
         { id: 'architecture', label: 'Architecture', icon: '🏗️' },
+        { id: 'dataflow', label: 'Data Flow', icon: '🌊' },
         { id: 'logs', label: 'Live Logs', icon: '📋' },
         { id: 'timeline', label: 'Timeline', icon: '⏱️' },
         { id: 'state', label: 'State', icon: '📊' },
+        { id: 'experience', label: 'Experience', icon: '💾' },
     ];
 
     return (
@@ -621,6 +663,21 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                     <ArchitecturePanel
                         activeLayer={activeLayer}
                         systemState={developerState?.system}
+                        selectedLayer={selectedLayer}
+                        onLayerSelect={setSelectedLayer}
+                    />
+                )}
+                {activePanel === 'dataflow' && (
+                    <DataFlowPanel
+                        response={response}
+                        isProcessing={isProcessing}
+                        className="border-none shadow-none"
+                    />
+                )}
+                {activePanel === 'datalayer' && (
+                    <DataLayerInspector
+                        context={response?.context}
+                        className="border-none shadow-none"
                     />
                 )}
                 {activePanel === 'logs' && (
@@ -633,6 +690,15 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                     />
                 )}
                 {activePanel === 'state' && <StateInspector response={response} />}
+                {activePanel === 'experience' && (
+                    <ExperienceBufferPanel
+                        sessionId={response?.sessionId}
+                        onApplyLearning={(pattern) => {
+                            console.log('[CYNEPIC] Apply learning:', pattern);
+                            alert(`Learning pattern applied: ${pattern}`);
+                        }}
+                    />
+                )}
             </div>
 
             {/* Export Button */}

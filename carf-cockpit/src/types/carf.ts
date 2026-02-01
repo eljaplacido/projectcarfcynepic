@@ -141,6 +141,7 @@ export interface QueryResponse {
     routerKeyIndicators?: string[];
     domainScores?: Record<string, number>;
     triggeredMethod?: string | null;
+    context?: Record<string, any>; // Analysis context for data layer inspection
 }
 
 export interface ScenarioMetadata {

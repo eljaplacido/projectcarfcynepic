@@ -14,6 +14,19 @@ interface DataPreview {
     sampleData: Record<string, unknown>[];
 }
 
+interface SchemaDetectionColumn {
+    name: string;
+    dtype: string;
+    sample_values: string[];
+    suggested_role?: 'treatment' | 'outcome' | 'covariate' | 'id' | null;
+}
+
+interface SchemaDetectionResult {
+    columns: SchemaDetectionColumn[];
+    row_count: number;
+    has_header: boolean;
+}
+
 type AnalysisType = 'causal' | 'bayesian' | 'auto';
 
 interface DataOnboardingWizardProps {
@@ -65,30 +78,7 @@ const SAMPLE_DATASETS = [
     },
 ];
 
-// Variable suggestions based on common patterns
-const VARIABLE_SUGGESTIONS: Record<string, { role: 'treatment' | 'outcome' | 'covariate'; reason: string }> = {
-    // Treatment indicators
-    'treatment': { role: 'treatment', reason: 'Standard treatment variable name' },
-    'treated': { role: 'treatment', reason: 'Boolean treatment indicator' },
-    'intervention': { role: 'treatment', reason: 'Intervention indicator' },
-    'campaign': { role: 'treatment', reason: 'Campaign exposure indicator' },
-    'discount': { role: 'treatment', reason: 'Discount treatment' },
-    'received_discount': { role: 'treatment', reason: 'Discount treatment indicator' },
-    // Outcome indicators
-    'outcome': { role: 'outcome', reason: 'Standard outcome variable name' },
-    'churn': { role: 'outcome', reason: 'Common business outcome' },
-    'churned': { role: 'outcome', reason: 'Churn outcome indicator' },
-    'conversion': { role: 'outcome', reason: 'Conversion outcome' },
-    'revenue': { role: 'outcome', reason: 'Revenue outcome metric' },
-    'sales': { role: 'outcome', reason: 'Sales outcome metric' },
-    'retention': { role: 'outcome', reason: 'Retention outcome' },
-    // Common covariates
-    'age': { role: 'covariate', reason: 'Demographic confounder' },
-    'gender': { role: 'covariate', reason: 'Demographic confounder' },
-    'income': { role: 'covariate', reason: 'Economic confounder' },
-    'tenure': { role: 'covariate', reason: 'Customer tenure confounder' },
-    'region': { role: 'covariate', reason: 'Geographic confounder' },
-};
+// Variable suggestions logic moved to processFile heuristic for now
 
 const DataOnboardingWizard: React.FC<DataOnboardingWizardProps> = ({
     isOpen,
@@ -150,69 +140,67 @@ const DataOnboardingWizard: React.FC<DataOnboardingWizardProps> = ({
     };
 
     const processFile = async (file: File) => {
-        const text = await file.text();
-        let data: Record<string, unknown>[];
+        try {
+            // Use Backend API for Intelligent Schema Detection
+            const formData = new FormData();
+            formData.append('file', file);
 
-        if (file.name.endsWith('.json')) {
-            data = JSON.parse(text);
-            if (!Array.isArray(data)) {
-                throw new Error('JSON must be an array of objects');
-            }
-        } else if (file.name.endsWith('.csv')) {
-            data = parseCSV(text);
-        } else {
-            throw new Error('Unsupported file type. Use CSV or JSON.');
-        }
-
-        if (data.length === 0) {
-            throw new Error('File contains no data');
-        }
-
-        if (data.length > 5000) {
-            data = data.slice(0, 5000);
-        }
-
-        const columnNames = Object.keys(data[0]);
-        const columns: ColumnInfo[] = columnNames.map(name => {
-            const values = data.map(row => row[name]);
-            const type = detectColumnType(values);
-            const uniqueValues = new Set(values.filter(v => v !== null)).size;
-            const sampleValues = Array.from(new Set(values.filter(v => v !== null)))
-                .slice(0, 5)
-                .map(String);
-
-            return { name, type, uniqueValues, sampleValues };
-        });
-
-        const preview: DataPreview = {
-            fileName: file.name,
-            rows: data.length,
-            columns,
-            sampleData: data.slice(0, 5),
-        };
-
-        setDataPreview(preview);
-
-        // Generate variable suggestions
-        const newSuggestions: typeof suggestions = { treatment: null, outcome: null, covariates: [] };
-        for (const col of columns) {
-            const lowerName = col.name.toLowerCase();
-            for (const [pattern, config] of Object.entries(VARIABLE_SUGGESTIONS)) {
-                if (lowerName.includes(pattern) || lowerName === pattern) {
-                    if (config.role === 'treatment' && !newSuggestions.treatment) {
-                        newSuggestions.treatment = col.name;
-                    } else if (config.role === 'outcome' && !newSuggestions.outcome) {
-                        newSuggestions.outcome = col.name;
-                    } else if (config.role === 'covariate' && !newSuggestions.covariates.includes(col.name)) {
-                        newSuggestions.covariates.push(col.name);
-                    }
-                    break;
+            let backendSuggestions: typeof suggestions | null = null;
+            try {
+                const res = await fetch('http://localhost:8000/data/detect-schema', { method: 'POST', body: formData });
+                if (res.ok) {
+                    const result: SchemaDetectionResult = await res.json();
+                    backendSuggestions = buildSuggestionsFromSchema(result);
+                } else {
+                    console.warn('Schema detection failed with status:', res.status);
                 }
+            } catch (err) {
+                console.warn('Schema detection request failed, falling back to local heuristics.', err);
             }
-        }
-        setSuggestions(newSuggestions);
 
-        setCurrentStep(2);
+            // Local Fallback (mimicking backend logic for reliability in this demo environment)
+            const text = await file.text();
+            let data: Record<string, unknown>[];
+
+            if (file.name.endsWith('.json')) {
+                data = JSON.parse(text);
+            } else if (file.name.endsWith('.csv')) {
+                data = parseCSV(text);
+            } else {
+                throw new Error('Unsupported file type. Use CSV or JSON.');
+            }
+
+            if (data.length === 0) throw new Error('File contains no data');
+            if (data.length > 5000) data = data.slice(0, 5000); // Front-end limiting
+
+            const columnNames = Object.keys(data[0]);
+            const columns: ColumnInfo[] = columnNames.map(name => {
+                const values = data.map(row => row[name]);
+                return {
+                    name,
+                    type: detectColumnType(values),
+                    uniqueValues: new Set(values.filter(v => v !== null)).size,
+                    sampleValues: Array.from(new Set(values.filter(v => v !== null))).slice(0, 5).map(String)
+                };
+            });
+
+            const preview: DataPreview = {
+                fileName: file.name,
+                rows: data.length,
+                columns,
+                sampleData: data.slice(0, 5),
+            };
+
+            setDataPreview(preview);
+
+            const fallbackSuggestions = buildSuggestionsFromColumns(columnNames, columns);
+            setSuggestions(backendSuggestions ?? fallbackSuggestions);
+            setCurrentStep(2);
+
+        } catch (err) {
+            console.error(err);
+            alert('Failed to process file');
+        }
     };
 
     // Load sample dataset
@@ -319,6 +307,50 @@ const DataOnboardingWizard: React.FC<DataOnboardingWizardProps> = ({
                 ? prev.filter(c => c !== column)
                 : [...prev, column]
         );
+    };
+
+    const buildSuggestionsFromSchema = (schema: SchemaDetectionResult): typeof suggestions => {
+        const newSuggestions: typeof suggestions = { treatment: null, outcome: null, covariates: [] };
+        schema.columns.forEach((column) => {
+            switch (column.suggested_role) {
+                case 'treatment':
+                    if (!newSuggestions.treatment) newSuggestions.treatment = column.name;
+                    break;
+                case 'outcome':
+                    if (!newSuggestions.outcome) newSuggestions.outcome = column.name;
+                    break;
+                case 'covariate':
+                    if (!newSuggestions.covariates.includes(column.name)) {
+                        newSuggestions.covariates.push(column.name);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+        return newSuggestions;
+    };
+
+    const buildSuggestionsFromColumns = (columnNames: string[], columns: ColumnInfo[]): typeof suggestions => {
+        const newSuggestions: typeof suggestions = { treatment: null, outcome: null, covariates: [] };
+
+        columnNames.forEach(col => {
+            const lower = col.toLowerCase();
+            if (['treatment', 'intervention', 'variant', 'group'].some(k => lower.includes(k))) {
+                if (!newSuggestions.treatment) newSuggestions.treatment = col;
+            }
+            if (['outcome', 'result', 'converted', 'conversion', 'revenue', 'sales', 'churn', 'score', 'cost'].some(k => lower.includes(k))) {
+                if (!newSuggestions.outcome) newSuggestions.outcome = col;
+            }
+            if (!lower.includes('id') && !lower.includes('uuid')) {
+                const colInfo = columns.find(c => c.name === col);
+                if (colInfo?.type !== 'text') {
+                    newSuggestions.covariates.push(col);
+                }
+            }
+        });
+
+        return newSuggestions;
     };
 
     const generateQuery = () => {
@@ -828,6 +860,45 @@ const DataOnboardingWizard: React.FC<DataOnboardingWizardProps> = ({
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                                 rows={4}
                             />
+
+                            {/* AI Starter Questions */}
+                            <div>
+                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                    AI Suggested Questions
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {(treatment && outcome) && (
+                                        <button
+                                            onClick={() => setQuery(`What is the causal effect of ${treatment} on ${outcome}?`)}
+                                            className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors text-left border border-blue-100"
+                                        >
+                                            ✨ Causal Effect: {treatment} → {outcome}
+                                        </button>
+                                    )}
+                                    {outcome && (
+                                        <button
+                                            onClick={() => setQuery(`What are the key drivers of ${outcome}?`)}
+                                            className="px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-sm font-medium hover:bg-purple-100 transition-colors text-left border border-purple-100"
+                                        >
+                                            🕵️ Key Drivers of {outcome}
+                                        </button>
+                                    )}
+                                    {treatment && (
+                                        <button
+                                            onClick={() => setQuery(`How does ${treatment} vary across different groups?`)}
+                                            className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium hover:bg-green-100 transition-colors text-left border border-green-100"
+                                        >
+                                            📊 Distribution of {treatment}
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => setQuery(`Analyze the impact of ${treatment || 'intervention'} on ${outcome || 'outcome'} considering ${covariates.slice(0, 2).join(', ') || 'key factors'}`)}
+                                        className="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors text-left border border-indigo-100"
+                                    >
+                                        🧠 Detailed Analysis (Advanced)
+                                    </button>
+                                </div>
+                            </div>
 
                             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                                 <div className="text-sm font-semibold text-green-900 mb-2">✅ Ready to Analyze</div>

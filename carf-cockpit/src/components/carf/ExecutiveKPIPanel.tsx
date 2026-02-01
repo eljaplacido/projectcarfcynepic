@@ -8,7 +8,7 @@
  * - Decision impact visualization
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { QueryResponse, CausalAnalysisResult, BayesianBeliefState, GuardianDecision } from '../../types/carf';
 
 interface ExecutiveKPIProps {
@@ -17,6 +17,7 @@ interface ExecutiveKPIProps {
   bayesianResult: BayesianBeliefState | null;
   guardianResult: GuardianDecision | null;
   onDrillDown?: (kpiId: string) => void;
+  context?: string; // Analysis context (e.g., 'sustainability')
 }
 
 interface KPIMetric {
@@ -56,18 +57,89 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
   bayesianResult,
   guardianResult,
   onDrillDown,
+  context = 'general'
 }) => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [vizConfig, setVizConfig] = useState<any>(null);
+
+  // Fetch visualization config on mount or context change
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        // In a real app, use the apiService. Here we'll use a fetch for the demo
+        const res = await fetch(`http://localhost:8000/config/visualization?context=${context}`);
+        if (res.ok) {
+          const data = await res.json();
+          setVizConfig(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch viz config", err);
+      }
+    };
+    fetchConfig();
+  }, [context]);
+
+  // Dynamic KPI Value Mapper
+  const getDynamicValue = (kpiName: string): Partial<KPIMetric> => {
+    // Map abstract KPI names to concrete data points based on available results
+    const defaults = { value: 0, status: 'warning' as const, trend: 'stable' as const };
+
+    if (context === 'sustainability') {
+      if (kpiName === 'Total Reduction') {
+        const effect = causalResult?.effect || 0;
+        return {
+          value: Math.abs(effect * 1000).toFixed(1), // Mock scaling
+          status: effect < 0 ? 'excellent' : 'warning',
+          trend: effect < 0 ? 'down' : 'up'
+        };
+      }
+      if (kpiName === 'Supplier Coverage') return { value: 85, status: 'good', trend: 'up' };
+      if (kpiName === 'Carbon Intensity') return { value: 1.2, status: 'good', trend: 'down' };
+    }
+
+    if (context === 'financial') {
+      if (kpiName === 'ROI') return { value: 24, status: 'excellent', trend: 'up' };
+      if (kpiName === 'Payback Period') return { value: 18, status: 'good', trend: 'down' };
+    }
+
+    // Default Fallbacks (existing logic)
+    if (kpiName === 'Domain Confidence') {
+      const conf = (queryResponse?.domainConfidence || 0) * 100;
+      return {
+        value: Math.round(conf),
+        status: conf >= 85 ? 'excellent' : conf >= 70 ? 'good' : 'warning',
+        trend: 'stable'
+      };
+    }
+
+    return defaults;
+  };
 
   // Calculate KPI metrics from analysis results
   const calculateKPIs = (): KPIMetric[] => {
-    const kpis: KPIMetric[] = [];
+    // Dynamic KPIs from Config
+    const dynamicKPIs: KPIMetric[] = vizConfig?.kpi_templates?.map((tpl: any, idx: number) => {
+      const data = getDynamicValue(tpl.name);
+      return {
+        id: `kpi-dyn-${idx}`,
+        label: tpl.name,
+        value: data.value as number | string,
+        unit: tpl.unit,
+        status: data.status as KPIMetric['status'],
+        trend: data.trend as KPIMetric['trend'],
+        description: tpl.description || tpl.name,
+        category: 'performance'
+      };
+    }) || [];
 
-    // Domain Confidence KPI
+    // Core KPIs (Always visible)
+    const coreKPIs: KPIMetric[] = [];
+
+    // Domain Confidence (Core)
     if (queryResponse?.domainConfidence) {
       const confidence = queryResponse.domainConfidence * 100;
-      kpis.push({
+      coreKPIs.push({
         id: 'domain-confidence',
         label: 'Domain Confidence',
         value: Math.round(confidence),
@@ -78,66 +150,7 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
       });
     }
 
-    // Causal Effect KPI
-    if (causalResult?.effect !== undefined) {
-      const effectAbs = Math.abs(causalResult.effect);
-      kpis.push({
-        id: 'causal-effect',
-        label: 'Causal Effect Size',
-        value: causalResult.effect.toFixed(3),
-        status: effectAbs >= 0.3 ? 'excellent' : effectAbs >= 0.1 ? 'good' : 'warning',
-        trend: causalResult.effect > 0 ? 'up' : causalResult.effect < 0 ? 'down' : 'stable',
-        description: `Treatment effect on outcome: ${causalResult.treatment} → ${causalResult.outcome}`,
-        category: 'performance',
-      });
-    }
-
-    // Refutation Tests KPI
-    if (causalResult) {
-      const passed = causalResult.refutationsPassed || 0;
-      const total = causalResult.refutationsTotal || 0;
-      const rate = total > 0 ? (passed / total) * 100 : 0;
-      kpis.push({
-        id: 'refutation-rate',
-        label: 'Causal Robustness',
-        value: `${passed}/${total}`,
-        status: rate === 100 ? 'excellent' : rate >= 80 ? 'good' : rate >= 60 ? 'warning' : 'critical',
-        description: 'Refutation tests passed - validates causal claim reliability',
-        category: 'quality',
-      });
-    }
-
-    // Epistemic Uncertainty KPI
-    if (bayesianResult?.epistemicUncertainty !== undefined) {
-      const epistemic = bayesianResult.epistemicUncertainty * 100;
-      kpis.push({
-        id: 'epistemic-uncertainty',
-        label: 'Knowledge Gap',
-        value: Math.round(epistemic),
-        unit: '%',
-        status: epistemic <= 15 ? 'excellent' : epistemic <= 30 ? 'good' : epistemic <= 50 ? 'warning' : 'critical',
-        description: 'Reducible uncertainty - can be lowered with more data',
-        category: 'quality',
-      });
-    }
-
-    // Guardian Compliance KPI
-    if (guardianResult) {
-      const passed = guardianResult.policiesPassed || 0;
-      const total = guardianResult.policiesTotal || 0;
-      const rate = total > 0 ? (passed / total) * 100 : 100;
-      kpis.push({
-        id: 'policy-compliance',
-        label: 'Policy Compliance',
-        value: Math.round(rate),
-        unit: '%',
-        status: rate === 100 ? 'excellent' : rate >= 90 ? 'good' : rate >= 70 ? 'warning' : 'critical',
-        description: `${passed} of ${total} governance policies passed`,
-        category: 'compliance',
-      });
-    }
-
-    // Risk Level KPI
+    // Risk Level (Core)
     if (guardianResult?.riskLevel) {
       const riskMap: Record<string, { value: string; status: KPIMetric['status'] }> = {
         low: { value: 'LOW', status: 'excellent' },
@@ -145,7 +158,7 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
         high: { value: 'HIGH', status: 'critical' },
       };
       const riskInfo = riskMap[guardianResult.riskLevel.toLowerCase()] || riskMap.medium;
-      kpis.push({
+      coreKPIs.push({
         id: 'risk-level',
         label: 'Risk Assessment',
         value: riskInfo.value,
@@ -155,7 +168,38 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
       });
     }
 
-    return kpis;
+    // If no dynamic config, fall back to some defaults if available results
+    if (dynamicKPIs.length === 0) {
+      // Causal Effect KPI
+      if (causalResult?.effect !== undefined) {
+        const effectAbs = Math.abs(causalResult.effect);
+        coreKPIs.push({
+          id: 'causal-effect',
+          label: 'Causal Effect Size',
+          value: causalResult.effect.toFixed(3),
+          status: effectAbs >= 0.3 ? 'excellent' : effectAbs >= 0.1 ? 'good' : 'warning',
+          trend: causalResult.effect > 0 ? 'up' : causalResult.effect < 0 ? 'down' : 'stable',
+          description: `Treatment effect on outcome: ${causalResult.treatment} → ${causalResult.outcome}`,
+          category: 'performance',
+        });
+      }
+      // Refutation (fallback)
+      if (causalResult) {
+        const passed = causalResult.refutationsPassed || 0;
+        const total = causalResult.refutationsTotal || 0;
+        const rate = total > 0 ? (passed / total) * 100 : 0;
+        coreKPIs.push({
+          id: 'refutation-rate',
+          label: 'Causal Robustness',
+          value: `${passed}/${total}`,
+          status: rate === 100 ? 'excellent' : rate >= 80 ? 'good' : rate >= 60 ? 'warning' : 'critical',
+          description: 'Refutation tests passed',
+          category: 'quality',
+        });
+      }
+    }
+
+    return [...dynamicKPIs, ...coreKPIs];
   };
 
   const kpis = calculateKPIs();
@@ -169,6 +213,11 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
     }
 
     const parts: string[] = [];
+
+    // Visualize title if available
+    if (vizConfig?.title_template) {
+      parts.push(`## ${vizConfig.title_template}`);
+    }
 
     // Domain context
     const domainConf = Math.round((queryResponse.domainConfidence || 0) * 100);

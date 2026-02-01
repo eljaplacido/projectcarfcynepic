@@ -64,7 +64,7 @@ class CynefinRouter:
 
     def __init__(
         self,
-        confidence_threshold: float = 0.85,
+        confidence_threshold: float = 0.70,
         entropy_threshold_chaotic: float = 0.9,
         mode: str | None = None,
         model_path: str | None = None,

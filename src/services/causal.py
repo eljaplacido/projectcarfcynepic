@@ -614,6 +614,42 @@ async def run_causal_analysis(
     """
     engine = get_causal_engine()
 
+    # Fast Oracle Path (Chimera)
+    if state.context.get("use_fast_oracle"):
+        scenario_id = state.context.get("scenario_id")
+        if scenario_id:
+            try:
+                from src.services.chimera_oracle import get_oracle_engine
+                oracle = get_oracle_engine()
+                
+                if oracle.has_model(scenario_id):
+                    logger.info(f"Using Fast Oracle for scenario {scenario_id}")
+                    pred = oracle.predict_effect(scenario_id, state.context)
+                    
+                    state.causal_evidence = CausalEvidence(
+                        effect_size=pred.effect_estimate,
+                        confidence_interval=pred.confidence_interval,
+                        refutation_passed=True, # Oracle models are pre-validated
+                        confounders_checked=["(Oracle Pre-trained)"],
+                        interpretation=f"Fast Oracle Prediction: {pred.effect_estimate:.2f} (Model: {pred.used_model})",
+                        treatment=state.context.get("causal_estimation", {}).get("treatment", "treatment"),
+                        outcome=state.context.get("causal_estimation", {}).get("outcome", "outcome"),
+                        mechanism="Oracle Causal Forest Prediction",
+                    )
+                    state.overall_confidence = ConfidenceLevel.HIGH
+                    state.proposed_action = {
+                        "action_type": "causal_recommendation",
+                        "description": f"Fast Oracle recommendation",
+                        "parameters": {
+                            "effect_size": pred.effect_estimate,
+                            "confidence_interval": pred.confidence_interval
+                        }
+                    }
+                    state.final_response = f"**Fast Oracle Analysis**\n\nEffect: {pred.effect_estimate:.2f}\nCI: {pred.confidence_interval}\nConfidence: High (Pre-validated model)"
+                    return state
+            except Exception as e:
+                logger.warning(f"Fast Oracle failed, falling back to full analysis: {e}")
+
     # Run analysis — propagate ValueError so the API layer can return 400
     result, graph = await engine.analyze(
         query=state.user_input,

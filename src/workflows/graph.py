@@ -163,20 +163,76 @@ async def circuit_breaker_node(state: EpistemicState) -> EpistemicState:
 async def reflector_node(state: EpistemicState) -> EpistemicState:
     """Self-correction node - attempts to fix rejected actions.
 
-    Called when Guardian rejects an action. Feeds the violation reasons back
-    into the context so the domain agent can adapt its approach.
+    Called when Guardian rejects an action. First attempts auto-repair based on
+    violation type, then feeds the violation reasons back into context if repair fails.
+    
+    Auto-repair strategies:
+    - budget_exceeded: Reduce proposed values by 20%
+    - threshold_exceeded: Apply safety margin
+    - missing_approval: Flag for human review instead of full escalation
     """
     logger.info(f"Reflector attempting self-correction (attempt {state.reflection_count + 1})")
 
     state.reflection_count += 1
 
     violations = state.policy_violations or []
+    original_action = state.proposed_action
+    
+    # Store original action for transparency
+    if original_action and not state.context.get("original_action"):
+        state.context["original_action"] = original_action
+    
+    # Attempt auto-repair based on violation types
+    repair_attempted = False
+    repair_successful = False
+    repair_details = []
+    
+    if original_action and isinstance(original_action, dict):
+        repaired_action = original_action.copy()
+        
+        for violation in violations:
+            violation_lower = violation.lower()
+            
+            # Budget-related repairs
+            if "budget" in violation_lower or "cost" in violation_lower:
+                # Reduce any numerical values by 20%
+                for key, value in repaired_action.items():
+                    if isinstance(value, (int, float)) and value > 0:
+                        repaired_action[key] = value * 0.8
+                        repair_details.append(f"Reduced {key} by 20%")
+                repair_attempted = True
+            
+            # Threshold-related repairs
+            elif "threshold" in violation_lower or "limit" in violation_lower:
+                # Apply safety margin
+                for key, value in repaired_action.items():
+                    if isinstance(value, (int, float)) and value > 0:
+                        repaired_action[key] = value * 0.9
+                        repair_details.append(f"Applied 10% safety margin to {key}")
+                repair_attempted = True
+            
+            # Approval-related - flag for targeted human review
+            elif "approval" in violation_lower or "authorization" in violation_lower:
+                repaired_action["requires_human_review"] = True
+                repaired_action["review_reason"] = violation
+                repair_details.append("Flagged for targeted human review")
+                repair_attempted = True
+        
+        if repair_attempted:
+            state.proposed_action = repaired_action
+            state.context["action_was_repaired"] = True
+            state.context["repair_details"] = repair_details
+            repair_successful = True
+            logger.info(f"Auto-repair applied: {repair_details}")
 
     # Feed rejection reasons into context so the domain agent can adapt
     rejections = state.context.get("guardian_rejections", [])
     rejections.append({
         "attempt": state.reflection_count,
         "violations": violations,
+        "repair_attempted": repair_attempted,
+        "repair_successful": repair_successful,
+        "repair_details": repair_details,
     })
     state.context["guardian_rejections"] = rejections
 
@@ -184,12 +240,17 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
         node_name="reflector",
         action=f"Self-correction attempt {state.reflection_count}",
         input_summary=f"Violations: {violations}",
-        output_summary=f"Feeding {len(violations)} violation(s) back to domain agent for retry",
-        confidence=ConfidenceLevel.MEDIUM,
+        output_summary=(
+            f"Auto-repair {'succeeded' if repair_successful else 'not attempted'}: {repair_details}"
+            if repair_attempted else 
+            f"Feeding {len(violations)} violation(s) back to domain agent for retry"
+        ),
+        confidence=ConfidenceLevel.MEDIUM if repair_successful else ConfidenceLevel.LOW,
     )
 
-    # Clear the proposed action for re-routing
-    state.proposed_action = None
+    # Only clear proposed action if repair wasn't attempted or failed
+    if not repair_successful:
+        state.proposed_action = None
     state.guardian_verdict = None
 
     return state

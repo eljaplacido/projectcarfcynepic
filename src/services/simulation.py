@@ -2,13 +2,19 @@
 
 Provides multi-scenario simulation capabilities for comparing
 different intervention strategies and their projected outcomes.
+
+Also includes realistic data generation for training causal models.
 """
 
 import logging
+import math
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+import numpy as np
+import pandas as pd
 from pydantic import BaseModel, Field
 
 from src.core.state import EpistemicState
@@ -16,6 +22,285 @@ from src.services.causal import CausalInferenceEngine, CausalEstimationConfig
 from src.services.neo4j_service import get_neo4j_service
 
 logger = logging.getLogger("carf.simulation")
+
+
+# ============================================================================
+# Realistic Data Generators (No Mock Data - Simulated with Causal Structure)
+# ============================================================================
+
+def generate_scope3_emissions_data(
+    n_samples: int = 2000,
+    seed: int = 42,
+    output_path: str | None = None
+) -> pd.DataFrame:
+    """Generate realistic Scope 3 emissions data with known causal structure.
+    
+    The data has the following causal properties:
+    - supplier_program → scope3_emissions (treatment effect, heterogeneous)
+    - supplier_size → supplier_program (confounding: larger suppliers more likely in program)
+    - region → scope3_emissions (effect modifier: EU has stronger program effect)
+    - baseline_emissions → scope3_emissions (confounder)
+    
+    GHG Protocol Scope 3 categories included:
+    - Category 1: Purchased Goods & Services
+    - Category 4: Upstream Transportation
+    - Category 6: Business Travel
+    - Category 11: Use of Sold Products
+    
+    Args:
+        n_samples: Number of supplier records to generate
+        seed: Random seed for reproducibility
+        output_path: Optional path to save CSV (defaults to demo/data/scope3_emissions.csv)
+    
+    Returns:
+        DataFrame with generated data
+    """
+    np.random.seed(seed)
+    
+    regions = ["EU", "NA", "APAC", "LATAM", "EMEA"]
+    sizes = ["small", "medium", "large"]
+    
+    # GHG Protocol Scope 3 categories with emission factors (kgCO2e per unit)
+    categories = {
+        "Cat1_Purchased_Goods": {"weight": 0.40, "emission_factor": 2.5, "unit": "kg/unit"},
+        "Cat4_Transport": {"weight": 0.25, "emission_factor": 0.12, "unit": "kg/tkm"},
+        "Cat6_Business_Travel": {"weight": 0.15, "emission_factor": 0.255, "unit": "kg/pkm"},
+        "Cat11_Use_of_Products": {"weight": 0.20, "emission_factor": 1.8, "unit": "kg/use"},
+    }
+    category_names = list(categories.keys())
+    category_probs = [categories[c]["weight"] for c in category_names]
+    
+    # Region-specific effects (EU strongest climate policy)
+    region_effect_modifiers = {"EU": 1.3, "NA": 1.0, "APAC": 0.8, "LATAM": 0.7, "EMEA": 0.95}
+    
+    # Size-specific effects (larger suppliers have more reduction potential)
+    size_effect_modifiers = {"large": 1.5, "medium": 1.0, "small": 0.6}
+    
+    # Size influences program participation (confounding)
+    size_program_propensity = {"large": 0.7, "medium": 0.45, "small": 0.2}
+    
+    # Generate timestamps over 2 years (for time-series analysis)
+    start_date = datetime(2024, 1, 1)
+    end_date = datetime(2025, 12, 31)
+    date_range_days = (end_date - start_date).days
+    
+    data = []
+    for i in range(n_samples):
+        # Generate timestamp (distributed over 2 years)
+        random_days = np.random.randint(0, date_range_days)
+        timestamp = start_date + pd.Timedelta(days=random_days)
+        
+        # Generate baseline characteristics
+        region = np.random.choice(regions, p=[0.25, 0.20, 0.30, 0.10, 0.15])
+        size = np.random.choice(sizes, p=[0.30, 0.45, 0.25])
+        
+        # Assign GHG category
+        category = np.random.choice(category_names, p=category_probs)
+        emission_factor = categories[category]["emission_factor"]
+        
+        # Baseline emissions (before any intervention)
+        # Larger suppliers have higher baselines
+        size_baseline = {"small": 400, "medium": 700, "large": 1100}
+        baseline_emissions = max(100, np.random.normal(size_baseline[size], 150))
+        
+        # Market conditions (0-1, affects business constraints)
+        market_conditions = np.clip(np.random.normal(0.6, 0.15), 0.2, 0.95)
+        
+        # Energy mix (fraction of renewables, 0-1)
+        # EU and NA have higher renewable adoption
+        energy_base = {"EU": 0.45, "NA": 0.35, "APAC": 0.25, "LATAM": 0.30, "EMEA": 0.35}
+        energy_mix = np.clip(np.random.normal(energy_base[region], 0.12), 0.05, 0.85)
+        
+        # Treatment assignment (supplier program participation)
+        # Confounded by size (larger suppliers more likely to join)
+        program_prob = size_program_propensity[size]
+        # Also slightly influenced by energy mix (greener suppliers more likely)
+        program_prob = program_prob + 0.1 * (energy_mix - 0.3)
+        program_prob = np.clip(program_prob, 0.1, 0.9)
+        supplier_program = int(np.random.random() < program_prob)
+        
+        # CAUSAL EFFECT: supplier program on emissions change
+        # Base effect: program reduces emissions by ~60 tCO2e on average
+        base_treatment_effect = -60 if supplier_program else 5  # slight increase without program
+        
+        # Heterogeneous effects by region and size
+        region_mod = region_effect_modifiers[region]
+        size_mod = size_effect_modifiers[size]
+        
+        # Energy mix also moderates: higher renewables = less room for reduction
+        energy_mod = 1.2 - 0.5 * energy_mix
+        
+        # Baseline emissions affect potential: higher baseline = more reduction possible
+        baseline_mod = 0.8 + 0.4 * (baseline_emissions / 1000)
+        
+        # Calculate emissions change (outcome)
+        emissions_change = (
+            base_treatment_effect 
+            * region_mod 
+            * size_mod 
+            * energy_mod
+            * baseline_mod
+            + np.random.normal(0, 12)  # individual-level noise
+        )
+        
+        # Confidence score based on data quality factors
+        # Higher if: recent timestamp, large supplier (more data), stable market
+        recency_factor = 0.5 + 0.5 * (1 - random_days / date_range_days)
+        size_factor = {"large": 0.9, "medium": 0.75, "small": 0.6}[size]
+        market_factor = 0.7 + 0.3 * (1 - abs(market_conditions - 0.6) / 0.4)
+        confidence_score = np.clip(
+            (recency_factor + size_factor + market_factor) / 3 + np.random.normal(0, 0.05),
+            0.4, 0.98
+        )
+        
+        data.append({
+            "supplier_id": f"SUP-{i:04d}",
+            "timestamp": timestamp.strftime("%Y-%m-%d"),
+            "category": category,
+            "supplier_program": supplier_program,
+            "scope3_emissions": round(emissions_change, 1),
+            "region": region,
+            "market_conditions": round(market_conditions, 2),
+            "energy_mix": round(energy_mix, 2),
+            "supplier_size": size,
+            "baseline_emissions": round(baseline_emissions, 0),
+            "emission_factor": round(emission_factor, 3),
+            "confidence_score": round(confidence_score, 2),
+        })
+    
+    df = pd.DataFrame(data)
+    
+    # Save to file if path provided
+    if output_path:
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(output_path, index=False)
+        logger.info(f"Generated {n_samples} Scope 3 records to {output_path}")
+    
+    return df
+
+
+
+def generate_supply_chain_resilience_data(
+    n_samples: int = 2000,
+    seed: int = 42,
+    output_path: str | None = None
+) -> pd.DataFrame:
+    """Generate supply chain resilience data with climate stress as treatment.
+    
+    Causal structure:
+    - climate_stress_index → disruption_risk_percent (treatment effect)
+    - operational_maturity → disruption_risk_percent (protective factor)
+    - inventory_days → disruption_risk_percent (buffer effect)
+    - supplier_tier → both treatment and outcome (confounder)
+    
+    Args:
+        n_samples: Number of records
+        seed: Random seed
+        output_path: Optional path to save CSV
+        
+    Returns:
+        DataFrame with generated data
+    """
+    np.random.seed(seed)
+    
+    regions = ["NAM", "APAC", "EMEA", "LATAM"]
+    tiers = ["Tier 1", "Tier 2", "Tier 3"]
+    
+    # Region-specific climate vulnerability
+    region_vulnerability = {"NAM": 0.9, "APAC": 1.15, "EMEA": 0.85, "LATAM": 1.1}
+    
+    # Tier affects both exposure and resilience
+    tier_exposure = {"Tier 1": 0.7, "Tier 2": 1.0, "Tier 3": 1.3}
+    
+    data = []
+    for i in range(n_samples):
+        region = np.random.choice(regions, p=[0.25, 0.35, 0.25, 0.15])
+        tier = np.random.choice(tiers, p=[0.20, 0.35, 0.45])
+        
+        # Operational maturity (0-100)
+        # Tier 1 suppliers tend to be more mature
+        tier_maturity_base = {"Tier 1": 70, "Tier 2": 55, "Tier 3": 45}
+        operational_maturity = np.clip(
+            np.random.normal(tier_maturity_base[tier], 15), 20, 100
+        )
+        
+        # Inventory buffer days
+        inventory_days = max(5, np.random.exponential(20) + 5)
+        
+        # Climate stress index (0-10)
+        # Higher in APAC and LATAM
+        climate_base = {"NAM": 4.0, "APAC": 5.5, "EMEA": 3.8, "LATAM": 5.0}
+        climate_stress_index = np.clip(
+            np.random.normal(climate_base[region], 2), 0, 10
+        )
+        
+        # CAUSAL EFFECT: climate stress on disruption risk
+        base_risk = 5  # base disruption risk %
+        
+        # Climate stress increases risk
+        climate_effect = climate_stress_index * 4 * tier_exposure[tier] * region_vulnerability[region]
+        
+        # Operational maturity reduces risk
+        maturity_protection = -0.3 * operational_maturity
+        
+        # Inventory provides buffer (diminishing returns)
+        inventory_protection = -5 * (1 - np.exp(-inventory_days / 30))
+        
+        disruption_risk = base_risk + climate_effect + maturity_protection + inventory_protection
+        disruption_risk = np.clip(disruption_risk + np.random.normal(0, 5), 0, 100)
+        
+        data.append({
+            "supplier_id": f"SUP-{i:04d}",
+            "supplier_region": region,
+            "supplier_tier": tier,
+            "operational_maturity": round(operational_maturity, 1),
+            "inventory_days": round(inventory_days, 1),
+            "climate_stress_index": round(climate_stress_index, 2),
+            "disruption_risk_percent": round(disruption_risk, 2),
+        })
+    
+    df = pd.DataFrame(data)
+    
+    if output_path:
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(output_path, index=False)
+        logger.info(f"Generated {n_samples} supply chain records to {output_path}")
+    
+    return df
+
+
+def calculate_shannon_entropy(text: str) -> float:
+    """Calculate Shannon entropy of text token distribution.
+    
+    Used for complexity classification in the Cynefin router.
+    Higher entropy suggests more disorder/complexity.
+    
+    Args:
+        text: Input text to analyze
+        
+    Returns:
+        Shannon entropy value (bits)
+    """
+    tokens = text.lower().split()
+    total = len(tokens)
+    
+    if total == 0:
+        return 0.0
+    
+    # Count token frequencies
+    freq: dict[str, int] = {}
+    for token in tokens:
+        freq[token] = freq.get(token, 0) + 1
+    
+    # Calculate entropy
+    entropy = -sum(
+        (count / total) * math.log2(count / total)
+        for count in freq.values()
+    )
+    
+    return entropy
+
+
 
 
 class Intervention(BaseModel):

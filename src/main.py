@@ -133,10 +133,44 @@ class QueryRequest(BaseModel):
         default=None,
         description="Optional dataset selection for causal estimation",
     )
+    use_fast_oracle: bool = Field(
+        default=False,
+        description="Use ChimeraOracle for fast causal scoring instead of full DoWhy analysis",
+    )
+    oracle_scenario_id: str | None = Field(
+        default=None,
+        description="Scenario ID for fast oracle (required if use_fast_oracle=True)",
+    )
 
+
+from src.services.visualization_engine import get_visualization_config, ContextualVisualization
+from src.services.schema_detector import schema_detector, SchemaDetectionResult
+from src.services.improvement_suggestions import improvement_service, ImprovementContext, Suggestion
+
+
+@app.post("/data/detect-schema", response_model=SchemaDetectionResult, tags=["Data"])
+async def detect_schema_endpoint(file: UploadFile = File(...)):
+    """
+    Detect schema and suggested roles from an uploaded CSV file.
+    """
+    content = await file.read()
+    return schema_detector.detect(content, file.filename)
+
+
+@app.post("/agent/suggest-improvements", response_model=list[Suggestion], tags=["Agent"])
+async def suggest_improvements_endpoint(context: ImprovementContext):
+    """
+    Generate proactive suggestions for query refinement or next steps.
+    """
+    return improvement_service.suggest(context)
 
 
 # ==================== Configuration Endpoints ====================
+
+@app.get("/config/visualization", tags=["Configuration"])
+async def get_viz_config(context: str = "general") -> ContextualVisualization:
+    """Get context-aware visualization configuration."""
+    return get_visualization_config(context)
 
 
 class LLMConfigStatus(BaseModel):
@@ -339,6 +373,155 @@ async def update_config(request: LLMConfigUpdateRequest) -> LLMConfigStatus:
         # Non-fatal, just means it won't persist across restarts
 
     return await get_config_status()
+
+
+# ==================== ChimeraOracle Endpoints ====================
+
+
+class OracleTrainRequest(BaseModel):
+    """Request to train a ChimeraOracle model."""
+
+    scenario_id: str = Field(..., description="Unique ID for this scenario model")
+    csv_path: str = Field(..., description="Path to training data CSV")
+    treatment: str = Field(..., description="Treatment variable name")
+    outcome: str = Field(..., description="Outcome variable name")
+    covariates: list[str] = Field(default_factory=list)
+    effect_modifiers: list[str] = Field(default_factory=list)
+    n_estimators: int = Field(100, ge=10, le=500)
+
+
+class OracleTrainResponse(BaseModel):
+    """Response from oracle training."""
+
+    status: str
+    n_samples: int
+    model_path: str
+    average_treatment_effect: float
+    effect_std: float
+    error: str | None = None
+
+
+class OraclePredictRequest(BaseModel):
+    """Request for fast causal prediction."""
+
+    scenario_id: str = Field(..., description="Scenario model to use")
+    context: dict[str, Any] = Field(..., description="Feature values for prediction")
+
+
+class OraclePredictResponse(BaseModel):
+    """Response from oracle prediction."""
+
+    effect_estimate: float
+    confidence_interval: tuple[float, float]
+    feature_importance: dict[str, float]
+    used_model: str
+    prediction_time_ms: float
+
+
+class OracleModelInfo(BaseModel):
+    """Information about a trained oracle model."""
+
+    scenario_id: str
+    average_treatment_effect: float
+    effect_std: float
+    n_samples: int
+
+
+@app.get("/oracle/models", tags=["ChimeraOracle"])
+async def list_oracle_models() -> list[OracleModelInfo]:
+    """List all trained ChimeraOracle models."""
+    from src.services.chimera_oracle import get_oracle_engine
+
+    engine = get_oracle_engine()
+    models = []
+    for scenario_id in engine.get_available_scenarios():
+        stats = engine.get_average_treatment_effect(scenario_id)
+        models.append(
+            OracleModelInfo(
+                scenario_id=scenario_id,
+                average_treatment_effect=stats["ate"],
+                effect_std=stats["std"],
+                n_samples=stats["n_samples"],
+            )
+        )
+    return models
+
+
+@app.post("/oracle/train", tags=["ChimeraOracle"])
+async def train_oracle_model(request: OracleTrainRequest) -> OracleTrainResponse:
+    """Train a CausalForestDML model on scenario data.
+    
+    This creates a fast-prediction model for the given scenario.
+    Once trained, use /oracle/predict for sub-100ms causal scoring.
+    """
+    from src.services.chimera_oracle import get_oracle_engine
+
+    engine = get_oracle_engine()
+    result = await engine.train_on_scenario(
+        scenario_id=request.scenario_id,
+        csv_path=request.csv_path,
+        treatment=request.treatment,
+        outcome=request.outcome,
+        covariates=request.covariates,
+        effect_modifiers=request.effect_modifiers,
+        n_estimators=request.n_estimators,
+    )
+
+    return OracleTrainResponse(
+        status=result.status,
+        n_samples=result.n_samples,
+        model_path=result.model_path,
+        average_treatment_effect=result.average_treatment_effect,
+        effect_std=result.effect_std,
+        error=result.error,
+    )
+
+
+@app.post("/oracle/predict", tags=["ChimeraOracle"])
+async def predict_oracle_effect(request: OraclePredictRequest) -> OraclePredictResponse:
+    """Fast causal effect prediction using a trained model.
+    
+    Returns effect estimate with confidence interval in <100ms.
+    For rigorous analysis with refutation tests, use /query with DoWhy.
+    """
+    from src.services.chimera_oracle import get_oracle_engine
+
+    engine = get_oracle_engine()
+    
+    if not engine.has_model(request.scenario_id):
+        raise HTTPException(
+            status_code=404,
+            detail=f"No trained model for scenario: {request.scenario_id}. Train first with /oracle/train"
+        )
+
+    prediction = engine.predict_effect(request.scenario_id, request.context)
+
+    return OraclePredictResponse(
+        effect_estimate=prediction.effect_estimate,
+        confidence_interval=prediction.confidence_interval,
+        feature_importance=prediction.feature_importance,
+        used_model=prediction.used_model,
+        prediction_time_ms=prediction.prediction_time_ms,
+    )
+
+
+@app.get("/oracle/models/{scenario_id}", tags=["ChimeraOracle"])
+async def get_oracle_model(scenario_id: str) -> OracleModelInfo:
+    """Get details about a specific trained model."""
+    from src.services.chimera_oracle import get_oracle_engine
+
+    engine = get_oracle_engine()
+    
+    if not engine.has_model(scenario_id):
+        raise HTTPException(status_code=404, detail=f"Model not found: {scenario_id}")
+    
+    stats = engine.get_average_treatment_effect(scenario_id)
+    return OracleModelInfo(
+        scenario_id=scenario_id,
+        average_treatment_effect=stats["ate"],
+        effect_std=stats["std"],
+        n_samples=stats["n_samples"],
+    )
 
 
 class DatasetCreateRequest(BaseModel):
@@ -592,6 +775,24 @@ async def get_scenario(scenario_id: str):
     return ScenarioDetailResponse(scenario=scenario, payload=payload)
 
 
+class ScenarioLoadRequest(BaseModel):
+    """Request to load a scenario."""
+    scenario_id: str
+
+
+@app.post("/scenarios/load")
+async def load_scenario(request: ScenarioLoadRequest):
+    """Load a scenario by ID (POST version for compatibility)."""
+    scenarios = _load_scenarios()
+    scenario_map = {scenario.id: scenario for scenario in scenarios}
+    scenario = scenario_map.get(request.scenario_id)
+    if not scenario:
+        raise HTTPException(status_code=404, detail="Scenario not found")
+
+    payload = _load_scenario_payload(scenario.payload_path)
+    return {"scenario_id": request.scenario_id, "message": "Scenario loaded", "scenario": scenario.model_dump(), "payload": payload}
+
+
 @app.post("/query", response_model=QueryResponse)
 async def process_query(request: QueryRequest):
     """Process a query through the CARF cognitive pipeline.
@@ -625,6 +826,29 @@ async def process_query(request: QueryRequest):
             ).model_dump()
         elif request.causal_estimation:
             context["causal_estimation"] = request.causal_estimation.model_dump()
+        
+        # Auto-load scenario configuration if ID provided but config missing
+        scenario_id = context.get("scenario_id")
+        if scenario_id and "causal_estimation" not in context:
+            try:
+                scenarios = _load_scenarios()
+                scenario = next((s for s in scenarios if s.id == scenario_id), None)
+                if scenario:
+                    payload = _load_scenario_payload(scenario.payload_path)
+                    if "causal_estimation" in payload:
+                        # Ensure we convert the dict to the model and back to validate/defaults
+                        # or just pass the dict if CausalEstimationConfig can handle it.
+                        # Ideally validation:
+                        ce_config = CausalEstimationConfig(**payload["causal_estimation"])
+                        context["causal_estimation"] = ce_config.model_dump()
+                    
+                    if "bayesian_inference" in payload and "bayesian_inference" not in context:
+                        # Similarly for Bayesian
+                        bi_config = BayesianInferenceConfig(**payload["bayesian_inference"])
+                        context["bayesian_inference"] = bi_config.model_dump()
+            except Exception as e:
+                logger.warning(f"Failed to auto-load scenario {scenario_id}: {e}")
+                # Don't fail the request, proceed and let agents decide
 
         if request.bayesian_inference:
             context["bayesian_inference"] = request.bayesian_inference.model_dump()
