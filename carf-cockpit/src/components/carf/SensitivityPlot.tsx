@@ -2,9 +2,19 @@ import React from 'react';
 
 interface SensitivityPlotProps {
     gamma: number; // Rosenbaum bounds gamma value where significance is lost
+    treatment?: string; // Optional treatment variable name
+    outcome?: string; // Optional outcome variable name
+    refutationsPassed?: number; // Number of refutation tests passed
+    refutationsTotal?: number; // Total refutation tests run
 }
 
-const SensitivityPlot: React.FC<SensitivityPlotProps> = ({ gamma }) => {
+const SensitivityPlot: React.FC<SensitivityPlotProps> = ({
+    gamma,
+    treatment,
+    outcome,
+    refutationsPassed,
+    refutationsTotal
+}) => {
     // Generate mock data points for the curve
     const generateCurve = () => {
         const points = [];
@@ -32,12 +42,12 @@ const SensitivityPlot: React.FC<SensitivityPlotProps> = ({ gamma }) => {
     const pathD = `M ${data.map(d => `${xScale(d.g)},${yScale(d.p)}`).join(' L ')}`;
 
     return (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm h-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm h-full overflow-hidden flex flex-col">
+            <h3 className="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2 flex-shrink-0">
                 <span>🛡️</span> Sensitivity Analysis
             </h3>
 
-            <div className="relative w-full h-48">
+            <div className="relative w-full flex-1 min-h-0" style={{ maxHeight: '140px' }}>
                 {/* Y-axis label */}
                 <div className="absolute -left-2 top-1/2 -rotate-90 text-xs text-gray-400">p-value</div>
 
@@ -80,9 +90,23 @@ const SensitivityPlot: React.FC<SensitivityPlotProps> = ({ gamma }) => {
                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-xs text-gray-400">Hidden Bias Magnitude (Γ)</div>
             </div>
 
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
-                <span className="font-semibold block mb-1">Interpretation:</span>
-                Result remains statistically significant even if an unobserved confounder increases the odds of treatment by a factor of <span className="font-bold text-gray-900">{gamma.toFixed(1)}x</span>.
+            <div className="mt-2 p-2 bg-gray-50 rounded-lg text-xs text-gray-600 flex-shrink-0 space-y-1">
+                <div>
+                    <span className="font-semibold">Interpretation:</span>{' '}
+                    {treatment && outcome ? (
+                        <>Effect of <span className="font-medium text-gray-800">{treatment}</span> on <span className="font-medium text-gray-800">{outcome}</span> remains significant if unmeasured confounders increase treatment odds by up to <span className="font-bold text-gray-900">{gamma.toFixed(1)}x</span>.</>
+                    ) : (
+                        <>Result significant if confounder increases treatment odds by <span className="font-bold text-gray-900">{gamma.toFixed(1)}x</span>.</>
+                    )}
+                </div>
+                {refutationsPassed !== undefined && refutationsTotal !== undefined && refutationsTotal > 0 && (
+                    <div className="flex items-center gap-1">
+                        <span className={refutationsPassed === refutationsTotal ? 'text-green-600' : 'text-amber-600'}>
+                            {refutationsPassed === refutationsTotal ? '✓' : '⚠'}
+                        </span>
+                        <span>Refutation tests: {refutationsPassed}/{refutationsTotal} passed</span>
+                    </div>
+                )}
             </div>
         </div>
     );

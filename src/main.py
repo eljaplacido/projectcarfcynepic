@@ -705,13 +705,178 @@ async def health_check():
     return {
         "status": "healthy",
         "phase": "MVP",
-        "version": "0.1.0",
+        "version": "0.5.0",
         "components": {
             "router": "active",
             "guardian": "active",
             "human_layer": "mock" if not os.getenv("HUMANLAYER_API_KEY") else "active",
         },
     }
+
+
+class InfrastructureStatus(BaseModel):
+    """Status of infrastructure components."""
+    service: str
+    status: str  # healthy, unhealthy, degraded
+    latency_ms: float | None = None
+    message: str | None = None
+
+
+class HealthCheckResponse(BaseModel):
+    """Comprehensive health check response."""
+    status: str
+    version: str
+    services: list[InfrastructureStatus]
+    all_healthy: bool
+    ready_for_analysis: bool
+
+
+@app.get("/health/infrastructure", response_model=HealthCheckResponse, tags=["Health"])
+async def infrastructure_health_check():
+    """Comprehensive infrastructure health check.
+
+    Verifies connectivity to all required services before analysis:
+    - Neo4j graph database
+    - Kafka message broker
+    - OPA policy engine (optional)
+    - LLM provider
+    """
+    import httpx
+    import time
+
+    services = []
+
+    # Check Neo4j
+    try:
+        start = time.perf_counter()
+        from src.services.neo4j_service import get_neo4j_service
+        neo4j = get_neo4j_service()
+        if neo4j._driver:
+            # Quick connectivity test
+            await neo4j._driver.verify_connectivity()
+            latency = (time.perf_counter() - start) * 1000
+            services.append(InfrastructureStatus(
+                service="neo4j",
+                status="healthy",
+                latency_ms=latency,
+                message="Connected"
+            ))
+        else:
+            services.append(InfrastructureStatus(
+                service="neo4j",
+                status="unhealthy",
+                message="Driver not initialized"
+            ))
+    except Exception as e:
+        services.append(InfrastructureStatus(
+            service="neo4j",
+            status="unhealthy",
+            message=str(e)[:100]
+        ))
+
+    # Check Kafka
+    kafka_enabled = os.getenv("KAFKA_ENABLED", "false").lower() == "true"
+    if kafka_enabled:
+        try:
+            from src.services.kafka_audit import get_kafka_audit_service
+            kafka_service = get_kafka_audit_service()
+            if kafka_service._producer is not None:
+                services.append(InfrastructureStatus(
+                    service="kafka",
+                    status="healthy",
+                    message="Producer available"
+                ))
+            else:
+                services.append(InfrastructureStatus(
+                    service="kafka",
+                    status="degraded",
+                    message="Producer not initialized"
+                ))
+        except Exception as e:
+            services.append(InfrastructureStatus(
+                service="kafka",
+                status="unhealthy",
+                message=str(e)[:100]
+            ))
+    else:
+        services.append(InfrastructureStatus(
+            service="kafka",
+            status="disabled",
+            message="KAFKA_ENABLED=false"
+        ))
+
+    # Check OPA (optional)
+    opa_enabled = os.getenv("OPA_ENABLED", "false").lower() == "true"
+    if opa_enabled:
+        try:
+            start = time.perf_counter()
+            opa_url = os.getenv("OPA_URL", "http://localhost:8181")
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                response = await client.get(f"{opa_url}/health")
+                latency = (time.perf_counter() - start) * 1000
+                if response.status_code == 200:
+                    services.append(InfrastructureStatus(
+                        service="opa",
+                        status="healthy",
+                        latency_ms=latency,
+                        message="Connected"
+                    ))
+                else:
+                    services.append(InfrastructureStatus(
+                        service="opa",
+                        status="degraded",
+                        message=f"Status {response.status_code}"
+                    ))
+        except Exception as e:
+            services.append(InfrastructureStatus(
+                service="opa",
+                status="unhealthy",
+                message=str(e)[:100]
+            ))
+    else:
+        services.append(InfrastructureStatus(
+            service="opa",
+            status="disabled",
+            message="OPA_ENABLED=false"
+        ))
+
+    # Check LLM provider
+    llm_provider = os.getenv("LLM_PROVIDER", "unknown")
+    test_mode = os.getenv("CARF_TEST_MODE", "").lower() in ("1", "true")
+    if test_mode:
+        services.append(InfrastructureStatus(
+            service="llm",
+            status="test_mode",
+            message=f"Test mode active (CARF_TEST_MODE=1)"
+        ))
+    elif os.getenv("OPENAI_API_KEY") or os.getenv("DEEPSEEK_API_KEY") or os.getenv("ANTHROPIC_API_KEY"):
+        services.append(InfrastructureStatus(
+            service="llm",
+            status="healthy",
+            message=f"Provider: {llm_provider}"
+        ))
+    else:
+        services.append(InfrastructureStatus(
+            service="llm",
+            status="unhealthy",
+            message="No API key configured"
+        ))
+
+    # Determine overall status
+    unhealthy_count = sum(1 for s in services if s.status == "unhealthy")
+    all_healthy = unhealthy_count == 0
+    ready_for_analysis = all_healthy or (unhealthy_count <= 1 and
+                                          not any(s.service == "neo4j" and s.status == "unhealthy" for s in services))
+
+    overall_status = "healthy" if all_healthy else ("degraded" if ready_for_analysis else "unhealthy")
+
+    return HealthCheckResponse(
+        status=overall_status,
+        version="0.5.0",
+        services=services,
+        all_healthy=all_healthy,
+        ready_for_analysis=ready_for_analysis,
+    )
 
 
 @app.post("/datasets", response_model=DatasetCreateResponse)
@@ -829,23 +994,30 @@ async def process_query(request: QueryRequest):
         
         # Auto-load scenario configuration if ID provided but config missing
         scenario_id = context.get("scenario_id")
-        if scenario_id and "causal_estimation" not in context:
+        if scenario_id:
             try:
                 scenarios = _load_scenarios()
                 scenario = next((s for s in scenarios if s.id == scenario_id), None)
                 if scenario:
                     payload = _load_scenario_payload(scenario.payload_path)
-                    if "causal_estimation" in payload:
-                        # Ensure we convert the dict to the model and back to validate/defaults
-                        # or just pass the dict if CausalEstimationConfig can handle it.
-                        # Ideally validation:
+
+                    # Load domain_hint and other context settings from scenario
+                    if "context" in payload and isinstance(payload["context"], dict):
+                        for key, value in payload["context"].items():
+                            if key not in context:  # Don't override user-provided context
+                                context[key] = value
+
+                    # Load causal estimation config
+                    if "causal_estimation" in payload and "causal_estimation" not in context:
                         ce_config = CausalEstimationConfig(**payload["causal_estimation"])
                         context["causal_estimation"] = ce_config.model_dump()
-                    
+
+                    # Load bayesian inference config
                     if "bayesian_inference" in payload and "bayesian_inference" not in context:
-                        # Similarly for Bayesian
                         bi_config = BayesianInferenceConfig(**payload["bayesian_inference"])
                         context["bayesian_inference"] = bi_config.model_dump()
+
+                    logger.info(f"Auto-loaded scenario config: {scenario_id}, domain_hint={context.get('domain_hint')}")
             except Exception as e:
                 logger.warning(f"Failed to auto-load scenario {scenario_id}: {e}")
                 # Don't fail the request, proceed and let agents decide
@@ -949,6 +1121,238 @@ async def process_query(request: QueryRequest):
             status_code=500,
             detail=f"CARF processing failed: {str(e)}",
         )
+
+
+from fastapi.responses import StreamingResponse
+
+
+class ProgressUpdate(BaseModel):
+    """Real-time progress update during analysis."""
+    step: str
+    status: str  # started, completed, error
+    message: str
+    progress_percent: int
+    timestamp: str
+    details: dict[str, Any] | None = None
+
+
+@app.post("/query/stream", tags=["Query"])
+async def process_query_stream(request: QueryRequest):
+    """Process a query with real-time chain-of-thought streaming.
+
+    Returns Server-Sent Events (SSE) with progress updates as the
+    analysis progresses through each stage:
+    1. Router classification
+    2. Domain agent analysis (Causal/Bayesian/etc.)
+    3. Guardian policy check
+    4. Final result
+
+    Use this endpoint when you need to show users real-time progress.
+    """
+    import asyncio
+
+    async def generate_progress():
+        try:
+            _validate_payload_limits(request)
+
+            # Progress: Starting
+            yield f"data: {json.dumps({'step': 'init', 'status': 'started', 'message': 'Initializing analysis', 'progress_percent': 5, 'timestamp': datetime.now().isoformat()})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Build context
+            context = dict(request.context or {})
+            scenario_id = context.get("scenario_id")
+
+            # Auto-load scenario configuration
+            if scenario_id:
+                try:
+                    scenarios = _load_scenarios()
+                    scenario = next((s for s in scenarios if s.id == scenario_id), None)
+                    if scenario:
+                        payload = _load_scenario_payload(scenario.payload_path)
+                        if "context" in payload and isinstance(payload["context"], dict):
+                            for key, value in payload["context"].items():
+                                if key not in context:
+                                    context[key] = value
+                        if "causal_estimation" in payload and "causal_estimation" not in context:
+                            ce_config = CausalEstimationConfig(**payload["causal_estimation"])
+                            context["causal_estimation"] = ce_config.model_dump()
+                        if "bayesian_inference" in payload and "bayesian_inference" not in context:
+                            bi_config = BayesianInferenceConfig(**payload["bayesian_inference"])
+                            context["bayesian_inference"] = bi_config.model_dump()
+                except Exception as e:
+                    logger.warning(f"Failed to auto-load scenario {scenario_id}: {e}")
+
+            if request.causal_estimation:
+                context["causal_estimation"] = request.causal_estimation.model_dump()
+            if request.bayesian_inference:
+                context["bayesian_inference"] = request.bayesian_inference.model_dump()
+
+            yield f"data: {json.dumps({'step': 'context', 'status': 'completed', 'message': 'Context prepared', 'progress_percent': 10, 'timestamp': datetime.now().isoformat()})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Progress: Router
+            yield f"data: {json.dumps({'step': 'router', 'status': 'started', 'message': 'Classifying query into Cynefin domain...', 'progress_percent': 15, 'timestamp': datetime.now().isoformat()})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Import and run the pipeline in steps
+            from src.core.state import EpistemicState
+            from src.workflows.router import cynefin_router_node
+
+            initial_state = EpistemicState(user_input=request.query, context=context)
+
+            # Step 1: Router
+            state = await cynefin_router_node(initial_state)
+            domain = state.cynefin_domain.value
+            confidence = state.domain_confidence
+
+            yield f"data: {json.dumps({'step': 'router', 'status': 'completed', 'message': f'Classified as {domain} (confidence: {confidence:.0%})', 'progress_percent': 30, 'timestamp': datetime.now().isoformat(), 'details': {'domain': domain, 'confidence': confidence, 'entropy': state.domain_entropy}})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Progress: Domain Agent
+            triggered_method = state.triggered_method or "unknown"
+            yield f"data: {json.dumps({'step': 'domain_agent', 'status': 'started', 'message': f'Running {triggered_method} analysis...', 'progress_percent': 35, 'timestamp': datetime.now().isoformat()})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Run the full pipeline from here
+            final_state = await run_carf(user_input=request.query, context=context)
+
+            yield f"data: {json.dumps({'step': 'domain_agent', 'status': 'completed', 'message': 'Analysis complete', 'progress_percent': 70, 'timestamp': datetime.now().isoformat()})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Progress: Guardian
+            guardian_status = final_state.guardian_verdict.value if final_state.guardian_verdict else "passed"
+            yield f"data: {json.dumps({'step': 'guardian', 'status': 'completed', 'message': f'Policy check: {guardian_status}', 'progress_percent': 90, 'timestamp': datetime.now().isoformat()})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Final result
+            reasoning_chain = [
+                {
+                    "node": step.node_name,
+                    "action": step.action,
+                    "confidence": step.confidence.value,
+                    "timestamp": step.timestamp.isoformat(),
+                    "durationMs": step.duration_ms,
+                }
+                for step in final_state.reasoning_chain
+            ]
+
+            causal_result = None
+            if final_state.causal_evidence:
+                ce = final_state.causal_evidence
+                causal_result = {
+                    "effect": ce.effect_size,
+                    "confidenceInterval": ce.confidence_interval,
+                    "refutationsPassed": sum(1 for v in ce.refutation_results.values() if v),
+                    "treatment": ce.treatment,
+                    "outcome": ce.outcome,
+                }
+
+            final_response = {
+                "step": "complete",
+                "status": "completed",
+                "message": "Analysis complete",
+                "progress_percent": 100,
+                "timestamp": datetime.now().isoformat(),
+                "result": {
+                    "sessionId": str(final_state.session_id),
+                    "domain": final_state.cynefin_domain.value,
+                    "domainConfidence": final_state.domain_confidence,
+                    "response": final_state.final_response,
+                    "reasoningChain": reasoning_chain,
+                    "causalResult": causal_result,
+                    "guardianVerdict": final_state.guardian_verdict.value if final_state.guardian_verdict else None,
+                }
+            }
+            yield f"data: {json.dumps(final_response)}\n\n"
+
+        except Exception as e:
+            logger.error(f"Stream error: {e}", exc_info=True)
+            yield f"data: {json.dumps({'step': 'error', 'status': 'error', 'message': str(e), 'progress_percent': 0, 'timestamp': datetime.now().isoformat()})}\n\n"
+
+    return StreamingResponse(
+        generate_progress(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        }
+    )
+
+
+class FastQueryRequest(BaseModel):
+    """Request for fast causal query bypassing LLM routing."""
+
+    scenario_id: str = Field(description="Scenario with pre-trained Oracle model")
+    treatment: str = Field(default="supplier_program", description="Treatment variable")
+    outcome: str = Field(default="scope3_emissions", description="Outcome variable")
+    context: dict[str, Any] = Field(default_factory=dict, description="Context for heterogeneous effects")
+
+
+class FastQueryResponse(BaseModel):
+    """Response from fast causal query."""
+
+    effect_estimate: float = Field(description="Estimated causal effect")
+    confidence_interval: tuple[float, float] = Field(description="95% confidence interval")
+    interpretation: str = Field(description="Human-readable interpretation")
+    prediction_time_ms: float = Field(description="Prediction latency in milliseconds")
+    model_info: dict[str, Any] = Field(description="Model metadata")
+    domain: str = Field(default="Complicated", description="Cynefin domain (fast path assumes Complicated)")
+
+
+@app.post("/query/fast", response_model=FastQueryResponse, tags=["Query"])
+async def process_fast_query(request: FastQueryRequest):
+    """Fast causal effect query using pre-trained ChimeraOracle.
+
+    Bypasses LLM-based Cynefin classification for <100ms response times.
+    Use this for routine causal queries on scenarios with trained models.
+    For complex/novel queries requiring full analysis, use /query instead.
+    """
+    from src.services.chimera_oracle import get_oracle_engine
+
+    engine = get_oracle_engine()
+
+    if not engine.has_model(request.scenario_id):
+        raise HTTPException(
+            status_code=404,
+            detail=f"No trained Oracle model for scenario '{request.scenario_id}'. "
+            f"Train first with POST /oracle/train. Available: {engine.get_available_scenarios()}"
+        )
+
+    try:
+        prediction = engine.predict_effect(request.scenario_id, request.context)
+        model_stats = engine.get_average_treatment_effect(request.scenario_id)
+
+        # Generate interpretation
+        effect = prediction.effect_estimate
+        direction = "reduces" if effect < 0 else "increases"
+        magnitude = abs(effect)
+
+        interpretation = (
+            f"The {request.treatment} {direction} {request.outcome} by approximately "
+            f"{magnitude:.2f} units (95% CI: [{prediction.confidence_interval[0]:.2f}, "
+            f"{prediction.confidence_interval[1]:.2f}]). "
+            f"Based on {model_stats['n_samples']} samples."
+        )
+
+        return FastQueryResponse(
+            effect_estimate=prediction.effect_estimate,
+            confidence_interval=prediction.confidence_interval,
+            interpretation=interpretation,
+            prediction_time_ms=prediction.prediction_time_ms,
+            model_info={
+                "scenario_id": request.scenario_id,
+                "average_treatment_effect": model_stats["ate"],
+                "effect_std": model_stats["std"],
+                "n_samples": model_stats["n_samples"],
+                "feature_importance": prediction.feature_importance,
+            },
+            domain="Complicated",
+        )
+    except Exception as e:
+        logger.error(f"Fast query error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def _metadata_to_payload(metadata: DatasetMetadata) -> dict[str, Any]:

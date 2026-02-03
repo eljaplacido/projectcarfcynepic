@@ -11,6 +11,8 @@
 import React, { useState, useEffect } from 'react';
 import type { QueryResponse, CausalAnalysisResult, BayesianBeliefState, GuardianDecision } from '../../types/carf';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 interface ExecutiveKPIProps {
   queryResponse: QueryResponse | null;
   causalResult: CausalAnalysisResult | null;
@@ -67,14 +69,15 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        // In a real app, use the apiService. Here we'll use a fetch for the demo
-        const res = await fetch(`http://localhost:8000/config/visualization?context=${context}`);
+        const res = await fetch(`${API_BASE_URL}/config/visualization?context=${context}`);
         if (res.ok) {
           const data = await res.json();
           setVizConfig(data);
         }
       } catch (err) {
         console.error("Failed to fetch viz config", err);
+        // Fallback to default config on error
+        setVizConfig(null);
       }
     };
     fetchConfig();

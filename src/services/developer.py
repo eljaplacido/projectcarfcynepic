@@ -214,7 +214,7 @@ class DeveloperService:
         self._current_session_id = session_id
         self._is_processing = True
         self._last_query = query
-        self._execution_steps = []
+        self._execution_steps.clear()
 
         self.log("router", "info", f"Starting query processing: {query[:100]}...")
 
@@ -330,7 +330,7 @@ class DeveloperService:
                 cache_misses=self._cache_misses,
             ),
             architecture=architecture,
-            execution_timeline=self._execution_steps[-50:],  # Last 50 steps
+            execution_timeline=list(self._execution_steps)[-50:],  # Last 50 steps
             recent_logs=list(self._logs)[-100:],  # Last 100 logs
         )
 

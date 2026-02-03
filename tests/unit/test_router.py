@@ -417,3 +417,216 @@ class TestRouterSystemPrompt:
         assert "domain" in router.system_prompt
         assert "confidence" in router.system_prompt
 
+
+class TestDomainHintOverride:
+    """Tests for domain hint override functionality."""
+
+    @pytest.fixture
+    def router(self):
+        """Create a router instance for testing."""
+        return CynefinRouter(
+            confidence_threshold=0.70,
+            entropy_threshold_chaotic=0.9,
+        )
+
+    @pytest.mark.asyncio
+    async def test_domain_hint_applied_to_state(self, router):
+        """Test that domain_hint in context is applied to classification."""
+        state = EpistemicState(
+            user_input="What is the effect of supplier program on emissions?",
+            context={
+                "domain_hint": "complicated",
+                "scenario_id": "scope3_attribution",
+            }
+        )
+
+        result = await router.classify(state)
+
+        # With domain hint, should be Complicated regardless of LLM classification
+        assert result.cynefin_domain == CynefinDomain.COMPLICATED
+
+    @pytest.mark.asyncio
+    async def test_domain_hint_capitalized(self, router):
+        """Test domain hint works with different capitalizations."""
+        for hint in ["Complicated", "COMPLICATED", "complicated"]:
+            state = EpistemicState(
+                user_input="Analyze this data",
+                context={"domain_hint": hint}
+            )
+
+            result = await router.classify(state)
+            assert result.cynefin_domain == CynefinDomain.COMPLICATED
+
+    @pytest.mark.asyncio
+    async def test_domain_hint_complex(self, router):
+        """Test domain hint for Complex domain."""
+        state = EpistemicState(
+            user_input="What will happen in the market?",
+            context={"domain_hint": "complex"}
+        )
+
+        result = await router.classify(state)
+        assert result.cynefin_domain == CynefinDomain.COMPLEX
+
+    @pytest.mark.asyncio
+    async def test_domain_hint_chaotic(self, router):
+        """Test domain hint for Chaotic domain."""
+        state = EpistemicState(
+            user_input="System is crashing",
+            context={"domain_hint": "chaotic"}
+        )
+
+        result = await router.classify(state)
+        assert result.cynefin_domain == CynefinDomain.CHAOTIC
+
+    @pytest.mark.asyncio
+    async def test_domain_hint_clear(self, router):
+        """Test domain hint for Clear domain."""
+        state = EpistemicState(
+            user_input="What is 2+2?",
+            context={"domain_hint": "clear"}
+        )
+
+        result = await router.classify(state)
+        assert result.cynefin_domain == CynefinDomain.CLEAR
+
+    @pytest.mark.asyncio
+    async def test_invalid_domain_hint_ignored(self, router):
+        """Test that invalid domain hints are ignored."""
+        state = EpistemicState(
+            user_input="What is 2+2?",
+            context={"domain_hint": "invalid_domain"}
+        )
+
+        result = await router.classify(state)
+
+        # Should still classify but not to invalid domain
+        assert result.cynefin_domain in [
+            CynefinDomain.CLEAR,
+            CynefinDomain.COMPLICATED,
+            CynefinDomain.COMPLEX,
+            CynefinDomain.CHAOTIC,
+            CynefinDomain.DISORDER,
+        ]
+
+    @pytest.mark.asyncio
+    async def test_domain_hint_increases_confidence(self, router):
+        """Test that domain hint ensures minimum confidence level."""
+        state = EpistemicState(
+            user_input="Short query",
+            context={"domain_hint": "complicated"}
+        )
+
+        result = await router.classify(state)
+
+        # Domain hint should ensure confidence >= 0.88
+        assert result.domain_confidence >= 0.88
+
+    @pytest.mark.asyncio
+    async def test_domain_hint_adds_indicator(self, router):
+        """Test that domain hint is recorded in key indicators."""
+        state = EpistemicState(
+            user_input="Test query",
+            context={"domain_hint": "complicated"}
+        )
+
+        result = await router.classify(state)
+
+        # Should have domain_hint indicator
+        indicators = " ".join(result.router_key_indicators)
+        assert "domain_hint" in indicators.lower()
+
+
+class TestEntropyReductionWithContext:
+    """Tests for entropy reduction based on context signals."""
+
+    @pytest.fixture
+    def router(self):
+        """Create a router instance for testing."""
+        return CynefinRouter()
+
+    @pytest.mark.asyncio
+    async def test_scenario_id_reduces_entropy(self, router):
+        """Test that scenario_id in context reduces entropy."""
+        state_without = EpistemicState(
+            user_input="Analyze this query"
+        )
+
+        state_with = EpistemicState(
+            user_input="Analyze this query",
+            context={"scenario_id": "scope3_attribution"}
+        )
+
+        result_without = await router.classify(state_without)
+        result_with = await router.classify(state_with)
+
+        # With scenario_id, entropy should be reduced
+        assert result_with.domain_entropy <= result_without.domain_entropy
+
+    @pytest.mark.asyncio
+    async def test_domain_hint_reduces_entropy(self, router):
+        """Test that domain_hint reduces entropy."""
+        state_without = EpistemicState(
+            user_input="What is the effect of treatment?"
+        )
+
+        state_with = EpistemicState(
+            user_input="What is the effect of treatment?",
+            context={"domain_hint": "complicated"}
+        )
+
+        result_without = await router.classify(state_without)
+        result_with = await router.classify(state_with)
+
+        # With domain_hint, entropy should be reduced by at least 0.3
+        assert result_with.domain_entropy <= result_without.domain_entropy
+
+    @pytest.mark.asyncio
+    async def test_historical_pattern_reduces_entropy(self, router):
+        """Test that historical_pattern_known reduces entropy."""
+        state = EpistemicState(
+            user_input="Process request",
+            context={"historical_pattern_known": True}
+        )
+
+        result = await router.classify(state)
+
+        # Entropy should be reduced below maximum
+        assert result.domain_entropy < 1.0
+
+    @pytest.mark.asyncio
+    async def test_system_stable_reduces_entropy(self, router):
+        """Test that system_stable reduces entropy."""
+        state = EpistemicState(
+            user_input="Process request",
+            context={"system_stable": True}
+        )
+
+        result = await router.classify(state)
+
+        # Entropy should be reduced below maximum
+        assert result.domain_entropy < 1.0
+
+    @pytest.mark.asyncio
+    async def test_multiple_context_signals_stack(self, router):
+        """Test that multiple context signals have cumulative effect."""
+        state_none = EpistemicState(
+            user_input="Process"
+        )
+
+        state_all = EpistemicState(
+            user_input="Process",
+            context={
+                "scenario_id": "test",
+                "domain_hint": "complicated",
+                "historical_pattern_known": True,
+                "system_stable": True,
+            }
+        )
+
+        result_none = await router.classify(state_none)
+        result_all = await router.classify(state_all)
+
+        # With all signals, entropy should be significantly reduced
+        assert result_all.domain_entropy < result_none.domain_entropy
+

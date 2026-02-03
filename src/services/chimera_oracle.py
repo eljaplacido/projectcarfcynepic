@@ -102,7 +102,7 @@ class ChimeraOracleEngine:
         n_estimators: int = 100,
     ) -> TrainingResult:
         """Train CausalForestDML on scenario data.
-        
+
         Args:
             scenario_id: Unique identifier for this scenario model
             csv_path: Path to training data CSV
@@ -111,21 +111,31 @@ class ChimeraOracleEngine:
             covariates: Variables to control for (W in causal model)
             effect_modifiers: Variables that modify treatment effect (X in causal model)
             n_estimators: Number of trees in the forest
-            
+
         Returns:
             TrainingResult with status and metrics
         """
         try:
             from econml.dml import CausalForestDML
             from sklearn.ensemble import GradientBoostingRegressor
-            
+
             # Load data
             df = pd.read_csv(csv_path)
             logger.info(f"Training on {len(df)} samples from {csv_path}")
-            
+
+            # CausalForestDML requires X (effect modifiers) to not be None
+            # If no effect_modifiers specified, use covariates as effect modifiers
+            if not effect_modifiers and covariates:
+                effect_modifiers = covariates.copy()
+                logger.info(f"Using covariates as effect modifiers: {effect_modifiers}")
+
+            # If still no effect modifiers, create a constant feature
+            if not effect_modifiers:
+                logger.warning("No effect modifiers or covariates provided, using constant feature")
+                effect_modifiers = []
+
             # Prepare variables
             # Effect modifiers (X) - variables that may create heterogeneous effects
-            X = None
             if effect_modifiers:
                 # Handle categorical variables by one-hot encoding
                 X_df = df[effect_modifiers].copy()
@@ -136,14 +146,16 @@ class ChimeraOracleEngine:
                 X = X_df.values
                 effect_modifier_names = list(X_df.columns)
             else:
-                effect_modifier_names = []
-            
+                # CausalForestDML needs X, use a constant intercept column
+                X = np.ones((len(df), 1))
+                effect_modifier_names = ["_intercept"]
+
             # Treatment (T)
             T = df[treatment].values
-            
+
             # Outcome (Y)
             Y = df[outcome].values
-            
+
             # Covariates for confounding adjustment (W)
             W = None
             if covariates:

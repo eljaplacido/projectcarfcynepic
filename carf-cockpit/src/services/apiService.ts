@@ -274,6 +274,94 @@ export async function submitQuery(request: QueryRequest): Promise<QueryResponse>
     );
 }
 
+// Progress update from SSE stream
+export interface ProgressUpdate {
+    step: string;           // 'init', 'router', 'domain_agent', 'guardian', 'complete', 'error'
+    status: string;         // 'started', 'completed', 'error'
+    message: string;        // Human-readable progress message
+    progress_percent: number; // 0-100
+    timestamp: string;      // ISO timestamp
+    details?: Record<string, unknown> | null; // Step-specific metadata
+}
+
+/**
+ * Submit a query with real-time progress streaming via SSE.
+ * This allows showing users chain-of-thought as analysis progresses.
+ *
+ * @param request - The query request
+ * @param onProgress - Callback for each progress update
+ * @param onComplete - Callback when analysis completes with final result
+ * @param onError - Callback for errors
+ * @returns AbortController to cancel the stream if needed
+ */
+export function submitQueryStream(
+    request: QueryRequest,
+    onProgress: (update: ProgressUpdate) => void,
+    onComplete: (result: QueryResponse) => void,
+    onError: (error: Error) => void
+): AbortController {
+    const controller = new AbortController();
+
+    (async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/query/stream`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(request),
+                signal: controller.signal,
+            });
+
+            if (!response.ok) {
+                throw new ApiError(response.status, `Stream Error: ${response.statusText}`);
+            }
+
+            const reader = response.body?.getReader();
+            if (!reader) {
+                throw new Error('No response body for SSE stream');
+            }
+
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(line.slice(6));
+
+                            // Check if this is the final result
+                            if (data.step === 'complete' && data.details?.result) {
+                                onComplete(data.details.result as QueryResponse);
+                            } else if (data.step === 'error') {
+                                onError(new Error(data.message || 'Analysis failed'));
+                            } else {
+                                onProgress(data as ProgressUpdate);
+                            }
+                        } catch (parseError) {
+                            console.warn('Failed to parse SSE data:', line);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            if ((error as Error).name !== 'AbortError') {
+                onError(error as Error);
+            }
+        }
+    })();
+
+    return controller;
+}
+
 // ============================================================================
 // Datasets API
 // ============================================================================
@@ -560,6 +648,7 @@ const api = {
 
     // Query
     submitQuery,
+    submitQueryStream,
 
     // Datasets
     listDatasets,

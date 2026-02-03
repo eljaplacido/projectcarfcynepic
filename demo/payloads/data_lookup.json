@@ -1,0 +1,25 @@
+{
+  "scenario_id": "data_lookup",
+  "name": "Inventory Data Lookup",
+  "description": "Simple deterministic queries for inventory and product data",
+  "context": {
+    "domain_hint": "clear",
+    "historical_pattern_known": true,
+    "system_stable": true
+  },
+  "data_source": {
+    "type": "inventory_database",
+    "tables": ["products", "inventory", "suppliers"],
+    "query_type": "lookup"
+  },
+  "sample_queries": [
+    "What is the current stock level for SKU-12345?",
+    "List all products in the Electronics category",
+    "Show supplier contact for Acme Corp"
+  ],
+  "expected_response": {
+    "response_type": "deterministic",
+    "confidence_level": "high",
+    "requires_analysis": false
+  }
+}

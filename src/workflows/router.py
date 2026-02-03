@@ -217,6 +217,11 @@ Respond with a JSON object only, no other text:
             shannon -= 0.2
         if context.get("system_stable"):
             shannon -= 0.1
+        # Known scenario with domain hint reduces uncertainty
+        if context.get("domain_hint"):
+            shannon -= 0.3
+        if context.get("scenario_id") or context.get("scenario"):
+            shannon -= 0.2
 
         return max(0.0, min(1.0, shannon))
 
@@ -331,14 +336,15 @@ Respond with a JSON object only, no other text:
         else:
             classification = await self._classify_with_llm(state.user_input)
 
-        # Step 4: Apply domain hint override when present and LLM agrees or is uncertain
+        # Step 4: Apply domain hint override when present
+        # Domain hints from scenarios are explicit configuration from domain experts
+        # and should take precedence unless LLM classification is the same
         if domain_hint:
             try:
                 hint_domain = CynefinDomain(domain_hint.capitalize())
-                # Use the hint if the LLM classification doesn't strongly disagree
-                if classification.confidence < 0.9 or classification.domain == hint_domain:
+                if classification.domain != hint_domain:
                     logger.info(
-                        f"Applying domain hint: {hint_domain.value} "
+                        f"Applying domain hint override: {hint_domain.value} "
                         f"(LLM said {classification.domain.value} @ {classification.confidence:.2f})"
                     )
                     classification = DomainClassification(
@@ -347,6 +353,8 @@ Respond with a JSON object only, no other text:
                         reasoning=f"Scenario domain hint ({domain_hint}): {classification.reasoning}",
                         key_indicators=classification.key_indicators + [f"domain_hint={domain_hint}"],
                     )
+                else:
+                    logger.info(f"Domain hint matches LLM classification: {hint_domain.value}")
             except ValueError:
                 logger.warning(f"Invalid domain_hint value: {domain_hint}")
 

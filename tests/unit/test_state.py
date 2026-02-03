@@ -40,7 +40,7 @@ class TestEpistemicState:
         assert state.domain_confidence == 0.0
         assert state.human_interaction_status == HumanInteractionStatus.IDLE
         assert state.reflection_count == 0
-        assert state.max_reflections == 3
+        assert state.max_reflections == 2
 
     def test_initialization_with_values(self):
         """Test initialization with custom values."""

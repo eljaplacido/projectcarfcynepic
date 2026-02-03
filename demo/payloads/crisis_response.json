@@ -1,0 +1,37 @@
+{
+  "scenario_id": "crisis_response",
+  "name": "Supply Chain Crisis Response",
+  "description": "Emergency scenario requiring immediate stabilization - simulate critical supplier failure",
+  "context": {
+    "domain_hint": "chaotic",
+    "crisis_mode": true,
+    "urgency": "critical",
+    "system_stable": false
+  },
+  "crisis_parameters": {
+    "trigger_event": "critical_supplier_failure",
+    "affected_suppliers": 5,
+    "impact_severity": 0.85,
+    "time_to_impact_hours": 24,
+    "cascading_risk": true
+  },
+  "immediate_actions": [
+    "Activate backup suppliers",
+    "Expedite alternative shipments",
+    "Notify downstream customers",
+    "Implement emergency protocols"
+  ],
+  "monitoring_metrics": [
+    "supplier_status",
+    "inventory_levels",
+    "production_impact",
+    "customer_orders_at_risk"
+  ],
+  "escalation_required": true,
+  "human_approval_needed": true,
+  "expected_response": {
+    "stabilization_priority": "highest",
+    "circuit_breaker_triggered": true,
+    "escalation_to_human": true
+  }
+}

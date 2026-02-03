@@ -1,0 +1,30 @@
+{
+  "scenario_id": "market_adoption",
+  "name": "New Product Market Adoption",
+  "description": "Model uncertainty in new product market adoption using Bayesian inference",
+  "context": {
+    "domain_hint": "complex",
+    "historical_pattern_known": false,
+    "system_stable": false
+  },
+  "bayesian_inference": {
+    "prior_type": "beta",
+    "prior_alpha": 2,
+    "prior_beta": 8,
+    "observations": [1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1,
+                     1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1,
+                     1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
+    "hypothesis": "New product adoption rate exceeds 50%",
+    "samples": 5000
+  },
+  "expected_results": {
+    "posterior_mean_range": [0.55, 0.75],
+    "credible_interval_width_max": 0.20,
+    "hypothesis_supported": true
+  },
+  "probing_questions": [
+    "What is the probability that adoption rate exceeds 60%?",
+    "How does uncertainty change with more observations?",
+    "What are the key drivers of adoption uncertainty?"
+  ]
+}

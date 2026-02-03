@@ -124,32 +124,77 @@ Optional:
    - Center panel: Causal DAG, causal analysis results, Guardian policy checks
    - Right panel: Execution trace
 
-## Status
-- All core files are in place
-- Dependencies installed in .venv
-- Demo scenarios configured
-- Dashboard UI complete with three views
-- Ready for testing
+## Status (Updated 2026-02-03)
 
-## Known Issues (from last session)
+### Tests
+- **456 tests passing**, 68% coverage
+- All unit tests, integration tests, and workflow tests operational
 
-1. **Port 8000 may be in use** - If you get "address already in use" error:
-   ```bash
-   # Find process using port 8000
-   netstat -ano | findstr :8000
-   # Kill the process (replace PID with actual number)
-   taskkill /PID <PID> /F
-   ```
-   Or use a different port: `--port 8001`
+### Recent Improvements
+- Fixed confidence interval extraction in causal analysis
+- Added SSE streaming support for real-time chain of thought (`/query/stream`)
+- Improved Cynefin router with pattern-based domain hints
+- Enhanced visualization config integration with domain classification
+- Added context-aware KPI panels for sustainability, financial, and risk domains
 
-2. **OPENAI_API_KEY not set** - The .env file needs a valid OpenAI API key:
-   ```
-   OPENAI_API_KEY=sk-your-key-here
-   ```
-   Without this, LLM-based classification and analysis will fail.
+### Docker Setup (Recommended)
+```bash
+docker-compose up -d
+# Services: app (8000), cockpit (5175), neo4j (7474), kafka (9092), opa (8181)
+```
+
+### React Cockpit (Primary UI)
+Located at `carf-cockpit/` - modern React dashboard with:
+- Analyst View: Full causal/Bayesian analysis panels
+- Developer View: Real-time logs, execution timeline, architecture visualization
+- Executive View: KPI dashboard with context-aware metrics
+
+## Environment Variables (.env)
+```bash
+# LLM Configuration (use DeepSeek for cost efficiency)
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=sk-your-key
+
+# Alternative: OpenAI
+# LLM_PROVIDER=openai
+# OPENAI_API_KEY=sk-your-key
+
+# Router Configuration
+ROUTER_MODE=llm              # or distilbert
+ROUTER_MODEL_PATH=models/router_distilbert
+
+# Optional Services
+HUMANLAYER_API_KEY=          # Human-in-the-loop
+NEO4J_URI=bolt://localhost:7687
+KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+```
+
+## Quick Test
+```bash
+# Test scope3 causal analysis
+python -c "
+import requests
+response = requests.post('http://localhost:8000/query', json={
+    'query': 'What is the causal effect of supplier_program on scope3_emissions?',
+    'context': {'domain_hint': 'complicated'},
+    'causal_estimation': {
+        'treatment': 'supplier_program',
+        'outcome': 'scope3_emissions',
+        'csv_path': 'demo/data/scope3_emissions.csv'
+    }
+}, timeout=120)
+print('Effect:', response.json().get('causalResult', {}).get('effect'))
+"
+```
+
+## Documentation
+- `docs/ROUTER_TRAINING.md` - Router training and domain adaptation
+- `docs/LLM_AGENTIC_STRATEGY.md` - Model selection and guardrails
+- `docs/DATA_LAYER.md` - Dataset management
+- `docs/SECURITY_GUIDELINES.md` - Security best practices
 
 ## Next Steps
-1. Verify OpenAI API key in .env
-2. Start backend server
-3. Start Streamlit dashboard
-4. Run through a demo scenario walkthrough
+1. Start docker services: `docker-compose up -d`
+2. Access React cockpit: http://localhost:5175
+3. Run a demo scenario (scope3_attribution recommended)
+4. Check Developer View for real-time analysis progress

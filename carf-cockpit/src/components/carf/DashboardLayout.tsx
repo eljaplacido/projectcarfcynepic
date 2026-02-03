@@ -23,10 +23,11 @@ import ExecutiveKPIPanel from './ExecutiveKPIPanel';
 import InterventionSimulator from './InterventionSimulator';
 import SensitivityPlot from './SensitivityPlot';
 import PromptGuidancePanel from './PromptGuidancePanel';
+import EscalationModal from './EscalationModal';
 import type { Suggestion } from './PromptGuidancePanel';
 import { useQuery, useScenarios, useConfigStatus } from '../../hooks/useCarfApi';
 import api from '../../services/apiService';
-import type { ChatMessage, ViewMode, AnalysisSession, SlashCommand, QueryResponse } from '../../types/carf';
+import type { ChatMessage, ViewMode, AnalysisSession, SlashCommand, QueryResponse, DAGNode, DAGEdge } from '../../types/carf';
 import type { FileAnalysisResult } from '../../services/apiService';
 import type { HighlightTarget } from '../../config/questioningFlow';
 
@@ -43,6 +44,84 @@ const HIGHLIGHT_TARGET_MAP: Record<HighlightTarget, string> = {
     'uncertainty-chart': 'uncertainty-chart',
     'policy-list': 'policy-list',
 };
+
+// Helper function to generate DAG nodes and edges from causal result
+function generateDAGFromCausalResult(causalResult: QueryResponse['causalResult'] | undefined): { nodes: DAGNode[]; edges: DAGEdge[] } {
+    if (!causalResult) {
+        return { nodes: [], edges: [] };
+    }
+
+    const nodes: DAGNode[] = [];
+    const edges: DAGEdge[] = [];
+
+    // Treatment node (intervention)
+    const treatmentId = 'treatment';
+    nodes.push({
+        id: treatmentId,
+        label: causalResult.treatment || 'Treatment',
+        type: 'intervention',
+        position: { x: 100, y: 150 },
+        value: 1,
+        unit: '',
+    });
+
+    // Outcome node
+    const outcomeId = 'outcome';
+    nodes.push({
+        id: outcomeId,
+        label: causalResult.outcome || 'Outcome',
+        type: 'outcome',
+        position: { x: 400, y: 150 },
+        value: causalResult.effect,
+        unit: causalResult.unit || 'units',
+    });
+
+    // Main causal edge
+    edges.push({
+        id: 'treatment-outcome',
+        source: treatmentId,
+        target: outcomeId,
+        effectSize: causalResult.effect,
+        pValue: causalResult.pValue ?? 0.05,
+        validated: (causalResult.refutationsPassed ?? 0) > 0,
+    });
+
+    // Add confounder nodes if available
+    const confounders = causalResult.confoundersControlled || [];
+    confounders.forEach((confounder, idx) => {
+        const confounderId = `confounder-${idx}`;
+        const yOffset = 50 + idx * 80;
+
+        nodes.push({
+            id: confounderId,
+            label: typeof confounder === 'string' ? confounder : `Confounder ${idx + 1}`,
+            type: 'confounder',
+            position: { x: 250, y: yOffset },
+        });
+
+        // Confounder affects treatment
+        edges.push({
+            id: `${confounderId}-treatment`,
+            source: confounderId,
+            target: treatmentId,
+            effectSize: 0.3, // Default effect size for visualization
+            pValue: 0.01, // Confounders assumed significant
+            validated: true,
+        });
+
+        // Confounder affects outcome
+        edges.push({
+            id: `${confounderId}-outcome`,
+            source: confounderId,
+            target: outcomeId,
+            effectSize: 0.2, // Default effect size for visualization
+            pValue: 0.01, // Confounders assumed significant
+            validated: true,
+        });
+    });
+
+    return { nodes, edges };
+}
 
 const DashboardLayout: React.FC = () => {
     // Core state
@@ -75,6 +154,26 @@ const DashboardLayout: React.FC = () => {
     const [fileAnalysisResult, setFileAnalysisResult] = useState<FileAnalysisResult | null>(null);
     const [comparisonSessions, setComparisonSessions] = useState<[AnalysisSession, AnalysisSession] | null>(null);
     const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
+    const [showEscalationModal, setShowEscalationModal] = useState<boolean>(false);
+    const [pendingEscalationsCount, setPendingEscalationsCount] = useState<number>(0);
+
+    // Fetch pending escalations count periodically
+    useEffect(() => {
+        const fetchEscalationCount = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/escalations?pending_only=true');
+                if (response.ok) {
+                    const data = await response.json();
+                    setPendingEscalationsCount(data.length);
+                }
+            } catch {
+                // Silently fail - backend might not be running
+            }
+        };
+        fetchEscalationCount();
+        const interval = setInterval(fetchEscalationCount, 30000); // Check every 30s
+        return () => clearInterval(interval);
+    }, []);
 
     // API hooks
     const { config: _config, isDemoMode } = useConfigStatus();
@@ -103,6 +202,18 @@ const DashboardLayout: React.FC = () => {
     // Phase 8: Agentic Guidance
     const [aiSuggestions, setAiSuggestions] = useState<Suggestion[]>([]);
 
+    // Track columns from file analysis or scenario for AI suggestions
+    const [dataColumns, setDataColumns] = useState<string[]>([]);
+
+    // Update columns when file analysis completes or scenario changes
+    useEffect(() => {
+        if (fileAnalysisResult?.columns) {
+            setDataColumns(fileAnalysisResult.columns.map((c: any) => c.name || c));
+        } else if (scenarioContext && (scenarioContext as any).columns) {
+            setDataColumns((scenarioContext as any).columns);
+        }
+    }, [fileAnalysisResult, scenarioContext]);
+
     useEffect(() => {
         const fetchSuggestions = async () => {
             try {
@@ -111,7 +222,7 @@ const DashboardLayout: React.FC = () => {
                     current_query: _currentQuery || '',
                     last_domain: queryResponse?.domain || null,
                     last_confidence: queryResponse?.domainConfidence || null,
-                    available_columns: []
+                    available_columns: dataColumns
                 };
 
                 // Use the correct backend URL
@@ -123,14 +234,28 @@ const DashboardLayout: React.FC = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    setAiSuggestions(data);
+                    // Filter to only show suggestions with action_payload
+                    const actionable = data.filter((s: Suggestion) => s.action_payload);
+                    setAiSuggestions(actionable.length > 0 ? actionable : data);
                 } else {
                     console.warn("AI Suggestions endpoint returned status:", response.status);
-                    // Fallback for demo if API fails/404s
+                    // Fallback for demo if API fails - include action_payload so they're usable
                     if (!_currentQuery) {
+                        const treatment = dataColumns.find(c => c.toLowerCase().includes('treatment') || c.toLowerCase().includes('program'));
+                        const outcome = dataColumns.find(c => c.toLowerCase().includes('outcome') || c.toLowerCase().includes('emission') || c.toLowerCase().includes('cost'));
                         setAiSuggestions([
-                            { id: 'fallback_1', type: 'prompt_refinement', text: 'Analyze causal effect of [Treatment] on [Outcome]' },
-                            { id: 'fallback_2', type: 'prompt_refinement', text: 'Drill down by Region' }
+                            {
+                                id: 'fallback_1',
+                                type: 'prompt_refinement',
+                                text: `Analyze causal effect of ${treatment || 'treatment'} on ${outcome || 'outcome'}`,
+                                action_payload: `What is the causal effect of ${treatment || 'treatment'} on ${outcome || 'outcome'}?`
+                            },
+                            {
+                                id: 'fallback_2',
+                                type: 'next_step',
+                                text: 'Explore data distributions',
+                                action_payload: 'Show me the distribution of key variables in the dataset'
+                            }
                         ]);
                     } else {
                         setAiSuggestions([]);
@@ -138,17 +263,21 @@ const DashboardLayout: React.FC = () => {
                 }
             } catch (e) {
                 console.error("Failed to fetch suggestions:", e);
-                // Fallback for demo if network fails
+                // Fallback for demo if network fails - with action_payload
                 if (!_currentQuery) {
                     setAiSuggestions([
-                        { id: 'fallback_1', type: 'prompt_refinement', text: 'Analyze causal effect of [Treatment] on [Outcome]' },
-                        { id: 'fallback_2', type: 'prompt_refinement', text: 'Drill down by Region' }
+                        {
+                            id: 'fallback_1',
+                            type: 'prompt_refinement',
+                            text: 'Analyze causal relationships in the data',
+                            action_payload: 'What are the key causal relationships in this dataset?'
+                        }
                     ]);
                 }
             }
         };
         fetchSuggestions();
-    }, [queryResponse, selectedScenario, _currentQuery]);
+    }, [queryResponse, selectedScenario, _currentQuery, dataColumns]);
 
     const handleApplySuggestion = (suggestion: Suggestion) => {
         if (suggestion.action_payload) {
@@ -623,6 +752,21 @@ const DashboardLayout: React.FC = () => {
 
                         {/* Right: Controls */}
                         <div className="flex items-center gap-2">
+                            {/* Human-in-the-Loop Escalations Button */}
+                            <button
+                                onClick={() => setShowEscalationModal(true)}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors group relative"
+                                title="Human review queue"
+                            >
+                                <svg className="w-5 h-5 text-gray-600 group-hover:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                {pendingEscalationsCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                                        {pendingEscalationsCount > 9 ? '9+' : pendingEscalationsCount}
+                                    </span>
+                                )}
+                            </button>
                             {/* Phase 7: History Button */}
                             <button
                                 onClick={() => setShowHistoryPanel(true)}
@@ -730,8 +874,8 @@ const DashboardLayout: React.FC = () => {
                             <div className="card min-h-[350px]" data-tour="results-area" id="dag-viewer">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Causal DAG</h2>
                                 <CausalDAG
-                                    nodes={queryResponse?.causalResult ? [] : []}
-                                    edges={queryResponse?.causalResult ? [] : []}
+                                    nodes={generateDAGFromCausalResult(queryResponse?.causalResult).nodes}
+                                    edges={generateDAGFromCausalResult(queryResponse?.causalResult).edges}
                                     onNodeClick={(id) => console.log('Node clicked:', id)}
                                 />
                             </div>
@@ -761,7 +905,7 @@ const DashboardLayout: React.FC = () => {
                             <DomainVisualization
                                 domain={queryResponse?.domain || null}
                                 confidence={queryResponse?.domainConfidence || 0}
-                                onEscalate={() => { /* TODO: Wire to EscalationModal */ }}
+                                onEscalate={() => setShowEscalationModal(true)}
                                 onAction={(action) => console.log('Domain action:', action)}
                                 isProcessing={isProcessing}
                             />
@@ -785,6 +929,10 @@ const DashboardLayout: React.FC = () => {
                                 causalResult={queryResponse?.causalResult || null}
                                 bayesianResult={queryResponse?.bayesianResult || null}
                                 guardianResult={queryResponse?.guardianResult || null}
+                                context={selectedScenario?.includes('scope3') || selectedScenario?.includes('carbon') || selectedScenario?.includes('renewable') ? 'sustainability'
+                                    : selectedScenario?.includes('pricing') || selectedScenario?.includes('roi') ? 'financial'
+                                    : selectedScenario?.includes('supply_chain') || selectedScenario?.includes('resilience') ? 'risk'
+                                    : queryResponse?.domain || 'general'}
                                 onDrillDown={(kpiId) => {
                                     // Switch to analyst view for drill-down
                                     console.log('Drill down to:', kpiId);
@@ -971,8 +1119,8 @@ const DashboardLayout: React.FC = () => {
                             <div className="card min-h-[450px]" data-tour="results-area" id="dag-viewer">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Causal DAG</h2>
                                 <CausalDAG
-                                    nodes={queryResponse?.causalResult ? [] : []}
-                                    edges={queryResponse?.causalResult ? [] : []}
+                                    nodes={generateDAGFromCausalResult(queryResponse?.causalResult).nodes}
+                                    edges={generateDAGFromCausalResult(queryResponse?.causalResult).edges}
                                     onNodeClick={(id) => console.log('Node clicked:', id)}
                                 />
                             </div>
@@ -1011,11 +1159,23 @@ const DashboardLayout: React.FC = () => {
 
                         {/* Right Sidebar (3 columns) */}
                         <div className="col-span-3 space-y-4">
-                            <div className="card h-[300px]">
-                                <SensitivityPlot
-                                    gamma={1.5}
-                                />
-                            </div>
+                            {queryResponse?.causalResult && (
+                                <div className="card h-[300px]">
+                                    <SensitivityPlot
+                                        gamma={
+                                            // Derive gamma from refutation test robustness
+                                            // More tests passed = higher hidden bias tolerance
+                                            queryResponse.causalResult.refutationsTotal > 0
+                                                ? 1 + (queryResponse.causalResult.refutationsPassed / queryResponse.causalResult.refutationsTotal) * 1.5
+                                                : 1.5
+                                        }
+                                        treatment={queryResponse.causalResult.treatment}
+                                        outcome={queryResponse.causalResult.outcome}
+                                        refutationsPassed={queryResponse.causalResult.refutationsPassed}
+                                        refutationsTotal={queryResponse.causalResult.refutationsTotal}
+                                    />
+                                </div>
+                            )}
                             <div className="card min-h-[600px]">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Execution Trace</h2>
                                 <ExecutionTrace
@@ -1027,6 +1187,16 @@ const DashboardLayout: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* Human-in-the-Loop Escalation Modal */}
+            <EscalationModal
+                isOpen={showEscalationModal}
+                onClose={() => setShowEscalationModal(false)}
+                onResolved={(escalation) => {
+                    console.log('Escalation resolved:', escalation);
+                    setPendingEscalationsCount(prev => Math.max(0, prev - 1));
+                }}
+            />
 
             {/* Phase 7: Analysis History Panel */}
             <AnalysisHistoryPanel

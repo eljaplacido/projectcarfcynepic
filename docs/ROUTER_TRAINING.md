@@ -2,6 +2,37 @@
 
 This guide covers data generation, DistilBERT training, and domain adaptation for the Cynefin router. It is written for the Phase 4 research demo and keeps the current LLM router as a fallback.
 
+## Quick Start: Improving Router Accuracy
+
+If you're seeing misclassifications in your domain, here's the fastest path to improvement:
+
+### Option 1: Use Domain Hints (No Training Required)
+Add `domain_hint` to your query context to override LLM classification:
+```json
+{
+  "query": "Analyze supplier emissions impact",
+  "context": {
+    "domain_hint": "complicated",
+    "scenario": "scope3_attribution"
+  }
+}
+```
+Valid hints: `clear`, `complicated`, `complex`, `chaotic`, `disorder`
+
+### Option 2: Adjust Confidence Threshold
+Lower the threshold to be more conservative (routes more to Disorder for human review):
+```bash
+# In router initialization
+router = CynefinRouter(confidence_threshold=0.80)  # Default is 0.70
+```
+
+### Option 3: Train a Custom Model (Best Long-term)
+1. Generate training data with your domain examples
+2. Fine-tune DistilBERT on your dataset
+3. Set `ROUTER_MODE=distilbert` and `ROUTER_MODEL_PATH=your/model/path`
+
+See detailed instructions below.
+
 ## Goals
 
 - Replace LLM-only routing with a fast, local DistilBERT classifier.

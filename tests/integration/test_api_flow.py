@@ -22,7 +22,7 @@ async def test_query_without_data_returns_400():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
-            "/api/query",
+            "/query",
             json={"query": "Does price affect churn?"},
             timeout=60.0,
         )
@@ -51,7 +51,7 @@ async def test_query_with_data_returns_200():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
-            "/api/query",
+            "/query",
             json={
                 "query": "Does x cause y?",
                 "context": {

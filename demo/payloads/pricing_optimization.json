@@ -1,0 +1,24 @@
+{
+  "scenario_id": "pricing_optimization",
+  "name": "Pricing Strategy Optimization",
+  "description": "Analyze causal impact of price changes on sales volume and revenue",
+  "context": {
+    "domain_hint": "complicated",
+    "historical_pattern_known": true,
+    "system_stable": true
+  },
+  "causal_estimation": {
+    "csv_path": "demo/data/pricing_data.csv",
+    "treatment": "price_change",
+    "outcome": "sales_volume",
+    "covariates": ["region", "product_category", "seasonality", "competitor_price"],
+    "effect_modifiers": ["market_segment"],
+    "method_name": "backdoor.linear_regression",
+    "refutation_tests": ["placebo_treatment", "random_common_cause"]
+  },
+  "expected_results": {
+    "effect_direction": "negative",
+    "effect_range": [-50, -10],
+    "confidence_min": 0.75
+  }
+}

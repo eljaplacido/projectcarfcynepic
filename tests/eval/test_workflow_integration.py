@@ -98,7 +98,27 @@ class TestCognitiveAgentNodes:
     @pytest.mark.asyncio
     async def test_causal_analyst_sets_hypothesis(self):
         """Test causal analyst creates hypothesis."""
-        state = EpistemicState(user_input="Why did costs increase?")
+        pytest.importorskip("dowhy", reason="dowhy required for causal analysis")
+
+        # Provide test data for causal analysis
+        import random
+        random.seed(42)
+        test_data = [
+            {"cost": random.gauss(100, 10), "volume": random.gauss(50, 5), "inflation": random.gauss(2, 0.5)}
+            for _ in range(100)
+        ]
+
+        state = EpistemicState(
+            user_input="Why did costs increase?",
+            context={
+                "causal_estimation": {
+                    "treatment": "volume",
+                    "outcome": "cost",
+                    "covariates": ["inflation"],
+                    "data": test_data,
+                }
+            }
+        )
         result = await causal_analyst_node(state)
 
         assert result.proposed_action is not None
@@ -108,7 +128,23 @@ class TestCognitiveAgentNodes:
     @pytest.mark.asyncio
     async def test_bayesian_explorer_sets_uncertainty(self):
         """Test bayesian explorer sets uncertainty level."""
-        state = EpistemicState(user_input="What will the market do?")
+        pytest.importorskip("pymc", reason="pymc required for Bayesian analysis")
+
+        # Provide test data for Bayesian analysis - observations for uncertainty quantification
+        import random
+        random.seed(42)
+        observations = [random.gauss(0.5, 0.1) for _ in range(50)]
+
+        state = EpistemicState(
+            user_input="What will the market do?",
+            context={
+                "bayesian_inference": {
+                    "observations": observations,
+                    "prior_mean": 0.5,
+                    "prior_std": 0.2,
+                }
+            }
+        )
         result = await bayesian_explorer_node(state)
 
         assert result.proposed_action is not None
@@ -204,12 +240,22 @@ class TestEndToEndFlow:
     @pytest.mark.asyncio
     async def test_complicated_domain_flow(self):
         """Test complete flow for Complicated domain query."""
+        pytest.importorskip("dowhy", reason="dowhy required for causal analysis")
+
         mock_classification = DomainClassification(
             domain=CynefinDomain.COMPLICATED,
             confidence=0.90,
             reasoning="Root cause analysis needed",
             key_indicators=["why", "analysis"],
         )
+
+        # Provide test data for the causal analysis
+        import random
+        random.seed(42)
+        test_data = [
+            {"cost": 100 + random.gauss(0, 10) + 0.5 * i, "time": i, "usage": random.gauss(50, 5)}
+            for i in range(100)
+        ]
 
         with patch(
             "src.workflows.router.CynefinRouter._classify_with_llm",
@@ -218,7 +264,17 @@ class TestEndToEndFlow:
         ):
             from src.workflows.graph import run_carf
 
-            result = await run_carf("Why did our server costs increase by 15%?")
+            result = await run_carf(
+                "Why did our server costs increase by 15%?",
+                context={
+                    "causal_estimation": {
+                        "treatment": "time",
+                        "outcome": "cost",
+                        "covariates": ["usage"],
+                        "data": test_data,
+                    }
+                }
+            )
 
             assert result.cynefin_domain == CynefinDomain.COMPLICATED
             node_names = [step.node_name for step in result.reasoning_chain]

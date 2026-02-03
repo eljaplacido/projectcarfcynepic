@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        EXTRAS: "kafka"
+        EXTRAS: "kafka,causal"
     environment:
       CARF_TEST_MODE: "1"
       LLM_PROVIDER: "deepseek"
@@ -50,7 +50,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        EXTRAS: "kafka"
+        EXTRAS: "kafka,causal"
     environment:
       CARF_TEST_MODE: "1"
       CARF_DATA_DIR: "/app/var"

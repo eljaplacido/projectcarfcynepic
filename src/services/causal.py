@@ -384,17 +384,39 @@ Respond with a JSON object:
         if hasattr(estimate, "get_confidence_intervals"):
             try:
                 intervals = estimate.get_confidence_intervals()
-                if intervals:
-                    return float(intervals[0][0]), float(intervals[0][1])
+                if intervals is not None and len(intervals) > 0:
+                    ci = intervals[0] if hasattr(intervals[0], "__len__") else intervals
+                    if hasattr(ci, "__len__") and len(ci) >= 2:
+                        lower, upper = float(ci[0]), float(ci[1])
+                        if lower < upper:
+                            return lower, upper
             except Exception:
                 pass
 
         stderr = getattr(estimate, "stderr", None)
         if stderr is not None:
-            delta = 1.96 * float(stderr)
-            return effect_value - delta, effect_value + delta
+            try:
+                delta = 1.96 * float(stderr)
+                if delta > 0:
+                    return effect_value - delta, effect_value + delta
+            except (TypeError, ValueError):
+                pass
 
-        return effect_value, effect_value
+        # Try to extract standard error from estimate internals
+        for attr in ["standard_error", "se", "std_err"]:
+            se = getattr(estimate, attr, None)
+            if se is not None:
+                try:
+                    delta = 1.96 * float(se)
+                    if delta > 0:
+                        return effect_value - delta, effect_value + delta
+                except (TypeError, ValueError):
+                    pass
+
+        # Fallback: use 10% of effect as uncertainty heuristic
+        # This indicates "we have an estimate but no proper CI"
+        delta = max(abs(effect_value) * 0.1, 0.01)
+        return effect_value - delta, effect_value + delta
 
     def _refutation_passed(self, refutation: Any) -> bool:
         """Determine pass/fail from refutation output."""
@@ -419,14 +441,30 @@ Respond with a JSON object:
         treatment = config.treatment or hypothesis.treatment
         outcome = config.outcome or hypothesis.outcome
         covariates = config.covariates or hypothesis.confounders
-        effect_modifiers = config.effect_modifiers or None
+        effect_modifiers = config.effect_modifiers or []
+
+        # For backdoor methods (linear_regression, etc.), effect_modifiers don't work well
+        # Merge them into common_causes for proper adjustment
+        # EconML-based methods handle effect_modifiers properly for heterogeneous effects
+        use_effect_modifiers = None
+        all_common_causes = list(covariates) if covariates else []
+        if effect_modifiers:
+            if "econml" in config.method_name or "dml" in config.method_name.lower():
+                # EconML methods support proper heterogeneous effect estimation
+                use_effect_modifiers = effect_modifiers
+            else:
+                # For backdoor methods, include effect modifiers as covariates
+                for em in effect_modifiers:
+                    if em not in all_common_causes:
+                        all_common_causes.append(em)
+                logger.info(f"Merged effect_modifiers into common_causes for {config.method_name}")
 
         model = CausalModel(
             data=df,
             treatment=treatment,
             outcome=outcome,
-            common_causes=covariates or None,
-            effect_modifiers=effect_modifiers or None,
+            common_causes=all_common_causes or None,
+            effect_modifiers=use_effect_modifiers,
         )
 
         estimand = model.identify_effect()

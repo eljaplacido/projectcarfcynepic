@@ -64,5 +64,49 @@
       "How does operational maturity reduce disruption risk under climate stress?",
       "Which supplier regions are most vulnerable to climate-driven disruptions?"
     ]
+  },
+  {
+    "id": "pricing_optimization",
+    "name": "Pricing Strategy Optimization",
+    "description": "Analyze causal impact of price changes on sales volume across market segments.",
+    "payload_path": "demo/payloads/pricing_optimization.json",
+    "suggested_queries": [
+      "What is the causal effect of price increases on sales volume?",
+      "How does market segment affect price sensitivity?",
+      "Which product categories are most price elastic?"
+    ]
+  },
+  {
+    "id": "market_adoption",
+    "name": "New Product Market Adoption",
+    "description": "Model uncertainty in new product market adoption using Bayesian inference for Complex domain analysis.",
+    "payload_path": "demo/payloads/market_adoption.json",
+    "suggested_queries": [
+      "What is the probability that our adoption rate exceeds 50%?",
+      "How does uncertainty in adoption change with more data?",
+      "What should we probe next to reduce adoption uncertainty?"
+    ]
+  },
+  {
+    "id": "crisis_response",
+    "name": "Supply Chain Crisis Response",
+    "description": "Chaotic domain scenario simulating critical supplier failure requiring immediate stabilization.",
+    "payload_path": "demo/payloads/crisis_response.json",
+    "suggested_queries": [
+      "Critical supplier just failed - what immediate actions should we take?",
+      "System is experiencing cascading failures - stabilize now!",
+      "Emergency: 5 suppliers offline, need crisis response plan"
+    ]
+  },
+  {
+    "id": "data_lookup",
+    "name": "Inventory Data Lookup",
+    "description": "Clear domain scenario for simple deterministic inventory and product queries.",
+    "payload_path": "demo/payloads/data_lookup.json",
+    "suggested_queries": [
+      "What is the current stock level for product X?",
+      "List all products in Electronics category",
+      "Show me supplier contact information"
+    ]
   }
 ]

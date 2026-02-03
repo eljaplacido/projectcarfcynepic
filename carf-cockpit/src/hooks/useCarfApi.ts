@@ -6,6 +6,7 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import type { QueryResponse } from '../types/carf';
 import api, {
     type QueryRequest,
     type ChatRequest,
@@ -18,7 +19,9 @@ import api, {
     type ConfigStatus,
     type ScenarioDetailResponse,
     type DatasetMetadata,
+    type ProgressUpdate,
     ApiError,
+    submitQueryStream,
 } from '../services/apiService';
 import type { QueryResponse, ScenarioMetadata } from '../types/carf';
 
@@ -192,6 +195,119 @@ export function useQuery(options?: UseQueryOptions) {
     }, []);
 
     return { response, loading, error, progress, submitQuery, reset };
+}
+
+// ============================================================================
+// Streaming Query Hook (Real-time Chain of Thought)
+// ============================================================================
+
+export interface UseQueryStreamOptions {
+    onProgress?: (update: ProgressUpdate) => void;
+    onSuccess?: (response: QueryResponse) => void;
+    onError?: (error: Error) => void;
+}
+
+export function useQueryStream(options?: UseQueryStreamOptions) {
+    const [response, setResponse] = useState<QueryResponse | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    const [progress, setProgress] = useState(0);
+    const [currentStep, setCurrentStep] = useState<string>('');
+    const [stepMessage, setStepMessage] = useState<string>('');
+    const [progressHistory, setProgressHistory] = useState<ProgressUpdate[]>([]);
+    const abortControllerRef = useRef<AbortController | null>(null);
+
+    const submitQueryStreaming = useCallback(
+        (request: QueryRequest): void => {
+            // Cancel any existing request
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+
+            setLoading(true);
+            setError(null);
+            setProgress(0);
+            setCurrentStep('init');
+            setStepMessage('Initializing analysis...');
+            setProgressHistory([]);
+            setResponse(null);
+
+            abortControllerRef.current = submitQueryStream(
+                request,
+                // onProgress
+                (update: ProgressUpdate) => {
+                    setProgress(update.progress_percent);
+                    setCurrentStep(update.step);
+                    setStepMessage(update.message);
+                    setProgressHistory(prev => [...prev, update]);
+                    options?.onProgress?.(update);
+                },
+                // onComplete
+                (result: QueryResponse) => {
+                    setResponse(result);
+                    setLoading(false);
+                    setProgress(100);
+                    setCurrentStep('complete');
+                    setStepMessage('Analysis complete');
+                    options?.onSuccess?.(result);
+                    // Reset progress after animation
+                    setTimeout(() => setProgress(0), 1000);
+                },
+                // onError
+                (err: Error) => {
+                    setError(err);
+                    setLoading(false);
+                    setProgress(0);
+                    setCurrentStep('error');
+                    setStepMessage(err.message);
+                    options?.onError?.(err);
+                }
+            );
+        },
+        [options]
+    );
+
+    const cancel = useCallback(() => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+            abortControllerRef.current = null;
+            setLoading(false);
+            setCurrentStep('cancelled');
+            setStepMessage('Analysis cancelled');
+        }
+    }, []);
+
+    const reset = useCallback(() => {
+        cancel();
+        setResponse(null);
+        setError(null);
+        setProgress(0);
+        setCurrentStep('');
+        setStepMessage('');
+        setProgressHistory([]);
+    }, [cancel]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+        };
+    }, []);
+
+    return {
+        response,
+        loading,
+        error,
+        progress,
+        currentStep,
+        stepMessage,
+        progressHistory,
+        submitQuery: submitQueryStreaming,
+        cancel,
+        reset,
+    };
 }
 
 // ============================================================================

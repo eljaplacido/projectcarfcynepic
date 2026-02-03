@@ -40,14 +40,49 @@ class _FakeChatModel:
         return _FakeLLMResponse(self._build_response(messages))
 
     def _build_response(self, messages) -> str:  # type: ignore[no-untyped-def]
+        # Get full prompt for general use
         prompt = " ".join(getattr(m, "content", "") for m in messages).lower()
 
         if self.purpose == "router":
+            # For router, only check the user's query (last message), not system prompt
+            user_query = ""
+            for m in messages:
+                content = getattr(m, "content", "")
+                if "classify this request" in content.lower():
+                    # Extract the actual query after "Classify this request:"
+                    user_query = content.lower()
+                    break
+            if not user_query:
+                # Fallback to last message if pattern not found
+                user_query = getattr(messages[-1], "content", "").lower() if messages else ""
+
+            # Pattern-based domain classification for realistic test behavior
+            causal_keywords = ["why", "cause", "effect", "affect", "impact", "increase", "decrease", "drive"]
+            complex_keywords = ["predict", "forecast", "will", "might", "could", "market", "future"]
+            chaotic_keywords = ["crash", "emergency", "urgent", "critical", "down", "breach"]
+
+            if any(kw in user_query for kw in chaotic_keywords):
+                domain, confidence = "Chaotic", 0.90
+                reasoning = "Emergency/crisis keywords detected"
+                indicators = ["emergency", "crisis"]
+            elif any(kw in user_query for kw in causal_keywords):
+                domain, confidence = "Complicated", 0.88
+                reasoning = "Causal analysis required"
+                indicators = ["cause", "effect", "analysis"]
+            elif any(kw in user_query for kw in complex_keywords):
+                domain, confidence = "Complex", 0.85
+                reasoning = "Uncertainty/prediction required"
+                indicators = ["uncertainty", "prediction"]
+            else:
+                domain, confidence = "Clear", 0.95
+                reasoning = "Deterministic lookup request"
+                indicators = ["lookup", "deterministic"]
+
             payload = {
-                "domain": "Clear",
-                "confidence": 0.95,
-                "reasoning": "Deterministic lookup request",
-                "key_indicators": ["lookup", "deterministic"],
+                "domain": domain,
+                "confidence": confidence,
+                "reasoning": reasoning,
+                "key_indicators": indicators,
             }
             return json.dumps(payload)
 
