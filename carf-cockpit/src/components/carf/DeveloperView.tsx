@@ -770,19 +770,19 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                 </div>
             </div>
 
-            {/* Panel Tabs */}
-            <div className="flex gap-1 mb-4">
+            {/* Panel Tabs - Responsive with wrapping */}
+            <div className="flex flex-wrap gap-1.5 mb-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300">
                 {panels.map(panel => (
                     <button
                         key={panel.id}
                         onClick={() => setActivePanel(panel.id as typeof activePanel)}
-                        className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${activePanel === panel.id
-                            ? 'bg-primary text-white'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-medium rounded-lg transition-colors whitespace-nowrap flex-shrink-0 ${activePanel === panel.id
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
                             }`}
                     >
-                        <span>{panel.icon}</span>
-                        <span>{panel.label}</span>
+                        <span className="text-sm sm:text-base">{panel.icon}</span>
+                        <span className="hidden xs:inline">{panel.label}</span>
                     </button>
                 ))}
             </div>

@@ -496,20 +496,118 @@ config = EvaluationConfig(
 - [x] Core DeepEval integration
 - [x] Chat, explanation, router tests
 - [x] GitHub Actions CI/CD
-- [ ] Causal/Bayesian evaluation tests
-- [ ] Frontend quality display
+- [x] Causal/Bayesian evaluation tests
+- [x] Frontend quality display (TransparencyPanel)
 
-### Medium-Term (v0.8)
-- [ ] Quality-aware caching
+### Medium-Term (v0.8) - CURRENT
+- [x] Quality-aware caching
+- [x] Insights Service (`src/services/insights_service.py`)
+- [x] Agent Tracker Service (`src/services/agent_tracker.py`)
+- [x] Data Loader Service (`src/services/data_loader.py`)
+- [x] Executive dashboard metrics (ExecutiveKPIPanel)
+- [x] InsightsPanel frontend component
+- [x] AgentComparisonPanel frontend component
+- [x] Dark theme UI support
 - [ ] Neo4j quality score persistence
 - [ ] Kafka audit event extension
-- [ ] Executive dashboard metrics
 
 ### Long-Term (v1.0)
 - [ ] Real-time quality monitoring
 - [ ] Automated quality regression alerts
 - [ ] Human feedback loop integration
 - [ ] Domain-specific evaluation fine-tuning
+
+---
+
+## New Services (v0.8)
+
+### Insights Service
+
+The `InsightsService` generates contextual, actionable insights for different personas:
+
+```python
+from src.services.insights_service import get_insights_service, AnalysisContext
+
+service = get_insights_service()
+context = AnalysisContext(
+    domain="complicated",
+    domain_confidence=0.85,
+    has_causal_result=True,
+    causal_effect=0.15,
+    refutation_pass_rate=0.8,
+)
+
+# Generate persona-specific insights
+response = service.generate_insights(context, persona="executive")
+for insight in response.insights:
+    print(f"[{insight.priority}] {insight.title}: {insight.description}")
+```
+
+**API Endpoint:** `POST /insights/generate`
+
+### Agent Tracker Service
+
+The `AgentTrackerService` tracks LLM agent execution for transparency:
+
+```python
+from src.services.agent_tracker import get_agent_tracker
+
+tracker = get_agent_tracker()
+
+# Start workflow tracking
+trace = tracker.start_workflow(session_id, query="What caused...")
+
+# Track agent execution
+execution = tracker.start_agent_execution(
+    trace_id=trace.trace_id,
+    agent_id="causal_analyst",
+    agent_name="Causal Analyst"
+)
+
+# Complete with metrics
+tracker.complete_agent_execution(
+    execution_id=execution.execution_id,
+    output_summary="Effect: 0.15",
+    llm_usage=LLMUsage(model="deepseek-chat", total_tokens=1500),
+    quality_score=0.87
+)
+
+# Get agent comparison
+comparison = tracker.get_agent_comparison()
+```
+
+**API Endpoints:**
+- `POST /workflow/start` - Start workflow tracking
+- `POST /workflow/complete` - Complete workflow
+- `GET /workflow/trace/{id}` - Get execution trace
+- `GET /agents/stats` - Agent performance stats
+- `GET /agents/comparison` - Agent comparison data
+
+### Data Loader Service
+
+The `DataLoaderService` provides unified data loading from multiple sources:
+
+```python
+from src.services.data_loader import get_data_loader
+
+loader = get_data_loader()
+
+# Load JSON data
+result = await loader.load_json({"data": [...]}, "my_dataset")
+
+# Load CSV
+result = await loader.load_csv(csv_content, "sales_data.csv")
+
+# Quality assessment included
+print(f"Quality: {result.quality} ({result.quality_score:.0%})")
+print(f"Suggested treatment: {result.suggested_treatment}")
+print(f"Suggested outcome: {result.suggested_outcome}")
+```
+
+**API Endpoints:**
+- `POST /data/load/json` - Load JSON data
+- `POST /data/load/csv` - Load CSV data
+- `GET /data/{id}` - Retrieve loaded data
 
 ---
 

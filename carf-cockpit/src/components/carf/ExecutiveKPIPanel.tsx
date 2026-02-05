@@ -53,6 +53,22 @@ const trendIcons = {
   stable: '→',
 };
 
+// Helper function for safe percentage display
+const safePercentage = (value: number | undefined | null, decimals = 0): number => {
+  if (value === undefined || value === null || isNaN(value)) {
+    return 0;
+  }
+  return Number((value * 100).toFixed(decimals));
+};
+
+// Helper to determine score out of 10
+const scoreOutOfTen = (value: number | undefined | null): number => {
+  if (value === undefined || value === null || isNaN(value)) {
+    return 0;
+  }
+  return Math.round(value * 10);
+};
+
 export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
   queryResponse,
   causalResult,
@@ -64,6 +80,12 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [vizConfig, setVizConfig] = useState<any>(null);
+  const [guardianStatus, setGuardianStatus] = useState<{
+    compliance_percentage: number;
+    policies_active: number;
+    risk_level: string;
+  } | null>(null);
+  const [insights, setInsights] = useState<any[]>([]);
 
   // Fetch visualization config on mount or context change
   useEffect(() => {
@@ -76,12 +98,64 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
         }
       } catch (err) {
         console.error("Failed to fetch viz config", err);
-        // Fallback to default config on error
         setVizConfig(null);
       }
     };
     fetchConfig();
   }, [context]);
+
+  // Fetch Guardian status for compliance data
+  useEffect(() => {
+    const fetchGuardianStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/guardian/status`);
+        if (res.ok) {
+          const data = await res.json();
+          setGuardianStatus(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch guardian status", err);
+      }
+    };
+    fetchGuardianStatus();
+  }, []);
+
+  // Fetch insights for executive persona
+  useEffect(() => {
+    const fetchInsights = async () => {
+      if (!queryResponse) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/insights/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            persona: 'executive',
+            domain: queryResponse.domain,
+            domain_confidence: queryResponse.domainConfidence,
+            domain_entropy: queryResponse.domainEntropy,
+            has_causal_result: !!causalResult,
+            causal_effect: causalResult?.effect,
+            refutation_pass_rate: causalResult?.refutationsTotal
+              ? (causalResult.refutationsPassed || 0) / causalResult.refutationsTotal
+              : null,
+            has_bayesian_result: !!bayesianResult,
+            epistemic_uncertainty: bayesianResult?.epistemicUncertainty,
+            aleatoric_uncertainty: bayesianResult?.aleatoricUncertainty,
+            guardian_verdict: queryResponse.guardianVerdict,
+            policies_passed: guardianResult?.policiesPassed || 0,
+            policies_total: guardianResult?.policiesTotal || 0,
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setInsights(data.insights || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch insights", err);
+      }
+    };
+    fetchInsights();
+  }, [queryResponse, causalResult, bayesianResult, guardianResult]);
 
   // Dynamic KPI Value Mapper
   const getDynamicValue = (kpiName: string): Partial<KPIMetric> => {
@@ -139,42 +213,89 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
     // Core KPIs (Always visible)
     const coreKPIs: KPIMetric[] = [];
 
-    // Domain Confidence (Core)
-    if (queryResponse?.domainConfidence) {
-      const confidence = queryResponse.domainConfidence * 100;
-      coreKPIs.push({
-        id: 'domain-confidence',
-        label: 'Domain Confidence',
-        value: Math.round(confidence),
-        unit: '%',
-        status: confidence >= 85 ? 'excellent' : confidence >= 70 ? 'good' : confidence >= 50 ? 'warning' : 'critical',
-        description: `System confidence in ${queryResponse.domain} classification`,
-        category: 'confidence',
-      });
-    }
+    // Overall Quality Score (0-10) - computed from all available metrics
+    const computeOverallScore = (): number => {
+      const scores: number[] = [];
+      if (queryResponse?.domainConfidence != null) {
+        scores.push(queryResponse.domainConfidence);
+      }
+      if (causalResult?.refutationsTotal && causalResult.refutationsTotal > 0) {
+        scores.push((causalResult.refutationsPassed || 0) / causalResult.refutationsTotal);
+      }
+      if (guardianStatus?.compliance_percentage != null) {
+        scores.push(guardianStatus.compliance_percentage / 100);
+      }
+      if (bayesianResult?.epistemicUncertainty != null) {
+        scores.push(1 - bayesianResult.epistemicUncertainty); // Lower uncertainty = higher score
+      }
+      if (scores.length === 0) return 0;
+      const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+      return scoreOutOfTen(avg);
+    };
 
-    // Risk Level (Core)
-    if (guardianResult?.riskLevel) {
-      const riskMap: Record<string, { value: string; status: KPIMetric['status'] }> = {
-        low: { value: 'LOW', status: 'excellent' },
-        medium: { value: 'MEDIUM', status: 'warning' },
-        high: { value: 'HIGH', status: 'critical' },
-      };
-      const riskInfo = riskMap[guardianResult.riskLevel.toLowerCase()] || riskMap.medium;
-      coreKPIs.push({
-        id: 'risk-level',
-        label: 'Risk Assessment',
-        value: riskInfo.value,
-        status: riskInfo.status,
-        description: 'Overall risk level based on Guardian analysis',
-        category: 'compliance',
-      });
-    }
+    const overallScore = computeOverallScore();
+    coreKPIs.push({
+      id: 'overall-score',
+      label: 'Overall Score',
+      value: `${overallScore}/10`,
+      status: overallScore >= 8 ? 'excellent' : overallScore >= 6 ? 'good' : overallScore >= 4 ? 'warning' : 'critical',
+      description: 'Composite score based on confidence, quality, and compliance',
+      category: 'confidence',
+    });
+
+    // Domain Confidence (Core) - with null-safe handling
+    const confidence = safePercentage(queryResponse?.domainConfidence);
+    coreKPIs.push({
+      id: 'domain-confidence',
+      label: 'Domain Confidence',
+      value: confidence > 0 ? confidence : 'N/A',
+      unit: confidence > 0 ? '%' : '',
+      status: confidence >= 85 ? 'excellent' : confidence >= 70 ? 'good' : confidence >= 50 ? 'warning' : 'critical',
+      description: queryResponse?.domain
+        ? `System confidence in ${queryResponse.domain} classification`
+        : 'Domain classification confidence',
+      category: 'confidence',
+    });
+
+    // Risk Level (Core) - with fallback
+    const riskLevel = guardianResult?.riskLevel || guardianStatus?.risk_level || 'unknown';
+    const riskMap: Record<string, { value: string; status: KPIMetric['status'] }> = {
+      low: { value: 'LOW', status: 'excellent' },
+      medium: { value: 'MEDIUM', status: 'warning' },
+      high: { value: 'HIGH', status: 'critical' },
+      unknown: { value: 'N/A', status: 'warning' },
+    };
+    const riskInfo = riskMap[riskLevel.toLowerCase()] || riskMap.unknown;
+    coreKPIs.push({
+      id: 'risk-level',
+      label: 'Risk Assessment',
+      value: riskInfo.value,
+      status: riskInfo.status,
+      description: 'Overall risk level based on Guardian analysis',
+      category: 'compliance',
+    });
+
+    // Compliance Score - from guardian status
+    const complianceScore = guardianStatus?.compliance_percentage ??
+      (guardianResult?.policiesTotal && guardianResult.policiesTotal > 0
+        ? ((guardianResult.policiesPassed || 0) / guardianResult.policiesTotal) * 100
+        : null);
+    coreKPIs.push({
+      id: 'compliance-score',
+      label: 'Policy Compliance',
+      value: complianceScore != null ? Math.round(complianceScore) : 'N/A',
+      unit: complianceScore != null ? '%' : '',
+      status: complianceScore != null
+        ? (complianceScore >= 100 ? 'excellent' : complianceScore >= 80 ? 'good' : complianceScore >= 60 ? 'warning' : 'critical')
+        : 'warning',
+      description: 'Guardian policy compliance rate',
+      category: 'compliance',
+    });
 
     // If no dynamic config, fall back to some defaults if available results
     if (dynamicKPIs.length === 0) {
       // Causal Effect KPI
-      if (causalResult?.effect !== undefined) {
+      if (causalResult?.effect !== undefined && causalResult.effect !== null) {
         const effectAbs = Math.abs(causalResult.effect);
         coreKPIs.push({
           id: 'causal-effect',
@@ -182,21 +303,37 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
           value: causalResult.effect.toFixed(3),
           status: effectAbs >= 0.3 ? 'excellent' : effectAbs >= 0.1 ? 'good' : 'warning',
           trend: causalResult.effect > 0 ? 'up' : causalResult.effect < 0 ? 'down' : 'stable',
-          description: `Treatment effect on outcome: ${causalResult.treatment} → ${causalResult.outcome}`,
+          description: `Treatment effect: ${causalResult.treatment || 'treatment'} → ${causalResult.outcome || 'outcome'}`,
           category: 'performance',
         });
       }
+
       // Refutation (fallback)
       if (causalResult) {
-        const passed = causalResult.refutationsPassed || 0;
-        const total = causalResult.refutationsTotal || 0;
+        const passed = causalResult.refutationsPassed ?? 0;
+        const total = causalResult.refutationsTotal ?? 0;
         const rate = total > 0 ? (passed / total) * 100 : 0;
         coreKPIs.push({
           id: 'refutation-rate',
           label: 'Causal Robustness',
-          value: `${passed}/${total}`,
-          status: rate === 100 ? 'excellent' : rate >= 80 ? 'good' : rate >= 60 ? 'warning' : 'critical',
+          value: total > 0 ? `${passed}/${total}` : 'N/A',
+          status: total === 0 ? 'warning' : (rate === 100 ? 'excellent' : rate >= 80 ? 'good' : rate >= 60 ? 'warning' : 'critical'),
           description: 'Refutation tests passed',
+          category: 'quality',
+        });
+      }
+
+      // Uncertainty KPI from Bayesian
+      if (bayesianResult) {
+        const epistemic = safePercentage(bayesianResult.epistemicUncertainty);
+        coreKPIs.push({
+          id: 'uncertainty',
+          label: 'Reducible Uncertainty',
+          value: epistemic > 0 ? epistemic : 'N/A',
+          unit: epistemic > 0 ? '%' : '',
+          status: epistemic < 20 ? 'excellent' : epistemic < 40 ? 'good' : epistemic < 60 ? 'warning' : 'critical',
+          trend: 'stable',
+          description: 'Epistemic uncertainty that can be reduced with more data',
           category: 'quality',
         });
       }
@@ -369,13 +506,66 @@ export const ExecutiveKPIPanel: React.FC<ExecutiveKPIProps> = ({
         )}
       </div>
 
+      {/* Actionable Insights */}
+      {insights.length > 0 && (
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200">
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
+            <span>💡</span> Actionable Insights
+          </h3>
+          <div className="space-y-3">
+            {insights.slice(0, 4).map((insight, idx) => (
+              <div
+                key={insight.id || idx}
+                className={`p-3 rounded-lg border ${
+                  insight.priority === 'high'
+                    ? 'bg-red-50 border-red-200'
+                    : insight.priority === 'medium'
+                    ? 'bg-yellow-50 border-yellow-200'
+                    : 'bg-gray-50 border-gray-200'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-semibold uppercase px-2 py-0.5 rounded ${
+                      insight.type === 'warning'
+                        ? 'bg-red-100 text-red-700'
+                        : insight.type === 'recommendation'
+                        ? 'bg-blue-100 text-blue-700'
+                        : insight.type === 'validation'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {insight.type}
+                    </span>
+                    <span className="font-medium text-gray-900">{insight.title}</span>
+                  </div>
+                  <span className={`text-xs px-2 py-0.5 rounded ${
+                    insight.priority === 'high'
+                      ? 'bg-red-100 text-red-700'
+                      : insight.priority === 'medium'
+                      ? 'bg-yellow-100 text-yellow-700'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {insight.priority}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 mt-2">{insight.description}</p>
+                {insight.action && (
+                  <p className="text-sm text-primary mt-2 font-medium">→ {insight.action}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Decision Actions */}
       {queryResponse && (
-        <div className="flex items-center gap-3 pt-4 border-t">
-          <button className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors">
+        <div className="flex items-center gap-3 pt-4 border-t flex-wrap">
+          <button className="flex-1 min-w-[120px] px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors">
             Export Report
           </button>
-          <button className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+          <button className="flex-1 min-w-[120px] px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
             Share Analysis
           </button>
           <button className="px-4 py-2 text-gray-500 hover:text-gray-700 transition-colors">

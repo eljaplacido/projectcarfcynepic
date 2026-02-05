@@ -6,13 +6,27 @@
   :root {
     --bg-page: #F8FAFC;
     --bg-card: #FFFFFF;
+    --bg-card-hover: #F1F5F9;
     --text-primary: #1E293B;
     --text-secondary: #64748B;
+    --text-muted: #94A3B8;
     --border-color: #E2E8F0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .dark {
+    --bg-page: #0F172A;
+    --bg-card: #1E293B;
+    --bg-card-hover: #334155;
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --border-color: #334155;
+    --shadow-color: rgba(0, 0, 0, 0.3);
   }
 
   body {
-    @apply bg-[--bg-page] text-[--text-primary] font-sans;
+    @apply bg-[--bg-page] text-[--text-primary] font-sans transition-colors duration-300;
   }
 
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -21,10 +35,12 @@
 @layer components {
   .glass {
     @apply bg-white/80 backdrop-blur-sm border border-gray-200/50;
+    @apply dark:bg-slate-800/80 dark:border-slate-700/50;
   }
 
   .glass-strong {
     @apply bg-white/90 backdrop-blur-md border border-gray-200/70 shadow-lg;
+    @apply dark:bg-slate-800/90 dark:border-slate-700/70;
   }
 
   .text-gradient {
@@ -33,10 +49,44 @@
 
   .card {
     @apply bg-white rounded-lg border border-gray-200 shadow-sm p-4;
+    @apply dark:bg-slate-800 dark:border-slate-700;
   }
 
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Dark mode specific overrides */
+  .dark .bg-white {
+    @apply bg-slate-800;
+  }
+
+  .dark .bg-gray-50 {
+    @apply bg-slate-900;
+  }
+
+  .dark .bg-gray-100 {
+    @apply bg-slate-800;
+  }
+
+  .dark .border-gray-200 {
+    @apply border-slate-700;
+  }
+
+  .dark .text-gray-900 {
+    @apply text-slate-100;
+  }
+
+  .dark .text-gray-700 {
+    @apply text-slate-300;
+  }
+
+  .dark .text-gray-600 {
+    @apply text-slate-400;
+  }
+
+  .dark .text-gray-500 {
+    @apply text-slate-400;
   }
 
   /* Tour highlight for walkthrough */
@@ -164,5 +214,18 @@
 
   ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
+  }
+
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar-track {
+    background: #1e293b;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
   }
 }

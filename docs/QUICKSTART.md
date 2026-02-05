@@ -289,6 +289,22 @@ curl -X POST http://localhost:8000/query \
 | **Causal Analysis Results** | Effect estimate, confidence interval, refutation tests |
 | **Guardian Policy Check** | Policy violations, approval workflow |
 | **Execution Trace** | Timeline of pipeline steps |
+| **Transparency Panel** | Agent reliability, data quality, compliance articles |
+| **Insights Panel** | Contextual recommendations per persona |
+| **Agent Comparison** | LLM performance metrics and cost tracking |
+
+### New Features (v0.8)
+
+**Dark Theme**: Toggle between light and dark themes using the switch in the header.
+
+**Persona Views**: Switch between three views:
+- **Analyst**: Technical analysis details
+- **Developer**: System debugging and performance
+- **Executive**: Business KPIs and decisions
+
+**Actionable Insights**: Context-aware recommendations based on your analysis results.
+
+**Agent Transparency**: Track which LLMs were used, their latency, token usage, and quality scores.
 
 ## 7. Running Tests
 
@@ -358,13 +374,62 @@ export CARF_TEST_MODE=1
 pip install -e ".[dev,causal,bayesian]" --force-reinstall
 ```
 
-## 9. Next Steps
+## 9. New API Endpoints (v0.8)
+
+### Insights API
+```bash
+# Generate persona-specific insights
+curl -X POST http://localhost:8000/insights/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "persona": "executive",
+    "domain": "complicated",
+    "domain_confidence": 0.85,
+    "has_causal_result": true,
+    "causal_effect": 0.15
+  }'
+```
+
+### Agent Tracking API
+```bash
+# Get agent performance statistics
+curl http://localhost:8000/agents/stats
+
+# Get agent comparison for LLM transparency
+curl http://localhost:8000/agents/comparison
+
+# Get recent workflow traces
+curl http://localhost:8000/workflow/recent?limit=10
+```
+
+### Data Loader API
+```bash
+# Load JSON data with quality assessment
+curl -X POST http://localhost:8000/data/load/json \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": [{"treatment": 1, "outcome": 100}, {"treatment": 0, "outcome": 50}],
+    "source_name": "my_experiment"
+  }'
+
+# Get data quality levels
+curl http://localhost:8000/data/quality/levels
+```
+
+### Guardian Status API
+```bash
+# Get compliance status for executive dashboard
+curl http://localhost:8000/guardian/status
+```
+
+## 10. Next Steps
 
 1. **Explore the Demo Scenarios**: Try each scenario to understand different analysis types
 2. **Upload Your Data**: Test with your own datasets
 3. **Customize Policies**: Edit `config/policies.yaml` to add business rules
 4. **Integrate HITL**: Set up HumanLayer for approval workflows
 5. **Deploy**: Use Docker Compose for production deployment
+6. **Enable Dark Theme**: Toggle the theme switch in the header for dark mode
 
 ## Support
 
