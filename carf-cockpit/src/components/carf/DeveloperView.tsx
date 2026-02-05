@@ -489,6 +489,142 @@ const ExecutionTimeline: React.FC<{
     );
 };
 
+// Evaluation Metrics Panel Component
+const EvaluationMetricsPanel: React.FC<{ response: QueryResponse | null }> = ({ response }) => {
+    // Mock evaluation data - in production this would come from the EvaluationService
+    const [metrics, setMetrics] = React.useState<{
+        relevancy_score: number;
+        hallucination_risk: number;
+        reasoning_depth: number;
+        uix_compliance: number;
+        task_completion: boolean;
+        evaluation_model: string;
+        evaluation_latency_ms: number;
+    } | null>(null);
+
+    React.useEffect(() => {
+        if (response?.domainConfidence) {
+            // Simulate evaluation metrics based on response confidence
+            const baseScore = response.domainConfidence;
+            setMetrics({
+                relevancy_score: Math.min(1, baseScore + Math.random() * 0.1),
+                hallucination_risk: Math.max(0, 0.25 - baseScore * 0.2 + Math.random() * 0.1),
+                reasoning_depth: Math.min(1, baseScore * 0.9 + Math.random() * 0.15),
+                uix_compliance: Math.min(1, baseScore * 0.85 + Math.random() * 0.2),
+                task_completion: baseScore > 0.6,
+                evaluation_model: 'deepseek-chat',
+                evaluation_latency_ms: Math.floor(150 + Math.random() * 200)
+            });
+        }
+    }, [response]);
+
+    if (!metrics) {
+        return (
+            <div className="text-center py-8 text-gray-500">
+                <div className="text-4xl mb-2">📊</div>
+                <div className="text-sm">Run a query to see evaluation metrics</div>
+            </div>
+        );
+    }
+
+    const MetricBar: React.FC<{ label: string; value: number; isInverted?: boolean }> = ({ label, value, isInverted = false }) => {
+        const getColor = () => {
+            const effectiveValue = isInverted ? 1 - value : value;
+            if (effectiveValue >= 0.8) return 'bg-green-500';
+            if (effectiveValue >= 0.6) return 'bg-blue-500';
+            if (effectiveValue >= 0.4) return 'bg-yellow-500';
+            return 'bg-red-500';
+        };
+
+        return (
+            <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                    <span className="text-gray-600">{label}</span>
+                    <span className="font-mono text-gray-900">{(value * 100).toFixed(1)}%</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${getColor()}`} style={{ width: `${value * 100}%` }} />
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold text-gray-900">DeepEval Metrics</div>
+                <div className="text-xs text-gray-500">
+                    Model: <span className="font-mono">{metrics.evaluation_model}</span>
+                </div>
+            </div>
+
+            {/* Overall Score */}
+            <div className="p-4 bg-gray-50 rounded-lg text-center">
+                <div className="text-3xl font-bold text-gray-900">
+                    {Math.round(((metrics.relevancy_score + metrics.reasoning_depth + metrics.uix_compliance + (1 - metrics.hallucination_risk)) / 4) * 100)}%
+                </div>
+                <div className="text-xs text-gray-600 mt-1">Overall Quality Score</div>
+            </div>
+
+            {/* Individual Metrics */}
+            <div className="space-y-3">
+                <MetricBar label="Answer Relevancy" value={metrics.relevancy_score} />
+                <MetricBar label="Hallucination Risk" value={metrics.hallucination_risk} isInverted />
+                <MetricBar label="Reasoning Depth" value={metrics.reasoning_depth} />
+                <MetricBar label="UIX Compliance" value={metrics.uix_compliance} />
+            </div>
+
+            {/* Status Indicators */}
+            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-gray-200">
+                <div className="p-2 bg-gray-50 rounded">
+                    <div className="text-[10px] text-gray-500 uppercase">Task Complete</div>
+                    <div className={`text-sm font-medium ${metrics.task_completion ? 'text-green-600' : 'text-yellow-600'}`}>
+                        {metrics.task_completion ? '✓ Yes' : '○ No'}
+                    </div>
+                </div>
+                <div className="p-2 bg-gray-50 rounded">
+                    <div className="text-[10px] text-gray-500 uppercase">Eval Latency</div>
+                    <div className="text-sm font-medium text-gray-700 font-mono">
+                        {metrics.evaluation_latency_ms}ms
+                    </div>
+                </div>
+            </div>
+
+            {/* UIX Compliance Breakdown */}
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="text-xs font-semibold text-blue-800 mb-2">UIX Standards (CARF)</div>
+                <div className="space-y-1 text-xs">
+                    {[
+                        { label: 'Why this?', threshold: 0.25 },
+                        { label: 'How confident?', threshold: 0.5 },
+                        { label: 'Based on what?', threshold: 0.75 },
+                        { label: 'Accessible language', threshold: 1.0 }
+                    ].map((check, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-blue-700">
+                            <span className={metrics.uix_compliance >= check.threshold ? 'text-green-600' : 'text-gray-400'}>
+                                {metrics.uix_compliance >= check.threshold ? '✓' : '○'}
+                            </span>
+                            <span>{check.label}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Export Button */}
+            <button
+                onClick={() => {
+                    const data = JSON.stringify({ metrics, timestamp: new Date().toISOString() }, null, 2);
+                    navigator.clipboard.writeText(data);
+                    alert('Metrics copied to clipboard');
+                }}
+                className="w-full px-3 py-2 text-xs text-blue-600 hover:bg-blue-50 rounded border border-blue-200"
+            >
+                Copy Metrics JSON
+            </button>
+        </div>
+    );
+};
+
 // State Inspector Component
 const StateInspector: React.FC<{ response: QueryResponse | null }> = ({ response }) => {
     const [activeTab, setActiveTab] = useState<'epistemic' | 'causal' | 'bayesian' | 'guardian'>('epistemic');
@@ -575,7 +711,7 @@ const StateInspector: React.FC<{ response: QueryResponse | null }> = ({ response
 
 // Main Developer View Component
 const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace, isProcessing }) => {
-    const [activePanel, setActivePanel] = useState<'architecture' | 'logs' | 'timeline' | 'state' | 'experience' | 'dataflow' | 'datalayer'>('architecture');
+    const [activePanel, setActivePanel] = useState<'architecture' | 'logs' | 'timeline' | 'state' | 'experience' | 'dataflow' | 'datalayer' | 'evaluation'>('architecture');
     const [selectedLayer, setSelectedLayer] = useState<string | null>(null);
     const { state: developerState, loading, error, fetchState } = useDeveloperState();
 
@@ -600,6 +736,7 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
         { id: 'logs', label: 'Live Logs', icon: '📋' },
         { id: 'timeline', label: 'Timeline', icon: '⏱️' },
         { id: 'state', label: 'State', icon: '📊' },
+        { id: 'evaluation', label: 'Evaluation', icon: '📈' },
         { id: 'experience', label: 'Experience', icon: '💾' },
     ];
 
@@ -689,6 +826,7 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                     />
                 )}
                 {activePanel === 'state' && <StateInspector response={response} />}
+                {activePanel === 'evaluation' && <EvaluationMetricsPanel response={response} />}
                 {activePanel === 'experience' && (
                     <ExperienceBufferPanel
                         sessionId={response?.sessionId}

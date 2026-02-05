@@ -170,6 +170,12 @@ class EpistemicState(BaseModel):
         default_factory=dict, description="Additional context data"
     )
 
+    # --- Evaluation Scores (DeepEval Quality Metrics) ---
+    evaluation_scores: dict[str, dict[str, Any]] = Field(
+        default_factory=dict,
+        description="DeepEval quality scores by node (relevancy, hallucination_risk, reasoning_depth, uix_compliance)",
+    )
+
     # --- Reasoning Chain ---
     reasoning_chain: list[ReasoningStep] = Field(
         default_factory=list,

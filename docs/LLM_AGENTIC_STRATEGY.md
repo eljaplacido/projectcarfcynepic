@@ -44,3 +44,47 @@ Define when and how LLMs are used in CARF, what remains deterministic/statistica
 - Prefer distilled/local for routing when accuracy acceptable.
 - Batch external calls; short prompts; structured outputs.
 - Use cheap tier for low-risk paths; escalate to stronger model only when entropy/uncertainty high.
+
+## LLM Output Evaluation Strategy
+
+All LLM outputs are subject to runtime quality evaluation using [DeepEval](https://github.com/confident-ai/deepeval).
+
+### Quality Metrics by Layer
+
+| Layer | Primary Metrics | Thresholds | Action on Failure |
+|-------|-----------------|------------|-------------------|
+| **Router** | Relevancy, Reasoning Depth | R>0.7, RD>0.6 | Route to Disorder |
+| **Causal Analyst** | Hallucination Risk, Reasoning | H<0.3, RD>0.7 | Flag for human review |
+| **Bayesian Explorer** | UIX Compliance, Reasoning | UIX>0.6 | Add uncertainty warning |
+| **Narration/UX** | Relevancy, UIX Compliance | R>0.7, UIX>0.6 | Regenerate response |
+| **Guardian** | Reasoning Depth | RD>0.6 | Log explanation gap |
+
+### Quality Gates
+
+- Responses with `hallucination_risk > 0.3` trigger reflection loop or human escalation
+- Responses with `relevancy < 0.7` escalate to stronger model or human review
+- `uix_compliance < 0.6` blocks presentation to end users without remediation
+- All quality scores logged to Kafka audit trail for compliance
+
+### Evaluation Integration Points
+
+1. **Post-Router**: Evaluate classification reasoning before domain dispatch
+2. **Post-Analyst**: Evaluate causal/Bayesian output before Guardian
+3. **Post-Guardian**: Evaluate decision explanations for clarity
+4. **Pre-Delivery**: Final UIX compliance check before user presentation
+
+### Chimera Oracle Quality Assurance
+
+Fast predictions from Chimera Oracle are validated:
+- Compare Chimera output quality vs cached full-analysis scores
+- Only cache predictions with `hallucination_risk < 0.2`
+- Fall back to full DoWhy analysis if Chimera quality degrades
+
+### Continuous Improvement
+
+- Quality scores stored in Neo4j for regression analysis
+- Weekly quality trend reports for model performance monitoring
+- Human feedback incorporated to refine evaluation thresholds
+- Automatic alerts on quality degradation (>10% drop in any metric)
+
+See [Evaluation Framework](./EVALUATION_FRAMEWORK.md) for detailed implementation.

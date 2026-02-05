@@ -284,6 +284,29 @@ mypy src/ --strict
 ruff check src/ tests/
 ```
 
+### LLM Quality Evaluation (DeepEval)
+
+CARF includes comprehensive LLM output quality evaluation using [DeepEval](https://github.com/confident-ai/deepeval):
+
+```bash
+# Install with evaluation dependencies
+pip install -e ".[dev,evaluation]"
+
+# Run DeepEval tests
+pytest tests/deepeval/ -v
+
+# Run with DeepEval CLI (parallel execution)
+deepeval test run tests/deepeval/ -n 4
+```
+
+**Quality Metrics Evaluated:**
+- **Relevancy Score**: How well responses address user queries
+- **Hallucination Risk**: Detection of fabricated content
+- **Reasoning Depth**: Quality of reasoning and justification
+- **UIX Compliance**: Adherence to transparency standards (Why? How confident? Based on what?)
+
+See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for details.
+
 ## Dashboard Views
 
 ### End-User View

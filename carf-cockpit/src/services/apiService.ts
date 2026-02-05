@@ -657,9 +657,27 @@ export interface DataQualityAssessment {
     recommendations: string[];
 }
 
+// DeepEval quality scores for LLM output evaluation
+export interface DeepEvalScores {
+    relevancy_score: number;
+    hallucination_risk: number;
+    reasoning_depth: number;
+    uix_compliance: number;
+    task_completion: boolean;
+    evaluated_at?: string;
+}
+
 export interface ReliabilityAssessment {
     overall_score: number;
+    overall_level?: string;
     level: 'excellent' | 'good' | 'fair' | 'poor' | 'unreliable';
+    factors?: {
+        name: string;
+        score: number;
+        weight: number;
+        status: string;
+        explanation: string;
+    }[];
     components: {
         name: string;
         score: number;
@@ -667,7 +685,10 @@ export interface ReliabilityAssessment {
         details: string;
     }[];
     suggestions: string[];
+    improvement_suggestions?: string[];
     eu_ai_act_compliant: boolean;
+    // DeepEval LLM quality scores (optional, populated when evaluation enabled)
+    deepeval_scores?: DeepEvalScores | null;
 }
 
 export interface EUAIActReport {

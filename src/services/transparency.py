@@ -150,6 +150,38 @@ class ReliabilityFactor(BaseModel):
     improvement_actions: list[str] = Field(default_factory=list)
 
 
+class DeepEvalScores(BaseModel):
+    """DeepEval quality metrics for LLM outputs.
+
+    These scores provide quantitative measures of LLM response quality
+    based on the DeepEval framework for LLM evaluation.
+    """
+    relevancy_score: float = Field(
+        0.0, ge=0.0, le=1.0,
+        description="How relevant the response is to the input query"
+    )
+    hallucination_risk: float = Field(
+        0.0, ge=0.0, le=1.0,
+        description="Risk of hallucinated content (0=no risk, 1=high risk)"
+    )
+    reasoning_depth: float = Field(
+        0.0, ge=0.0, le=1.0,
+        description="Quality and depth of reasoning in response"
+    )
+    uix_compliance: float = Field(
+        0.0, ge=0.0, le=1.0,
+        description="Compliance with CARF UIX standards (Why? How confident? Based on what?)"
+    )
+    task_completion: bool = Field(
+        False,
+        description="Whether the response adequately addresses the query"
+    )
+    evaluated_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        description="Timestamp when evaluation was performed"
+    )
+
+
 class ReliabilityAssessment(BaseModel):
     """Comprehensive reliability assessment of an analysis."""
     assessment_id: UUID = Field(default_factory=uuid4)
@@ -168,6 +200,12 @@ class ReliabilityAssessment(BaseModel):
     refutation_score: float = Field(0.0, ge=0.0, le=1.0)
     sample_size_score: float = Field(0.0, ge=0.0, le=1.0)
     domain_expertise_score: float = Field(0.0, ge=0.0, le=1.0)
+
+    # DeepEval LLM quality scores (optional, populated when evaluation enabled)
+    deepeval_scores: DeepEvalScores | None = Field(
+        None,
+        description="LLM quality metrics from DeepEval evaluation"
+    )
 
     # Recommendations
     strengths: list[str] = Field(default_factory=list)

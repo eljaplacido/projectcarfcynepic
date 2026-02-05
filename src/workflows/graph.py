@@ -29,6 +29,7 @@ from src.core.state import (
 )
 from src.services.bayesian import run_active_inference
 from src.services.causal import run_causal_analysis
+from src.services.evaluation_service import get_evaluation_service, DeepEvalScores
 from src.services.human_layer import human_escalation_node
 from src.services.kafka_audit import log_state_to_kafka
 from src.utils.telemetry import traced
@@ -36,6 +37,80 @@ from src.workflows.guardian import guardian_node
 from src.workflows.router import cynefin_router_node
 
 logger = logging.getLogger("carf.graph")
+
+
+# =============================================================================
+# EVALUATION INTEGRATION
+# =============================================================================
+
+
+async def evaluate_node_output(
+    state: EpistemicState,
+    node_name: str,
+    input_text: str,
+    output_text: str,
+    context: list[str] | None = None,
+) -> DeepEvalScores | None:
+    """Evaluate LLM output quality at a workflow node.
+
+    This integrates DeepEval metrics into the workflow for:
+    - Quality scoring at each decision point
+    - Hallucination detection before user presentation
+    - UIX compliance verification
+    - Audit trail enrichment
+
+    Args:
+        state: Current epistemic state
+        node_name: Name of the node being evaluated
+        input_text: The input to the node
+        output_text: The output to evaluate
+        context: Optional context for hallucination detection
+
+    Returns:
+        DeepEvalScores if evaluation successful, None otherwise
+    """
+    try:
+        eval_service = get_evaluation_service()
+        scores = await eval_service.evaluate_response(
+            input=input_text,
+            output=output_text,
+            context=context or []
+        )
+
+        # Store scores in state for transparency
+        if not hasattr(state, 'evaluation_scores') or state.evaluation_scores is None:
+            state.evaluation_scores = {}
+        state.evaluation_scores[node_name] = {
+            "relevancy_score": scores.relevancy_score,
+            "hallucination_risk": scores.hallucination_risk,
+            "reasoning_depth": scores.reasoning_depth,
+            "uix_compliance": scores.uix_compliance,
+            "task_completion": scores.task_completion,
+            "evaluated_at": scores.evaluated_at.isoformat() if scores.evaluated_at else None,
+        }
+
+        # Log quality metrics
+        logger.info(
+            f"[{node_name}] Quality scores - "
+            f"Relevancy: {scores.relevancy_score:.2f}, "
+            f"Hallucination: {scores.hallucination_risk:.2f}, "
+            f"Reasoning: {scores.reasoning_depth:.2f}, "
+            f"UIX: {scores.uix_compliance:.2f}"
+        )
+
+        # Quality gate: flag for human review if hallucination risk high
+        if scores.hallucination_risk > 0.3:
+            logger.warning(
+                f"[{node_name}] High hallucination risk ({scores.hallucination_risk:.2f}) - "
+                "flagging for review"
+            )
+            state.context["quality_warning"] = f"High hallucination risk at {node_name}"
+
+        return scores
+
+    except Exception as e:
+        logger.warning(f"Evaluation failed for {node_name}: {e}")
+        return None
 
 
 # =============================================================================
@@ -80,6 +155,7 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     2. Estimate causal effects
     3. Run refutation tests
     4. Generate interpretable conclusions
+    5. Evaluate output quality (DeepEval)
     """
     logger.info(f"Causal analyst processing: {state.user_input[:50]}...")
 
@@ -97,6 +173,21 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
         confidence=state.overall_confidence,
     )
 
+    # Evaluate causal output quality
+    if state.final_response:
+        context = [
+            f"Treatment effect: {effect_str}",
+            f"Refutation status: {refutation_str}",
+            f"Confidence: {state.overall_confidence}",
+        ]
+        await evaluate_node_output(
+            state=state,
+            node_name="causal_analyst",
+            input_text=state.user_input,
+            output_text=state.final_response,
+            context=context,
+        )
+
     return state
 
 
@@ -109,6 +200,7 @@ async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
     2. Design safe-to-fail probes to reduce uncertainty
     3. Update beliefs based on analysis
     4. Recommend next steps for exploration
+    5. Evaluate output quality (DeepEval)
     """
     logger.info(f"Bayesian explorer processing: {state.user_input[:50]}...")
 
@@ -126,6 +218,21 @@ async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
         ),
         confidence=state.overall_confidence,
     )
+
+    # Evaluate Bayesian output quality
+    if state.final_response:
+        context = [
+            f"Epistemic uncertainty: {state.epistemic_uncertainty:.0%}",
+            f"Hypothesis: {state.current_hypothesis or 'N/A'}",
+            f"Confidence: {state.overall_confidence}",
+        ]
+        await evaluate_node_output(
+            state=state,
+            node_name="bayesian_explorer",
+            input_text=state.user_input,
+            output_text=state.final_response,
+            context=context,
+        )
 
     return state
 

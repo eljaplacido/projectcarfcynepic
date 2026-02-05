@@ -98,8 +98,12 @@ observability = [
     "opentelemetry-api>=1.22.0",
     "opentelemetry-sdk>=1.22.0",
 ]
+evaluation = [
+    # LLM Quality Evaluation
+    "deepeval>=1.0.0",
+]
 all = [
-    "carf[dev,causal,bayesian,files,kafka,router,databases,observability]",
+    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation]",
 ]
 
 [project.scripts]
