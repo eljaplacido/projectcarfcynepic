@@ -33,6 +33,10 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 - **Bayesian Exploration**: Quantify uncertainty and update beliefs with new evidence via PyMC.
 - **Guardian Policy Layer**: Human-in-the-loop enforcement, Slack/Email notifications, and full audit trails.
 - **Three-View Dashboard**: Tailored views for Analysts, Developers, and Executives.
+- **Dark/Light Theme**: Full dark mode support with system preference detection.
+- **Actionable Insights**: Persona-specific recommendations based on analysis results.
+- **Agent Transparency**: Track LLM usage, latency, cost, and quality scores across workflows.
+- **Multi-Source Data Loading**: Load data from JSON, CSV, APIs, or Neo4j with automatic quality assessment.
 
 ### Data & Analytical Flows in CARF architecture 
 
@@ -157,16 +161,50 @@ All paths -> Guardian (policy check) -> [Approve | Reject | Escalate to Human]
 
 ## API Endpoints
 
+### Core Endpoints
+
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/health` | GET | System health check |
 | `/query` | POST | Process query through CARF pipeline |
+| `/query/transparent` | POST | Query with full transparency metrics |
 | `/domains` | GET | List Cynefin domains |
 | `/scenarios` | GET | List demo scenarios |
 | `/scenarios/{id}` | GET | Fetch scenario payload |
 | `/datasets` | POST | Upload dataset to registry |
 | `/datasets` | GET | List stored datasets |
 | `/datasets/{id}/preview` | GET | Preview dataset rows |
+
+### Insights & Transparency Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/insights/generate` | POST | Generate persona-based insights |
+| `/insights/types` | GET | List available insight types |
+| `/transparency/reliability` | POST | Assess analysis reliability |
+| `/transparency/agents` | GET | Get agent registry info |
+| `/guardian/status` | GET | Get compliance status |
+| `/guardian/policies` | GET | List configured policies |
+
+### Agent Tracking Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/workflow/start` | POST | Start workflow tracking |
+| `/workflow/complete` | POST | Complete workflow and aggregate metrics |
+| `/workflow/trace/{id}` | GET | Get full execution trace |
+| `/workflow/recent` | GET | Get recent workflow traces |
+| `/agents/stats` | GET | Get agent performance statistics |
+| `/agents/comparison` | GET | Get agent comparison data |
+
+### Data Loading Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/data/load/json` | POST | Load JSON data with quality assessment |
+| `/data/load/csv` | POST | Load CSV data with quality assessment |
+| `/data/{id}` | GET | Retrieve loaded data by ID |
+| `/data/quality/levels` | GET | Get available quality levels |
 
 ### Example API Calls
 
@@ -309,25 +347,38 @@ See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for detai
 
 ## Dashboard Views
 
-### End-User View
-- Query input with suggested queries
+### Analyst View
+- Query input with intelligent suggestions
 - Simulation controls (sliders)
-- Cynefin classification with domain scores
+- Cynefin classification with domain scores and entropy
 - Bayesian belief state with distribution chart
 - Causal DAG visualization
 - Guardian policy check with approval workflow
+- **Transparency Panel** with agent reliability and data quality
+- **Insights Panel** with actionable recommendations
 
 ### Developer View
 - Execution trace timeline
-- Performance metrics
+- Performance metrics (latency, tokens, cost)
 - DAG structure explorer
 - State snapshots (JSON)
+- **Agent Comparison Panel** with LLM performance tracking
+- **Data Flow Visualization**
+- Live log streaming via WebSocket
+- DeepEval quality metrics integration
 
 ### Executive View
 - Expected impact hero card
-- KPI dashboard
+- **Dynamic KPI Dashboard** (0-10 scoring with real data)
 - Proposed action summary
 - Policy compliance overview
+- **Actionable Insights** for decision-makers
+- Export and share functionality
+
+### Theme Support
+- **Dark/Light Mode Toggle** in header
+- System preference detection
+- Persistent theme preference (localStorage)
 
 ## Documentation
 
