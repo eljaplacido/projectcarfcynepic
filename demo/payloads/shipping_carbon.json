@@ -5,22 +5,28 @@
     "domain_hint": "complicated"
   },
   "causal_estimation": {
+    "csv_path": "demo/data/shipping_carbon.csv",
     "treatment": "sea_freight",
     "outcome": "co2_emissions_kg",
-    "covariates": ["distance_km", "weight_tons", "urgency"],
-    "effect_modifiers": ["product_type", "route"],
-    "data": [
-      {"sea_freight": 1, "co2_emissions_kg": 150, "distance_km": 15000, "weight_tons": 10, "urgency": "low", "product_type": "bulk", "route": "asia_europe"},
-      {"sea_freight": 0, "co2_emissions_kg": 4500, "distance_km": 15000, "weight_tons": 10, "urgency": "high", "product_type": "electronics", "route": "asia_europe"},
-      {"sea_freight": 1, "co2_emissions_kg": 120, "distance_km": 12000, "weight_tons": 8, "urgency": "low", "product_type": "textiles", "route": "asia_na"},
-      {"sea_freight": 0, "co2_emissions_kg": 3600, "distance_km": 12000, "weight_tons": 8, "urgency": "medium", "product_type": "machinery", "route": "asia_na"},
-      {"sea_freight": 1, "co2_emissions_kg": 180, "distance_km": 18000, "weight_tons": 12, "urgency": "low", "product_type": "raw_materials", "route": "europe_apac"},
-      {"sea_freight": 0, "co2_emissions_kg": 5400, "distance_km": 18000, "weight_tons": 12, "urgency": "high", "product_type": "pharma", "route": "europe_apac"},
-      {"sea_freight": 1, "co2_emissions_kg": 95, "distance_km": 8000, "weight_tons": 5, "urgency": "low", "product_type": "consumer_goods", "route": "intra_europe"},
-      {"sea_freight": 0, "co2_emissions_kg": 2400, "distance_km": 8000, "weight_tons": 5, "urgency": "high", "product_type": "food", "route": "intra_europe"},
-      {"sea_freight": 1, "co2_emissions_kg": 200, "distance_km": 20000, "weight_tons": 15, "urgency": "low", "product_type": "automotive", "route": "europe_sa"},
-      {"sea_freight": 0, "co2_emissions_kg": 6000, "distance_km": 20000, "weight_tons": 15, "urgency": "medium", "product_type": "electronics", "route": "europe_sa"}
-    ]
+    "covariates": ["distance_km", "weight_tons", "urgency", "product_type"],
+    "effect_modifiers": ["route"],
+    "method_name": "backdoor.linear_regression",
+    "refutation_tests": ["placebo_treatment", "random_common_cause", "data_subset"]
+  },
+  "data_generation": {
+    "generator": "shipping_carbon",
+    "n_samples": 1200,
+    "causal_structure": {
+      "treatment_to_outcome": "sea_freight -> co2_emissions_kg (30x reduction vs air)",
+      "confounders": ["urgency (high urgency = air)", "product_type (perishables = air)"],
+      "effect_modifiers": ["route (longer routes amplify mode difference)"]
+    },
+    "emission_factors_gCO2_per_tkm": {
+      "air": 550,
+      "road": 100,
+      "rail": 30,
+      "sea": 15
+    }
   },
   "bayesian_inference": {
     "prior_mean": -3500.0,

@@ -336,7 +336,6 @@ const DisorderDomainView: React.FC<{
 // ============================================================================
 const DomainVisualization: React.FC<DomainVisualizationProps> = ({
     domain,
-    confidence: _confidence, // Reserved for future threshold-based rendering
     onEscalate,
     onAction,
     isProcessing,

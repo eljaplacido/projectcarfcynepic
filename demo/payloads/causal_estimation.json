@@ -5,9 +5,22 @@
     "domain_hint": "complicated"
   },
   "causal_estimation": {
-    "treatment": "discount",
-    "outcome": "churn",
-    "covariates": ["region", "tenure"],
-    "csv_path": "demo/data/causal_sample.csv"
-  }
+    "csv_path": "demo/data/customer_churn.csv",
+    "treatment": "discount_offered",
+    "outcome": "churned",
+    "covariates": ["region", "plan_type", "tenure_months", "monthly_spend", "support_tickets"],
+    "effect_modifiers": ["tenure_months"],
+    "method_name": "backdoor.propensity_score_matching",
+    "refutation_tests": ["placebo_treatment", "random_common_cause", "data_subset"]
+  },
+  "data_generation": {
+    "generator": "customer_churn",
+    "n_samples": 2000,
+    "causal_structure": {
+      "treatment_to_outcome": "discount_offered -> churned (40% risk reduction)",
+      "confounders": ["churn_risk (discounts targeted at high-risk)", "monthly_spend"],
+      "effect_modifiers": ["tenure_months (most effective for 6-36 month tenure)"]
+    }
+  },
+  "legacy_csv_path": "demo/data/causal_sample.csv"
 }

@@ -676,7 +676,6 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                 )}
                 {activePanel === 'datalayer' && (
                     <DataLayerInspector
-                        context={response?.context}
                         className="border-none shadow-none"
                     />
                 )}

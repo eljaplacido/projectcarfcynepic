@@ -28,8 +28,9 @@ from src.services.file_analyzer import FileAnalysisResult, get_file_analyzer
 from src.utils.telemetry import init_telemetry
 from src.workflows.graph import run_carf
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from project root (override system env vars)
+_project_root = Path(__file__).resolve().parents[1]
+load_dotenv(_project_root / ".env", override=True)
 
 # Configure logging
 logging.basicConfig(
@@ -49,9 +50,17 @@ async def lifespan(app: FastAPI):
     # Initialise observability
     init_telemetry()
 
-    # Validate required environment
-    if not os.getenv("OPENAI_API_KEY"):
-        logger.warning("OPENAI_API_KEY not set - LLM features will fail")
+    # Validate required environment - check for any supported LLM provider
+    has_llm_key = (
+        os.getenv("DEEPSEEK_API_KEY") or
+        os.getenv("OPENAI_API_KEY") or
+        os.getenv("ANTHROPIC_API_KEY")
+    )
+    if not has_llm_key:
+        logger.warning("No LLM API key found (DEEPSEEK_API_KEY/OPENAI_API_KEY) - LLM features will fail")
+    else:
+        provider = os.getenv("LLM_PROVIDER", "deepseek")
+        logger.info(f"LLM provider configured: {provider}")
 
     # Initialise Neo4j and wire it into the causal engine
     prod_mode = os.getenv("PROD_MODE", "").lower() in ("1", "true", "yes")
@@ -195,13 +204,47 @@ async def get_config_status() -> LLMConfigStatus:
     """Check current LLM configuration status.
 
     Returns whether the system has a valid LLM configuration.
+    Respects the LLM_PROVIDER environment variable if set.
     """
-    # Check for any configured API key
+    # Get configured provider (if explicitly set)
+    configured_provider = os.getenv("LLM_PROVIDER", "").lower()
+
+    # Check for API keys
     openai_key = os.getenv("OPENAI_API_KEY")
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
     deepseek_key = os.getenv("DEEPSEEK_API_KEY")
 
-    if openai_key:
+    # If provider is explicitly configured, verify its key exists
+    if configured_provider == "deepseek" and deepseek_key:
+        return LLMConfigStatus(
+            is_configured=True,
+            provider="deepseek",
+            model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+            message="DeepSeek API configured",
+        )
+    elif configured_provider == "openai" and openai_key:
+        return LLMConfigStatus(
+            is_configured=True,
+            provider="openai",
+            model=os.getenv("OPENAI_MODEL", "gpt-4"),
+            message="OpenAI API configured",
+        )
+    elif configured_provider == "anthropic" and anthropic_key:
+        return LLMConfigStatus(
+            is_configured=True,
+            provider="anthropic",
+            model=os.getenv("ANTHROPIC_MODEL", "claude-3-sonnet"),
+            message="Anthropic API configured",
+        )
+    # Fallback: check for any available key
+    elif deepseek_key:
+        return LLMConfigStatus(
+            is_configured=True,
+            provider="deepseek",
+            model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+            message="DeepSeek API configured",
+        )
+    elif openai_key:
         return LLMConfigStatus(
             is_configured=True,
             provider="openai",
@@ -214,13 +257,6 @@ async def get_config_status() -> LLMConfigStatus:
             provider="anthropic",
             model=os.getenv("ANTHROPIC_MODEL", "claude-3-sonnet"),
             message="Anthropic API configured",
-        )
-    elif deepseek_key:
-        return LLMConfigStatus(
-            is_configured=True,
-            provider="deepseek",
-            model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
-            message="DeepSeek API configured",
         )
     else:
         return LLMConfigStatus(
@@ -1435,6 +1471,187 @@ async def list_domains():
 
 
 # ============================================================================
+# Router Configuration Endpoints
+# ============================================================================
+
+from src.workflows.router import RouterConfig, get_router_config, update_router_config
+
+
+@app.get("/router/config", response_model=RouterConfig, tags=["Router"])
+async def get_router_configuration():
+    """Get current Cynefin Router configuration.
+
+    Returns all configurable thresholds and settings for the router,
+    allowing users to understand how domain classification decisions are made.
+    """
+    return get_router_config()
+
+
+@app.put("/router/config", response_model=RouterConfig, tags=["Router"])
+async def update_router_configuration(config: RouterConfig):
+    """Update Cynefin Router configuration.
+
+    Allows users to adjust:
+    - Global confidence threshold
+    - Per-domain confidence thresholds
+    - Entropy thresholds
+    - Feature flags (data hints, pattern matching)
+
+    Changes take effect immediately for subsequent queries.
+    """
+    update_router_config(config)
+    return get_router_config()
+
+
+class RouterThresholdUpdate(BaseModel):
+    """Partial update for specific router thresholds."""
+    confidence_threshold: float | None = Field(None, ge=0.0, le=1.0)
+    entropy_threshold_chaotic: float | None = Field(None, ge=0.0, le=1.0)
+    clear_threshold: float | None = Field(None, ge=0.0, le=1.0)
+    complicated_threshold: float | None = Field(None, ge=0.0, le=1.0)
+    complex_threshold: float | None = Field(None, ge=0.0, le=1.0)
+
+
+@app.patch("/router/config", response_model=RouterConfig, tags=["Router"])
+async def patch_router_thresholds(update: RouterThresholdUpdate):
+    """Partially update router thresholds.
+
+    Update only the specified thresholds without changing other settings.
+    """
+    current = get_router_config()
+    updates = update.model_dump(exclude_none=True)
+
+    if updates:
+        new_config = current.model_copy(update=updates)
+        update_router_config(new_config)
+
+    return get_router_config()
+
+
+@app.get("/router/hints", tags=["Router"])
+async def get_router_hints():
+    """Get data structure and query patterns used for domain hints.
+
+    Shows what patterns the router looks for to suggest domains,
+    providing transparency into the classification logic.
+    """
+    from src.workflows.router import DATA_STRUCTURE_HINTS
+    return {
+        "data_structure_hints": DATA_STRUCTURE_HINTS,
+        "description": "Patterns used to detect domain from data structure and query text"
+    }
+
+
+# ============================================================================
+# Guardian Configuration Endpoints
+# ============================================================================
+
+from src.workflows.guardian import (
+    ContextualPolicyConfig,
+    get_guardian_config,
+    update_guardian_config,
+)
+
+
+@app.get("/guardian/config", response_model=ContextualPolicyConfig, tags=["Guardian"])
+async def get_guardian_configuration():
+    """Get current Guardian policy configuration.
+
+    Returns all configurable policy thresholds including:
+    - Per-domain confidence thresholds
+    - Per-domain financial limits
+    - Risk weights for decomposed scoring
+    - User override settings
+    """
+    return get_guardian_config()
+
+
+@app.put("/guardian/config", response_model=ContextualPolicyConfig, tags=["Guardian"])
+async def update_guardian_configuration(config: ContextualPolicyConfig):
+    """Update Guardian policy configuration.
+
+    Allows users to customize:
+    - Confidence thresholds per Cynefin domain
+    - Financial limits per domain
+    - Risk component weights
+    - Strict mode and audit settings
+
+    Changes take effect immediately for subsequent evaluations.
+    """
+    update_guardian_config(config)
+    return get_guardian_config()
+
+
+class GuardianThresholdUpdate(BaseModel):
+    """Partial update for Guardian thresholds."""
+    user_financial_limit: float | None = Field(None, description="Override financial limit")
+    user_confidence_threshold: float | None = Field(None, ge=0.0, le=1.0)
+    strict_mode: bool | None = Field(None, description="Enable strict mode")
+
+
+@app.patch("/guardian/config", response_model=ContextualPolicyConfig, tags=["Guardian"])
+async def patch_guardian_config(update: GuardianThresholdUpdate):
+    """Partially update Guardian configuration.
+
+    Update only the specified settings without changing others.
+    Common use case: Set user-specific financial limit or confidence threshold.
+    """
+    current = get_guardian_config()
+    updates = update.model_dump(exclude_none=True)
+
+    if updates:
+        new_config = current.model_copy(update=updates)
+        update_guardian_config(new_config)
+
+    return get_guardian_config()
+
+
+@app.get("/guardian/policies", tags=["Guardian"])
+async def get_guardian_policies():
+    """Get all defined Guardian policies with explanations.
+
+    Shows what policies are enforced, their categories,
+    and which can be overridden by users.
+    """
+    return {
+        "policies": [
+            {
+                "name": "confidence_threshold",
+                "category": "risk",
+                "description": "Minimum confidence required for automated approval",
+                "user_configurable": True,
+                "per_domain": True,
+            },
+            {
+                "name": "auto_approval_limit",
+                "category": "financial",
+                "description": "Maximum amount for automatic approval without human review",
+                "user_configurable": True,
+                "per_domain": True,
+            },
+            {
+                "name": "max_reflection_attempts",
+                "category": "operational",
+                "description": "Maximum self-correction loops before escalation",
+                "user_configurable": False,
+                "default_value": 2,
+            },
+            {
+                "name": "always_escalate",
+                "category": "escalation",
+                "description": "Actions that always require human approval",
+                "user_configurable": False,
+                "actions": ["delete_data", "modify_policy", "production_deployment"],
+            },
+        ],
+        "risk_weights": {
+            "description": "Weights used for decomposed risk scoring",
+            "values": get_guardian_config().risk_weights,
+        },
+    }
+
+
+# ============================================================================
 # Phase 7: /analyze Endpoint - File Upload and Analysis
 # ============================================================================
 
@@ -1718,6 +1935,9 @@ from src.services.simulation import (
     ScenarioConfig,
     SimulationResult,
     SimulationComparison,
+    EnhancedSimulationResult,
+    ScenarioRealismScore,
+    assess_scenario_realism,
     get_simulation_service
 )
 
@@ -1836,6 +2056,168 @@ async def rerun_simulation(
         raise HTTPException(
             status_code=500,
             detail=f"Re-run failed: {str(e)}"
+        )
+
+
+@app.get("/simulations/generators")
+async def list_data_generators():
+    """List available realistic data generators.
+
+    Returns generators that can create simulation data with known
+    causal structure for testing and demonstration.
+    """
+    sim_service = get_simulation_service()
+    return sim_service.list_available_generators()
+
+
+class DataGenerationRequest(BaseModel):
+    """Request for generating simulation data."""
+    scenario_type: str = Field(..., description="Type of scenario (e.g., 'scope3_emissions')")
+    n_samples: int = Field(1000, ge=100, le=10000, description="Number of samples")
+    seed: int = Field(42, description="Random seed for reproducibility")
+
+
+@app.post("/simulations/generate")
+async def generate_simulation_data(request: DataGenerationRequest):
+    """Generate realistic simulation data with known causal structure.
+
+    Available generators:
+    - scope3_emissions: Scope 3 emissions with supplier programs
+    - supply_chain_resilience: Climate stress impact on disruptions
+    - pricing_optimization: Price changes and sales volume
+    - renewable_energy_roi: Solar investment ROI by facility
+    - shipping_carbon: Shipping mode carbon footprint
+    - customer_churn: Discount intervention on churn
+    """
+    sim_service = get_simulation_service()
+    df = sim_service.generate_scenario_data(
+        scenario_type=request.scenario_type,
+        n_samples=request.n_samples,
+        seed=request.seed
+    )
+
+    if df is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown scenario type: {request.scenario_type}"
+        )
+
+    return {
+        "scenario_type": request.scenario_type,
+        "n_samples": len(df),
+        "columns": list(df.columns),
+        "sample_data": df.head(5).to_dict(orient="records"),
+        "data_summary": {
+            col: {
+                "dtype": str(df[col].dtype),
+                "null_count": int(df[col].isnull().sum()),
+                "unique_count": int(df[col].nunique()),
+            }
+            for col in df.columns
+        }
+    }
+
+
+class RealismAssessmentRequest(BaseModel):
+    """Request for scenario realism assessment."""
+    dataset_id: str = Field(..., description="Dataset ID to assess")
+    treatment_col: str = Field(..., description="Treatment column name")
+    outcome_col: str = Field(..., description="Outcome column name")
+    covariates: list[str] = Field(default_factory=list, description="Covariate columns")
+
+
+@app.post("/simulations/assess-realism", response_model=ScenarioRealismScore)
+async def assess_scenario_data_realism(request: RealismAssessmentRequest):
+    """Assess the realism and quality of simulation/scenario data.
+
+    Evaluates:
+    - Sample size adequacy for causal inference
+    - Treatment/control balance (positivity assumption)
+    - Covariate coverage and completeness
+    - Effect size plausibility
+    - Causal identifiability strength
+
+    Returns recommendations for improving data quality.
+    """
+    import pandas as pd
+
+    dataset_store = get_dataset_store()
+    dataset_info = dataset_store.get_metadata(request.dataset_id)
+
+    if dataset_info is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Dataset not found: {request.dataset_id}"
+        )
+
+    try:
+        df = pd.read_csv(dataset_info.file_path)
+        realism = assess_scenario_realism(
+            df=df,
+            treatment_col=request.treatment_col,
+            outcome_col=request.outcome_col,
+            covariates=request.covariates
+        )
+        return realism
+    except Exception as e:
+        logger.error(f"Realism assessment failed: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Assessment failed: {str(e)}"
+        )
+
+
+@app.post("/simulations/run-transparent", response_model=EnhancedSimulationResult)
+async def run_simulation_with_transparency(
+    config: ScenarioConfig,
+    treatment_col: str | None = None,
+    outcome_col: str | None = None,
+    covariates: list[str] | None = None,
+    context: dict[str, Any] | None = None
+):
+    """Run simulation with full transparency and reliability reporting.
+
+    Enhanced simulation that provides:
+    - Standard causal effect estimation
+    - Scenario realism assessment (if data available)
+    - Reliability scoring based on multiple factors
+    - List of agents used in analysis
+    - Methodology transparency details
+    - Known limitations and caveats
+
+    This endpoint is designed for EU AI Act compliance and
+    enterprise evaluation of analysis reliability.
+    """
+    import pandas as pd
+
+    sim_service = get_simulation_service()
+    dataset_store = get_dataset_store()
+
+    # Load data if dataset specified
+    df = None
+    if config.baseline_dataset_id:
+        dataset_info = dataset_store.get_metadata(config.baseline_dataset_id)
+        if dataset_info:
+            try:
+                df = pd.read_csv(dataset_info.file_path)
+            except Exception as e:
+                logger.warning(f"Could not load dataset for realism assessment: {e}")
+
+    try:
+        result = await sim_service.run_scenario_with_transparency(
+            config=config,
+            data=df,
+            treatment_col=treatment_col,
+            outcome_col=outcome_col,
+            covariates=covariates,
+            context=context
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Transparent simulation failed: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Simulation failed: {str(e)}"
         )
 
 
@@ -2189,6 +2571,366 @@ async def validate_config(request: ConfigValidateRequest) -> ConfigValidateRespo
         provider=provider,
         message=message,
     )
+
+
+# ============================================================================
+# Transparency, Reliability & EU AI Act Compliance Endpoints
+# ============================================================================
+
+from src.services.transparency import (
+    get_transparency_service,
+    AgentInfo,
+    AgentChainTrace,
+    DataQualityAssessment,
+    ReliabilityAssessment,
+    EUAIActComplianceReport,
+    WorkflowEvaluation,
+    GuardianTransparencyReport,
+)
+
+
+@app.get("/transparency/agents", response_model=list[AgentInfo], tags=["Transparency"])
+async def list_agents():
+    """List all agents used in the CARF analysis pipeline.
+
+    Provides transparency into which agents are available, their roles,
+    capabilities, and known limitations.
+    """
+    service = get_transparency_service()
+    return service.get_all_agents()
+
+
+@app.get("/transparency/agents/{agent_id}", response_model=AgentInfo, tags=["Transparency"])
+async def get_agent_details(agent_id: str):
+    """Get detailed information about a specific agent.
+
+    Returns the agent's role, model used, capabilities, and limitations.
+    """
+    service = get_transparency_service()
+    agent = service.get_agent_info(agent_id)
+    if not agent:
+        raise HTTPException(status_code=404, detail=f"Agent not found: {agent_id}")
+    return agent
+
+
+class DataQualityRequest(BaseModel):
+    """Request for data quality assessment."""
+    data: list[dict[str, Any]] | dict[str, list[Any]] = Field(
+        ..., description="Data to assess quality"
+    )
+    dataset_id: str | None = Field(None, description="Optional dataset identifier")
+
+
+@app.post("/transparency/data-quality", response_model=DataQualityAssessment, tags=["Transparency"])
+async def assess_data_quality(request: DataQualityRequest):
+    """Assess data quality for transparency and reliability.
+
+    Evaluates completeness, uniqueness, sample size, and provides
+    recommendations for data improvements.
+    """
+    service = get_transparency_service()
+    return service.assess_data_quality(request.data, request.dataset_id)
+
+
+class ReliabilityRequest(BaseModel):
+    """Request for reliability assessment."""
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Analysis confidence")
+    refutation_passed: bool | None = Field(None, description="Did refutation tests pass")
+    refutation_tests_run: int = Field(0, description="Number of refutation tests run")
+    refutation_tests_passed: int = Field(0, description="Number passed")
+    sample_size: int = Field(0, description="Sample size used")
+    methodology: str = Field("unknown", description="Analysis methodology")
+    data: list[dict[str, Any]] | None = Field(None, description="Optional data for quality assessment")
+
+
+@app.post("/transparency/reliability", response_model=ReliabilityAssessment, tags=["Transparency"])
+async def assess_reliability(request: ReliabilityRequest):
+    """Assess overall reliability of an analysis.
+
+    Provides decomposed reliability scores across:
+    - Model confidence
+    - Data quality
+    - Refutation tests
+    - Sample size adequacy
+
+    Returns actionable recommendations for improvement.
+    """
+    service = get_transparency_service()
+
+    data_quality = None
+    if request.data:
+        data_quality = service.assess_data_quality(request.data)
+
+    return service.assess_reliability(
+        confidence=request.confidence,
+        data_quality=data_quality,
+        refutation_passed=request.refutation_passed,
+        refutation_tests_run=request.refutation_tests_run,
+        refutation_tests_passed=request.refutation_tests_passed,
+        sample_size=request.sample_size,
+        methodology=request.methodology,
+    )
+
+
+class ComplianceRequest(BaseModel):
+    """Request for EU AI Act compliance assessment."""
+    session_id: str | None = Field(None, description="Session to assess")
+    has_explanation: bool = Field(True, description="Explanation service enabled")
+    has_audit_trail: bool = Field(True, description="Kafka audit enabled")
+    has_human_oversight: bool = Field(True, description="HumanLayer enabled")
+    data_governance_score: float = Field(0.8, ge=0.0, le=1.0)
+
+
+@app.post("/transparency/compliance", response_model=EUAIActComplianceReport, tags=["Transparency"])
+async def assess_compliance(request: ComplianceRequest):
+    """Assess EU AI Act compliance status.
+
+    Evaluates compliance with key articles:
+    - Art. 13: Transparency
+    - Art. 12: Record-keeping
+    - Art. 14: Human Oversight
+    - Art. 10: Data Governance
+
+    Returns compliance status, gaps, and remediation steps.
+    """
+    from uuid import UUID
+    service = get_transparency_service()
+    return service.assess_eu_ai_act_compliance(
+        session_id=UUID(request.session_id) if request.session_id else None,
+        has_explanation=request.has_explanation,
+        has_audit_trail=request.has_audit_trail,
+        has_human_oversight=request.has_human_oversight,
+        data_governance_score=request.data_governance_score,
+    )
+
+
+class WorkflowEvaluationRequest(BaseModel):
+    """Request for workflow evaluation."""
+    workflow_name: str = Field(..., description="Name of the workflow")
+    use_case: str = Field(..., description="Business use case description")
+    data_types: list[str] = Field(default_factory=list, description="Types of data used")
+    models_used: list[str] = Field(default_factory=list, description="Models/algorithms used")
+    has_validation: bool = Field(False, description="Includes validation tests")
+    has_human_review: bool = Field(False, description="Human review enabled")
+    sample_size: int = Field(0, description="Data sample size")
+    domain: str = Field("Complicated", description="Cynefin domain")
+
+
+@app.post("/transparency/evaluate-workflow", response_model=WorkflowEvaluation, tags=["Transparency"])
+async def evaluate_workflow(request: WorkflowEvaluationRequest):
+    """Evaluate an agentic workflow's feasibility, reliability, and transparency.
+
+    This endpoint allows users to input their workflow configuration and
+    receive scores on:
+    - Feasibility: Can this workflow achieve the goal?
+    - Reliability: How trustworthy are the results?
+    - Transparency: Is the workflow explainable?
+    - EU AI Act Alignment: Compliance with regulations
+
+    Use this to assess your analysis approach before execution.
+    """
+    service = get_transparency_service()
+    return service.evaluate_workflow(
+        workflow_name=request.workflow_name,
+        use_case=request.use_case,
+        data_types=request.data_types,
+        models_used=request.models_used,
+        has_validation=request.has_validation,
+        has_human_review=request.has_human_review,
+        sample_size=request.sample_size,
+        domain=request.domain,
+    )
+
+
+class GuardianTransparencyRequest(BaseModel):
+    """Request for Guardian transparency report."""
+    session_id: str = Field(..., description="Session ID")
+    verdict: str = Field(..., description="Guardian verdict")
+    policies_passed: list[str] = Field(default_factory=list)
+    policies_violated: list[str] = Field(default_factory=list)
+
+
+@app.post("/transparency/guardian", response_model=GuardianTransparencyReport, tags=["Transparency"])
+async def get_guardian_transparency(request: GuardianTransparencyRequest):
+    """Get transparent view of Guardian policy decisions.
+
+    Shows all policies evaluated, their definitions, rationale,
+    and which can be user-configured. Enables users to understand
+    why decisions were made and what overrides are available.
+    """
+    from uuid import UUID
+    service = get_transparency_service()
+    return service.get_guardian_transparency(
+        session_id=UUID(request.session_id),
+        verdict=request.verdict,
+        policies_passed=request.policies_passed,
+        policies_violated=request.policies_violated,
+    )
+
+
+# ============================================================================
+# Enhanced Query Response with Transparency
+# ============================================================================
+
+class EnhancedQueryResponse(QueryResponse):
+    """Extended query response with full transparency metrics."""
+    reliability_assessment: ReliabilityAssessment | None = Field(
+        None, alias="reliabilityAssessment", serialization_alias="reliabilityAssessment"
+    )
+    data_quality_assessment: DataQualityAssessment | None = Field(
+        None, alias="dataQualityAssessment", serialization_alias="dataQualityAssessment"
+    )
+    agents_used: list[AgentInfo] = Field(
+        default_factory=list, alias="agentsUsed", serialization_alias="agentsUsed"
+    )
+    eu_compliance_status: str | None = Field(
+        None, alias="euComplianceStatus", serialization_alias="euComplianceStatus"
+    )
+
+
+@app.post("/query/transparent", response_model=EnhancedQueryResponse, tags=["Query"])
+async def process_query_with_transparency(request: QueryRequest):
+    """Process a query with full transparency and reliability metrics.
+
+    Extends the standard /query endpoint with:
+    - Reliability assessment
+    - Data quality assessment
+    - Agent chain transparency
+    - EU AI Act compliance indicators
+
+    Use this endpoint when you need full audit trail and explainability.
+    """
+    try:
+        _validate_payload_limits(request)
+
+        context = dict(request.context or {})
+        if request.causal_estimation:
+            context["causal_estimation"] = request.causal_estimation.model_dump()
+        if request.bayesian_inference:
+            context["bayesian_inference"] = request.bayesian_inference.model_dump()
+
+        # Run the full CARF pipeline
+        final_state = await run_carf(
+            user_input=request.query,
+            context=context,
+        )
+
+        # Build standard response parts
+        reasoning_chain = [
+            ReasoningStep(
+                node=step.node_name,
+                action=step.action,
+                confidence=step.confidence.value,
+                timestamp=step.timestamp,
+                duration_ms=step.duration_ms,
+            )
+            for step in final_state.reasoning_chain
+        ]
+
+        causal_result = None
+        if final_state.causal_evidence:
+            ce = final_state.causal_evidence
+            refutations_passed = sum(1 for v in ce.refutation_results.values() if v)
+            causal_result = CausalResult(
+                effect=ce.effect_size,
+                unit="units",
+                p_value=ce.p_value,
+                ci_low=ce.confidence_interval[0],
+                ci_high=ce.confidence_interval[1],
+                description=ce.interpretation or f"Effect of {ce.treatment} on {ce.outcome}",
+                refutations_passed=refutations_passed,
+                refutations_total=len(ce.refutation_results),
+                confounders_controlled=len([c for c in ce.confounders_checked]),
+                confounders_total=len(ce.confounders_checked),
+                treatment=ce.treatment,
+                outcome=ce.outcome,
+            )
+
+        bayesian_result = None
+        if final_state.bayesian_evidence:
+            be = final_state.bayesian_evidence
+            bayesian_result = BayesianResult(
+                posterior_mean=be.posterior_mean,
+                ci_low=be.credible_interval[0],
+                ci_high=be.credible_interval[1],
+                uncertainty_before=be.uncertainty_before,
+                uncertainty_after=be.uncertainty_after,
+                epistemic_uncertainty=be.epistemic_uncertainty,
+                aleatoric_uncertainty=be.aleatoric_uncertainty,
+                hypothesis=be.hypothesis,
+                confidence_level=be.confidence_level,
+                probes_designed=be.probes_designed,
+                recommended_probe=be.recommended_probe,
+            )
+
+        guardian_result = GuardianResult(
+            verdict=final_state.guardian_verdict,
+            policies_passed=0 if final_state.policy_violations else 1,
+            policies_total=1,
+            risk_level="high" if final_state.policy_violations else "low",
+            violations=final_state.policy_violations or [],
+        )
+
+        # Add transparency metrics
+        transparency_service = get_transparency_service()
+
+        # Determine which agents were used
+        agents_used = []
+        for step in final_state.reasoning_chain:
+            agent = transparency_service.get_agent_info(step.node_name)
+            if agent and agent not in agents_used:
+                agents_used.append(agent)
+
+        # Reliability assessment
+        refutation_passed = None
+        refutation_count = 0
+        refutation_passed_count = 0
+        if final_state.causal_evidence:
+            refutation_count = len(final_state.causal_evidence.refutation_results)
+            refutation_passed_count = sum(
+                1 for v in final_state.causal_evidence.refutation_results.values() if v
+            )
+            refutation_passed = refutation_passed_count == refutation_count
+
+        reliability = transparency_service.assess_reliability(
+            confidence=final_state.domain_confidence,
+            refutation_passed=refutation_passed,
+            refutation_tests_run=refutation_count,
+            refutation_tests_passed=refutation_passed_count,
+            methodology=final_state.triggered_method or "unknown",
+        )
+
+        return EnhancedQueryResponse(
+            session_id=str(final_state.session_id),
+            domain=final_state.cynefin_domain,
+            domain_confidence=final_state.domain_confidence,
+            domain_entropy=final_state.domain_entropy,
+            guardian_verdict=final_state.guardian_verdict,
+            response=final_state.final_response,
+            requires_human=final_state.should_escalate_to_human(),
+            reasoning_chain=reasoning_chain,
+            causal_result=causal_result,
+            bayesian_result=bayesian_result,
+            guardian_result=guardian_result,
+            error=final_state.error,
+            router_reasoning=final_state.current_hypothesis,
+            router_key_indicators=final_state.router_key_indicators,
+            domain_scores=final_state.domain_scores,
+            triggered_method=final_state.triggered_method,
+            # Transparency additions
+            reliability_assessment=reliability,
+            agents_used=agents_used,
+            eu_compliance_status="compliant",
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Transparent query error: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Processing failed: {str(e)}",
+        )
 
 
 def main():

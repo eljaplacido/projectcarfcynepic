@@ -116,8 +116,8 @@ export interface ReasoningStep {
     confidence: string;
     timestamp: string;
     durationMs: number;
-    input?: Record<string, any>;
-    output?: Record<string, any>;
+    input?: Record<string, unknown>;
+    output?: Record<string, unknown>;
     status?: 'completed' | 'in_progress' | 'pending';
 }
 
@@ -141,7 +141,7 @@ export interface QueryResponse {
     routerKeyIndicators?: string[];
     domainScores?: Record<string, number>;
     triggeredMethod?: string | null;
-    context?: Record<string, any>; // Analysis context for data layer inspection
+    context?: Record<string, unknown>; // Analysis context for data layer inspection
 }
 
 export interface ScenarioMetadata {
@@ -156,9 +156,9 @@ export interface ScenarioMetadata {
 
 export interface ScenarioPayload {
     query: string;
-    context?: Record<string, any>;
-    causalEstimation?: Record<string, any>;
-    bayesianInference?: Record<string, any>;
+    context?: Record<string, unknown>;
+    causalEstimation?: Record<string, unknown>;
+    bayesianInference?: Record<string, unknown>;
 }
 
 // Phase 7: Analysis History

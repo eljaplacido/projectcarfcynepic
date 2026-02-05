@@ -73,7 +73,6 @@ const CynefinRouter: React.FC<CynefinRouterProps> = ({
     confidence,
     entropy,
     solver,
-    isProcessing: _isProcessing = false,
     scores,
     reasoning,
     explanation,

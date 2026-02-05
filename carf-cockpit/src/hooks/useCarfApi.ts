@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { QueryResponse } from '../types/carf';
+import type { QueryResponse, ScenarioMetadata } from '../types/carf';
 import api, {
     type QueryRequest,
     type ChatRequest,
@@ -23,7 +23,6 @@ import api, {
     ApiError,
     submitQueryStream,
 } from '../services/apiService';
-import type { QueryResponse, ScenarioMetadata } from '../types/carf';
 
 // ============================================================================
 // Generic API Hook

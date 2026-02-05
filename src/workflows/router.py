@@ -50,6 +50,57 @@ class DomainClassification(BaseModel):
     )
 
 
+class RouterConfig(BaseModel):
+    """Configuration for Cynefin Router with per-domain thresholds."""
+
+    # Global thresholds
+    confidence_threshold: float = Field(0.70, ge=0.0, le=1.0, description="Below this → Disorder")
+    entropy_threshold_chaotic: float = Field(0.9, ge=0.0, le=1.0, description="Above this → Chaotic")
+
+    # Per-domain confidence thresholds (allow finer control)
+    clear_threshold: float = Field(0.95, ge=0.0, le=1.0, description="Threshold for Clear domain")
+    complicated_threshold: float = Field(0.85, ge=0.0, le=1.0, description="Threshold for Complicated")
+    complex_threshold: float = Field(0.70, ge=0.0, le=1.0, description="Threshold for Complex")
+
+    # Per-domain entropy thresholds
+    clear_entropy_max: float = Field(0.2, ge=0.0, le=1.0, description="Max entropy for Clear")
+    complicated_entropy_max: float = Field(0.5, ge=0.0, le=1.0, description="Max entropy for Complicated")
+    complex_entropy_range: tuple[float, float] = Field((0.5, 0.8), description="Entropy range for Complex")
+
+    # Feature flags
+    use_data_hints: bool = Field(True, description="Use data structure hints for domain detection")
+    use_pattern_matching: bool = Field(True, description="Use pattern matching for domain hints")
+    allow_user_override: bool = Field(True, description="Allow user-specified domain hints")
+
+
+# Data structure patterns that hint at specific domains
+DATA_STRUCTURE_HINTS = {
+    "Complicated": {
+        "column_patterns": [
+            "treatment", "intervention", "program", "campaign", "exposure",
+            "outcome", "result", "effect", "impact", "conversion", "churn",
+            "confounder", "covariate", "control"
+        ],
+        "indicators": ["causal", "effect", "treatment", "outcome"],
+    },
+    "Complex": {
+        "column_patterns": [
+            "probability", "belief", "prior", "posterior", "uncertainty",
+            "hypothesis", "prediction", "forecast", "scenario"
+        ],
+        "indicators": ["uncertain", "belief", "probability", "forecast", "predict"],
+    },
+    "Clear": {
+        "column_patterns": ["id", "lookup", "reference", "key"],
+        "indicators": ["lookup", "find", "get", "retrieve", "what is"],
+    },
+    "Chaotic": {
+        "column_patterns": ["alert", "incident", "emergency", "critical"],
+        "indicators": ["emergency", "critical", "down", "breach", "failure", "crisis"],
+    },
+}
+
+
 class CynefinRouter:
     """The Sense-Making Gateway for CARF.
 
@@ -57,6 +108,8 @@ class CynefinRouter:
     1. LLM-based semantic classification
     2. Signal entropy analysis
     3. Confidence thresholding
+    4. Data structure hints (NEW)
+    5. Query pattern matching (NEW)
 
     If confidence falls below threshold (default 0.85), routes to Disorder
     for human escalation via HumanLayer.
@@ -68,6 +121,7 @@ class CynefinRouter:
         entropy_threshold_chaotic: float = 0.9,
         mode: str | None = None,
         model_path: str | None = None,
+        config: RouterConfig | None = None,
     ):
         """Initialize the Cynefin Router.
 
@@ -76,10 +130,20 @@ class CynefinRouter:
             entropy_threshold_chaotic: Above this → Chaotic
             mode: "llm" or "distilbert" (defaults to ROUTER_MODE env or "llm")
             model_path: Path to trained model (defaults to ROUTER_MODEL_PATH env)
+            config: Full router configuration (overrides individual params)
 
         Note: LLM provider is configured via environment variables.
         Set LLM_PROVIDER=deepseek and DEEPSEEK_API_KEY for cost-efficient operation.
         """
+        # Load configuration
+        if config:
+            self.config = config
+        else:
+            self.config = RouterConfig(
+                confidence_threshold=confidence_threshold,
+                entropy_threshold_chaotic=entropy_threshold_chaotic,
+            )
+
         self.mode = (mode or os.getenv("ROUTER_MODE", "llm")).lower()
         if self.mode not in {"llm", "distilbert"}:
             logger.warning(f"Unknown router mode '{self.mode}', defaulting to LLM.")
@@ -103,8 +167,10 @@ class CynefinRouter:
 
         if self.mode == "llm":
             self.model = get_router_model()
-        self.confidence_threshold = confidence_threshold
-        self.entropy_threshold_chaotic = entropy_threshold_chaotic
+
+        # Use config values
+        self.confidence_threshold = self.config.confidence_threshold
+        self.entropy_threshold_chaotic = self.config.entropy_threshold_chaotic
 
         self.system_prompt = self._build_system_prompt()
 
@@ -182,6 +248,89 @@ Respond with a JSON object only, no other text:
 - Consider the ACTION required, not just the topic
 - Emergency keywords should bias toward Chaotic
 - Vague or philosophical questions should bias toward Complex or Disorder"""
+
+    def _detect_data_hints(self, context: dict[str, Any]) -> tuple[str | None, list[str]]:
+        """Detect domain hints from data structure.
+
+        Analyzes column names and data patterns to suggest domain.
+
+        Args:
+            context: Context containing data/column information
+
+        Returns:
+            Tuple of (suggested_domain, indicators)
+        """
+        if not self.config.use_data_hints:
+            return None, []
+
+        indicators = []
+
+        # Check causal estimation config
+        causal_config = context.get("causal_estimation")
+        if causal_config:
+            if causal_config.get("treatment") and causal_config.get("outcome"):
+                indicators.append(f"treatment={causal_config.get('treatment')}")
+                indicators.append(f"outcome={causal_config.get('outcome')}")
+                return "Complicated", indicators
+
+        # Check bayesian inference config
+        bayesian_config = context.get("bayesian_inference")
+        if bayesian_config:
+            if bayesian_config.get("prior_belief") or bayesian_config.get("observations"):
+                indicators.append("bayesian_inference_config_present")
+                return "Complex", indicators
+
+        # Check for column names in dataset selection
+        dataset_selection = context.get("dataset_selection")
+        if dataset_selection:
+            columns = []
+            if isinstance(dataset_selection, dict):
+                columns = [
+                    dataset_selection.get("treatment", ""),
+                    dataset_selection.get("outcome", ""),
+                ] + dataset_selection.get("covariates", [])
+
+            columns_lower = [c.lower() for c in columns if c]
+
+            for domain, hints in DATA_STRUCTURE_HINTS.items():
+                for pattern in hints.get("column_patterns", []):
+                    if any(pattern in col for col in columns_lower):
+                        indicators.append(f"column_pattern={pattern}")
+                        if len(indicators) >= 2:
+                            return domain, indicators
+
+        return None, indicators
+
+    def _detect_query_patterns(self, query: str) -> tuple[str | None, list[str]]:
+        """Detect domain from query text patterns.
+
+        Uses keyword matching for initial domain hints.
+
+        Args:
+            query: User query text
+
+        Returns:
+            Tuple of (suggested_domain, indicators)
+        """
+        if not self.config.use_pattern_matching:
+            return None, []
+
+        query_lower = query.lower()
+        indicators = []
+        scores = {domain: 0 for domain in DATA_STRUCTURE_HINTS}
+
+        for domain, hints in DATA_STRUCTURE_HINTS.items():
+            for indicator in hints.get("indicators", []):
+                if indicator in query_lower:
+                    scores[domain] += 1
+                    indicators.append(f"query_pattern={indicator}")
+
+        # Return domain with highest score if above threshold
+        max_domain = max(scores, key=scores.get)
+        if scores[max_domain] >= 2:
+            return max_domain, indicators
+
+        return None, indicators
 
     def _calculate_entropy(self, text: str, context: dict[str, Any]) -> float:
         """Calculate Shannon entropy over the token distribution of the input.
@@ -325,10 +474,22 @@ Respond with a JSON object only, no other text:
         )
         state.domain_entropy = entropy
 
-        # Step 2: Check for domain_hint from scenario context
+        # Step 2: Check for domain_hint from scenario context (explicit user override)
         domain_hint = state.context.get("domain_hint")
         if domain_hint:
             logger.info(f"Domain hint provided: {domain_hint}")
+
+        # Step 2b: Detect hints from data structure (NEW)
+        data_hint, data_indicators = self._detect_data_hints(state.context)
+        if data_hint and not domain_hint:
+            logger.info(f"Data structure suggests domain: {data_hint} ({data_indicators})")
+            if self.config.use_data_hints:
+                domain_hint = data_hint
+
+        # Step 2c: Detect hints from query patterns (NEW)
+        query_hint, query_indicators = self._detect_query_patterns(state.user_input)
+        if query_hint and not domain_hint:
+            logger.info(f"Query pattern suggests domain: {query_hint} ({query_indicators})")
 
         # Step 3: Model or LLM classification
         if self.mode == "distilbert":
@@ -428,6 +589,20 @@ def get_router() -> CynefinRouter:
     if _router_instance is None:
         _router_instance = CynefinRouter()
     return _router_instance
+
+
+def update_router_config(config: RouterConfig) -> CynefinRouter:
+    """Update router configuration and recreate instance."""
+    global _router_instance
+    _router_instance = CynefinRouter(config=config)
+    logger.info(f"Router configuration updated: {config.model_dump()}")
+    return _router_instance
+
+
+def get_router_config() -> RouterConfig:
+    """Get current router configuration."""
+    router = get_router()
+    return router.config
 
 
 async def cynefin_router_node(state: EpistemicState) -> EpistemicState:

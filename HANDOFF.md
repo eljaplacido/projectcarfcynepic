@@ -124,18 +124,20 @@ Optional:
    - Center panel: Causal DAG, causal analysis results, Guardian policy checks
    - Right panel: Execution trace
 
-## Status (Updated 2026-02-03)
+## Status (Updated 2026-02-04)
 
 ### Tests
-- **456 tests passing**, 68% coverage
-- All unit tests, integration tests, and workflow tests operational
+- **437 tests passing** (3 skipped), 64% coverage
+- All unit tests, eval tests, and workflow tests operational
 
 ### Recent Improvements
-- Fixed confidence interval extraction in causal analysis
-- Added SSE streaming support for real-time chain of thought (`/query/stream`)
-- Improved Cynefin router with pattern-based domain hints
-- Enhanced visualization config integration with domain classification
-- Added context-aware KPI panels for sustainability, financial, and risk domains
+- Enhanced simulation service with 4 data generators and scenario realism assessment
+- Added TransparencyPanel for reliability, agents, EU AI Act compliance, and config
+- Added comprehensive walkthroughs (Quick Demo, Analyst, Executive, Contributor, Production)
+- Enhanced AI chat guidance for data onboarding and configuration
+- Created central WALKTHROUGH.md documentation
+- Fixed TypeScript lint errors and unused variable warnings
+- Added context-aware Guardian policies with Cynefin domain thresholds
 
 ### Docker Setup (Recommended)
 ```bash
@@ -188,6 +190,9 @@ print('Effect:', response.json().get('causalResult', {}).get('effect'))
 ```
 
 ## Documentation
+- `docs/WALKTHROUGH.md` - **Complete walkthrough guide** (Analyst, Developer, Executive views)
+- `docs/QUICKSTART.md` - Quick start guide
+- `docs/DEMO_WALKTHROUGH.md` - Demo scenario walkthrough
 - `docs/ROUTER_TRAINING.md` - Router training and domain adaptation
 - `docs/LLM_AGENTIC_STRATEGY.md` - Model selection and guardrails
 - `docs/DATA_LAYER.md` - Dataset management

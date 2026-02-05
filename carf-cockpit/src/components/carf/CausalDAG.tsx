@@ -255,7 +255,7 @@ const CausalDAG: React.FC<CausalDAGProps> = ({ nodes, edges, onNodeClick, onInte
                 <Controls />
                 <MiniMap
                     nodeColor={(node) => {
-                        const type = (node.data as any).type;
+                        const type = (node.data as { type?: string }).type || 'variable';
                         return getNodeColor(type);
                     }}
                     style={{ height: 80, width: 120 }}

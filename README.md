@@ -308,17 +308,23 @@ ruff check src/ tests/
 
 ## Documentation
 
+### Getting Started
 - [Quick Start Guide](docs/QUICKSTART.md) - Get running in 5 minutes
+- [Complete Walkthrough](docs/WALKTHROUGH.md) - Comprehensive guide for all user types (Analyst, Developer, Executive)
+- [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) - Step-by-step demo scenarios
+- [End-User Testing Guide](docs/END_USER_TESTING_GUIDE.md) - Validate the demo flow and integrations
+
+### Architecture & Design
 - [PRD and Blueprint](docs/PRD.md) - Product requirements
 - [Data Layer](docs/DATA_LAYER.md) - Data architecture
 - [UI/UX Guidelines](docs/CARF_UIX_INTERACTION_GUIDELINES.md) - Design system
-- [OPA Policy](docs/OPA_POLICY.md) - Enterprise policy setup
-- [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) - Step-by-step demo
-- [End-User Testing Guide](docs/END_USER_TESTING_GUIDE.md) - Validate the demo flow and integrations
-- [Security Guidelines](docs/SECURITY_GUIDELINES.md) - Release readiness checklist
 - [LLM Agentic Strategy](docs/LLM_AGENTIC_STRATEGY.md) - LLM roles, guardrails, model selection
 - [Self-Healing Architecture](docs/SELF_HEALING_ARCHITECTURE.md) - Reflection, human escalation, adaptive recovery
 - [End-to-End Context Flow](docs/END_TO_END_CONTEXT_FLOW.md) - State propagation and memory/audit integration
+
+### Operations & Integration
+- [OPA Policy](docs/OPA_POLICY.md) - Enterprise policy setup
+- [Security Guidelines](docs/SECURITY_GUIDELINES.md) - Release readiness checklist
 - [Integration Guide](docs/INTEGRATION_GUIDE.md) - Enterprise integration patterns (ERP, Cloud)
 - [Future Roadmap](docs/FUTURE_ROADMAP.md) - Development path and vision
 

@@ -90,6 +90,29 @@ Ask probing questions to help the user improve their analysis:
 5. Explore alternative hypotheses
 
 Ask one question at a time and build on their responses.""",
+
+    "data_onboarding": """You are CARF Assistant helping users configure their own data for analysis.
+
+Guide users through the data onboarding process:
+1. **Data Format**: CARF accepts CSV files (up to 5,000 rows) or JSON data
+2. **Required Columns**: Identify treatment (intervention), outcome (what you measure), and covariates (control variables)
+3. **Variable Types**: Explain numeric vs categorical vs binary variables
+4. **Analysis Type Selection**: Help choose between causal analysis and Bayesian inference
+5. **Configuration**: Explain model selection, provider setup, and API key requirements
+
+Key concepts to explain:
+- Treatment: The intervention or variable you control (e.g., marketing spend, program enrollment)
+- Outcome: What you want to measure the effect on (e.g., sales, churn, emissions)
+- Covariates: Variables that might influence both treatment and outcome (confounders)
+
+Configuration steps:
+1. Upload data via Dashboard > "Upload Your Own Data" or /analyze command
+2. Review auto-detected schema and column types
+3. Map columns: treatment, outcome, covariates
+4. Choose analysis type (causal for effect estimation, Bayesian for belief updates)
+5. Set up LLM provider in Settings (DeepSeek or OpenAI API key)
+
+Be specific about file formats, column naming conventions, and common pitfalls.""",
 }
 
 
@@ -137,6 +160,66 @@ To get started:
 3. **Type a query** to run causal analysis
 
 What would you like to do?""",
+
+    "data_setup": """## Setting Up Your Own Data in CARF
+
+### Step 1: Prepare Your Data
+- **Format**: CSV file (max 5,000 rows) or JSON
+- **Requirements**: Must have at least treatment, outcome, and 1+ covariates
+
+### Step 2: Upload Data
+Click "Upload Your Own Data" in the Dashboard or use `/analyze` command.
+
+### Step 3: Configure Variables
+- **Treatment**: The variable you can control (e.g., `marketing_spend`, `received_discount`)
+- **Outcome**: What you want to measure (e.g., `sales`, `churned`, `emissions`)
+- **Covariates**: Variables that might confound the analysis (e.g., `region`, `age`, `size`)
+
+### Step 4: Choose Analysis Type
+- **Causal Analysis**: "What is the effect of X on Y?" (requires treatment/outcome structure)
+- **Bayesian Inference**: "Update my belief about parameter θ" (uses observations)
+
+### Step 5: Configure LLM Provider
+Go to Settings (⚙️) and enter your API key:
+- **DeepSeek** (recommended): Get key at platform.deepseek.com
+- **OpenAI**: Get key at platform.openai.com
+
+### Example Data Structure:
+```
+customer_id,received_discount,churned,tenure,age
+C001,1,0,24,35
+C002,0,1,6,28
+...
+```
+
+Would you like me to walk you through a specific step?""",
+
+    "configure_model": """## Configuring Your LLM Model
+
+CARF uses large language models for routing, explanations, and chat. Here's how to set up:
+
+### Option 1: DeepSeek (Recommended)
+1. Visit platform.deepseek.com and create an account
+2. Generate an API key
+3. In CARF Settings (⚙️), select DeepSeek and enter your key
+4. Cost: ~$0.01 per analysis
+
+### Option 2: OpenAI
+1. Visit platform.openai.com
+2. Go to API keys section
+3. Create a new secret key
+4. In CARF Settings, select OpenAI and enter your key
+
+### Test Mode (No API Key)
+Set `CARF_TEST_MODE=1` environment variable for offline demos.
+
+### What the LLM Does:
+- Routes queries to appropriate analysis domain
+- Generates natural language explanations
+- Powers the chat assistant (me!)
+- Does NOT run the statistical analysis (DoWhy/EconML handle that)
+
+Need help with API setup?""",
 }
 
 
@@ -182,6 +265,23 @@ class ChatService:
             return ChatResponse(
                 message=DEMO_RESPONSES["help"],
                 suggestions=["/analyze", "/question"],
+                confidence="high",
+            )
+
+        # Data setup and configuration guidance
+        data_keywords = ["my data", "own data", "upload", "csv", "configure", "setup", "onboard", "import"]
+        if any(kw in last_user_message for kw in data_keywords):
+            return ChatResponse(
+                message=DEMO_RESPONSES["data_setup"],
+                suggestions=["/analyze", "Tell me about treatment variables", "How do I configure the model?"],
+                confidence="high",
+            )
+
+        config_keywords = ["api key", "model", "llm", "deepseek", "openai", "provider", "settings"]
+        if any(kw in last_user_message for kw in config_keywords):
+            return ChatResponse(
+                message=DEMO_RESPONSES["configure_model"],
+                suggestions=["How do I upload my data?", "/help"],
                 confidence="high",
             )
 

@@ -31,7 +31,6 @@ interface GraphNode extends Node {
 
 interface SemanticGraphViewProps {
     className?: string;
-    context?: any; // Analysis context to load specific graph
 }
 
 // Initial mock data simulating a Neo4j query result for Scope 3
@@ -112,7 +111,7 @@ const initialEdges: Edge[] = [
     },
 ];
 
-const SemanticGraphView: React.FC<SemanticGraphViewProps> = ({ className = '', context: _context }) => {
+const SemanticGraphView: React.FC<SemanticGraphViewProps> = ({ className = '' }) => {
     const [nodes, , onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 

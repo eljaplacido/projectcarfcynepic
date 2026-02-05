@@ -1,7 +1,7 @@
 {
   "scenario_id": "pricing_optimization",
   "name": "Pricing Strategy Optimization",
-  "description": "Analyze causal impact of price changes on sales volume and revenue",
+  "description": "Analyze causal impact of price changes on sales volume and revenue across 1500 product records",
   "context": {
     "domain_hint": "complicated",
     "historical_pattern_known": true,
@@ -11,14 +11,23 @@
     "csv_path": "demo/data/pricing_data.csv",
     "treatment": "price_change",
     "outcome": "sales_volume",
-    "covariates": ["region", "product_category", "seasonality", "competitor_price"],
+    "covariates": ["region", "product_category", "seasonality", "competitor_price", "base_price"],
     "effect_modifiers": ["market_segment"],
     "method_name": "backdoor.linear_regression",
-    "refutation_tests": ["placebo_treatment", "random_common_cause"]
+    "refutation_tests": ["placebo_treatment", "random_common_cause", "data_subset"]
+  },
+  "data_generation": {
+    "generator": "pricing_optimization",
+    "n_samples": 1500,
+    "causal_structure": {
+      "treatment_to_outcome": "price_change -> sales_volume (elasticity varies by segment)",
+      "confounders": ["competitor_price (affects pricing decisions)", "seasonality (affects both)"],
+      "effect_modifiers": ["market_segment (premium vs budget sensitivity)"]
+    }
   },
   "expected_results": {
     "effect_direction": "negative",
-    "effect_range": [-50, -10],
+    "effect_range": [-8, -2],
     "confidence_min": 0.75
   }
 }

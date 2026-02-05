@@ -22,10 +22,9 @@ interface DatasetPreview {
 
 interface DataLayerInspectorProps {
     className?: string;
-    context?: any; // Current analysis context to auto-filter data
 }
 
-const DataLayerInspector: React.FC<DataLayerInspectorProps> = ({ className = '', context }) => {
+const DataLayerInspector: React.FC<DataLayerInspectorProps> = ({ className = '' }) => {
     const [activeTab, setActiveTab] = useState<'structured' | 'semantic' | 'operational'>('structured');
     const [isLoading, setIsLoading] = useState(false);
     const [datasets, setDatasets] = useState<any[]>([]);
@@ -155,7 +154,7 @@ const DataLayerInspector: React.FC<DataLayerInspectorProps> = ({ className = '',
 
     const renderSemanticView = () => (
         <div className="h-full">
-            <SemanticGraphView context={context} />
+            <SemanticGraphView />
         </div>
     );
 

@@ -40,9 +40,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onConfig
                 onClose();
             }, 1000);
 
-        } catch (error: any) {
+        } catch (error) {
             setStatus('error');
-            setMessage(error.message || 'Failed to update configuration');
+            setMessage(error instanceof Error ? error.message : 'Failed to update configuration');
         }
     };
 

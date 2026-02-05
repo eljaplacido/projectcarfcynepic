@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.core.state import EpistemicState, GuardianVerdict
+from src.core.state import CynefinDomain, EpistemicState, GuardianVerdict
 from src.workflows.guardian import Guardian, PolicyEngine, PolicyViolation
 
 
@@ -95,9 +95,15 @@ class TestGuardian:
 
     @pytest.mark.asyncio
     async def test_reject_low_confidence(self, guardian):
-        """Test low confidence triggers escalation."""
+        """Test low confidence triggers rejection/escalation.
+
+        With context-aware policies, confidence thresholds vary by domain:
+        - Clear: 0.95, Complicated: 0.85, Complex: 0.70, Chaotic: 0.50, Disorder: 0.0
+        Testing with Complicated domain (threshold 0.85) and confidence 0.5.
+        """
         state = EpistemicState(
-            domain_confidence=0.5,
+            cynefin_domain=CynefinDomain.COMPLICATED,  # Threshold: 0.85
+            domain_confidence=0.5,  # Below 0.85 threshold
             reflection_count=0,
         )
 

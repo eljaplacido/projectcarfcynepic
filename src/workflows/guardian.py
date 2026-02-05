@@ -5,9 +5,11 @@ immutable policy constraints before execution.
 
 Responsibilities:
 - Policy enforcement (financial limits, data policies, operational constraints)
-- Risk assessment
+- Risk assessment with decomposed scoring
 - Human escalation triggers for policy overrides
 - Audit trail generation
+- Context-aware policy application
+- Transparent policy explanation
 
 In Phase 3, this will integrate with Open Policy Agent (OPA) for enterprise-grade
 policy enforcement. For MVP, we use YAML-based policy definitions.
@@ -22,6 +24,7 @@ from pydantic import BaseModel, Field
 
 from src.core.state import (
     ConfidenceLevel,
+    CynefinDomain,
     EpistemicState,
     GuardianVerdict,
 )
@@ -38,6 +41,19 @@ class PolicyViolation(BaseModel):
     description: str
     severity: str = Field(default="medium", pattern="^(low|medium|high|critical)$")
     suggested_fix: str | None = None
+    user_overridable: bool = Field(default=False, description="Can user override this policy")
+    override_requirements: list[str] = Field(default_factory=list)
+
+
+class RiskComponent(BaseModel):
+    """Individual risk component for decomposed scoring."""
+
+    name: str
+    score: float = Field(..., ge=0.0, le=1.0)
+    weight: float = Field(..., ge=0.0, le=1.0)
+    weighted_score: float = Field(..., ge=0.0, le=1.0)
+    status: str
+    explanation: str
 
 
 class GuardianDecision(BaseModel):
@@ -49,6 +65,68 @@ class GuardianDecision(BaseModel):
     explanation: str
     requires_human_override: bool = False
     modified_action: dict[str, Any] | None = None
+    # New transparency fields
+    risk_score: float = Field(0.0, ge=0.0, le=1.0, description="Numeric risk score")
+    risk_breakdown: list[RiskComponent] = Field(default_factory=list)
+    policies_checked: int = 0
+    policies_passed: int = 0
+    context_adjustments: list[str] = Field(default_factory=list)
+
+
+class ContextualPolicyConfig(BaseModel):
+    """Context-aware policy configuration."""
+
+    # Per-domain confidence thresholds
+    confidence_thresholds: dict[str, float] = Field(
+        default={
+            "Clear": 0.95,
+            "Complicated": 0.85,
+            "Complex": 0.70,
+            "Chaotic": 0.50,
+            "Disorder": 0.0,
+        },
+        description="Minimum confidence required per Cynefin domain"
+    )
+
+    # Per-domain financial limits
+    financial_limits: dict[str, float] = Field(
+        default={
+            "Clear": 100000,
+            "Complicated": 50000,
+            "Complex": 25000,
+            "Chaotic": 10000,
+            "Disorder": 0,
+        },
+        description="Auto-approval limit per domain"
+    )
+
+    # Risk weights for scoring
+    risk_weights: dict[str, float] = Field(
+        default={
+            "confidence": 0.30,
+            "data_quality": 0.25,
+            "financial": 0.20,
+            "operational": 0.15,
+            "compliance": 0.10,
+        },
+        description="Weights for risk components"
+    )
+
+    # User-configurable limits
+    user_financial_limit: float | None = Field(
+        None, description="User-specified financial limit (overrides domain)"
+    )
+    user_confidence_threshold: float | None = Field(
+        None, description="User-specified confidence threshold"
+    )
+
+    # Feature flags
+    strict_mode: bool = Field(
+        False, description="Reject on any violation (no escalation)"
+    )
+    audit_all: bool = Field(
+        True, description="Log all decisions to audit trail"
+    )
 
 
 class PolicyEngine:
@@ -60,15 +138,23 @@ class PolicyEngine:
     - operational: Timeouts, rate limits, reflection caps
     - risk: Confidence thresholds, entropy alerts
     - escalation: Actions that always require human approval
+
+    Supports context-aware policy application based on Cynefin domain.
     """
 
-    def __init__(self, config_path: str | Path | None = None):
+    def __init__(
+        self,
+        config_path: str | Path | None = None,
+        contextual_config: ContextualPolicyConfig | None = None,
+    ):
         """Initialize the policy engine.
 
         Args:
             config_path: Path to policies.yaml. If None, uses default location.
+            contextual_config: Optional context-aware policy configuration.
         """
         self.policies: dict[str, Any] = {}
+        self.contextual_config = contextual_config or ContextualPolicyConfig()
         self._load_policies(config_path)
 
     def _load_policies(self, config_path: str | Path | None) -> None:
@@ -93,6 +179,7 @@ class PolicyEngine:
         self.policies = {
             "financial": {
                 "auto_approval_limit": {"value": 100000, "currency": "USD"},
+                "daily_limit": {"value": 500000, "currency": "USD"},
             },
             "operational": {
                 "max_reflection_attempts": {"value": 2},
@@ -100,6 +187,11 @@ class PolicyEngine:
             },
             "risk": {
                 "confidence_threshold": {"value": 0.85},
+                "entropy_alert_threshold": {"value": 0.9},
+            },
+            "data": {
+                "pii_handling": {"require_encryption": True},
+                "data_residency": {"allowed_regions": ["EU", "US"]},
             },
             "escalation": {
                 "always_escalate": {
@@ -107,6 +199,36 @@ class PolicyEngine:
                 }
             },
         }
+
+    def get_context_aware_threshold(
+        self,
+        domain: CynefinDomain,
+        threshold_type: str = "confidence",
+    ) -> float:
+        """Get threshold adjusted for Cynefin domain.
+
+        Args:
+            domain: Current Cynefin domain
+            threshold_type: Type of threshold (confidence, financial)
+
+        Returns:
+            Adjusted threshold value
+        """
+        domain_name = domain.value
+
+        if threshold_type == "confidence":
+            # Check user override first
+            if self.contextual_config.user_confidence_threshold is not None:
+                return self.contextual_config.user_confidence_threshold
+            return self.contextual_config.confidence_thresholds.get(domain_name, 0.85)
+
+        elif threshold_type == "financial":
+            # Check user override first
+            if self.contextual_config.user_financial_limit is not None:
+                return self.contextual_config.user_financial_limit
+            return self.contextual_config.financial_limits.get(domain_name, 100000)
+
+        return 0.85  # Default
 
     def get_policy(self, category: str, name: str) -> dict[str, Any] | None:
         """Get a specific policy by category and name."""
@@ -185,22 +307,62 @@ class PolicyEngine:
             )
         return None
 
-    def check_confidence_threshold(self, confidence: float) -> PolicyViolation | None:
-        """Check if confidence is below required threshold."""
-        policy = self.get_policy("risk", "confidence_threshold")
-        if not policy:
-            return None
+    def check_confidence_threshold(
+        self,
+        confidence: float,
+        domain: CynefinDomain | None = None,
+    ) -> PolicyViolation | None:
+        """Check if confidence is below required threshold.
 
-        threshold = policy.get("value", 0.85)
+        Uses context-aware threshold based on Cynefin domain.
+        """
+        # Get context-aware threshold
+        if domain:
+            threshold = self.get_context_aware_threshold(domain, "confidence")
+        else:
+            policy = self.get_policy("risk", "confidence_threshold")
+            threshold = policy.get("value", 0.85) if policy else 0.85
+
         if confidence < threshold:
             return PolicyViolation(
                 policy_name="confidence_threshold",
                 policy_category="risk",
-                description=f"Confidence ({confidence:.2f}) below threshold ({threshold})",
+                description=f"Confidence ({confidence:.2f}) below threshold ({threshold:.2f}) for domain {domain.value if domain else 'default'}",
                 severity="medium",
                 suggested_fix="Gather more information or escalate to human",
+                user_overridable=True,
+                override_requirements=["Provide justification for low-confidence action"],
             )
         return None
+
+    def check_financial_limit_contextual(
+        self,
+        amount: float,
+        currency: str = "USD",
+        domain: CynefinDomain | None = None,
+    ) -> list[PolicyViolation]:
+        """Check financial limit with context-aware threshold."""
+        violations: list[PolicyViolation] = []
+
+        # Get context-aware limit
+        if domain:
+            limit = self.get_context_aware_threshold(domain, "financial")
+        else:
+            policy = self.get_policy("financial", "auto_approval_limit")
+            limit = policy.get("value", float("inf")) if policy else float("inf")
+
+        if amount > limit:
+            violations.append(PolicyViolation(
+                policy_name="auto_approval_limit",
+                policy_category="financial",
+                description=f"Amount {amount:,.2f} {currency} exceeds limit of {limit:,.2f} for domain {domain.value if domain else 'default'}",
+                severity="high",
+                suggested_fix=f"Reduce amount to {limit:,.2f} {currency} or request human approval",
+                user_overridable=True,
+                override_requirements=["Manager approval", "Business justification"],
+            ))
+
+        return violations
 
 
 class Guardian:
@@ -208,15 +370,27 @@ class Guardian:
 
     Checks all proposed actions against policy constraints and returns
     a verdict: approved, rejected, or requires_escalation.
+
+    Features:
+    - Context-aware policy application based on Cynefin domain
+    - Decomposed risk scoring for transparency
+    - User-configurable policy overrides
+    - Detailed audit trail
     """
 
-    def __init__(self, config_path: str | Path | None = None):
+    def __init__(
+        self,
+        config_path: str | Path | None = None,
+        contextual_config: ContextualPolicyConfig | None = None,
+    ):
         """Initialize the Guardian.
 
         Args:
             config_path: Path to policies.yaml
+            contextual_config: Optional context-aware configuration
         """
-        self.policy_engine = PolicyEngine(config_path)
+        self.contextual_config = contextual_config or ContextualPolicyConfig()
+        self.policy_engine = PolicyEngine(config_path, self.contextual_config)
 
     def _assess_risk_level(self, violations: list[PolicyViolation]) -> str:
         """Determine overall risk level from violations."""
@@ -317,6 +491,76 @@ class Guardian:
             requires_human_override=False,
         )
 
+    def _compute_risk_breakdown(
+        self,
+        state: EpistemicState,
+        violations: list[PolicyViolation],
+    ) -> tuple[float, list[RiskComponent]]:
+        """Compute decomposed risk score with transparency."""
+        weights = self.contextual_config.risk_weights
+        components = []
+
+        # Confidence risk
+        conf_score = 1.0 - state.domain_confidence  # Low confidence = high risk
+        components.append(RiskComponent(
+            name="Confidence Risk",
+            score=conf_score,
+            weight=weights.get("confidence", 0.30),
+            weighted_score=conf_score * weights.get("confidence", 0.30),
+            status="low" if conf_score < 0.3 else "medium" if conf_score < 0.6 else "high",
+            explanation=f"Confidence: {state.domain_confidence:.1%}"
+        ))
+
+        # Financial risk (from violations)
+        financial_violations = [v for v in violations if v.policy_category == "financial"]
+        fin_score = min(1.0, len(financial_violations) * 0.5)
+        components.append(RiskComponent(
+            name="Financial Risk",
+            score=fin_score,
+            weight=weights.get("financial", 0.20),
+            weighted_score=fin_score * weights.get("financial", 0.20),
+            status="low" if fin_score < 0.3 else "medium" if fin_score < 0.6 else "high",
+            explanation=f"{len(financial_violations)} financial violations"
+        ))
+
+        # Operational risk
+        operational_violations = [v for v in violations if v.policy_category == "operational"]
+        op_score = min(1.0, len(operational_violations) * 0.3)
+        components.append(RiskComponent(
+            name="Operational Risk",
+            score=op_score,
+            weight=weights.get("operational", 0.15),
+            weighted_score=op_score * weights.get("operational", 0.15),
+            status="low" if op_score < 0.3 else "medium" if op_score < 0.6 else "high",
+            explanation=f"{len(operational_violations)} operational violations"
+        ))
+
+        # Data quality risk (from entropy)
+        dq_score = state.domain_entropy  # High entropy = high risk
+        components.append(RiskComponent(
+            name="Data Quality Risk",
+            score=dq_score,
+            weight=weights.get("data_quality", 0.25),
+            weighted_score=dq_score * weights.get("data_quality", 0.25),
+            status="low" if dq_score < 0.3 else "medium" if dq_score < 0.6 else "high",
+            explanation=f"Signal entropy: {state.domain_entropy:.2f}"
+        ))
+
+        # Compliance risk (escalation violations)
+        escalation_violations = [v for v in violations if v.policy_category == "escalation"]
+        comp_score = 1.0 if escalation_violations else 0.0
+        components.append(RiskComponent(
+            name="Compliance Risk",
+            score=comp_score,
+            weight=weights.get("compliance", 0.10),
+            weighted_score=comp_score * weights.get("compliance", 0.10),
+            status="low" if comp_score < 0.3 else "critical" if comp_score > 0.8 else "high",
+            explanation=f"Mandatory escalation required" if escalation_violations else "No compliance issues"
+        ))
+
+        total_risk = sum(c.weighted_score for c in components)
+        return total_risk, components
+
     async def evaluate(self, state: EpistemicState) -> GuardianDecision:
         """Evaluate the current state against all policies.
 
@@ -324,18 +568,26 @@ class Guardian:
             state: Current epistemic state with proposed action
 
         Returns:
-            GuardianDecision with verdict and details
+            GuardianDecision with verdict, risk breakdown, and details
         """
         violations: list[PolicyViolation] = []
+        context_adjustments: list[str] = []
+        policies_checked = 0
 
-        # Check 1: Confidence threshold
+        # Check 1: Context-aware confidence threshold
+        policies_checked += 1
         confidence_violation = self.policy_engine.check_confidence_threshold(
-            state.domain_confidence
+            state.domain_confidence,
+            domain=state.cynefin_domain,
         )
         if confidence_violation:
             violations.append(confidence_violation)
+            context_adjustments.append(
+                f"Confidence threshold adjusted for {state.cynefin_domain.value} domain"
+            )
 
         # Check 2: Reflection limit
+        policies_checked += 1
         reflection_violation = self.policy_engine.check_reflection_limit(
             state.reflection_count
         )
@@ -347,32 +599,51 @@ class Guardian:
             action = state.proposed_action
 
             # Check action type for mandatory escalation
+            policies_checked += 1
             action_type = action.get("action_type", "")
             escalation_violation = self.policy_engine.check_always_escalate(action_type)
             if escalation_violation:
                 violations.append(escalation_violation)
 
-            # Check financial limits
+            # Check context-aware financial limits
             amount = action.get("amount") or action.get("parameters", {}).get("amount")
             if amount is not None:
-                financial_violations = self.policy_engine.check_financial_limit(
+                policies_checked += 1
+                financial_violations = self.policy_engine.check_financial_limit_contextual(
                     float(amount),
                     action.get("currency", "USD"),
+                    domain=state.cynefin_domain,
                 )
                 violations.extend(financial_violations)
+                if financial_violations:
+                    context_adjustments.append(
+                        f"Financial limit adjusted for {state.cynefin_domain.value} domain"
+                    )
 
-        # Assess overall risk
-        risk_level = self._assess_risk_level(violations)
+        # Compute risk breakdown
+        risk_score, risk_breakdown = self._compute_risk_breakdown(state, violations)
+
+        # Assess overall risk level
+        risk_level = (
+            "critical" if risk_score > 0.8
+            else "high" if risk_score > 0.6
+            else "medium" if risk_score > 0.3
+            else "low"
+        )
 
         # Determine verdict
-        verdict = self._determine_verdict(violations, risk_level)
+        if self.contextual_config.strict_mode and violations:
+            verdict = GuardianVerdict.REJECTED
+        else:
+            verdict = self._determine_verdict(violations, risk_level)
 
         # Build explanation
+        policies_passed = policies_checked - len(violations)
         if not violations:
-            explanation = "All policy checks passed. Action approved."
+            explanation = f"All {policies_checked} policy checks passed. Action approved."
         else:
             violation_summaries = [v.description for v in violations]
-            explanation = f"Policy violations detected: {'; '.join(violation_summaries)}"
+            explanation = f"Policy violations ({len(violations)}/{policies_checked}): {'; '.join(violation_summaries)}"
 
         decision = GuardianDecision(
             verdict=verdict,
@@ -380,6 +651,11 @@ class Guardian:
             risk_level=risk_level,
             explanation=explanation,
             requires_human_override=(verdict == GuardianVerdict.REQUIRES_ESCALATION),
+            risk_score=risk_score,
+            risk_breakdown=risk_breakdown,
+            policies_checked=policies_checked,
+            policies_passed=policies_passed,
+            context_adjustments=context_adjustments,
         )
 
         return await self._apply_opa(state, decision)
@@ -426,13 +702,29 @@ class Guardian:
 
 # Singleton instance
 _guardian_instance: Guardian | None = None
+_guardian_config: ContextualPolicyConfig | None = None
 
 
 def get_guardian() -> Guardian:
     """Get or create the Guardian singleton."""
-    global _guardian_instance
+    global _guardian_instance, _guardian_config
     if _guardian_instance is None:
-        _guardian_instance = Guardian()
+        _guardian_instance = Guardian(contextual_config=_guardian_config)
+    return _guardian_instance
+
+
+def get_guardian_config() -> ContextualPolicyConfig:
+    """Get current Guardian policy configuration."""
+    guardian = get_guardian()
+    return guardian.contextual_config
+
+
+def update_guardian_config(config: ContextualPolicyConfig) -> Guardian:
+    """Update Guardian configuration and recreate instance."""
+    global _guardian_instance, _guardian_config
+    _guardian_config = config
+    _guardian_instance = Guardian(contextual_config=config)
+    logger.info(f"Guardian configuration updated")
     return _guardian_instance
 
 

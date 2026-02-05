@@ -212,60 +212,63 @@ const DataOnboardingWizard: React.FC<DataOnboardingWizardProps> = ({
         const mockColumns: ColumnInfo[] = [];
         const mockData: Record<string, unknown>[] = [];
 
-        if (datasetId === 'churn') {
-            mockColumns.push(
-                { name: 'customer_id', type: 'text', uniqueValues: 1000, sampleValues: ['C001', 'C002', 'C003'] },
-                { name: 'tenure', type: 'numeric', uniqueValues: 72, sampleValues: ['12', '24', '36', '48'] },
-                { name: 'received_discount', type: 'binary', uniqueValues: 2, sampleValues: ['0', '1'] },
-                { name: 'churned', type: 'binary', uniqueValues: 2, sampleValues: ['0', '1'] },
-                { name: 'monthly_charges', type: 'numeric', uniqueValues: 500, sampleValues: ['29.99', '49.99', '79.99'] },
-                { name: 'age', type: 'numeric', uniqueValues: 50, sampleValues: ['25', '35', '45', '55'] },
-            );
-            for (let i = 0; i < 5; i++) {
-                mockData.push({
-                    customer_id: `C00${i + 1}`,
-                    tenure: Math.floor(Math.random() * 72) + 1,
-                    received_discount: Math.random() > 0.5 ? 1 : 0,
-                    churned: Math.random() > 0.7 ? 1 : 0,
-                    monthly_charges: Math.round((Math.random() * 80 + 20) * 100) / 100,
-                    age: Math.floor(Math.random() * 40) + 20,
-                });
-            }
-        } else if (datasetId === 'marketing') {
-            mockColumns.push(
-                { name: 'user_id', type: 'text', uniqueValues: 2000, sampleValues: ['U001', 'U002', 'U003'] },
-                { name: 'campaign_variant', type: 'categorical', uniqueValues: 3, sampleValues: ['control', 'variant_a', 'variant_b'] },
-                { name: 'conversion', type: 'binary', uniqueValues: 2, sampleValues: ['0', '1'] },
-                { name: 'time_on_site', type: 'numeric', uniqueValues: 500, sampleValues: ['30', '120', '300'] },
-                { name: 'previous_purchases', type: 'numeric', uniqueValues: 10, sampleValues: ['0', '1', '2', '5'] },
-            );
-            for (let i = 0; i < 5; i++) {
-                mockData.push({
-                    user_id: `U00${i + 1}`,
-                    campaign_variant: ['control', 'variant_a', 'variant_b'][Math.floor(Math.random() * 3)],
-                    conversion: Math.random() > 0.85 ? 1 : 0,
-                    time_on_site: Math.floor(Math.random() * 300) + 30,
-                    previous_purchases: Math.floor(Math.random() * 5),
-                });
-            }
-        } else {
-            mockColumns.push(
-                { name: 'patient_id', type: 'text', uniqueValues: 500, sampleValues: ['P001', 'P002', 'P003'] },
-                { name: 'treatment_type', type: 'categorical', uniqueValues: 2, sampleValues: ['standard', 'experimental'] },
-                { name: 'recovery_days', type: 'numeric', uniqueValues: 30, sampleValues: ['7', '14', '21', '28'] },
-                { name: 'age', type: 'numeric', uniqueValues: 50, sampleValues: ['30', '45', '60'] },
-                { name: 'severity', type: 'categorical', uniqueValues: 3, sampleValues: ['mild', 'moderate', 'severe'] },
-            );
-            for (let i = 0; i < 5; i++) {
-                mockData.push({
-                    patient_id: `P00${i + 1}`,
-                    treatment_type: Math.random() > 0.5 ? 'experimental' : 'standard',
-                    recovery_days: Math.floor(Math.random() * 21) + 7,
-                    age: Math.floor(Math.random() * 40) + 30,
-                    severity: ['mild', 'moderate', 'severe'][Math.floor(Math.random() * 3)],
-                });
-            }
-        }
+        // Pre-defined sample data to avoid Math.random() during render
+        const SAMPLE_MOCK_DATA: Record<string, { columns: ColumnInfo[]; data: Record<string, unknown>[] }> = {
+            churn: {
+                columns: [
+                    { name: 'customer_id', type: 'text' as const, uniqueValues: 1000, sampleValues: ['C001', 'C002', 'C003'] },
+                    { name: 'tenure', type: 'numeric' as const, uniqueValues: 72, sampleValues: ['12', '24', '36', '48'] },
+                    { name: 'received_discount', type: 'binary' as const, uniqueValues: 2, sampleValues: ['0', '1'] },
+                    { name: 'churned', type: 'binary' as const, uniqueValues: 2, sampleValues: ['0', '1'] },
+                    { name: 'monthly_charges', type: 'numeric' as const, uniqueValues: 500, sampleValues: ['29.99', '49.99', '79.99'] },
+                    { name: 'age', type: 'numeric' as const, uniqueValues: 50, sampleValues: ['25', '35', '45', '55'] },
+                ],
+                data: [
+                    { customer_id: 'C001', tenure: 24, received_discount: 1, churned: 0, monthly_charges: 49.99, age: 35 },
+                    { customer_id: 'C002', tenure: 12, received_discount: 0, churned: 1, monthly_charges: 29.99, age: 28 },
+                    { customer_id: 'C003', tenure: 48, received_discount: 1, churned: 0, monthly_charges: 79.99, age: 45 },
+                    { customer_id: 'C004', tenure: 6, received_discount: 0, churned: 1, monthly_charges: 39.99, age: 32 },
+                    { customer_id: 'C005', tenure: 36, received_discount: 1, churned: 0, monthly_charges: 59.99, age: 41 },
+                ],
+            },
+            marketing: {
+                columns: [
+                    { name: 'user_id', type: 'text' as const, uniqueValues: 2000, sampleValues: ['U001', 'U002', 'U003'] },
+                    { name: 'campaign_variant', type: 'categorical' as const, uniqueValues: 3, sampleValues: ['control', 'variant_a', 'variant_b'] },
+                    { name: 'conversion', type: 'binary' as const, uniqueValues: 2, sampleValues: ['0', '1'] },
+                    { name: 'time_on_site', type: 'numeric' as const, uniqueValues: 500, sampleValues: ['30', '120', '300'] },
+                    { name: 'previous_purchases', type: 'numeric' as const, uniqueValues: 10, sampleValues: ['0', '1', '2', '5'] },
+                ],
+                data: [
+                    { user_id: 'U001', campaign_variant: 'control', conversion: 0, time_on_site: 120, previous_purchases: 2 },
+                    { user_id: 'U002', campaign_variant: 'variant_a', conversion: 1, time_on_site: 240, previous_purchases: 3 },
+                    { user_id: 'U003', campaign_variant: 'variant_b', conversion: 1, time_on_site: 180, previous_purchases: 1 },
+                    { user_id: 'U004', campaign_variant: 'control', conversion: 0, time_on_site: 60, previous_purchases: 0 },
+                    { user_id: 'U005', campaign_variant: 'variant_a', conversion: 0, time_on_site: 90, previous_purchases: 4 },
+                ],
+            },
+            healthcare: {
+                columns: [
+                    { name: 'patient_id', type: 'text' as const, uniqueValues: 500, sampleValues: ['P001', 'P002', 'P003'] },
+                    { name: 'treatment_type', type: 'categorical' as const, uniqueValues: 2, sampleValues: ['standard', 'experimental'] },
+                    { name: 'recovery_days', type: 'numeric' as const, uniqueValues: 30, sampleValues: ['7', '14', '21', '28'] },
+                    { name: 'age', type: 'numeric' as const, uniqueValues: 50, sampleValues: ['30', '45', '60'] },
+                    { name: 'severity', type: 'categorical' as const, uniqueValues: 3, sampleValues: ['mild', 'moderate', 'severe'] },
+                ],
+                data: [
+                    { patient_id: 'P001', treatment_type: 'experimental', recovery_days: 14, age: 45, severity: 'moderate' },
+                    { patient_id: 'P002', treatment_type: 'standard', recovery_days: 21, age: 55, severity: 'severe' },
+                    { patient_id: 'P003', treatment_type: 'experimental', recovery_days: 10, age: 38, severity: 'mild' },
+                    { patient_id: 'P004', treatment_type: 'standard', recovery_days: 18, age: 62, severity: 'moderate' },
+                    { patient_id: 'P005', treatment_type: 'experimental', recovery_days: 12, age: 42, severity: 'mild' },
+                ],
+            },
+        };
+
+        const mockDataKey = datasetId === 'churn' ? 'churn' : datasetId === 'marketing' ? 'marketing' : 'healthcare';
+        const sampleDataset = SAMPLE_MOCK_DATA[mockDataKey];
+        mockColumns.push(...sampleDataset.columns);
+        mockData.push(...sampleDataset.data)
 
         const preview: DataPreview = {
             fileName: `${dataset.name} (Sample)`,

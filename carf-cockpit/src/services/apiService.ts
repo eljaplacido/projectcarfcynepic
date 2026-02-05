@@ -242,7 +242,7 @@ export async function validateConfig(provider: string, apiKey?: string, baseUrl?
     }));
 }
 
-export async function updateConfig(provider: string, apiKey?: string, baseUrl?: string): Promise<any> {
+export async function updateConfig(provider: string, apiKey?: string, baseUrl?: string): Promise<{ status: string }> {
     return withRetry(() => apiFetch('/config/update', {
         method: 'POST',
         body: JSON.stringify({ provider, api_key: apiKey, base_url: baseUrl }),
@@ -346,7 +346,7 @@ export function submitQueryStream(
                             } else {
                                 onProgress(data as ProgressUpdate);
                             }
-                        } catch (parseError) {
+                        } catch {
                             console.warn('Failed to parse SSE data:', line);
                         }
                     }
@@ -632,6 +632,201 @@ export async function listDomains(): Promise<{
 }
 
 // ============================================================================
+// Transparency API
+// ============================================================================
+
+export interface AgentInfo {
+    agent_id: string;
+    name: string;
+    description: string;
+    category: string;
+    capabilities: string[];
+    dependencies: string[];
+    reliability_score: number;
+    version: string;
+}
+
+export interface DataQualityAssessment {
+    dataset_id: string;
+    overall_score: number;
+    completeness: number;
+    consistency: number;
+    uniqueness: number;
+    validity: number;
+    issues: string[];
+    recommendations: string[];
+}
+
+export interface ReliabilityAssessment {
+    overall_score: number;
+    level: 'excellent' | 'good' | 'fair' | 'poor' | 'unreliable';
+    components: {
+        name: string;
+        score: number;
+        weight: number;
+        details: string;
+    }[];
+    suggestions: string[];
+    eu_ai_act_compliant: boolean;
+}
+
+export interface EUAIActReport {
+    overall_compliant: boolean;
+    risk_level: 'minimal' | 'limited' | 'high' | 'unacceptable';
+    articles: {
+        article_id: string;
+        title: string;
+        compliant: boolean;
+        details: string;
+        recommendations: string[];
+    }[];
+    transparency_score: number;
+    traceability_score: number;
+    human_oversight_score: number;
+}
+
+export interface RouterConfig {
+    confidence_threshold: number;
+    clear_threshold: number;
+    complicated_threshold: number;
+    complex_threshold: number;
+    use_data_hints: boolean;
+    use_pattern_matching: boolean;
+}
+
+export interface GuardianConfig {
+    confidence_thresholds: Record<string, number>;
+    financial_limits: Record<string, number>;
+    risk_weights: Record<string, number>;
+    user_financial_limit: number | null;
+    policies_enabled: boolean;
+}
+
+export async function getAgents(): Promise<AgentInfo[]> {
+    return withRetry(() => apiFetch('/transparency/agents'));
+}
+
+export async function assessDataQuality(datasetId: string): Promise<DataQualityAssessment> {
+    return withRetry(() =>
+        apiFetch('/transparency/data-quality', {
+            method: 'POST',
+            body: JSON.stringify({ dataset_id: datasetId }),
+        })
+    );
+}
+
+export async function assessReliability(request: {
+    confidence: number;
+    sample_size: number;
+    method: string;
+    refutation_pass_rate?: number;
+    data_quality_score?: number;
+}): Promise<ReliabilityAssessment> {
+    return withRetry(() =>
+        apiFetch('/transparency/reliability', {
+            method: 'POST',
+            body: JSON.stringify(request),
+        })
+    );
+}
+
+export async function getEUAIActCompliance(request: {
+    workflow_id?: string;
+    analysis_type: string;
+    data_sources: string[];
+    methods_used: string[];
+}): Promise<EUAIActReport> {
+    return withRetry(() =>
+        apiFetch('/transparency/compliance', {
+            method: 'POST',
+            body: JSON.stringify(request),
+        })
+    );
+}
+
+export async function getRouterConfig(): Promise<RouterConfig> {
+    return withRetry(() => apiFetch('/router/config'));
+}
+
+export async function updateRouterConfig(config: Partial<RouterConfig>): Promise<RouterConfig> {
+    return withRetry(() =>
+        apiFetch('/router/config', {
+            method: 'PUT',
+            body: JSON.stringify(config),
+        })
+    );
+}
+
+export async function getGuardianConfig(): Promise<GuardianConfig> {
+    return withRetry(() => apiFetch('/guardian/config'));
+}
+
+export async function updateGuardianConfig(config: Partial<GuardianConfig>): Promise<GuardianConfig> {
+    return withRetry(() =>
+        apiFetch('/guardian/config', {
+            method: 'PUT',
+            body: JSON.stringify(config),
+        })
+    );
+}
+
+// ============================================================================
+// Simulation API
+// ============================================================================
+
+export interface SimulationGenerator {
+    name: string;
+    description: string;
+}
+
+export interface ScenarioRealism {
+    overall_score: number;
+    level: 'excellent' | 'good' | 'fair' | 'poor' | 'synthetic';
+    sample_adequacy: number;
+    causal_validity: number;
+    covariate_balance: number;
+    effect_plausibility: number;
+    issues: string[];
+    recommendations: string[];
+}
+
+export async function listSimulationGenerators(): Promise<SimulationGenerator[]> {
+    return withRetry(() => apiFetch('/simulations/generators'));
+}
+
+export async function generateSimulationData(request: {
+    scenario_type: string;
+    n_samples: number;
+    seed?: number;
+}): Promise<{
+    scenario_type: string;
+    n_samples: number;
+    columns: string[];
+    sample_data: Record<string, unknown>[];
+}> {
+    return withRetry(() =>
+        apiFetch('/simulations/generate', {
+            method: 'POST',
+            body: JSON.stringify(request),
+        })
+    );
+}
+
+export async function assessScenarioRealism(request: {
+    dataset_id: string;
+    treatment_col: string;
+    outcome_col: string;
+    covariates?: string[];
+}): Promise<ScenarioRealism> {
+    return withRetry(() =>
+        apiFetch('/simulations/assess-realism', {
+            method: 'POST',
+            body: JSON.stringify(request),
+        })
+    );
+}
+
+// ============================================================================
 // Export default API object
 // ============================================================================
 
@@ -676,6 +871,21 @@ const api = {
 
     // Domains
     listDomains,
+
+    // Transparency
+    getAgents,
+    assessDataQuality,
+    assessReliability,
+    getEUAIActCompliance,
+    getRouterConfig,
+    updateRouterConfig,
+    getGuardianConfig,
+    updateGuardianConfig,
+
+    // Simulation
+    listSimulationGenerators,
+    generateSimulationData,
+    assessScenarioRealism,
 };
 
 export default api;

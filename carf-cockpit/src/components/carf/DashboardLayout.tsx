@@ -24,6 +24,7 @@ import InterventionSimulator from './InterventionSimulator';
 import SensitivityPlot from './SensitivityPlot';
 import PromptGuidancePanel from './PromptGuidancePanel';
 import EscalationModal from './EscalationModal';
+import TransparencyPanel from './TransparencyPanel';
 import type { Suggestion } from './PromptGuidancePanel';
 import { useQuery, useScenarios, useConfigStatus } from '../../hooks/useCarfApi';
 import api from '../../services/apiService';
@@ -132,7 +133,7 @@ const DashboardLayout: React.FC = () => {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [queryResponse, setQueryResponse] = useState<QueryResponse | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
-    const [_queryStartTime, setQueryStartTime] = useState<number>(0);
+    const [, setQueryStartTime] = useState<number>(0);
 
     // Phase 7: View mode state
     const [viewMode, setViewMode] = useState<ViewMode>('analyst');
@@ -144,8 +145,10 @@ const DashboardLayout: React.FC = () => {
     // Phase 7: Query flow mode
     const [useConversationalFlow, setUseConversationalFlow] = useState<boolean>(true);
 
-    // UI state for new components
-    const [showOnboarding, setShowOnboarding] = useState<boolean>(true);
+    // UI state for new components - check localStorage for first visit
+    const [showOnboarding, setShowOnboarding] = useState<boolean>(() =>
+        !localStorage.getItem('carf-visited')
+    );
     const [showWalkthrough, setShowWalkthrough] = useState<boolean>(false);
     const [showDataWizard, setShowDataWizard] = useState<boolean>(false);
     const [showMethodologyModal, setShowMethodologyModal] = useState<boolean>(false);
@@ -176,24 +179,16 @@ const DashboardLayout: React.FC = () => {
     }, []);
 
     // API hooks
-    const { config: _config, isDemoMode } = useConfigStatus();
+    const { isDemoMode } = useConfigStatus();
     const { scenarios: apiScenarios } = useScenarios();
     const { submitQuery: apiSubmitQuery, loading: apiLoading, progress: apiProgress } = useQuery();
 
     // Chat state
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-    const [_currentQuery, setCurrentQuery] = useState<string>('');
+    const [currentQuery, setCurrentQuery] = useState<string>('');
 
     // Socratic mode highlighting state
     const [highlightedPanels, setHighlightedPanels] = useState<HighlightTarget[]>([]);
-
-    // Check localStorage for first visit
-    useEffect(() => {
-        const hasVisited = localStorage.getItem('carf-visited');
-        if (hasVisited) {
-            setShowOnboarding(false);
-        }
-    }, []);
 
     // Dynamic suggested queries based on scenario
     const [dynamicSuggestedQueries, setDynamicSuggestedQueries] = useState<string[]>([]);
@@ -208,9 +203,11 @@ const DashboardLayout: React.FC = () => {
     // Update columns when file analysis completes or scenario changes
     useEffect(() => {
         if (fileAnalysisResult?.columns) {
-            setDataColumns(fileAnalysisResult.columns.map((c: any) => c.name || c));
-        } else if (scenarioContext && (scenarioContext as any).columns) {
-            setDataColumns((scenarioContext as any).columns);
+            setDataColumns(fileAnalysisResult.columns.map((c: { name?: string } | string) =>
+                typeof c === 'string' ? c : c.name || ''
+            ));
+        } else if (scenarioContext && 'columns' in scenarioContext && Array.isArray(scenarioContext.columns)) {
+            setDataColumns(scenarioContext.columns as string[]);
         }
     }, [fileAnalysisResult, scenarioContext]);
 
@@ -219,7 +216,7 @@ const DashboardLayout: React.FC = () => {
             try {
                 // Ensure we send a valid payload even for initial empty state
                 const contextPayload = {
-                    current_query: _currentQuery || '',
+                    current_query: currentQuery || '',
                     last_domain: queryResponse?.domain || null,
                     last_confidence: queryResponse?.domainConfidence || null,
                     available_columns: dataColumns
@@ -240,7 +237,7 @@ const DashboardLayout: React.FC = () => {
                 } else {
                     console.warn("AI Suggestions endpoint returned status:", response.status);
                     // Fallback for demo if API fails - include action_payload so they're usable
-                    if (!_currentQuery) {
+                    if (!currentQuery) {
                         const treatment = dataColumns.find(c => c.toLowerCase().includes('treatment') || c.toLowerCase().includes('program'));
                         const outcome = dataColumns.find(c => c.toLowerCase().includes('outcome') || c.toLowerCase().includes('emission') || c.toLowerCase().includes('cost'));
                         setAiSuggestions([
@@ -264,7 +261,7 @@ const DashboardLayout: React.FC = () => {
             } catch (e) {
                 console.error("Failed to fetch suggestions:", e);
                 // Fallback for demo if network fails - with action_payload
-                if (!_currentQuery) {
+                if (!currentQuery) {
                     setAiSuggestions([
                         {
                             id: 'fallback_1',
@@ -277,7 +274,7 @@ const DashboardLayout: React.FC = () => {
             }
         };
         fetchSuggestions();
-    }, [queryResponse, selectedScenario, _currentQuery, dataColumns]);
+    }, [queryResponse, selectedScenario, currentQuery, dataColumns]);
 
     const handleApplySuggestion = (suggestion: Suggestion) => {
         if (suggestion.action_payload) {
@@ -604,6 +601,11 @@ const DashboardLayout: React.FC = () => {
                         setShowOnboarding(false);
                         localStorage.setItem('carf-visited', 'true');
                     }}
+                    onStartTour={() => {
+                        setShowOnboarding(false);
+                        setShowWalkthrough(true);
+                        localStorage.setItem('carf-visited', 'true');
+                    }}
                 />
             )}
 
@@ -909,6 +911,10 @@ const DashboardLayout: React.FC = () => {
                                 onAction={(action) => console.log('Domain action:', action)}
                                 isProcessing={isProcessing}
                             />
+                            {/* Transparency Panel for Developer View */}
+                            <TransparencyPanel
+                                queryResponse={queryResponse}
+                            />
                             <div className="card" id="bayesian-panel">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Bayesian Panel</h2>
                                 <BayesianPanel belief={queryResponse?.bayesianResult || null} />
@@ -1159,6 +1165,11 @@ const DashboardLayout: React.FC = () => {
 
                         {/* Right Sidebar (3 columns) */}
                         <div className="col-span-3 space-y-4">
+                            {/* Transparency Panel - Reliability, Agents, EU AI Act */}
+                            <TransparencyPanel
+                                queryResponse={queryResponse}
+                            />
+
                             {queryResponse?.causalResult && (
                                 <div className="card h-[300px]">
                                     <SensitivityPlot
@@ -1176,7 +1187,7 @@ const DashboardLayout: React.FC = () => {
                                     />
                                 </div>
                             )}
-                            <div className="card min-h-[600px]">
+                            <div className="card min-h-[400px]">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Execution Trace</h2>
                                 <ExecutionTrace
                                     steps={queryResponse?.reasoningChain || []}

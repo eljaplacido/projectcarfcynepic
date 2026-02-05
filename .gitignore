@@ -68,6 +68,11 @@ tmpclaude-*
 api.txt.txt
 =5.15.0
 nul
+test_failures.txt
+test_output.log
+debug_flow.log
+backend.log
+*.txt.txt
 
 # Claude local settings
 .claude/

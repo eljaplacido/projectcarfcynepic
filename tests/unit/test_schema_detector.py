@@ -113,7 +113,10 @@ C003,150,C
         assert result.row_count == 0
 
     def test_detect_sample_values(self):
-        """Test that sample values are extracted correctly."""
+        """Test that sample values are extracted correctly.
+
+        SchemaDetector takes up to 5 non-null sample values per column.
+        """
         csv_content = b"""treatment,outcome
 1,100
 0,80
@@ -124,7 +127,8 @@ C003,150,C
         result = schema_detector.detect(csv_content, "test.csv")
 
         treatment_col = next(c for c in result.columns if c.name == "treatment")
-        assert len(treatment_col.sample_values) == 3
+        # Schema detector takes head(5) samples
+        assert len(treatment_col.sample_values) == 5
         assert "1" in treatment_col.sample_values
         assert "0" in treatment_col.sample_values
 

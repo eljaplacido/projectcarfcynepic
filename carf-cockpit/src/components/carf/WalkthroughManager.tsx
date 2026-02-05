@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export type WalkthroughTrack = 'quick-demo' | 'analyst' | 'contributor' | 'production';
+export type WalkthroughTrack = 'quick-demo' | 'analyst' | 'executive' | 'contributor' | 'production';
 
 interface WalkthroughStep {
     id: string;
@@ -112,6 +112,45 @@ const WALKTHROUGH_TRACKS: WalkthroughTrackConfig[] = [
                 id: 'ao-8',
                 title: 'Iterate & Export',
                 content: 'Use suggested follow-up questions to deepen your analysis. Export results as JSON for reproducibility.',
+            },
+        ],
+    },
+    {
+        id: 'executive',
+        name: 'Executive View',
+        description: 'I need to make decisions',
+        duration: '~3 minutes',
+        icon: '📈',
+        steps: [
+            {
+                id: 'ev-1',
+                title: 'Executive Dashboard Overview',
+                content: 'The Executive View provides a high-level summary of AI-driven insights, KPIs, and recommended actions without technical details.',
+            },
+            {
+                id: 'ev-2',
+                title: 'Key Performance Indicators',
+                content: 'Monitor critical metrics: Total Impact, Confidence Level, Risk Assessment, and Policy Compliance. Each KPI is derived from the underlying causal analysis.',
+            },
+            {
+                id: 'ev-3',
+                title: 'Proposed Actions',
+                content: 'View AI-recommended actions ranked by expected impact. Each recommendation includes a confidence score and supporting evidence from the analysis.',
+            },
+            {
+                id: 'ev-4',
+                title: 'Risk & Compliance',
+                content: 'The Guardian policy layer validates all recommendations against organizational policies. See which actions require approval and why.',
+            },
+            {
+                id: 'ev-5',
+                title: 'Transparency & Audit',
+                content: 'All AI decisions are fully explainable. Click any metric to see the underlying methodology, data sources, and confidence intervals.',
+            },
+            {
+                id: 'ev-6',
+                title: 'Human-in-the-Loop',
+                content: 'High-impact or uncertain decisions are flagged for human review. The escalation panel shows pending items requiring your approval.',
             },
         ],
     },

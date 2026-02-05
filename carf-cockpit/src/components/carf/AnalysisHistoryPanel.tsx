@@ -1,26 +1,27 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import type { AnalysisSession, CynefinDomain } from '../../types/carf';
 
 // localStorage key
 const HISTORY_STORAGE_KEY = 'carf-analysis-history';
 const MAX_HISTORY_ITEMS = 100;
 
+// Helper to load history from localStorage
+const loadHistoryFromStorage = (): AnalysisSession[] => {
+    try {
+        const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
+        if (stored) {
+            return JSON.parse(stored) as AnalysisSession[];
+        }
+    } catch (error) {
+        console.error('Failed to load analysis history:', error);
+    }
+    return [];
+};
+
 // Hook for managing analysis history
 export const useAnalysisHistory = () => {
-    const [history, setHistory] = useState<AnalysisSession[]>([]);
-
-    // Load from localStorage on mount
-    useEffect(() => {
-        try {
-            const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
-            if (stored) {
-                const parsed = JSON.parse(stored) as AnalysisSession[];
-                setHistory(parsed);
-            }
-        } catch (error) {
-            console.error('Failed to load analysis history:', error);
-        }
-    }, []);
+    // Initialize state lazily from localStorage
+    const [history, setHistory] = useState<AnalysisSession[]>(loadHistoryFromStorage);
 
     // Save analysis session
     const saveAnalysis = useCallback((session: AnalysisSession) => {

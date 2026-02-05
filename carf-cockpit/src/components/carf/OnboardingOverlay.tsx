@@ -7,6 +7,7 @@ interface OnboardingOverlayProps {
     onUploadData: () => void;
     onStartChat: () => void;
     onDismiss: () => void;
+    onStartTour?: () => void;
 }
 
 const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
@@ -15,6 +16,7 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
     onUploadData,
     onStartChat,
     onDismiss,
+    onStartTour,
 }) => {
     const getDomainColor = (domain?: string) => {
         switch (domain) {
@@ -153,7 +155,10 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                 <div className="p-4 bg-gray-50 border-t border-gray-100 rounded-b-2xl">
                     <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
                         <span>First time here?</span>
-                        <button className="text-primary hover:underline font-medium">
+                        <button
+                            onClick={onStartTour}
+                            className="text-primary hover:underline font-medium"
+                        >
                             Take a guided tour →
                         </button>
                     </div>
