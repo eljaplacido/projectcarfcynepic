@@ -1,0 +1,62 @@
+# Budget Limits Policy
+# Enforce financial action limits across all CARF operations.
+# Evaluated by CSL-Core runtime guard with Z3 verification.
+
+policy budget_limits {
+    version = "1.0"
+    description = "Enforce financial action limits"
+
+    rule junior_transfer_limit {
+        when user.role == "junior" and action.type == "transfer"
+        then action.amount <= 1000
+        message = "Junior users cannot transfer more than $1,000"
+    }
+
+    rule senior_transfer_limit {
+        when user.role == "senior" and action.type == "transfer"
+        then action.amount <= 50000
+        message = "Senior users limited to $50,000 transfers"
+    }
+
+    rule admin_transfer_limit {
+        when user.role == "admin" and action.type == "transfer"
+        then action.amount <= 500000
+        message = "Admin users limited to $500,000 transfers"
+    }
+
+    rule chimera_prediction_bounds {
+        when prediction.source == "chimera"
+        then prediction.effect_size >= -1.0 and prediction.effect_size <= 1.0
+        message = "Chimera predictions must be normalized between -1.0 and 1.0"
+    }
+
+    rule daily_spend_cap {
+        when action.type == "spend"
+        then action.daily_total <= 100000
+        message = "Daily spend cannot exceed $100,000"
+    }
+
+    rule domain_financial_limit_clear {
+        when domain.type == "Clear"
+        then action.amount <= 100000
+        message = "Clear domain auto-approval limit is $100,000"
+    }
+
+    rule domain_financial_limit_complicated {
+        when domain.type == "Complicated"
+        then action.amount <= 50000
+        message = "Complicated domain auto-approval limit is $50,000"
+    }
+
+    rule domain_financial_limit_complex {
+        when domain.type == "Complex"
+        then action.amount <= 25000
+        message = "Complex domain auto-approval limit is $25,000"
+    }
+
+    rule domain_financial_limit_chaotic {
+        when domain.type == "Chaotic"
+        then action.amount <= 10000
+        message = "Chaotic domain auto-approval limit is $10,000"
+    }
+}

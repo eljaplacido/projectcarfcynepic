@@ -28,15 +28,22 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 
 ### Key Features
 
-- **Cynefin-based Routing**: Automatic classification of query complexity.
+- **Cynefin-based Routing**: Automatic classification of query complexity across 5 domains.
 - **Causal Inference Engine**: Discover DAGs, estimate effects, and run refutation tests via DoWhy/EconML.
 - **Bayesian Exploration**: Quantify uncertainty and update beliefs with new evidence via PyMC.
-- **Guardian Policy Layer**: Human-in-the-loop enforcement, Slack/Email notifications, and full audit trails.
+- **Guardian Policy Layer**: Multi-layer enforcement (YAML + CSL-Core + OPA), human-in-the-loop, and audit trails.
+- **ChimeraOracle Fast Predictions**: Pre-trained CausalForestDML models for <100ms causal effect scoring.
+- **What-If Simulation Framework**: Multi-scenario comparison with 6 built-in realistic data generators.
+- **CSL-Core Policy Verification**: Formal, deterministic policy rules with fail-closed safety.
+- **Policy Scaffolding & Refinement**: Auto-generate domain-specific policies with adaptive refinement agents.
 - **Three-View Dashboard**: Tailored views for Analysts, Developers, and Executives.
 - **Dark/Light Theme**: Full dark mode support with system preference detection.
 - **Actionable Insights**: Persona-specific recommendations based on analysis results.
 - **Agent Transparency**: Track LLM usage, latency, cost, and quality scores across workflows.
 - **Multi-Source Data Loading**: Load data from JSON, CSV, APIs, or Neo4j with automatic quality assessment.
+- **Streaming Query Mode**: Server-sent events for real-time progressive responses.
+- **EU AI Act Compliance**: Built-in compliance reporting and audit trail generation.
+- **Data Lineage Tracking**: Full provenance chain for audit and reproducibility.
 
 ### Data & Analytical Flows in CARF architecture 
 
@@ -134,6 +141,11 @@ CARF_DATA_DIR=./var            # Dataset storage location
 NEO4J_URI=bolt://localhost:7687
 KAFKA_ENABLED=false
 OPA_ENABLED=false
+
+# Optional: CSL-Core Policy Engine
+CSL_ENABLED=false              # Enable formal policy verification
+CSL_POLICY_DIR=config/policies # Directory for CSL policy files
+CSL_FAIL_CLOSED=true           # Fail-closed on CSL errors (recommended)
 ```
 
 ## Core Architecture
@@ -205,6 +217,69 @@ All paths -> Guardian (policy check) -> [Approve | Reject | Escalate to Human]
 | `/data/load/csv` | POST | Load CSV data with quality assessment |
 | `/data/{id}` | GET | Retrieve loaded data by ID |
 | `/data/quality/levels` | GET | Get available quality levels |
+| `/data/detect-schema` | POST | Auto-detect schema from uploaded data |
+| `/data/cache` | DELETE | Clear data cache |
+
+### Simulation & What-If Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/simulations/run` | POST | Run what-if scenario simulation |
+| `/simulations/compare` | POST | Compare multiple simulation results |
+| `/simulations/{id}/status` | GET | Get simulation status |
+| `/simulations/{id}/rerun` | POST | Rerun a simulation |
+| `/simulations/generators` | GET | List available data generators |
+| `/simulations/generate` | POST | Generate synthetic data with causal structure |
+| `/simulations/assess-realism` | POST | Assess scenario realism score |
+| `/simulations/run-transparent` | POST | Enhanced simulation with transparency |
+
+### ChimeraOracle (Fast Predictions) Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/oracle/models` | GET | List trained oracle models |
+| `/oracle/train` | POST | Train CausalForestDML model on scenario data |
+| `/oracle/predict` | POST | Fast causal prediction (<100ms) |
+| `/oracle/models/{id}` | GET | Get model metadata for scenario |
+
+### Configuration Management Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/config/status` | GET | System configuration status |
+| `/config/validate` | POST | Validate configuration |
+| `/router/config` | GET/PUT/PATCH | Manage Cynefin Router configuration |
+| `/guardian/config` | GET/PUT/PATCH | Manage Guardian policy configuration |
+
+### Advanced Query Modes
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/query/stream` | POST | Streaming query with server-sent events |
+| `/query/fast` | POST | Fast query mode via Chimera Oracle |
+| `/chat` | POST | Chat interface with Socratic mode |
+
+### Escalation & Compliance Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/escalations` | GET | List pending human escalations |
+| `/escalations/{id}` | GET | Get escalation details |
+| `/escalations/{id}/resolve` | POST | Resolve an escalation |
+| `/transparency/compliance` | GET | EU AI Act compliance report |
+| `/transparency/data-quality` | POST | Assess data quality |
+| `/transparency/guardian` | POST | Guardian decision transparency |
+| `/sessions/{id}/lineage` | GET | Data lineage and provenance tracking |
+
+### Developer & Diagnostics Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/developer/state` | GET | Full system state dump |
+| `/developer/logs` | WebSocket | Live log streaming |
+| `/analyze` | POST | File analysis for CSV/JSON |
+| `/agent/suggest-improvements` | POST | Automated improvement suggestions |
+| `/explain/{type}` | POST | Generate explanations for analyses |
 
 ### Example API Calls
 
@@ -290,16 +365,26 @@ See [docs/END_USER_TESTING_GUIDE.md](docs/END_USER_TESTING_GUIDE.md) for detaile
 ```
 projectcarf/
 ├── src/
-│   ├── core/           # State schemas, LLM config
-│   ├── services/       # Causal, Bayesian, HumanLayer
-│   ├── workflows/      # LangGraph nodes and graph
-│   ├── utils/          # Telemetry, caching, resiliency
-│   └── main.py         # FastAPI entry point
+│   ├── core/           # State schemas (EpistemicState), LLM config
+│   ├── services/       # Causal, Bayesian, Simulation, Transparency, ChimeraOracle,
+│   │                   # CSL Policy, Policy Scaffolding, Chat, Insights, Explanations
+│   ├── workflows/      # LangGraph graph, Guardian, Cynefin Router
+│   ├── utils/          # Telemetry, caching, circuit breaker, resiliency
+│   └── main.py         # FastAPI entry point (60+ endpoints)
 ├── carf-cockpit/       # React (Vite + TypeScript) dashboard
-├── config/             # YAML configs (policies, prompts)
+├── config/
+│   ├── agents.yaml     # Agent configurations
+│   ├── policies.yaml   # Guardian YAML policies
+│   ├── policies/       # CSL-Core formal policy definitions
+│   └── policy_scaffolds/ # Domain-specific policy templates
 ├── demo/               # Demo scenarios and sample data
-├── tests/              # Unit and integration tests
-├── docs/               # Documentation
+├── tests/
+│   ├── unit/           # 598 unit tests (72% coverage)
+│   ├── deepeval/       # LLM quality evaluation tests
+│   ├── e2e/            # End-to-end gold standard tests
+│   └── integration/    # API flow integration tests
+├── scripts/            # Training, data generation, evaluation scripts
+├── docs/               # 28 documentation files
 └── docker-compose.yml  # Full stack deployment
 ```
 

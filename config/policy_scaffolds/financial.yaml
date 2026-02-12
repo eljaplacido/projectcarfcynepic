@@ -1,0 +1,49 @@
+# Financial Domain Policy Scaffold
+# Used for transaction processing, budget management, financial analysis scenarios.
+
+scaffold:
+  name: "budget_limits"
+  domain: "financial"
+  version: "1.0"
+  description: "Policy scaffold for financial domain scenarios"
+
+csl_policies:
+  - "budget_limits"
+  - "action_gates"
+  - "data_access"
+
+csl_overrides:
+  budget_limits:
+    junior_transfer_limit: 1000
+    senior_transfer_limit: 50000
+    admin_transfer_limit: 500000
+  action_gates:
+    high_risk_threshold: "HIGH"
+
+domain_rules:
+  vendor_approval:
+    description: "Transactions only to pre-approved vendors"
+    action: "reject"
+    message: "Vendor not in approved list"
+
+  cross_entity_validation:
+    description: "Cross-entity transaction validation"
+    required: true
+    action: "escalate"
+
+  currency_check:
+    description: "Verify currency matches policy"
+    allowed_currencies:
+      - "USD"
+      - "EUR"
+      - "GBP"
+    action: "reject_if_mismatch"
+
+  audit_trail:
+    description: "Full audit trail for financial transactions"
+    required: true
+    immutable: true
+
+opa_policies:
+  - "financial_compliance"
+  - "cross_entity_validation"

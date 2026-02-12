@@ -1,0 +1,50 @@
+# Chimera Guards Policy
+# Safety bounds for ChimeraOracle predictions and causal inference outputs.
+# Evaluated by CSL-Core runtime guard with Z3 verification.
+
+policy chimera_guards {
+    version = "1.0"
+    description = "Prediction safety bounds for ChimeraOracle"
+
+    rule effect_size_bounds {
+        when prediction.source == "chimera"
+        then prediction.effect_size >= -2.0 and prediction.effect_size <= 2.0
+        message = "Chimera effect size must be within [-2.0, 2.0]"
+    }
+
+    rule confidence_minimum {
+        when prediction.source == "chimera"
+        then prediction.confidence >= 0.5
+        message = "Chimera predictions require minimum 50% confidence"
+    }
+
+    rule drift_detection_gate {
+        when prediction.drift_detected == true
+        then action.type == "observe_only" or approval.escalated == true
+        message = "Predictions blocked when drift is detected"
+    }
+
+    rule refutation_required {
+        when prediction.source == "causal" and prediction.is_actionable == true
+        then prediction.refutation_passed == true
+        message = "Actionable causal predictions must pass refutation tests"
+    }
+
+    rule bayesian_uncertainty_gate {
+        when prediction.source == "bayesian"
+        then prediction.epistemic_uncertainty <= 0.7
+        message = "Bayesian predictions with >70% epistemic uncertainty require review"
+    }
+
+    rule prediction_staleness {
+        when prediction.age_minutes > 60
+        then prediction.is_refreshed == true or approval.escalated == true
+        message = "Predictions older than 60 minutes must be refreshed"
+    }
+
+    rule concurrent_prediction_limit {
+        when session.active_predictions > 10
+        then action.type == "queue"
+        message = "Maximum 10 concurrent predictions per session"
+    }
+}

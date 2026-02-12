@@ -34,7 +34,7 @@ class BayesianBelief(BaseModel):
     """A probabilistic belief about a hypothesis."""
     hypothesis: str = Field(..., description="The hypothesis being evaluated")
     prior: float = Field(..., ge=0.0, le=1.0, description="Prior probability")
-    posterior: float = Field(..., ge=0.0, le=1.0, description="Posterior probability")
+    posterior: float = Field(..., description="Posterior estimate (probability for binomial, mean for normal)")
     evidence_considered: list[str] = Field(
         default_factory=list, description="Evidence that updated the belief"
     )

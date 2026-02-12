@@ -1,0 +1,44 @@
+# Data Access Policy
+# PII/sensitive data rules and data residency controls.
+# Evaluated by CSL-Core runtime guard with Z3 verification.
+
+policy data_access {
+    version = "1.0"
+    description = "Enforce PII and sensitive data handling rules"
+
+    rule pii_must_be_masked {
+        when data.contains_pii == true
+        then data.is_masked == true
+        message = "PII data must be masked before processing"
+    }
+
+    rule ssn_never_exposed {
+        when data.field_type == "ssn"
+        then data.access_level == "restricted" and data.is_encrypted == true
+        message = "SSN fields must be encrypted and access-restricted"
+    }
+
+    rule data_residency_us {
+        when data.region != "us-east-1" and data.region != "eu-west-1"
+        then action.type == "block"
+        message = "Data must remain in approved regions (us-east-1, eu-west-1)"
+    }
+
+    rule retention_limit {
+        when data.age_days > 90
+        then data.action == "archive" or data.action == "delete"
+        message = "Data older than 90 days must be archived or deleted"
+    }
+
+    rule sensitive_export_blocked {
+        when action.type == "export" and data.sensitivity == "high"
+        then approval.status == "approved" and approval.role == "compliance"
+        message = "High-sensitivity data export requires compliance approval"
+    }
+
+    rule audit_log_immutable {
+        when data.type == "audit_log"
+        then action.type != "modify" and action.type != "delete"
+        message = "Audit logs are immutable and cannot be modified or deleted"
+    }
+}

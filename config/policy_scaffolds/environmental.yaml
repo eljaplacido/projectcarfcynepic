@@ -1,0 +1,45 @@
+# Environmental Domain Policy Scaffold
+# Used for Scope 3 emissions, carbon tracking, sustainability scenarios.
+
+scaffold:
+  name: "scope3_compliance"
+  domain: "environmental"
+  version: "1.0"
+  description: "Policy scaffold for environmental compliance scenarios"
+
+csl_policies:
+  - "budget_limits"
+  - "action_gates"
+  - "data_access"
+
+csl_overrides:
+  budget_limits:
+    domain_financial_limit: 50000
+    daily_spend_cap: 200000
+  action_gates:
+    high_risk_threshold: "HIGH"
+
+domain_rules:
+  emission_threshold:
+    description: "Maximum emission increase before escalation"
+    max_increase_percent: 10
+    action: "escalate"
+
+  reporting_deadline:
+    description: "Regulatory reporting deadlines"
+    enforcement: "strict"
+    action: "block_on_miss"
+
+  data_lineage:
+    description: "Require full data lineage for environmental claims"
+    required: true
+    action: "reject_if_missing"
+
+  carbon_offset_validation:
+    description: "Validate carbon offset claims"
+    verification_required: true
+    action: "escalate_if_unverified"
+
+opa_policies:
+  - "environmental_audit"
+  - "data_lineage_check"

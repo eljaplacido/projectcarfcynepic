@@ -29,9 +29,11 @@ from src.core.state import (
 )
 from src.services.bayesian import run_active_inference
 from src.services.causal import run_causal_analysis
+from src.services.csl_policy_service import get_csl_service
 from src.services.evaluation_service import get_evaluation_service, DeepEvalScores
 from src.services.human_layer import human_escalation_node
 from src.services.kafka_audit import log_state_to_kafka
+from src.services.policy_scaffold_service import get_scaffold_service
 from src.utils.telemetry import traced
 from src.workflows.guardian import guardian_node
 from src.workflows.router import cynefin_router_node
@@ -111,6 +113,79 @@ async def evaluate_node_output(
     except Exception as e:
         logger.warning(f"Evaluation failed for {node_name}: {e}")
         return None
+
+
+# =============================================================================
+# CSL CONTEXT INJECTION
+# =============================================================================
+
+
+def inject_csl_context(state: EpistemicState) -> EpistemicState:
+    """Inject CSL-Core context into the state before Guardian evaluation.
+
+    Adds user role, session metadata, and domain-specific scaffold context
+    so that CSL policy rules have full context for evaluation.
+
+    This runs synchronously as it only modifies the state dict.
+    """
+    csl_service = get_csl_service()
+    if not csl_service.is_available:
+        return state
+
+    context = state.context
+
+    # Ensure CSL-relevant metadata is in context
+    if "user_role" not in context:
+        context["user_role"] = context.get("role", "junior")
+
+    if "risk_level" not in context:
+        # Derive risk level from domain and confidence
+        if state.cynefin_domain == CynefinDomain.CHAOTIC:
+            context["risk_level"] = "CRITICAL"
+        elif state.cynefin_domain == CynefinDomain.DISORDER:
+            context["risk_level"] = "HIGH"
+        elif state.domain_confidence < 0.5:
+            context["risk_level"] = "HIGH"
+        elif state.domain_confidence < 0.7:
+            context["risk_level"] = "MEDIUM"
+        else:
+            context["risk_level"] = "LOW"
+
+    # Inject prediction metadata from causal/bayesian evidence
+    if state.causal_evidence:
+        context["prediction_source"] = "causal"
+        context["prediction_effect_size"] = state.causal_evidence.effect_size
+        context["refutation_passed"] = state.causal_evidence.refutation_passed
+        context["is_actionable"] = True
+
+    if state.bayesian_evidence:
+        if "prediction_source" not in context:
+            context["prediction_source"] = "bayesian"
+        context["prediction_effect_size"] = context.get(
+            "prediction_effect_size", state.bayesian_evidence.posterior_mean
+        )
+
+    # Apply domain-specific scaffold if available
+    scaffold_service = get_scaffold_service()
+    scenario_meta = context.get("scenario_metadata", {})
+    if scenario_meta:
+        scaffold = scaffold_service.get_scaffold_for_scenario(scenario_meta)
+        if scaffold:
+            context["_active_scaffold"] = scaffold.name
+            context["_scaffold_domain"] = scaffold.domain
+
+    state.context = context
+    return state
+
+
+async def csl_guardian_node(state: EpistemicState) -> EpistemicState:
+    """Guardian node with CSL context injection.
+
+    Wraps the standard Guardian node by first injecting CSL context,
+    then running the Guardian evaluation (which includes CSL + OPA).
+    """
+    state = inject_csl_context(state)
+    return await guardian_node(state)
 
 
 # =============================================================================
@@ -457,7 +532,7 @@ def build_carf_graph() -> StateGraph:
     workflow.add_node("causal_analyst", causal_analyst_node)
     workflow.add_node("bayesian_explorer", bayesian_explorer_node)
     workflow.add_node("circuit_breaker", circuit_breaker_node)
-    workflow.add_node("guardian", guardian_node)
+    workflow.add_node("guardian", csl_guardian_node)
     workflow.add_node("reflector", reflector_node)
     workflow.add_node("human_escalation", human_escalation_node)
 

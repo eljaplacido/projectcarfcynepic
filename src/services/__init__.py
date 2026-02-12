@@ -1,10 +1,16 @@
 """Services module: Concrete implementations.
 
 Contains integrations with external services:
-- Causal Inference Engine - Active (Phase 2)
+- Causal Inference Engine - Active
 - HumanLayer (HITL) - Active
-- Neo4j (Causal Graph) - Active (Phase 3)
-- Redis (Short-term memory) - Phase 3+
+- Neo4j (Causal Graph) - Active
+- CSL-Core Policy Verification - Active
+- Policy Scaffolding - Active
+- Transparency & Reliability - Active
+- Simulation Framework - Active
+- ChimeraOracle Fast Predictions - Active
+- Kafka Audit Trail - Optional
+- OPA Policy Engine - Optional
 """
 
 from .human_layer import (
@@ -54,6 +60,24 @@ from .dataset_store import (
     DatasetMetadata,
     get_dataset_store,
 )
+from .csl_policy_service import (
+    CSLPolicyService,
+    CSLConfig,
+    CSLEvaluation,
+    get_csl_service,
+)
+from .policy_scaffold_service import (
+    PolicyScaffoldService,
+    get_scaffold_service,
+)
+from .transparency import (
+    TransparencyService,
+    get_transparency_service,
+)
+from .simulation import (
+    SimulationService,
+    get_simulation_service,
+)
 
 __all__ = [
     # Human Layer
@@ -96,4 +120,18 @@ __all__ = [
     "DatasetStore",
     "DatasetMetadata",
     "get_dataset_store",
+    # CSL-Core Policy Service
+    "CSLPolicyService",
+    "CSLConfig",
+    "CSLEvaluation",
+    "get_csl_service",
+    # Policy Scaffolding
+    "PolicyScaffoldService",
+    "get_scaffold_service",
+    # Transparency & Reliability
+    "TransparencyService",
+    "get_transparency_service",
+    # Simulation Framework
+    "SimulationService",
+    "get_simulation_service",
 ]

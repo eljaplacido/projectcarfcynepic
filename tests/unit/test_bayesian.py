@@ -33,7 +33,7 @@ class TestBayesianBelief:
         assert belief.posterior == 0.75
 
     def test_probability_bounds(self):
-        """Test that probabilities must be between 0 and 1."""
+        """Test that prior must be between 0 and 1 (posterior is unbounded for normal models)."""
         with pytest.raises(ValidationError):
             BayesianBelief(
                 hypothesis="test",
@@ -43,8 +43,8 @@ class TestBayesianBelief:
         with pytest.raises(ValidationError):
             BayesianBelief(
                 hypothesis="test",
-                prior=0.5,
-                posterior=-0.1,
+                prior=-0.1,
+                posterior=0.5,
             )
 
     def test_default_values(self):

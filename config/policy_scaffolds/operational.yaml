@@ -1,0 +1,51 @@
+# Operational Domain Policy Scaffold
+# Used for churn prevention, customer management, operational optimization scenarios.
+
+scaffold:
+  name: "churn_prevention"
+  domain: "operational"
+  version: "1.0"
+  description: "Policy scaffold for operational scenarios"
+
+csl_policies:
+  - "budget_limits"
+  - "action_gates"
+  - "chimera_guards"
+
+csl_overrides:
+  budget_limits:
+    domain_financial_limit: 25000
+  chimera_guards:
+    confidence_minimum: 0.6
+
+domain_rules:
+  action_rate_limit:
+    description: "Limit actions per customer per day"
+    max_actions_per_day: 5
+    action: "throttle"
+
+  discount_cap:
+    description: "Maximum discount percentage"
+    max_discount_percent: 30
+    action: "reject_if_exceeded"
+
+  customer_segment_rules:
+    description: "Segment-specific action rules"
+    enterprise:
+      max_discount: 25
+      requires_approval_above: 15
+    sme:
+      max_discount: 20
+      requires_approval_above: 10
+    consumer:
+      max_discount: 15
+      requires_approval_above: 5
+
+  outreach_frequency:
+    description: "Limit customer contact frequency"
+    max_contacts_per_week: 3
+    action: "throttle"
+
+opa_policies:
+  - "customer_segment_logic"
+  - "outreach_compliance"

@@ -28,6 +28,7 @@ from src.core.state import (
     EpistemicState,
     GuardianVerdict,
 )
+from src.services.csl_policy_service import get_csl_service
 from src.services.opa_service import get_opa_service
 
 logger = logging.getLogger("carf.guardian")
@@ -427,6 +428,103 @@ class Guardian:
         # Medium/low violations might still pass with warning
         return GuardianVerdict.REQUIRES_ESCALATION
 
+    async def _apply_csl(
+        self,
+        state: EpistemicState,
+        decision: GuardianDecision,
+    ) -> GuardianDecision:
+        """Apply CSL-Core policy checks as primary enforcement layer.
+
+        CSL-Core provides sub-millisecond deterministic evaluation with
+        fail-closed safety. Violations from CSL are merged into the decision.
+        """
+        service = get_csl_service()
+        if not service.is_available:
+            return decision
+
+        try:
+            evaluation = await service.evaluate(state)
+        except Exception as exc:
+            logger.error(f"CSL evaluation error: {exc}")
+            # Fail-closed: escalate on CSL errors
+            violations = list(decision.violations)
+            violations.append(
+                PolicyViolation(
+                    policy_name="csl_evaluation_error",
+                    policy_category="csl",
+                    description=f"CSL-Core evaluation failed: {exc}",
+                    severity="high",
+                    suggested_fix="Check CSL policy configuration and rule definitions",
+                )
+            )
+            risk_level = self._assess_risk_level(violations)
+            return GuardianDecision(
+                verdict=GuardianVerdict.REQUIRES_ESCALATION,
+                violations=violations,
+                risk_level=risk_level,
+                explanation="CSL-Core evaluation failed; human escalation required.",
+                requires_human_override=True,
+                risk_score=decision.risk_score,
+                risk_breakdown=decision.risk_breakdown,
+                policies_checked=decision.policies_checked,
+                policies_passed=decision.policies_passed,
+                context_adjustments=decision.context_adjustments,
+            )
+
+        if evaluation.allow:
+            # CSL passed - add audit info to context adjustments
+            adjustments = list(decision.context_adjustments)
+            adjustments.append(
+                f"CSL-Core: {evaluation.rules_passed}/{evaluation.rules_checked} rules passed"
+            )
+            return GuardianDecision(
+                verdict=decision.verdict,
+                violations=decision.violations,
+                risk_level=decision.risk_level,
+                explanation=decision.explanation,
+                requires_human_override=decision.requires_human_override,
+                modified_action=decision.modified_action,
+                risk_score=decision.risk_score,
+                risk_breakdown=decision.risk_breakdown,
+                policies_checked=decision.policies_checked + evaluation.rules_checked,
+                policies_passed=decision.policies_passed + evaluation.rules_passed,
+                context_adjustments=adjustments,
+            )
+
+        # CSL violations found - merge into decision
+        violations = list(decision.violations)
+        for csl_violation in evaluation.violations:
+            violations.append(
+                PolicyViolation(
+                    policy_name=f"csl:{csl_violation.rule_name}",
+                    policy_category="csl",
+                    description=csl_violation.message or f"CSL rule '{csl_violation.rule_name}' violated",
+                    severity="high",
+                    suggested_fix=f"Adjust action to comply with CSL policy '{csl_violation.policy_name}'",
+                )
+            )
+
+        risk_level = self._assess_risk_level(violations)
+        verdict = self._determine_verdict(violations, risk_level)
+
+        adjustments = list(decision.context_adjustments)
+        adjustments.append(
+            f"CSL-Core: {evaluation.rules_failed} rule(s) failed out of {evaluation.rules_checked}"
+        )
+
+        return GuardianDecision(
+            verdict=verdict,
+            violations=violations,
+            risk_level=risk_level,
+            explanation=f"CSL policy violations: {'; '.join(v.message for v in evaluation.violations if v.message)}",
+            requires_human_override=(verdict == GuardianVerdict.REQUIRES_ESCALATION),
+            risk_score=decision.risk_score,
+            risk_breakdown=decision.risk_breakdown,
+            policies_checked=decision.policies_checked + evaluation.rules_checked,
+            policies_passed=decision.policies_passed + evaluation.rules_passed,
+            context_adjustments=adjustments,
+        )
+
     async def _apply_opa(
         self,
         state: EpistemicState,
@@ -658,6 +756,10 @@ class Guardian:
             context_adjustments=context_adjustments,
         )
 
+        # Apply CSL-Core as primary enforcement layer
+        decision = await self._apply_csl(state, decision)
+
+        # Apply OPA as secondary enforcement layer
         return await self._apply_opa(state, decision)
 
     async def check(self, state: EpistemicState) -> EpistemicState:

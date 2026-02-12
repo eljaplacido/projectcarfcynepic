@@ -1,0 +1,56 @@
+# Action Gates Policy
+# Require approvals for high-risk actions and enforce domain-specific controls.
+# Evaluated by CSL-Core runtime guard with Z3 verification.
+
+policy action_gates {
+    version = "1.0"
+    description = "Require approvals for high-risk actions"
+
+    rule high_risk_requires_approval {
+        when risk.level == "HIGH"
+        then approval.status == "approved"
+        message = "High-risk actions require human approval"
+    }
+
+    rule critical_risk_blocked {
+        when risk.level == "CRITICAL"
+        then action.type == "halt"
+        message = "Critical-risk actions are blocked pending investigation"
+    }
+
+    rule chaotic_domain_blocks {
+        when domain.type == "Chaotic"
+        then action.type == "observe_only" or approval.escalated == true
+        message = "Chaotic situations require human oversight"
+    }
+
+    rule disorder_domain_blocks {
+        when domain.type == "Disorder"
+        then approval.escalated == true
+        message = "Disorder domain requires mandatory human escalation"
+    }
+
+    rule delete_data_requires_approval {
+        when action.type == "delete_data"
+        then approval.status == "approved" and approval.role == "admin"
+        message = "Data deletion requires admin approval"
+    }
+
+    rule modify_policy_requires_approval {
+        when action.type == "modify_policy"
+        then approval.status == "approved" and approval.role == "admin"
+        message = "Policy modification requires admin approval"
+    }
+
+    rule production_deployment_gate {
+        when action.type == "production_deployment"
+        then approval.status == "approved" and approval.count >= 2
+        message = "Production deployments require at least 2 approvals"
+    }
+
+    rule external_api_write_gate {
+        when action.type == "external_api_write"
+        then approval.status == "approved"
+        message = "External API writes require human approval"
+    }
+}

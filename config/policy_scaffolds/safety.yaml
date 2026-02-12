@@ -1,0 +1,47 @@
+# Safety Domain Policy Scaffold
+# Used for grid stability, infrastructure monitoring, safety-critical scenarios.
+
+scaffold:
+  name: "grid_stability"
+  domain: "safety"
+  version: "1.0"
+  description: "Policy scaffold for safety-critical scenarios"
+
+csl_policies:
+  - "budget_limits"
+  - "action_gates"
+  - "chimera_guards"
+
+csl_overrides:
+  action_gates:
+    high_risk_threshold: "MEDIUM"
+  chimera_guards:
+    confidence_minimum: 0.8
+    effect_size_bounds: [-1.0, 1.0]
+
+domain_rules:
+  frequency_limits:
+    description: "Grid frequency must stay within safe bounds"
+    min_hz: 49.8
+    max_hz: 50.2
+    action: "circuit_break"
+
+  voltage_limits:
+    description: "Voltage must stay within safe bounds"
+    min_kv: 0.95
+    max_kv: 1.05
+    action: "circuit_break"
+
+  maintenance_window:
+    description: "Changes only during maintenance windows"
+    enforcement: "strict"
+    action: "block_outside_window"
+
+  safety_margin:
+    description: "Predictions must include safety margin"
+    margin_percent: 15
+    action: "reject_if_insufficient"
+
+opa_policies:
+  - "safety_compliance"
+  - "maintenance_window_check"
