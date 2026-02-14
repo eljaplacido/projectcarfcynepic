@@ -67,6 +67,8 @@ class ActiveInferenceResult(BaseModel):
     uncertainty_before: float = Field(..., description="Entropy before analysis")
     uncertainty_after: float = Field(..., description="Entropy after analysis")
     interpretation: str = Field(..., description="Human-readable summary")
+    epistemic_uncertainty: float = 0.0
+    aleatoric_uncertainty: float = 0.0
 
 
 class BayesianInferenceConfig(BaseModel):
@@ -115,6 +117,8 @@ class BayesianInferenceResult(BaseModel):
     posterior_mean: float
     credible_interval: tuple[float, float]
     uncertainty: float
+    epistemic_uncertainty: float = 0.0
+    aleatoric_uncertainty: float = 0.0
 
 
 @dataclass
@@ -296,8 +300,14 @@ Respond with a JSON object:
                     progressbar=False,
                 )
 
-            samples = trace.posterior["p"].values.ravel().tolist()
-            return self._summarize_samples(samples)
+            p_samples = trace.posterior["p"].values.ravel().tolist()
+            result = self._summarize_samples(p_samples)
+            # Epistemic: uncertainty about the true rate (std of posterior)
+            p_mean = sum(p_samples) / len(p_samples)
+            result.epistemic_uncertainty = (sum((x - p_mean) ** 2 for x in p_samples) / max(len(p_samples) - 1, 1)) ** 0.5
+            # Aleatoric: inherent Bernoulli variance mean(p*(1-p))
+            result.aleatoric_uncertainty = sum(x * (1 - x) for x in p_samples) / len(p_samples)
+            return result
 
         if mode == "normal":
             observations = [float(value) for value in config.observations or []]
@@ -324,8 +334,15 @@ Respond with a JSON object:
                     progressbar=False,
                 )
 
-            samples = trace.posterior["mu"].values.ravel().tolist()
-            return self._summarize_samples(samples)
+            mu_samples = trace.posterior["mu"].values.ravel().tolist()
+            sigma_samples = trace.posterior["sigma"].values.ravel().tolist()
+            result = self._summarize_samples(mu_samples)
+            # Epistemic: uncertainty about the true mean (std of mu posterior)
+            mu_mean = sum(mu_samples) / len(mu_samples)
+            result.epistemic_uncertainty = (sum((x - mu_mean) ** 2 for x in mu_samples) / max(len(mu_samples) - 1, 1)) ** 0.5
+            # Aleatoric: estimated data noise (mean of sigma posterior)
+            result.aleatoric_uncertainty = sum(sigma_samples) / len(sigma_samples)
+            return result
 
         raise ValueError("Inference config missing observations")
 
@@ -377,12 +394,19 @@ Respond with a JSON object:
             beliefs = []
             for h in data.get("hypotheses", []):
                 prior = h.get("prior", 0.5)
+                # Scale CI width by binary entropy of the prior (wider when uncertain)
+                import math
+                if 0 < prior < 1:
+                    entropy = -prior * math.log2(prior) - (1 - prior) * math.log2(1 - prior)
+                else:
+                    entropy = 0.0
+                half_width = 0.05 + 0.30 * entropy  # Range: 0.05 (certain) to 0.35 (max uncertain)
                 belief = BayesianBelief(
                     hypothesis=h.get("hypothesis", "unknown"),
                     prior=prior,
                     posterior=prior,  # Initially same as prior
                     evidence_considered=[],
-                    confidence_interval=(max(0, prior - 0.2), min(1, prior + 0.2)),
+                    confidence_interval=(max(0, prior - half_width), min(1, prior + half_width)),
                 )
                 beliefs.append(belief)
 
@@ -496,12 +520,18 @@ Design probes that would help us learn more."""),
 
         new_evidence = belief.evidence_considered + [evidence]
 
+        import math
+        n_evidence = len(new_evidence)
+        base_width = 0.25 / max(n_evidence ** 0.5, 1.0)
+        if 0 < posterior < 1:
+            entropy = -posterior * math.log2(posterior) - (1 - posterior) * math.log2(1 - posterior)
+            base_width *= (0.5 + 0.5 * entropy)
         return BayesianBelief(
             hypothesis=belief.hypothesis,
             prior=belief.prior,
             posterior=posterior,
             evidence_considered=new_evidence,
-            confidence_interval=(max(0, posterior - 0.15), min(1, posterior + 0.15)),
+            confidence_interval=(max(0, posterior - base_width), min(1, posterior + base_width)),
         )
 
     @async_lru_cache(maxsize=100)
@@ -593,6 +623,8 @@ Design probes that would help us learn more."""),
             uncertainty_before=initial_uncertainty,
             uncertainty_after=final_uncertainty,
             interpretation=interpretation,
+            epistemic_uncertainty=inference_result.epistemic_uncertainty,
+            aleatoric_uncertainty=inference_result.aleatoric_uncertainty,
         )
 
 
@@ -647,8 +679,8 @@ async def run_active_inference(
         credible_interval=result.updated_belief.confidence_interval,
         uncertainty_before=result.uncertainty_before,
         uncertainty_after=result.uncertainty_after,
-        epistemic_uncertainty=result.uncertainty_after * 0.7,  # Estimate
-        aleatoric_uncertainty=result.uncertainty_after * 0.3,  # Estimate
+        epistemic_uncertainty=result.epistemic_uncertainty,
+        aleatoric_uncertainty=result.aleatoric_uncertainty,
         hypothesis=result.updated_belief.hypothesis,
         confidence_level=state.overall_confidence.value,
         interpretation=result.interpretation,

@@ -134,6 +134,7 @@ class DeveloperService:
 
         # WebSocket connections for live streaming
         self._ws_connections: list[Any] = []
+        self._max_ws_connections: int = 50
 
         # Set up logging handler to capture logs
         self._log_handler = None  # Will be set by _setup_log_handler
@@ -200,6 +201,9 @@ class DeveloperService:
 
     def add_ws_connection(self, ws: Any):
         """Add a WebSocket connection for log streaming."""
+        if len(self._ws_connections) >= self._max_ws_connections:
+            self._ws_connections.pop(0)
+            logger.warning("WebSocket connection limit reached, evicting oldest")
         self._ws_connections.append(ws)
         logger.info(f"WebSocket connected. Total connections: {len(self._ws_connections)}")
 

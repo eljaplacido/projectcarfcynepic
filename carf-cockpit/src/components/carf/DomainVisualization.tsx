@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import type { CynefinDomain } from '../../types/carf';
+import type { CynefinDomain, CausalAnalysisResult, BayesianBeliefState } from '../../types/carf';
 
 interface DomainVisualizationProps {
     domain: CynefinDomain | null;
@@ -18,6 +18,8 @@ interface DomainVisualizationProps {
     onEscalate?: () => void;
     onAction?: (action: string) => void;
     isProcessing?: boolean;
+    causalResult?: CausalAnalysisResult | null;
+    bayesianResult?: BayesianBeliefState | null;
 }
 
 // Styles
@@ -325,6 +327,148 @@ const DisorderDomainView: React.FC<{
                     onClick={onEscalate}
                 >
                     ⚠️ Escalate to Human
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// ============================================================================
+// Complicated Domain: Expert Analysis Path
+// ============================================================================
+const ComplicatedDomainView: React.FC<{
+    onAction?: (action: string) => void;
+    causalResult?: CausalAnalysisResult | null;
+}> = ({ onAction, causalResult }) => {
+    return (
+        <div style={{ ...styles.container, backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
+            <div style={{ ...styles.header, color: '#3b82f6' }}>
+                <span>🔬</span>
+                <span>Complicated Domain - Expert Analysis</span>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#888', marginBottom: '1rem' }}>
+                This problem requires expert decomposition. Review causal pathways below.
+            </div>
+
+            {/* Effect Summary */}
+            {causalResult && (
+                <div style={{
+                    padding: '1rem',
+                    backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    marginBottom: '0.75rem',
+                }}>
+                    <div style={{ color: '#60a5fa', fontWeight: 600, marginBottom: '0.5rem' }}>
+                        Causal Effect: {causalResult.effect.toFixed(3)} {causalResult.unit}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                        {causalResult.treatment} → {causalResult.outcome}
+                        {causalResult.pValue !== null && ` (p=${causalResult.pValue.toFixed(4)})`}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                        Refutations: {causalResult.refutationsPassed}/{causalResult.refutationsTotal} passed
+                    </div>
+                </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+                <button
+                    style={{ ...styles.actionButton, backgroundColor: '#3b82f6', color: '#fff' }}
+                    onClick={() => onAction?.('deep_analysis')}
+                >
+                    🔍 Deep Analysis
+                </button>
+                <button
+                    style={{ ...styles.actionButton, backgroundColor: '#1e40af', color: '#fff' }}
+                    onClick={() => onAction?.('sensitivity_check')}
+                >
+                    📐 Sensitivity Check
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// ============================================================================
+// Complex Domain: Uncertainty Exploration
+// ============================================================================
+const ComplexDomainView: React.FC<{
+    onAction?: (action: string) => void;
+    bayesianResult?: BayesianBeliefState | null;
+}> = ({ onAction, bayesianResult }) => {
+    return (
+        <div style={{ ...styles.container, backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
+            <div style={{ ...styles.header, color: '#8b5cf6' }}>
+                <span>🌀</span>
+                <span>Complex Domain - Uncertainty Exploration</span>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#888', marginBottom: '1rem' }}>
+                Emergent patterns detected. Explore uncertainty landscape with probes.
+            </div>
+
+            {/* Uncertainty Breakdown */}
+            {bayesianResult && (
+                <div style={{
+                    padding: '1rem',
+                    backgroundColor: 'rgba(139, 92, 246, 0.08)',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(139, 92, 246, 0.2)',
+                    marginBottom: '0.75rem',
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.8rem', color: '#a78bfa' }}>Total Uncertainty</span>
+                        <span style={{ fontSize: '0.8rem', color: '#fff', fontWeight: 600 }}>
+                            {(bayesianResult.totalUncertainty * 100).toFixed(1)}%
+                        </span>
+                    </div>
+                    {/* Uncertainty bar */}
+                    <div style={{
+                        height: '8px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.1)',
+                        overflow: 'hidden', display: 'flex',
+                    }}>
+                        <div style={{
+                            width: `${bayesianResult.epistemicUncertainty * 100}%`,
+                            backgroundColor: '#8b5cf6', transition: 'width 0.5s',
+                        }} />
+                        <div style={{
+                            width: `${bayesianResult.aleatoricUncertainty * 100}%`,
+                            backgroundColor: '#c084fc', transition: 'width 0.5s',
+                        }} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.25rem' }}>
+                        <span style={{ fontSize: '0.7rem', color: '#a78bfa' }}>
+                            Epistemic: {(bayesianResult.epistemicUncertainty * 100).toFixed(0)}%
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: '#c084fc' }}>
+                            Aleatoric: {(bayesianResult.aleatoricUncertainty * 100).toFixed(0)}%
+                        </span>
+                    </div>
+
+                    {bayesianResult.recommendedProbe && (
+                        <div style={{
+                            marginTop: '0.75rem', padding: '0.5rem',
+                            backgroundColor: 'rgba(139, 92, 246, 0.15)', borderRadius: '6px',
+                            fontSize: '0.8rem', color: '#c4b5fd',
+                        }}>
+                            💡 Probe: {bayesianResult.recommendedProbe}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+                <button
+                    style={{ ...styles.actionButton, backgroundColor: '#8b5cf6', color: '#fff' }}
+                    onClick={() => onAction?.('run_probe')}
+                >
+                    🔮 Run Probe
+                </button>
+                <button
+                    style={{ ...styles.actionButton, backgroundColor: '#6d28d9', color: '#fff' }}
+                    onClick={() => onAction?.('explore_scenarios')}
+                >
+                    🌐 Explore Scenarios
                 </button>
             </div>
         </div>

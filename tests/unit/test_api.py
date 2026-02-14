@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 import src.main as main_module
+import src.api.routers.datasets as datasets_router
 from src.services.dataset_store import DatasetStore
 
 
@@ -23,7 +24,7 @@ def dataset_store():
 @pytest.fixture
 def client(dataset_store, monkeypatch):
     """Create a TestClient with an isolated dataset store."""
-    monkeypatch.setattr(main_module, "get_dataset_store", lambda: dataset_store)
+    monkeypatch.setattr(datasets_router, "get_dataset_store", lambda: dataset_store)
     return TestClient(main_module.app)
 
 
