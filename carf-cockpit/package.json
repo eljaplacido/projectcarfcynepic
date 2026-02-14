@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "lucide-react": "^0.563.0",
+    "plotly.js": "^3.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-plotly.js": "^2.6.0",
     "reactflow": "^11.11.4",
     "recharts": "^3.6.0"
   },
@@ -25,6 +27,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/react-plotly.js": "^2.6.4",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.39.1",

@@ -913,6 +913,8 @@ const DashboardLayout: React.FC = () => {
                                 onEscalate={() => setShowEscalationModal(true)}
                                 onAction={(action) => console.log('Domain action:', action)}
                                 isProcessing={isProcessing}
+                                causalResult={queryResponse?.causalResult || null}
+                                bayesianResult={queryResponse?.bayesianResult || null}
                             />
                             {/* Transparency Panel for Developer View */}
                             <TransparencyPanel
@@ -931,25 +933,6 @@ const DashboardLayout: React.FC = () => {
                 ) : viewMode === 'executive' ? (
                     /* EXECUTIVE VIEW - High-level KPI Dashboard and Decision Summary */
                     <div className="space-y-6">
-                        {/* Top: KPI Dashboard */}
-                        <div className="card">
-                            <ExecutiveKPIPanel
-                                queryResponse={queryResponse}
-                                causalResult={queryResponse?.causalResult || null}
-                                bayesianResult={queryResponse?.bayesianResult || null}
-                                guardianResult={queryResponse?.guardianResult || null}
-                                context={selectedScenario?.includes('scope3') || selectedScenario?.includes('carbon') || selectedScenario?.includes('renewable') ? 'sustainability'
-                                    : selectedScenario?.includes('pricing') || selectedScenario?.includes('roi') ? 'financial'
-                                    : selectedScenario?.includes('supply_chain') || selectedScenario?.includes('resilience') ? 'risk'
-                                    : queryResponse?.domain || 'general'}
-                                onDrillDown={(kpiId) => {
-                                    // Switch to analyst view for drill-down
-                                    console.log('Drill down to:', kpiId);
-                                    setViewMode('analyst');
-                                }}
-                            />
-                        </div>
-
                         <div className="grid grid-cols-12 gap-6">
                             {/* Left: Quick Query + Decision Status */}
                             <div className="col-span-3 space-y-4">

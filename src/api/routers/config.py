@@ -13,7 +13,7 @@ from src.api.models import (
     LLMConfigUpdateRequest,
     LLMConfigValidateRequest,
 )
-from src.services.visualization_engine import get_visualization_config, ContextualVisualization
+from src.services.visualization_engine import get_visualization_config, ContextualVisualization, get_cynefin_viz_config
 
 logger = logging.getLogger("carf")
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -24,6 +24,17 @@ router = APIRouter(tags=["Configuration"])
 async def get_viz_config(context: str = "general") -> ContextualVisualization:
     """Get context-aware visualization configuration."""
     return get_visualization_config(context)
+
+
+@router.get("/api/visualization-config")
+async def visualization_config(context: str = "general", domain: str = "disorder"):
+    """Return combined visualization configuration for context + domain."""
+    context_config = get_visualization_config(context)
+    domain_config = get_cynefin_viz_config(domain)
+    return {
+        "context": context_config.model_dump(),
+        "domain": domain_config.model_dump(),
+    }
 
 
 @router.get("/config/status")

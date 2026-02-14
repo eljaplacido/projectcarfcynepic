@@ -483,22 +483,25 @@ const DomainVisualization: React.FC<DomainVisualizationProps> = ({
     onEscalate,
     onAction,
     isProcessing,
+    causalResult,
+    bayesianResult,
 }) => {
     if (!domain || isProcessing) {
         return null;
     }
 
-    // Only show specialized views for certain domains
-    // Complicated and Complex use existing Causal/Bayesian panels
     switch (domain) {
         case 'clear':
             return <ClearDomainView onAction={onAction} />;
+        case 'complicated':
+            return <ComplicatedDomainView onAction={onAction} causalResult={causalResult} />;
+        case 'complex':
+            return <ComplexDomainView onAction={onAction} bayesianResult={bayesianResult} />;
         case 'chaotic':
             return <ChaoticDomainView onAction={onAction} />;
         case 'disorder':
             return <DisorderDomainView onEscalate={onEscalate} onAction={onAction} />;
         default:
-            // Complicated and Complex handled by existing panels
             return null;
     }
 };

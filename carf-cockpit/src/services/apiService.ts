@@ -909,4 +909,44 @@ const api = {
     assessScenarioRealism,
 };
 
+// ============================================================================
+// Visualization Config
+// ============================================================================
+
+export interface CynefinVizConfig {
+    domain: string;
+    primary_chart: string;
+    secondary_charts: string[];
+    color_scheme: string[];
+    interaction_mode: string;
+    detail_level: string;
+    recommended_panels: string[];
+}
+
+export interface ContextualVizConfig {
+    context: string;
+    chart_type: string;
+    color_scheme: string[];
+    kpi_templates: Array<{ name: string; unit: string; trend: string; description?: string }>;
+    recommended_panels: string[];
+    title_template: string;
+    insight_prompt: string;
+}
+
+export interface VizConfigResponse {
+    context: ContextualVizConfig;
+    domain: CynefinVizConfig;
+}
+
+export async function getVisualizationConfig(
+    context: string = 'general',
+    domain: string = 'disorder'
+): Promise<VizConfigResponse> {
+    const response = await fetch(
+        `${API_BASE_URL}/api/visualization-config?context=${encodeURIComponent(context)}&domain=${encodeURIComponent(domain)}`
+    );
+    if (!response.ok) throw new ApiError(response.status, 'Failed to fetch visualization config');
+    return response.json();
+}
+
 export default api;

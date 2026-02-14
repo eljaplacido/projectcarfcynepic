@@ -242,10 +242,12 @@ All paths -> Guardian (policy check) -> [Approve | Reject | Escalate to Human]
 | `/oracle/predict` | POST | Fast causal prediction (<100ms) |
 | `/oracle/models/{id}` | GET | Get model metadata for scenario |
 
-### Configuration Management Endpoints
+### Visualization & Configuration Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
+| `/api/visualization-config` | GET | Combined domain + context visualization config |
+| `/config/visualization` | GET | Context-aware visualization settings |
 | `/config/status` | GET | System configuration status |
 | `/config/validate` | POST | Validate configuration |
 | `/router/config` | GET/PUT/PATCH | Manage Cynefin Router configuration |
@@ -371,6 +373,7 @@ projectcarf/
 │   ├── workflows/      # LangGraph graph, Guardian, Cynefin Router
 │   ├── utils/          # Telemetry, caching, circuit breaker, resiliency
 │   └── main.py         # FastAPI entry point (60+ endpoints)
+│   ├── api/            # FastAPI routers (modularized endpoints)
 ├── carf-cockpit/       # React (Vite + TypeScript) dashboard
 ├── config/
 │   ├── agents.yaml     # Agent configurations
@@ -451,6 +454,12 @@ See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for detai
 - **Data Flow Visualization**
 - Live log streaming via WebSocket
 - DeepEval quality metrics integration
+- **Domain-Specific Views** for all 5 Cynefin domains:
+  - Clear: Decision checklist with step tracking
+  - Complicated: Expert analysis with causal effect summary
+  - Complex: Uncertainty exploration with epistemic/aleatoric breakdown
+  - Chaotic: Circuit breaker with rapid response controls
+  - Disorder: Clarification prompts with human escalation
 
 ### Executive View
 - Expected impact hero card
@@ -459,6 +468,12 @@ See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for detai
 - Policy compliance overview
 - **Actionable Insights** for decision-makers
 - Export and share functionality
+
+### Data Visualization
+- **PlotlyChart** unified wrapper supporting waterfall, radar, sankey, and gauge charts
+- **CynefinVizConfig** backend-driven domain-specific visualization strategy
+- **Context-adaptive charts**: color schemes, chart types, and interaction modes adapt per Cynefin domain and business context (sustainability, financial, operational, risk)
+- **useVisualizationConfig** React hook with caching and offline fallbacks
 
 ### Theme Support
 - **Dark/Light Mode Toggle** in header

@@ -1,20 +1,21 @@
 # CYNEPIC Architecture 0.5 - Current Status
 
-**Last Updated**: 2026-02-01
-**Phase**: CHIMEPIC Integration (Phase 12)
-**Overall Status**: Phase 1 Complete - Tested & Verified
+**Last Updated**: 2026-02-14
+**Phase**: CHIMEPIC Integration (Phase 12) + UIX Visualization Phase
+**Overall Status**: Phase 1 Complete - Tested & Verified, Visualization Phase Complete
 
 ---
 
 ## Test Coverage
 
 ```
-Total Tests: 354+ passing
+Total Tests: 380+ passing
 Overall Coverage: 64%
-Python Lines: 4,800+ lines
-React Components: 32 components
+Python Lines: 5,000+ lines
+React Components: 34 components
+Backend Unit Tests: 31 test files
+Frontend Tests: 65 tests (5 test files, all passing)
 E2E Tests: 16 tests (Data Quality: 6/6 pass, API: varies by network)
-Unit Tests: 17 tests (15/17 pass)
 ```
 
 ## Feature Completion Matrix
@@ -50,6 +51,10 @@ Unit Tests: 17 tests (15/17 pass)
 | SetupWizard | Complete | LLM provider configuration |
 | **StrategyComparisonPanel** | **NEW** | Fast Oracle vs DoWhy comparison |
 | **ExperienceBufferPanel** | **NEW** | Learning buffer for Developer view |
+| **DomainVisualization** | Complete | All 5 Cynefin domain views (Clear/Complicated/Complex/Chaotic/Disorder) |
+| **PlotlyChart** | **NEW** | Unified Plotly.js wrapper (waterfall, radar, sankey, gauge) |
+| **TransparencyPanel** | Complete | Agent reliability, data quality, compliance |
+| **InsightsPanel** | Complete | Persona-specific actionable recommendations |
 
 ### API Endpoints
 
@@ -66,10 +71,35 @@ Unit Tests: 17 tests (15/17 pass)
 | Benchmarking | 3 | Complete |
 | Oracle | 3 | Complete - train, predict, list models |
 | **Agent** | **1** | **NEW** - suggest-improvements |
+| **Visualization Config** | **2** | **NEW** - `/api/visualization-config`, `/config/visualization` |
 
 ---
 
 ## Recent Improvements
+
+### UIX & Data Visualization Phase (2026-02-14)
+
+#### Phase A: Domain View Completion
+1. **Wired ComplicatedDomainView** into DomainVisualization switch — expert analysis with causal effect summary, refutation stats, Deep Analysis / Sensitivity Check actions
+2. **Wired ComplexDomainView** into DomainVisualization switch — uncertainty exploration with epistemic/aleatoric breakdown bar, recommended probes, Run Probe / Explore Scenarios actions
+3. **Removed duplicate ExecutiveKPIPanel** from executive view — was rendering twice, now single instance under Analysis Board
+4. **Connected causalResult and bayesianResult props** through DashboardLayout to DomainVisualization
+
+#### Phase B: Backend Visualization Config
+5. **CynefinVizConfig model** added to visualization_engine.py — domain-specific chart types, color schemes, interaction modes, and recommended panels for all 5 Cynefin domains
+6. **GET /api/visualization-config endpoint** — returns combined domain + context visualization configuration
+7. **getVisualizationConfig()** API function in apiService.ts with typed interfaces
+8. **useVisualizationConfig hook** — React hook with in-memory caching, offline fallbacks, and error resilience
+
+#### Phase C: Plotly.js Integration
+9. **PlotlyChart.tsx** — unified Plotly.js wrapper supporting waterfall (causal effects), radar (domain scores), sankey (confounder flows), and gauge (KPI scoring) with dark mode support
+10. **react-plotly.js** dependency installed with TypeScript types
+
+#### Phase D: Test Coverage
+11. **test_cynefin_viz_config.py** — 11 backend tests (all domains, fallback, case insensitivity, panel recommendations)
+12. **DomainVisualization.test.tsx** — 11 component tests (all 5 domain renders, causal effect display, uncertainty bar, action callbacks)
+13. **useVisualizationConfig.test.ts** — 4 hook tests (null domain, API fetch, error fallback, caching)
+14. **All 65 frontend tests passing**, 0 TypeScript errors
 
 ### Bug Fixes (2026-02-01)
 1. **Fixed import error** - Removed invalid `visualization_engine` import in main.py
@@ -262,15 +292,17 @@ pytest tests/ -v --cov=src
 ```
 projectcarf/
 ├── src/
-│   ├── main.py              # FastAPI entry (1800+ lines, 40+ endpoints)
+│   ├── main.py              # FastAPI entry point
+│   ├── api/routers/         # Modularized API routers (11 routers, 83 routes)
 │   ├── core/                # State schemas, LLM config
-│   ├── services/            # 15 services (incl. chimera_oracle, schema_detector)
+│   ├── services/            # 16 services (incl. chimera_oracle, visualization_engine)
 │   ├── workflows/           # LangGraph nodes (router, guardian, graph)
 │   └── dashboard/           # Streamlit (legacy)
 ├── carf-cockpit/
 │   └── src/
-│       ├── components/carf/ # 32 React components
-│       ├── services/        # API client
+│       ├── components/carf/ # 34 React components (incl. PlotlyChart, DomainVisualization)
+│       ├── hooks/           # React hooks (useVisualizationConfig, useCarfApi, useTheme)
+│       ├── services/        # API client (apiService.ts with typed interfaces)
 │       └── types/           # TypeScript types
 ├── tests/
 │   ├── unit/               # 20+ test files

@@ -27,6 +27,74 @@ class ContextualVisualization(BaseModel):
     title_template: str
     insight_prompt: str
 
+class CynefinVizConfig(BaseModel):
+    """Cynefin domain-specific visualization strategy."""
+    domain: str  # clear, complicated, complex, chaotic, disorder
+    primary_chart: str  # Main chart type for this domain
+    secondary_charts: List[str]  # Additional chart types
+    color_scheme: List[str]  # Domain-specific colors
+    interaction_mode: str  # "checklist", "explore", "act_first", "triage"
+    detail_level: str  # "summary", "detailed", "raw"
+    recommended_panels: List[str]  # Frontend component names to show
+
+
+CYNEFIN_VIZ_CONFIGS: Dict[str, CynefinVizConfig] = {
+    "clear": CynefinVizConfig(
+        domain="clear",
+        primary_chart="bar",
+        secondary_charts=["checklist"],
+        color_scheme=["#10B981", "#059669", "#D1FAE5"],
+        interaction_mode="checklist",
+        detail_level="summary",
+        recommended_panels=["ClearDomainView", "GuardianPanel"],
+    ),
+    "complicated": CynefinVizConfig(
+        domain="complicated",
+        primary_chart="dag",
+        secondary_charts=["waterfall", "sensitivity"],
+        color_scheme=["#3B82F6", "#1D4ED8", "#DBEAFE"],
+        interaction_mode="explore",
+        detail_level="detailed",
+        recommended_panels=["CausalDAG", "ComplicatedDomainView", "SensitivityPlot", "InterventionSimulator"],
+    ),
+    "complex": CynefinVizConfig(
+        domain="complex",
+        primary_chart="area",
+        secondary_charts=["gauge", "heatmap"],
+        color_scheme=["#8B5CF6", "#6D28D9", "#EDE9FE"],
+        interaction_mode="explore",
+        detail_level="detailed",
+        recommended_panels=["BayesianPanel", "ComplexDomainView"],
+    ),
+    "chaotic": CynefinVizConfig(
+        domain="chaotic",
+        primary_chart="timeline",
+        secondary_charts=["alert_list"],
+        color_scheme=["#EF4444", "#B91C1C", "#FEF2F2"],
+        interaction_mode="act_first",
+        detail_level="summary",
+        recommended_panels=["ChaoticDomainView", "GuardianPanel"],
+    ),
+    "disorder": CynefinVizConfig(
+        domain="disorder",
+        primary_chart="radar",
+        secondary_charts=["confidence_bar"],
+        color_scheme=["#9CA3AF", "#6B7280", "#F3F4F6"],
+        interaction_mode="triage",
+        detail_level="summary",
+        recommended_panels=["DisorderDomainView", "CynefinRouter"],
+    ),
+}
+
+
+def get_cynefin_viz_config(domain_str: str) -> CynefinVizConfig:
+    """Return domain-appropriate visualization config."""
+    return CYNEFIN_VIZ_CONFIGS.get(
+        domain_str.lower(),
+        CYNEFIN_VIZ_CONFIGS["disorder"]  # fallback
+    )
+
+
 def get_visualization_config(context_str: str) -> ContextualVisualization:
     """Return context-appropriate visualization settings."""
     
