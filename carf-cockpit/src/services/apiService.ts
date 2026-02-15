@@ -949,4 +949,178 @@ export async function getVisualizationConfig(
     return response.json();
 }
 
+// ============================================================================
+// Feedback API — Closed-Loop Learning
+// ============================================================================
+
+export interface FeedbackItem {
+    type: 'issue' | 'improvement' | 'domain_override' | 'quality_rating';
+    description: string;
+    context: Record<string, unknown>;
+    rating?: number;
+    correct_domain?: string;
+}
+
+export interface FeedbackResponse {
+    feedback_id: string;
+    status: string;
+    message: string;
+    received_at: string;
+}
+
+export async function submitFeedback(item: FeedbackItem): Promise<FeedbackResponse> {
+    const response = await fetch(`${API_BASE_URL}/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+    });
+    if (!response.ok) throw new ApiError(response.status, 'Failed to submit feedback');
+    return response.json();
+}
+
+export async function getFeedbackSummary(): Promise<Record<string, unknown>> {
+    const response = await fetch(`${API_BASE_URL}/feedback/summary`);
+    if (!response.ok) throw new ApiError(response.status, 'Failed to fetch feedback summary');
+    return response.json();
+}
+
+// ============================================================================
+// Domain Action API
+// ============================================================================
+
+export async function submitDomainAction(
+    action: string,
+    context: Record<string, unknown>
+): Promise<QueryResponse> {
+    return withRetry(() =>
+        apiFetch('/query', {
+            method: 'POST',
+            body: JSON.stringify({
+                query: context.prompt || `Execute domain action: ${action}`,
+                context: { ...context, action_type: action },
+            }),
+        })
+    );
+}
+
+// ============================================================================
+// CSL Policy API
+// ============================================================================
+
+export interface CSLStatus {
+    enabled: boolean;
+    engine: string;
+    policy_count: number;
+    rule_count: number;
+    policies: string[];
+}
+
+export interface CSLPolicyDetail {
+    name: string;
+    version: string;
+    description: string;
+    rules: CSLRuleDetail[];
+}
+
+export interface CSLRuleDetail {
+    name: string;
+    policy_name: string;
+    condition: Record<string, unknown>;
+    constraint: Record<string, unknown>;
+    message: string;
+}
+
+export interface CSLEvaluationResult {
+    allow: boolean;
+    rules_checked: number;
+    rules_passed: number;
+    rules_failed: number;
+    violations: Array<{
+        rule_name: string;
+        policy_name: string;
+        message: string;
+    }>;
+}
+
+export async function getCSLStatus(): Promise<CSLStatus> {
+    return withRetry(() => apiFetch('/csl/status'));
+}
+
+export async function getCSLPolicies(): Promise<CSLPolicyDetail[]> {
+    return withRetry(() => apiFetch('/csl/policies'));
+}
+
+export async function reloadCSLPolicies(): Promise<{ status: string; message: string }> {
+    return withRetry(() => apiFetch('/csl/reload', { method: 'POST' }));
+}
+
+export async function evaluateCSLPolicy(
+    policyName: string,
+    context: Record<string, unknown>
+): Promise<CSLEvaluationResult> {
+    return withRetry(() =>
+        apiFetch('/csl/evaluate', {
+            method: 'POST',
+            body: JSON.stringify({ policy_name: policyName, context }),
+        })
+    );
+}
+
+export async function addCSLRule(
+    policyName: string,
+    naturalLanguageRule: string
+): Promise<{ status: string; rule: CSLRuleDetail }> {
+    return withRetry(() =>
+        apiFetch(`/csl/policies/${encodeURIComponent(policyName)}/rules`, {
+            method: 'POST',
+            body: JSON.stringify({ natural_language: naturalLanguageRule }),
+        })
+    );
+}
+
+// ============================================================================
+// Simulation Benchmarks API
+// ============================================================================
+
+export interface SimulationBenchmark {
+    id: string;
+    name: string;
+    type: 'industry' | 'historical' | 'custom';
+    value: number;
+    description: string;
+}
+
+export async function getSimulationBenchmarks(
+    scenario: string
+): Promise<SimulationBenchmark[]> {
+    return withRetry(() =>
+        apiFetch(`/simulations/benchmarks/${encodeURIComponent(scenario)}`)
+    );
+}
+
+// ============================================================================
+// Executive Summary API
+// ============================================================================
+
+export interface ExecutiveSummary {
+    key_finding: string;
+    confidence_level: string;
+    recommended_action: string;
+    risk_assessment: string;
+    plain_explanation: string;
+    domain: string;
+    generated_at: string;
+}
+
+export async function getExecutiveSummary(
+    analysisContext: Record<string, unknown>
+): Promise<ExecutiveSummary> {
+    return withRetry(() =>
+        apiFetch('/summary/executive', {
+            method: 'POST',
+            body: JSON.stringify(analysisContext),
+        })
+    );
+}
+
 export default api;

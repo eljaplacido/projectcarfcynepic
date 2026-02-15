@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import PolicyEditorModal from './PolicyEditorModal';
 import type { GuardianDecision } from '../../types/carf';
 import ExplainableWrapper from './ExplainableWrapper';
 
@@ -7,6 +8,8 @@ interface GuardianPanelProps {
 }
 
 const GuardianPanel: React.FC<GuardianPanelProps> = ({ decision }) => {
+    const [showPolicyEditor, setShowPolicyEditor] = useState(false);
+
     if (!decision) {
         return (
             <div className="text-sm text-gray-500 italic">
@@ -106,7 +109,7 @@ const GuardianPanel: React.FC<GuardianPanelProps> = ({ decision }) => {
                     <div className="flex items-center justify-between mb-2">
                         <div className="text-sm font-semibold text-gray-900">Policy Checks</div>
                         <button
-                            onClick={() => alert('Policy Configuration: This would open the Policy Editor in a production environment.\n\nCurrent policies are defined in:\n- configs/safety_policies.yaml\n- configs/budget_constraints.json')}
+                            onClick={() => setShowPolicyEditor(true)}
                             className="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
                             title="Edit validation rules"
                         >
@@ -166,6 +169,10 @@ const GuardianPanel: React.FC<GuardianPanelProps> = ({ decision }) => {
                     </div>
                 </div>
             )}
+            <PolicyEditorModal
+                isOpen={showPolicyEditor}
+                onClose={() => setShowPolicyEditor(false)}
+            />
         </div>
     );
 };

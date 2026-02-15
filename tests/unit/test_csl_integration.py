@@ -45,7 +45,7 @@ class TestCSLConfig:
 
         config = CSLConfig.from_env()
 
-        assert config.enabled is False
+        assert config.enabled is True
         assert config.policy_dir == "config/policies"
         assert config.fail_closed is True
         assert config.audit_enabled is True
@@ -335,7 +335,7 @@ class TestGuardianCSLIntegration:
     @pytest.mark.asyncio
     async def test_guardian_with_csl_disabled(self, guardian, monkeypatch):
         """Guardian works normally when CSL is disabled."""
-        monkeypatch.delenv("CSL_ENABLED", raising=False)
+        monkeypatch.setenv("CSL_ENABLED", "false")
 
         # Reset the singleton so it picks up the new env
         import src.services.csl_policy_service as csl_mod

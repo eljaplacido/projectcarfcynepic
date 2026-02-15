@@ -1,8 +1,8 @@
 # CYNEPIC Architecture 0.5 - Current Status
 
-**Last Updated**: 2026-02-14
-**Phase**: CHIMEPIC Integration (Phase 12) + UIX Visualization Phase
-**Overall Status**: Phase 1 Complete - Tested & Verified, Visualization Phase Complete
+**Last Updated**: 2026-02-15
+**Phase**: CHIMEPIC Integration (Phase 12) + UIX Visualization Phase + Platform Hardening
+**Overall Status**: Phase 1 Complete - Tested & Verified, Visualization Phase Complete, Feedback Loop Wired
 
 ---
 
@@ -72,10 +72,33 @@ E2E Tests: 16 tests (Data Quality: 6/6 pass, API: varies by network)
 | Oracle | 3 | Complete - train, predict, list models |
 | **Agent** | **1** | **NEW** - suggest-improvements |
 | **Visualization Config** | **2** | **NEW** - `/api/visualization-config`, `/config/visualization` |
+| **Feedback** | **4** | **NEW** - `/feedback`, `/feedback/summary`, `/feedback/domain-overrides`, `/feedback/export` |
 
 ---
 
 ## Recent Improvements
+
+### Platform Hardening & Feedback Loop (2026-02-15)
+
+#### Feedback API (Closed-Loop Learning)
+1. **Feedback router** (`src/api/routers/feedback.py`) — POST `/feedback`, GET `/feedback/summary`, `/feedback/domain-overrides`, `/feedback/export`
+2. **DeveloperView.tsx** feedback buttons now POST to real API (was `console.log` only)
+3. **apiService.ts** — `submitFeedback()` and `getFeedbackSummary()` functions added
+4. **Domain overrides** tracked separately for Router retraining pipeline
+
+#### Antipattern Documentation
+5. **AGENTS.md** — 8 antipatterns documented (AP-1 through AP-8): hardcoded values, mock data, blocking I/O, unbounded collections, currency-blind comparisons, silent null returns, isolated services, test mode leakage
+
+#### Testing & Data Generation
+6. **`scripts/generate_all_scenario_data.py`** — Generates 8 datasets (10,000+ rows total) covering all 5 Cynefin domains
+7. **New datasets**: `market_uncertainty.csv` (Complex/Bayesian), `crisis_response.csv` (Chaotic/Circuit Breaker)
+8. **`docs/UIX_TESTING_WALKTHROUGH.md`** — Comprehensive walkthrough with 8 test suites (A-H), curl commands, verification checklists
+
+#### Remaining Gaps (Documented, Not Yet Implemented)
+- ChimeraOracle not wired into LangGraph StateGraph (standalone API only)
+- LightRAG / Vector Store (no implementation)
+- Guardian currency-aware comparisons
+- Router retraining pipeline from feedback data
 
 ### UIX & Data Visualization Phase (2026-02-14)
 
@@ -249,10 +272,14 @@ pytest tests/ -v --cov=src
 
 ## Known Limitations
 
-1. **Causal/Bayesian Engines**: Currently use LLM simulation when DoWhy/PyMC not available
+1. **Causal/Bayesian Engines**: Use LLM simulation when DoWhy/PyMC not available (graceful degradation)
 2. **Neo4j Integration**: Connection pool exists but queries need real database
 3. **Kafka Audit**: Infrastructure ready but not persisting to real Kafka
-4. **Streamlit Dashboard**: 0% test coverage (deprecated in favor of React)
+4. **Streamlit Dashboard**: Deprecated in favor of React cockpit
+5. **ChimeraOracle**: Standalone REST API only — not yet wired into LangGraph StateGraph workflow
+6. **LightRAG / Vector Store**: Not implemented — semantic search and cross-session knowledge retrieval missing
+7. **Guardian Currency**: Financial thresholds are currency-blind ($50K USD = ¥50K JPY)
+8. **Router Retraining**: Feedback collection works but no automated retraining pipeline yet
 
 ---
 
@@ -293,7 +320,7 @@ pytest tests/ -v --cov=src
 projectcarf/
 ├── src/
 │   ├── main.py              # FastAPI entry point
-│   ├── api/routers/         # Modularized API routers (11 routers, 83 routes)
+│   ├── api/routers/         # Modularized API routers (12 routers incl. feedback)
 │   ├── core/                # State schemas, LLM config
 │   ├── services/            # 16 services (incl. chimera_oracle, visualization_engine)
 │   ├── workflows/           # LangGraph nodes (router, guardian, graph)
@@ -308,7 +335,36 @@ projectcarf/
 │   ├── unit/               # 20+ test files
 │   └── e2e/                # End-to-end tests (gold standard scenarios)
 ├── demo/
-│   ├── data/               # Sample datasets (scope3_emissions.csv)
-│   └── payloads/           # Scenario configurations
+│   ├── data/               # 8 realistic datasets (scope3, supply_chain, pricing, etc.)
+│   └── payloads/           # 10 scenario configurations
 └── docs/                   # Documentation
 ```
+
+---
+
+## CSL-Core Policy Engine Integration
+
+**Status:** Active — built-in Python evaluator enabled by default
+
+### Architecture
+- **Primary Layer:** CSL-Core (Z3 formal verification at compile-time, pure Python evaluation at runtime)
+- **Secondary Layer:** OPA/YAML fallback for complex contextual policies
+- **Tool Guard:** CSLToolGuard wraps workflow nodes with policy enforcement (enforce/log-only modes)
+
+### Policies (4 core + 1 cross-cutting)
+| Policy | Rules | Purpose |
+|--------|-------|---------|
+| budget_limits | 9 | Financial action limits by role and domain |
+| action_gates | 8 | Approval requirements for high-risk actions |
+| chimera_guards | 7 | Prediction safety bounds for ChimeraOracle |
+| data_access | 6 | PII, encryption, and data residency rules |
+| cross_cutting | 5 | Cross-domain rules spanning multiple areas |
+
+### API Endpoints
+- `GET /csl/status` — Engine status and loaded policies
+- `GET /csl/policies` — List all policies with rules
+- `POST /csl/policies/{name}/rules` — Add rule (supports natural language)
+- `PUT /csl/policies/{name}/rules/{rule_name}` — Update rule constraints
+- `DELETE /csl/policies/{name}/rules/{rule_name}` — Remove rule
+- `POST /csl/evaluate` — Test-evaluate against sample context
+- `POST /csl/reload` — Hot-reload policies without restart

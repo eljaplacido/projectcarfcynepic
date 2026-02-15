@@ -89,6 +89,17 @@ async def process_query(request: QueryRequest):
         if request.bayesian_inference:
             context["bayesian_inference"] = request.bayesian_inference.model_dump()
 
+        # Handle special run types (deep analysis, sensitivity check)
+        run_type = context.get("run_type")
+        if run_type == "deep_analysis":
+            context["run_heterogeneous"] = True
+            context["run_extra_refutations"] = True
+            context["analysis_depth"] = "deep"
+        elif run_type == "sensitivity_check":
+            context["run_extra_refutations"] = True
+            context["run_sensitivity"] = True
+            context["analysis_depth"] = "sensitivity"
+
         # Run the full CARF pipeline
         final_state = await run_carf(
             user_input=request.query,
@@ -269,10 +280,13 @@ async def process_query_stream(request: QueryRequest):
             causal_result = None
             if final_state.causal_evidence:
                 ce = final_state.causal_evidence
+                ci = ce.confidence_interval
                 causal_result = {
                     "effect": ce.effect_size,
-                    "confidenceInterval": ce.confidence_interval,
+                    "pValue": ce.p_value,
+                    "confidenceInterval": [ci[0], ci[1]] if ci else None,
                     "refutationsPassed": sum(1 for v in ce.refutation_results.values() if v),
+                    "refutationsTotal": len(ce.refutation_results),
                     "treatment": ce.treatment,
                     "outcome": ce.outcome,
                 }

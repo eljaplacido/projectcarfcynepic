@@ -81,8 +81,12 @@ class TestGuardian:
         return Guardian()
 
     @pytest.mark.asyncio
-    async def test_approve_clean_state(self, guardian):
+    async def test_approve_clean_state(self, guardian, monkeypatch):
         """Test clean state gets approved."""
+        monkeypatch.setenv("CSL_ENABLED", "false")
+        import src.services.csl_policy_service as csl_mod
+        csl_mod._csl_service = None
+
         state = EpistemicState(
             domain_confidence=0.95,
             reflection_count=0,

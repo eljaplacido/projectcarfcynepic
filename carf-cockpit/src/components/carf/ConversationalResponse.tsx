@@ -25,6 +25,7 @@ const ConversationalResponse: React.FC<ConversationalResponseProps> = ({
     onViewData,
 }) => {
     const [expandedZone, setExpandedZone] = useState<string | null>(null);
+    const [expandedSummary, setExpandedSummary] = useState<any>(null);
 
     if (!response || !response.response) {
         return null;
@@ -237,8 +238,64 @@ const ConversationalResponse: React.FC<ConversationalResponseProps> = ({
                     >
                         🔬 View Methodology
                     </button>
+                    <button
+                        onClick={async () => {
+                            try {
+                                const { getExecutiveSummary } = await import('../../services/apiService');
+                                const ctx = {
+                                    domain: response?.domain || 'unknown',
+                                    domain_confidence: response?.domainConfidence || 0,
+                                    causal_effect: response?.causalResult?.effect || null,
+                                    guardian_verdict: response?.guardianVerdict || 'unknown',
+                                    treatment: response?.causalResult?.treatment || null,
+                                    outcome: response?.causalResult?.outcome || null,
+                                };
+                                const summary = await getExecutiveSummary(ctx);
+                                setExpandedSummary(summary);
+                            } catch (e) {
+                                console.error('Failed to generate executive summary:', e);
+                            }
+                        }}
+                        className="text-xs px-3 py-1.5 bg-amber-100 text-amber-800 rounded-full hover:bg-amber-200 transition-colors flex items-center gap-1"
+                    >
+                        Executive Summary
+                    </button>
                 </div>
             </div>
+
+            {expandedSummary && (
+                <div className="mt-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-amber-900">Executive Summary</h4>
+                        <button
+                            onClick={() => setExpandedSummary(null)}
+                            className="text-amber-500 hover:text-amber-700 text-xs"
+                        >
+                            Close
+                        </button>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                        <div>
+                            <span className="font-medium text-amber-900">Key Finding: </span>
+                            <span className="text-amber-800">{expandedSummary.key_finding}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-amber-900">Confidence: </span>
+                            <span className="text-amber-800">{expandedSummary.confidence_level}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-amber-900">Risk: </span>
+                            <span className="text-amber-800">{expandedSummary.risk_assessment}</span>
+                        </div>
+                        <div>
+                            <span className="font-medium text-amber-900">Recommendation: </span>
+                            <span className="text-amber-800">{expandedSummary.recommended_action}</span>
+                        </div>
+                        <hr className="border-amber-200" />
+                        <p className="text-xs text-amber-700 italic">{expandedSummary.plain_explanation}</p>
+                    </div>
+                </div>
+            )}
 
             {/* Key Insights */}
             {response.keyInsights && response.keyInsights.length > 0 && (

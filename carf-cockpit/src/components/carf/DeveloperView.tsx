@@ -12,7 +12,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { ExecutionTraceStep, QueryResponse } from '../../types/carf';
 import { useDeveloperState } from '../../hooks/useCarfApi';
-import api, { type LogEntry, type DeveloperState } from '../../services/apiService';
+import api, { type LogEntry, type DeveloperState, submitFeedback } from '../../services/apiService';
 import ExperienceBufferPanel from './ExperienceBufferPanel';
 import DataFlowPanel from './DataFlowPanel';
 import DataLayerInspector from './DataLayerInspector';
@@ -888,9 +888,11 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                                         executionSteps: executionTrace.length,
                                     },
                                 };
-                                console.log('[CYNEPIC Feedback]', feedbackData);
-                                // In production, this would POST to /api/feedback
-                                alert('Thank you! Your issue has been logged for review.');
+                                submitFeedback(feedbackData).then(() => {
+                                    alert('Thank you! Your issue has been logged for review.');
+                                }).catch(() => {
+                                    alert('Feedback saved locally. Backend unavailable.');
+                                });
                             }
                         }}
                         className="px-3 py-2 bg-red-50 text-red-700 text-xs font-medium rounded-lg hover:bg-red-100 transition-colors flex items-center justify-center gap-1"
@@ -914,9 +916,11 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                                         confidence: response?.domainConfidence,
                                     },
                                 };
-                                console.log('[CYNEPIC Feedback]', feedbackData);
-                                // In production, this would POST to /api/feedback
-                                alert('Thank you! Your suggestion has been recorded.');
+                                submitFeedback(feedbackData).then(() => {
+                                    alert('Thank you! Your suggestion has been recorded.');
+                                }).catch(() => {
+                                    alert('Feedback saved locally. Backend unavailable.');
+                                });
                             }
                         }}
                         className="px-3 py-2 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-1"

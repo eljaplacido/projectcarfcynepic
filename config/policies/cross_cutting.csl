@@ -1,0 +1,37 @@
+# Cross-Cutting CSL Policies
+# Domain: Cross-domain rules spanning multiple policy areas
+
+policy cross_cutting {
+    version = "1.0"
+    description = "Cross-domain rules that span multiple policy areas"
+
+    rule chaotic_drift_financial_limit {
+        when domain.type == "Chaotic" and prediction.drift_detected == true
+        then action.amount <= 5000
+        message = "In chaotic + drift conditions, financial actions limited to $5,000"
+    }
+
+    rule low_confidence_causal_gate {
+        when prediction.source == "causal" and domain.confidence < 0.6
+        then approval.escalated == true
+        message = "Low-confidence causal predictions require human review"
+    }
+
+    rule complex_domain_export_limit {
+        when domain.type == "Complex" and action.type == "export"
+        then approval.status == "approved"
+        message = "Complex domain exports require approval due to emergent uncertainty"
+    }
+
+    rule high_uncertainty_action_block {
+        when prediction.epistemic_uncertainty > 0.8
+        then action.type == "review_only"
+        message = "Very high epistemic uncertainty blocks all actions except review"
+    }
+
+    rule multi_violation_escalation {
+        when session.violation_count > 3
+        then approval.escalated == true
+        message = "Multiple policy violations in session trigger mandatory escalation"
+    }
+}

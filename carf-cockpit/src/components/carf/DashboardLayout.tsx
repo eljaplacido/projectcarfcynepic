@@ -132,6 +132,7 @@ const DashboardLayout: React.FC = () => {
         `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
     );
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const [processingMessage, setProcessingMessage] = useState<string>('');
     const [queryResponse, setQueryResponse] = useState<QueryResponse | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
     const [, setQueryStartTime] = useState<number>(0);
@@ -417,6 +418,7 @@ const DashboardLayout: React.FC = () => {
 
                 setQueryResponse(formattedResponse as QueryResponse);
                 setIsProcessing(false);
+                setProcessingMessage('');
 
                 // Save to analysis history
                 const analysisSession: AnalysisSession = {
@@ -446,6 +448,7 @@ const DashboardLayout: React.FC = () => {
         } catch (error) {
             console.error('API call failed:', error);
             setIsProcessing(false);
+            setProcessingMessage('');
             setApiError('Analysis failed. Please check that the backend API is running.');
 
             const errorMessage: ChatMessage = {
@@ -499,6 +502,65 @@ const DashboardLayout: React.FC = () => {
             scenario_id: session.scenarioId,
         });
     }, [handleQuerySubmit]);
+
+    // Handle domain-specific action buttons (Deep Analysis, Sensitivity Check, Run Probe, Explore Scenarios)
+    const handleDomainAction = useCallback((action: string) => {
+        const domain = queryResponse?.domain || 'unknown';
+        const currentQuery = queryResponse?.response || '';
+
+        switch (action) {
+            case 'deep_analysis': {
+                setProcessingMessage('Running deep causal analysis with alternative estimators...');
+                const prompt = `Perform a deeper causal analysis of: "${currentQuery}". Focus on identifying additional confounders, testing alternative causal pathways, and providing sensitivity analysis of the treatment effect estimate. Include heterogeneous treatment effects across subgroups.`;
+                handleQuerySubmit(prompt, { run_type: 'deep_analysis', parent_domain: domain });
+                break;
+            }
+            case 'sensitivity_check': {
+                setProcessingMessage('Running sensitivity and refutation checks...');
+                const prompt = `Run sensitivity and refutation checks for the causal analysis of: "${currentQuery}". Test with placebo treatments, random common causes, and data subset validation. Report which assumptions are most fragile.`;
+                handleQuerySubmit(prompt, { run_type: 'sensitivity_check', parent_domain: domain });
+                break;
+            }
+            case 'run_probe': {
+                const prompt = `Design and evaluate safe-to-fail probes for: "${currentQuery}". This is a Complex domain scenario - suggest small experiments that could reduce uncertainty and identify which variables most influence the outcome.`;
+                handleQuerySubmit(prompt, { run_type: 'probe_design', parent_domain: domain });
+                break;
+            }
+            case 'explore_scenarios': {
+                // Open simulation arena with current analysis if history available
+                if (history.length >= 2) {
+                    setComparisonSessions([history[0], history[1]]);
+                } else {
+                    const prompt = `Generate scenario comparisons for: "${currentQuery}". Compare optimistic, baseline, and pessimistic scenarios with different treatment intensities. Show how outcomes vary under each scenario.`;
+                    handleQuerySubmit(prompt, { run_type: 'scenario_exploration', parent_domain: domain });
+                }
+                break;
+            }
+            case 'apply': {
+                const prompt = `Apply established best practices for: "${currentQuery}". This is a Clear domain problem - retrieve and format the standard operating procedure or guideline.`;
+                handleQuerySubmit(prompt, { run_type: 'best_practice', parent_domain: domain });
+                break;
+            }
+            case 'halt':
+            case 'escalate': {
+                setShowEscalationModal(true);
+                break;
+            }
+            case 'fallback': {
+                const prompt = `Re-analyze "${currentQuery}" using a more conservative approach. Reduce complexity assumptions and provide a simplified assessment with wider confidence intervals.`;
+                handleQuerySubmit(prompt, { run_type: 'fallback_analysis', parent_domain: domain });
+                break;
+            }
+            case 'resubmit': {
+                if (currentQuery) {
+                    handleQuerySubmit(currentQuery);
+                }
+                break;
+            }
+            default:
+                console.log('Unhandled domain action:', action);
+        }
+    }, [queryResponse, handleQuerySubmit, history, setComparisonSessions, setShowEscalationModal]);
 
     // Phase 7: Handle rerunning a session from history
     const handleRerunSession = useCallback((session: AnalysisSession) => {
@@ -911,7 +973,7 @@ const DashboardLayout: React.FC = () => {
                                 domain={queryResponse?.domain || null}
                                 confidence={queryResponse?.domainConfidence || 0}
                                 onEscalate={() => setShowEscalationModal(true)}
-                                onAction={(action) => console.log('Domain action:', action)}
+                                onAction={handleDomainAction}
                                 isProcessing={isProcessing}
                                 causalResult={queryResponse?.causalResult || null}
                                 bayesianResult={queryResponse?.bayesianResult || null}
@@ -1046,7 +1108,7 @@ const DashboardLayout: React.FC = () => {
                                         <div className="flex items-center gap-2 mb-2">
                                             <span className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full" />
                                             <span className="text-sm font-medium text-blue-700">
-                                                Processing query...
+                                                {processingMessage || 'Processing query...'}
                                             </span>
                                         </div>
                                         <div className="w-full bg-blue-200 rounded-full h-2 overflow-hidden">
@@ -1208,13 +1270,15 @@ const DashboardLayout: React.FC = () => {
             />
 
             {/* Phase 7: Simulation Arena */}
+            {(!comparisonSessions || (comparisonSessions[0] && comparisonSessions[1])) && (
             <SimulationArena
                 isOpen={!!comparisonSessions}
                 onClose={() => setComparisonSessions(null)}
                 sessionA={comparisonSessions ? comparisonSessions[0] : history[0]}
-                sessionB={comparisonSessions ? comparisonSessions[1] : history[0]}
+                sessionB={comparisonSessions ? comparisonSessions[1] : (history.length > 1 ? history[1] : history[0])}
                 onRerunWithChanges={handleRerunWithChanges}
             />
+            )}
 
             {/* Phase 7: Intelligent Chat Tab - Always visible in bottom-right */}
             <IntelligentChatTab

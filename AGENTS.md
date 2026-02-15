@@ -248,6 +248,14 @@ The "3-Point Context" for notifications:
   - Contributor Guide track (10-15 min)
   - Production Deployment track (5-10 min)
 
+### CSL-Core Policy Engine
+- **Role:** Primary policy enforcement layer for all CARF agent actions
+- **Engine:** Built-in Python evaluator (CSL-Core Z3 optional)
+- **Integration:** CSLToolGuard wraps workflow nodes (causal_analyst, bayesian_explorer) with policy checks
+- **Modes:** `enforce` (block on violation) | `log-only` (audit trail only)
+- **Audit:** Bounded deque (maxlen=1000) per AP-4, Kafka audit integration for CSL fields
+- **API:** Full CRUD via `/csl/*` endpoints, natural language rule creation supported
+
 ### Completed (Phases 1-5):
 - Full Cynefin router and cognitive mesh
 - Neo4j persistence + query utilities
@@ -261,6 +269,147 @@ The "3-Point Context" for notifications:
 ### Out of Scope:
 - Production autoscaling and Kubernetes
 - Enterprise-grade observability beyond demo
+
+---
+
+## Antipatterns — Mandatory Avoidance List
+
+These antipatterns have caused real bugs and regressions in this project. Every AI coding agent and human contributor MUST check against this list before submitting code.
+
+### AP-1: No Hardcoded Analytical Values
+
+**Problem**: Hardcoded numbers in analytical engines undermine the platform's core value proposition (epistemic rigor).
+
+```python
+# BAD — previously caused the 0.7/0.3 epistemic/aleatoric split bug
+epistemic_uncertainty = uncertainty * 0.7
+aleatoric_uncertainty = uncertainty * 0.3
+confidence_interval = (posterior - 0.15, posterior + 0.15)
+
+# GOOD — derive from actual statistical computation
+epistemic_uncertainty = float(np.std(posterior_samples))
+aleatoric_uncertainty = float(np.mean(sample_variances))
+ci_width = 0.05 + 0.30 * shannon_entropy  # entropy-adaptive
+confidence_interval = (posterior - ci_width, posterior + ci_width)
+```
+
+**Rule**: If a number appears in an analytical formula, it MUST either be:
+1. A configurable parameter (Pydantic model field with default)
+2. Derived from data (computed from samples, posteriors, etc.)
+3. A well-known mathematical constant (pi, e, etc.)
+
+### AP-2: No Mock Data in Production Paths
+
+**Problem**: `console.log` as a placeholder for API calls, hardcoded fallback arrays displayed as "real" results.
+
+```typescript
+// BAD — feedback goes nowhere, user thinks it was submitted
+console.log('[CYNEPIC Feedback]', feedbackData);
+alert('Thank you!');
+
+// GOOD — call real API, handle failure gracefully
+submitFeedback(feedbackData)
+    .then(() => alert('Feedback recorded.'))
+    .catch(() => alert('Feedback saved locally. Backend unavailable.'));
+```
+
+**Rule**: Every user-facing interaction MUST connect to a real backend endpoint. If the endpoint doesn't exist yet, create it. If data is simulated, label it explicitly as "Simulated Data" in the UI.
+
+### AP-3: No Blocking I/O in Async Functions
+
+**Problem**: Synchronous I/O inside `async def` blocks the event loop, causing request timeouts.
+
+```python
+# BAD — blocks the entire event loop
+async def check_policy(state):
+    response = urllib.request.urlopen(opa_url)  # SYNC!
+    producer.flush()  # SYNC!
+
+# GOOD — offload to thread or use async library
+async def check_policy(state):
+    response = await asyncio.to_thread(urllib.request.urlopen, opa_url)
+    await asyncio.to_thread(producer.flush, 5)
+    # OR: use httpx/aiohttp for native async
+```
+
+**Rule**: All I/O inside `async def` MUST be non-blocking. Use `asyncio.to_thread()` as minimum mitigation, prefer native async libraries (httpx, aiokafka).
+
+### AP-4: No Unbounded Collections
+
+**Problem**: Appending to `list` without bounds causes memory exhaustion in long-running processes.
+
+```python
+# BAD — grows without limit
+self._logs: list[LogEntry] = []
+self._logs.append(entry)  # OOM after hours of operation
+
+# GOOD — bounded deque auto-evicts oldest
+from collections import deque
+self._logs: deque[LogEntry] = deque(maxlen=500)
+self._logs.append(entry)  # safe forever
+```
+
+**Rule**: Every in-memory collection that grows over time MUST use `deque(maxlen=N)` or implement periodic flush/rotation.
+
+### AP-5: No Currency-Blind Financial Comparisons
+
+**Problem**: Comparing monetary values without currency context leads to incorrect policy decisions.
+
+```python
+# BAD — $50,000 USD and ¥50,000 JPY treated identically
+if amount > threshold:
+    return "VIOLATION"
+
+# GOOD — currency-aware comparison
+if normalize_to_base_currency(amount, currency) > threshold_in_base:
+    return "VIOLATION"
+```
+
+**Rule**: All financial comparisons MUST include currency context. Guardian policies with monetary thresholds MUST specify currency.
+
+### AP-6: No Silent Null Returns in UI Components
+
+**Problem**: React components returning `null` for valid domain states cause invisible blank panels.
+
+```tsx
+// BAD — user sees nothing, thinks UI is broken
+case 'complicated':
+case 'complex':
+    return null;
+
+// GOOD — every valid state has a dedicated view
+case 'complicated':
+    return <ComplicatedDomainView causalResult={causalResult} />;
+case 'complex':
+    return <ComplexDomainView bayesianResult={bayesianResult} />;
+```
+
+**Rule**: Every valid Cynefin domain MUST have a dedicated view component. `null` is only acceptable for truly invalid states (null domain, processing state).
+
+### AP-7: No Isolated Services in the Cognitive Mesh
+
+**Problem**: Analytical services accessible only via standalone REST endpoints bypass the LangGraph workflow, losing traceability and Guardian enforcement.
+
+```python
+# BAD — ChimeraOracle only reachable via /oracle/predict, not in workflow
+@router.post("/oracle/predict")
+async def predict(request): ...
+
+# GOOD — integrate into StateGraph as optional fast-path node
+graph.add_node("chimera_fast_path", chimera_oracle_node)
+graph.add_conditional_edges("router", route_with_oracle_option)
+```
+
+**Rule**: Every analytical capability MUST be accessible through the LangGraph workflow graph, even if also exposed via direct API. This ensures Guardian enforcement, audit trail, and evaluation at every step.
+
+### AP-8: No Test Mode Leaking into Production Responses
+
+**Problem**: `CARF_TEST_MODE=1` stubs can leak into production if environment isn't properly managed.
+
+**Rule**: Test mode stubs MUST be:
+1. Clearly labeled in response metadata: `"mode": "test_stub"`
+2. Never cached alongside real responses
+3. Logged with warning level: `logger.warning("Using test stub for ...")`
 
 ---
 

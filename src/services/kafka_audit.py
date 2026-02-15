@@ -61,6 +61,11 @@ class KafkaAuditEvent(BaseModel):
     human_verification: dict[str, Any] | None = None
     final_action: dict[str, Any] | None = None
     final_response: str | None = None
+    csl_rules_checked: int = 0
+    csl_rules_failed: int = 0
+    csl_engine: str = ""
+    csl_latency_ms: float = 0.0
+    csl_violations: list[str] = Field(default_factory=list)
 
     @classmethod
     def from_state(cls, state: EpistemicState) -> "KafkaAuditEvent":

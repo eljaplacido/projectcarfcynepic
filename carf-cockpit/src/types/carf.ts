@@ -175,7 +175,7 @@ export interface AnalysisSession {
 }
 
 // Phase 7: Slash Commands
-export type SlashCommand = '/analyze' | '/question' | '/query' | '/analysis' | '/history' | '/help' | '/benchmark';
+export type SlashCommand = '/analyze' | '/question' | '/query' | '/analysis' | '/history' | '/help' | '/benchmark' | '/summary';
 
 export interface SlashCommandConfig {
     command: SlashCommand;

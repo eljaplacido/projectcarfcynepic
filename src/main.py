@@ -107,8 +107,10 @@ app.add_middleware(
 from src.api.routers import (  # noqa: E402
     analysis,
     config,
+    csl,
     datasets,
     developer,
+    feedback,
     guardian,
     health,
     oracle,
@@ -128,6 +130,8 @@ app.include_router(developer.router)
 app.include_router(simulation.router)
 app.include_router(analysis.router)
 app.include_router(transparency.router)
+app.include_router(feedback.router)
+app.include_router(csl.router)
 app.include_router(query.router)
 
 

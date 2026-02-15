@@ -68,6 +68,8 @@ class AgentInfo(BaseModel):
     version: str = Field("1.0", description="Agent version")
     capabilities: list[str] = Field(default_factory=list, description="Agent capabilities")
     limitations: list[str] = Field(default_factory=list, description="Known limitations")
+    reliability_score: float = Field(0.85, ge=0.0, le=1.0, description="Agent reliability score (0.0-1.0)")
+    status: str = Field("active", description="Agent status (active, inactive, degraded)")
 
 
 class AgentDecision(BaseModel):
@@ -442,11 +444,48 @@ class TransparencyService:
 
     def get_agent_info(self, agent_id: str) -> AgentInfo | None:
         """Get information about a specific agent."""
-        return self._agent_registry.get(agent_id)
+        agent = self._agent_registry.get(agent_id)
+        if agent:
+            self._enrich_agent_with_tracker_stats(agent)
+        return agent
 
     def get_all_agents(self) -> list[AgentInfo]:
-        """Get information about all registered agents."""
-        return list(self._agent_registry.values())
+        """Get information about all registered agents, enriched with live tracker stats."""
+        agents = list(self._agent_registry.values())
+        for agent in agents:
+            self._enrich_agent_with_tracker_stats(agent)
+        return agents
+
+    def _enrich_agent_with_tracker_stats(self, agent: AgentInfo) -> None:
+        """Enrich an AgentInfo with live reliability data from AgentTrackerService."""
+        from src.services.agent_tracker import get_agent_tracker
+        try:
+            tracker = get_agent_tracker()
+            stats_list = tracker.get_agent_stats(agent.agent_id)
+            if stats_list:
+                stats = stats_list[0]
+                if stats.total_executions > 0:
+                    agent.reliability_score = round(
+                        stats.successful_executions / stats.total_executions, 3
+                    )
+                    # Determine status based on recent performance
+                    success_rate = stats.successful_executions / stats.total_executions
+                    if success_rate >= 0.8:
+                        agent.status = "active"
+                    elif success_rate >= 0.5:
+                        agent.status = "degraded"
+                    else:
+                        agent.status = "inactive"
+                else:
+                    # No executions yet, use default
+                    agent.reliability_score = 0.85
+                    agent.status = "active"
+            else:
+                # No tracker data, use default
+                agent.reliability_score = 0.85
+                agent.status = "active"
+        except Exception as e:
+            logger.debug(f"Could not fetch tracker stats for {agent.agent_id}: {e}")
 
     def create_agent_decision(
         self,

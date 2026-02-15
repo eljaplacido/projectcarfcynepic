@@ -32,7 +32,7 @@ logger = logging.getLogger("carf.csl")
 class CSLConfig(BaseModel):
     """CSL-Core configuration loaded from environment."""
 
-    enabled: bool = Field(default=False)
+    enabled: bool = Field(default=True)
     policy_dir: str = Field(default="config/policies")
     fail_closed: bool = Field(default=True)
     audit_enabled: bool = Field(default=True)
@@ -41,7 +41,7 @@ class CSLConfig(BaseModel):
     def from_env(cls) -> "CSLConfig":
         """Load CSL config from environment variables."""
         enabled_env = os.getenv("CSL_ENABLED")
-        enabled = enabled_env.lower() == "true" if enabled_env is not None else False
+        enabled = enabled_env.lower() != "false" if enabled_env is not None else True
 
         fail_closed_env = os.getenv("CSL_FAIL_CLOSED")
         fail_closed = fail_closed_env.lower() != "false" if fail_closed_env is not None else True
@@ -271,6 +271,14 @@ def _build_budget_limits_policy() -> CSLPolicy:
         message="Chaotic domain auto-approval limit is $10,000",
     ))
 
+    policy.add_rule(CSLRule(
+        name="daily_spend_cap",
+        policy_name="budget_limits",
+        condition={},  # Always check for spend actions
+        constraint={"action.daily_total": 100000},
+        message="Daily spend cannot exceed $100,000",
+    ))
+
     return policy
 
 
@@ -326,6 +334,22 @@ def _build_action_gates_policy() -> CSLPolicy:
         message="External API writes require human approval",
     ))
 
+    policy.add_rule(CSLRule(
+        name="chaotic_domain_block",
+        policy_name="action_gates",
+        condition={"domain.type": "Chaotic"},
+        constraint={"approval.escalated": True},
+        message="Chaotic situations require human oversight",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="disorder_domain_block",
+        policy_name="action_gates",
+        condition={"domain.type": "Disorder"},
+        constraint={"approval.escalated": True},
+        message="Disorder domain requires mandatory human escalation",
+    ))
+
     return policy
 
 
@@ -365,6 +389,30 @@ def _build_chimera_guards_policy() -> CSLPolicy:
         message="Actionable causal predictions must pass refutation tests",
     ))
 
+    policy.add_rule(CSLRule(
+        name="bayesian_uncertainty_gate",
+        policy_name="chimera_guards",
+        condition={"prediction.source": "bayesian"},
+        constraint={"prediction.epistemic_uncertainty": {"max": 0.7}},
+        message="Bayesian predictions with >70% epistemic uncertainty require review",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="prediction_staleness",
+        policy_name="chimera_guards",
+        condition={"prediction.is_stale": True},
+        constraint={"prediction.is_refreshed": True},
+        message="Predictions older than 60 minutes must be refreshed",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="concurrent_prediction_limit",
+        policy_name="chimera_guards",
+        condition={},  # Always evaluate
+        constraint={"session.active_predictions": 10},
+        message="Maximum 10 concurrent predictions per session",
+    ))
+
     return policy
 
 
@@ -386,6 +434,38 @@ def _build_data_access_policy() -> CSLPolicy:
         condition={"data.type": "audit_log"},
         constraint={"action.type": {"neq": "delete"}},
         message="Audit logs are immutable and cannot be deleted",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="ssn_never_exposed",
+        policy_name="data_access",
+        condition={"data.field_type": "ssn"},
+        constraint={"data.is_encrypted": True},
+        message="SSN fields must be encrypted and access-restricted",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="data_residency",
+        policy_name="data_access",
+        condition={},  # Always check
+        constraint={"data.region_approved": True},
+        message="Data must remain in approved regions (us-east-1, eu-west-1)",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="retention_limit",
+        policy_name="data_access",
+        condition={"data.is_expired": True},
+        constraint={"data.action": "archive"},
+        message="Data older than 90 days must be archived or deleted",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="sensitive_export_blocked",
+        policy_name="data_access",
+        condition={"action.type": "export", "data.sensitivity": "high"},
+        constraint={"approval.status": "approved"},
+        message="High-sensitivity data export requires compliance approval",
     ))
 
     return policy
@@ -482,6 +562,8 @@ class CSLPolicyService:
                 "amount": proposed_action.get("amount")
                     or proposed_action.get("parameters", {}).get("amount", 0),
                 "description": proposed_action.get("description", ""),
+                "currency": proposed_action.get("currency", "USD"),
+                "daily_total": context_data.get("daily_spend_total", 0),
             },
             "user": {
                 "role": context_data.get("user_role", "junior"),
@@ -494,6 +576,7 @@ class CSLPolicyService:
                 "status": context_data.get("approval_status", ""),
                 "role": context_data.get("approver_role", ""),
                 "escalated": context_data.get("escalated", False),
+                "count": context_data.get("approval_count", 0),
             },
             "prediction": {
                 "source": context_data.get("prediction_source", ""),
@@ -502,11 +585,23 @@ class CSLPolicyService:
                 "drift_detected": context_data.get("drift_detected", False),
                 "is_actionable": context_data.get("is_actionable", False),
                 "refutation_passed": context_data.get("refutation_passed", False),
+                "epistemic_uncertainty": context_data.get("epistemic_uncertainty", 0.0),
+                "age_minutes": context_data.get("prediction_age_minutes", 0),
+                "is_refreshed": context_data.get("prediction_is_refreshed", True),
+                "is_stale": context_data.get("prediction_age_minutes", 0) > 60,
             },
             "data": {
                 "contains_pii": context_data.get("contains_pii", False),
                 "is_masked": context_data.get("is_masked", False),
                 "type": context_data.get("data_type", ""),
+                "field_type": context_data.get("field_type", ""),
+                "is_encrypted": context_data.get("is_encrypted", False),
+                "region": context_data.get("data_region", "us-east-1"),
+                "region_approved": context_data.get("data_region", "us-east-1") in ("us-east-1", "eu-west-1"),
+                "age_days": context_data.get("data_age_days", 0),
+                "is_expired": context_data.get("data_age_days", 0) > 90,
+                "sensitivity": context_data.get("data_sensitivity", "low"),
+                "action": context_data.get("data_action", ""),
             },
             "session": {
                 "active_predictions": context_data.get("active_predictions", 0),

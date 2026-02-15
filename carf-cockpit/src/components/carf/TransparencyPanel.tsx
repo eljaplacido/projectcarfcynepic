@@ -535,22 +535,23 @@ const TransparencyPanel: React.FC<TransparencyPanelProps> = ({
                 agents.map((agent) => (
                     <div
                         key={agent.agent_id}
-                        className="p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors"
+                        className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors"
                     >
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                                 <span className={`w-2 h-2 rounded-full ${
                                     agent.category === 'router' ? 'bg-purple-500' :
-                                    agent.category === 'analyst' ? 'bg-blue-500' :
-                                    agent.category === 'safety' ? 'bg-green-500' : 'bg-gray-500'
+                                    agent.category === 'causal' || agent.category === 'bayesian' ? 'bg-blue-500' :
+                                    agent.category === 'guardian' ? 'bg-green-500' :
+                                    agent.category === 'oracle' ? 'bg-amber-500' : 'bg-gray-500'
                                 }`} />
-                                <span className="font-medium text-sm text-gray-900">{agent.name}</span>
+                                <span className="font-medium text-sm text-gray-900 dark:text-gray-100">{agent.name}</span>
                             </div>
                             <span className={`text-xs px-2 py-0.5 rounded-full ${getReliabilityColor(agent.reliability_score)}`}>
                                 {safePercentage(agent.reliability_score)}%
                             </span>
                         </div>
-                        <p className="text-xs text-gray-600 mb-2">{agent.description}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{agent.description}</p>
                         <div className="flex flex-wrap gap-1">
                             {agent.capabilities.slice(0, 3).map((cap) => (
                                 <span key={cap} className="text-[10px] px-1.5 py-0.5 bg-gray-200 rounded text-gray-600">

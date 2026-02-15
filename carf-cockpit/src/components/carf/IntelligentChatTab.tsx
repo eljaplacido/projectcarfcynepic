@@ -53,6 +53,7 @@ const SLASH_COMMANDS: SlashCommandConfig[] = [
         usage: '/benchmark [id]',
         example: '/benchmark sustainability_carbon_footprint',
     },
+    { command: '/summary', description: 'Generate executive summary of current analysis', usage: '/summary', example: '/summary' },
 ];
 
 interface IntelligentChatTabProps {
@@ -137,7 +138,7 @@ const IntelligentChatTab: React.FC<IntelligentChatTabProps> = ({
         inputRef.current?.focus();
     }, []);
 
-    const processSlashCommand = useCallback((input: string) => {
+    const processSlashCommand = useCallback(async (input: string) => {
         const parts = input.trim().split(' ');
         const command = parts[0].toLowerCase() as SlashCommand;
         const args = parts.slice(1).join(' ');
@@ -179,6 +180,43 @@ const IntelligentChatTab: React.FC<IntelligentChatTabProps> = ({
             case '/benchmark':
                 handleBenchmark(args);
                 return true;
+
+            case '/summary': {
+                // Generate executive summary from current analysis context
+                const summaryContext = {
+                    domain: lastQueryResponse?.domain || 'unknown',
+                    domain_confidence: lastQueryResponse?.domainConfidence || 0,
+                    causal_effect: lastQueryResponse?.causalResult?.effect || null,
+                    refutation_pass_rate: lastQueryResponse?.causalResult?.refutationsPassed != null && lastQueryResponse?.causalResult?.refutationsTotal
+                        ? lastQueryResponse.causalResult.refutationsPassed / lastQueryResponse.causalResult.refutationsTotal
+                        : null,
+                    bayesian_uncertainty: lastQueryResponse?.bayesianResult?.epistemicUncertainty || null,
+                    guardian_verdict: lastQueryResponse?.guardianVerdict || 'unknown',
+                    treatment: lastQueryResponse?.causalResult?.treatment || null,
+                    outcome: lastQueryResponse?.causalResult?.outcome || null,
+                    p_value: lastQueryResponse?.causalResult?.pValue || null,
+                };
+
+                try {
+                    const { getExecutiveSummary } = await import('../../services/apiService');
+                    const summary = await getExecutiveSummary(summaryContext);
+                    onSendMessage(
+                        `## Executive Summary\n\n` +
+                        `**Key Finding:** ${summary.key_finding}\n\n` +
+                        `**Confidence:** ${summary.confidence_level}\n\n` +
+                        `**Risk Assessment:** ${summary.risk_assessment}\n\n` +
+                        `**Recommendation:** ${summary.recommended_action}\n\n` +
+                        `---\n\n${summary.plain_explanation}`,
+                        true, '/summary' as SlashCommand
+                    );
+                } catch {
+                    onSendMessage(
+                        'Unable to generate executive summary. Please run an analysis first using /query.',
+                        false
+                    );
+                }
+                return true;
+            }
 
             default:
                 return false;
@@ -552,7 +590,7 @@ ${nextFlowStep.question}${hintText}`;
 
         // Check for slash command
         if (trimmedInput.startsWith('/')) {
-            const handled = processSlashCommand(trimmedInput);
+            const handled = await processSlashCommand(trimmedInput);
             if (handled) {
                 setInputValue('');
                 return;

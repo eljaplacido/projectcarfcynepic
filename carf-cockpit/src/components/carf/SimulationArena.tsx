@@ -61,11 +61,24 @@ interface Benchmark {
     description: string;
 }
 
-const DEFAULT_BENCHMARKS: Benchmark[] = [
-    { id: 'industry-avg', name: 'Industry Average', type: 'industry', value: 0.15, description: 'Standard industry benchmark effect size' },
-    { id: 'best-practice', name: 'Best Practice', type: 'industry', value: 0.25, description: 'Top quartile performance benchmark' },
-    { id: 'historical', name: 'Historical Mean', type: 'historical', value: 0.12, description: 'Your historical average effect' },
-];
+function getContextualBenchmarks(session: AnalysisSession | null): Benchmark[] {
+    if (!session?.result?.causalResult) {
+        return [
+            { id: 'industry-avg', name: 'Industry Average', type: 'industry', value: 0.15, description: 'Standard industry benchmark effect size' },
+            { id: 'best-practice', name: 'Best Practice', type: 'industry', value: 0.25, description: 'Top quartile performance benchmark' },
+            { id: 'historical', name: 'Historical Mean', type: 'historical', value: 0.12, description: 'Your historical average effect' },
+        ];
+    }
+    const effect = Math.abs(session.result.causalResult.effect || 0);
+    const baseline = effect;
+    const minDetectable = effect * 0.1;
+    const strongEffect = effect * 2;
+    return [
+        { id: 'baseline', name: 'Measured Baseline', type: 'historical', value: baseline, description: `Baseline from current analysis (effect: ${baseline.toFixed(3)})` },
+        { id: 'min-detectable', name: 'Min Detectable Effect', type: 'industry', value: minDetectable, description: `10% of measured effect (${minDetectable.toFixed(3)})` },
+        { id: 'strong-effect', name: 'Strong Effect (2x)', type: 'industry', value: strongEffect, description: `Double the measured effect (${strongEffect.toFixed(3)})` },
+    ];
+}
 
 const SimulationArena: React.FC<SimulationArenaProps> = ({
     isOpen,
@@ -76,6 +89,12 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
 }) => {
     const [activeTab, setActiveTab] = useState<'overview' | 'causal' | 'bayesian' | 'simulation' | 'parameters'>('overview');
     const [simulatedChange, setSimulatedChange] = useState<number>(0); // Percentage change in treatment
+    const [showGuide, setShowGuide] = useState(true);
+
+    // Null safety: don't render if sessions are missing
+    if (!isOpen || !sessionA || !sessionB) return null;
+
+    const contextualBenchmarks = getContextualBenchmarks(sessionA);
 
     // Enhanced simulation controls
     const [methodToggles, setMethodToggles] = useState<AnalysisMethodToggles>({
@@ -232,8 +251,6 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
         }
     };
 
-    if (!isOpen) return null;
-
     const renderMetricsTable = (metrics: ComparisonMetric[], title: string) => {
         if (metrics.length === 0) {
             return (
@@ -377,6 +394,27 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
 
                 {/* Content */}
                 <div className="flex-grow overflow-y-auto p-6">
+                {/* Simulation Guide */}
+                {showGuide && (
+                    <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-sm font-semibold text-blue-900">Simulation Guide</h4>
+                            <button
+                                onClick={() => setShowGuide(false)}
+                                className="text-blue-500 hover:text-blue-700 text-xs"
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                        <ol className="text-xs text-blue-800 space-y-1 list-decimal list-inside">
+                            <li><strong>Review Scenarios</strong> — Compare the two analysis sessions side by side</li>
+                            <li><strong>Adjust Treatment</strong> — Use the simulation slider to model treatment changes</li>
+                            <li><strong>Compare Benchmarks</strong> — Select contextual benchmarks derived from your data</li>
+                            <li><strong>Interpret Results</strong> — Evaluate effect sizes against confidence intervals</li>
+                        </ol>
+                    </div>
+                )}
+
                     {activeTab === 'overview' && (
                         <div className="space-y-6">
                             <div>
@@ -674,7 +712,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                                             >
                                                 <option value="">No benchmark</option>
-                                                {DEFAULT_BENCHMARKS.map(b => (
+                                                {contextualBenchmarks.map(b => (
                                                     <option key={b.id} value={b.id}>{b.name} ({formatNumber(b.value, 2)})</option>
                                                 ))}
                                                 <option value="custom">Custom value...</option>

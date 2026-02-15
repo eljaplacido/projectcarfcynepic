@@ -5,6 +5,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from src.api.models import (
     ComplianceRequest,
@@ -94,21 +95,45 @@ async def resolve_escalation_endpoint(
 
 # ── Transparency ──────────────────────────────────────────────────────────
 
-@router.get("/transparency/agents", response_model=list[AgentInfo], tags=["Transparency"])
+def _map_agent_to_frontend(agent: AgentInfo) -> dict:
+    """Map backend AgentInfo fields to frontend-expected field names.
+
+    Frontend expects: name, description, category, dependencies, reliability_score
+    Backend has:      agent_name, role, agent_type, limitations, reliability_score
+    """
+    return {
+        "agent_id": agent.agent_id,
+        "name": agent.agent_name,
+        "description": agent.role,
+        "category": agent.agent_type,
+        "capabilities": agent.capabilities,
+        "dependencies": agent.limitations,  # Map limitations as dependencies for frontend
+        "reliability_score": agent.reliability_score,
+        "version": agent.version,
+        "status": agent.status,
+    }
+
+
+@router.get("/transparency/agents", tags=["Transparency"])
 async def list_agents():
-    """List all agents used in the CARF analysis pipeline."""
+    """List all agents used in the CARF analysis pipeline.
+
+    Returns agent data with field names mapped for the frontend:
+    agent_name -> name, role -> description, agent_type -> category.
+    """
     service = get_transparency_service()
-    return service.get_all_agents()
+    agents = service.get_all_agents()
+    return [_map_agent_to_frontend(a) for a in agents]
 
 
-@router.get("/transparency/agents/{agent_id}", response_model=AgentInfo, tags=["Transparency"])
+@router.get("/transparency/agents/{agent_id}", tags=["Transparency"])
 async def get_agent_details(agent_id: str):
     """Get detailed information about a specific agent."""
     service = get_transparency_service()
     agent = service.get_agent_info(agent_id)
     if not agent:
         raise HTTPException(status_code=404, detail=f"Agent not found: {agent_id}")
-    return agent
+    return _map_agent_to_frontend(agent)
 
 
 @router.post("/transparency/data-quality", response_model=DataQualityAssessment, tags=["Transparency"])
@@ -392,3 +417,198 @@ async def get_agent_comparison():
     """Get comparison data for all agents."""
     tracker = get_agent_tracker()
     return tracker.get_agent_comparison()
+
+
+# ── Executive Summary ────────────────────────────────────────────────────
+
+class ExecutiveSummaryRequest(BaseModel):
+    """Request for executive summary generation."""
+    domain: str = "unknown"
+    domain_confidence: float = 0.0
+    causal_effect: float | None = None
+    refutation_pass_rate: float | None = None
+    bayesian_uncertainty: float | None = None
+    guardian_verdict: str = "unknown"
+    treatment: str | None = None
+    outcome: str | None = None
+    sample_size: int | None = None
+    p_value: float | None = None
+
+
+@router.post("/summary/executive", tags=["Executive Summary"])
+async def generate_executive_summary(request: ExecutiveSummaryRequest):
+    """Generate a structured executive summary for decision-makers.
+
+    Translates technical metrics into plain-English findings,
+    confidence assessments, and recommended actions.
+    """
+    # Derive confidence level description
+    if request.domain_confidence >= 0.85:
+        confidence_level = "High confidence"
+        confidence_desc = "The analysis results are highly reliable."
+    elif request.domain_confidence >= 0.70:
+        confidence_level = "Moderate confidence"
+        confidence_desc = "Results are reasonably reliable but should be validated."
+    elif request.domain_confidence >= 0.50:
+        confidence_level = "Low confidence"
+        confidence_desc = "Results have significant uncertainty — use with caution."
+    else:
+        confidence_level = "Very low confidence"
+        confidence_desc = "Results are unreliable and should not drive decisions alone."
+
+    # Derive key finding
+    key_finding = _derive_key_finding(
+        request.causal_effect, request.treatment, request.outcome,
+        request.p_value, request.domain,
+    )
+
+    # Derive recommended action
+    recommended_action = _derive_recommended_action(
+        request.guardian_verdict, request.domain_confidence,
+        request.refutation_pass_rate, request.domain,
+    )
+
+    # Derive risk assessment
+    risk_assessment = _derive_risk_assessment(
+        request.guardian_verdict, request.refutation_pass_rate,
+        request.bayesian_uncertainty, request.domain,
+    )
+
+    # Build plain explanation narrative
+    plain_explanation = _build_narrative(
+        key_finding, confidence_desc, recommended_action,
+        risk_assessment, request.domain,
+    )
+
+    from datetime import datetime
+    return {
+        "key_finding": key_finding,
+        "confidence_level": confidence_level,
+        "recommended_action": recommended_action,
+        "risk_assessment": risk_assessment,
+        "plain_explanation": plain_explanation,
+        "domain": request.domain,
+        "generated_at": datetime.utcnow().isoformat(),
+    }
+
+
+def _derive_key_finding(
+    effect: float | None, treatment: str | None, outcome: str | None,
+    p_value: float | None, domain: str,
+) -> str:
+    """Convert causal effect into decision-maker-friendly language."""
+    if effect is None:
+        if domain in ("Complex", "complex"):
+            return "The situation involves high uncertainty — no definitive causal relationship identified yet."
+        return "No causal effect was measured in this analysis."
+
+    treatment_name = treatment or "the intervention"
+    outcome_name = outcome or "the outcome"
+    abs_effect = abs(effect)
+
+    if abs_effect < 0.01:
+        magnitude = "negligible"
+    elif abs_effect < 1.0:
+        magnitude = "small"
+    elif abs_effect < 10.0:
+        magnitude = "moderate"
+    elif abs_effect < 50.0:
+        magnitude = "substantial"
+    else:
+        magnitude = "very large"
+
+    direction = "positive" if effect > 0 else "negative"
+    impact_word = "increases" if effect > 0 else "decreases"
+
+    finding = f"{treatment_name.capitalize()} has a {magnitude} {direction} impact — it {impact_word} {outcome_name} by {abs_effect:.2f} units."
+
+    if p_value is not None:
+        if p_value < 0.01:
+            finding += " This finding is statistically significant (p < 0.01)."
+        elif p_value < 0.05:
+            finding += " This finding is statistically significant (p < 0.05)."
+        elif p_value < 0.10:
+            finding += " This finding is marginally significant (p < 0.10)."
+        else:
+            finding += f" However, the statistical significance is weak (p = {p_value:.3f})."
+
+    return finding
+
+
+def _derive_recommended_action(
+    verdict: str, confidence: float,
+    refutation_rate: float | None, domain: str,
+) -> str:
+    """Generate action recommendation based on analysis results."""
+    if verdict in ("fail", "rejected", "blocked"):
+        return "DO NOT proceed — the Guardian policy engine has flagged safety concerns. Escalate to compliance team for review."
+
+    if confidence < 0.50:
+        return "Gather more data before making a decision. Current analysis confidence is too low for reliable action."
+
+    if refutation_rate is not None and refutation_rate < 0.5:
+        return "Exercise caution — less than half of robustness checks passed. Consider additional validation before acting."
+
+    if domain in ("Chaotic", "chaotic"):
+        return "Stabilize the situation first. In chaotic conditions, act to establish order before optimizing."
+
+    if domain in ("Complex", "complex"):
+        return "Design safe-to-fail experiments to test the hypothesis before full implementation."
+
+    if confidence >= 0.85 and (refutation_rate is None or refutation_rate >= 0.75):
+        return "Evidence supports proceeding. Implement with standard monitoring and review cycles."
+
+    return "Proceed with caution. Monitor key metrics closely and be prepared to adjust."
+
+
+def _derive_risk_assessment(
+    verdict: str, refutation_rate: float | None,
+    bayesian_uncertainty: float | None, domain: str,
+) -> str:
+    """Assess risk level for decision-makers."""
+    risks = []
+
+    if verdict in ("fail", "rejected"):
+        risks.append("Policy violations detected — regulatory or safety risk present")
+
+    if refutation_rate is not None and refutation_rate < 0.5:
+        risks.append("Causal analysis failed multiple robustness checks")
+    elif refutation_rate is not None and refutation_rate < 0.75:
+        risks.append("Some robustness checks did not pass — moderate analytical risk")
+
+    if bayesian_uncertainty is not None and bayesian_uncertainty > 0.7:
+        risks.append("High epistemic uncertainty — the model lacks sufficient knowledge")
+    elif bayesian_uncertainty is not None and bayesian_uncertainty > 0.5:
+        risks.append("Moderate uncertainty in Bayesian estimates")
+
+    if domain in ("Chaotic", "chaotic"):
+        risks.append("Operating in chaotic domain — situation is volatile and unpredictable")
+    elif domain in ("Disorder", "disorder"):
+        risks.append("Cannot classify the domain — fundamental ambiguity in the situation")
+
+    if not risks:
+        return "Low risk — analysis passed all checks and confidence is adequate."
+
+    return "Identified risks: " + "; ".join(risks) + "."
+
+
+def _build_narrative(
+    finding: str, confidence_desc: str,
+    action: str, risk: str, domain: str,
+) -> str:
+    """Build a coherent narrative paragraph for executive consumption."""
+    domain_context = {
+        "Clear": "a straightforward situation with clear cause-and-effect",
+        "Complicated": "a complicated situation requiring expert analysis",
+        "Complex": "a complex adaptive situation with emergent behavior",
+        "Chaotic": "a chaotic situation requiring immediate stabilization",
+        "Disorder": "an ambiguous situation that defies classification",
+    }
+    context = domain_context.get(domain, "an analytical scenario")
+
+    return (
+        f"This analysis examined {context}. "
+        f"{finding} {confidence_desc} "
+        f"{risk} "
+        f"Recommendation: {action}"
+    )
