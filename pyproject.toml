@@ -107,12 +107,17 @@ csl = [
     "csl-core>=0.1.0",
     "z3-solver>=4.12.0",
 ]
+mcp = [
+    # Model Context Protocol server
+    "mcp>=1.0.0",
+]
 all = [
-    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation,csl]",
+    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation,csl,mcp]",
 ]
 
 [project.scripts]
 carf = "src.main:main"
+carf-mcp = "src.mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]
