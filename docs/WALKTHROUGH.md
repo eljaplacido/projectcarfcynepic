@@ -176,6 +176,60 @@ Simulate "what-if" scenarios:
 3. See predicted outcome changes
 4. Review confidence in predictions
 
+#### 7. Deep Analysis & Sensitivity Check
+
+After an initial analysis, use action buttons for deeper investigation:
+
+- **Deep Analysis**: Re-runs causal estimation with multiple alternative estimators (linear regression, propensity score matching, PS stratification) and computes heterogeneous treatment effects (CATE) across subgroups. Results show cross-method consistency and which subpopulations are most affected.
+
+- **Sensitivity Check**: Runs three additional refutation tests beyond the standard set:
+  1. **Placebo Treatment** — shuffles the treatment randomly to verify the effect disappears
+  2. **Random Common Cause** — adds a random confounder to check estimate stability
+  3. **Data Subset Validation** — tests whether the effect holds on an 80% subsample
+
+  Returns per-test results with p-values and an overall robustness assessment.
+
+Both buttons show progress messages in the loading indicator while running.
+
+#### 8. Simulation Arena
+
+Compare two analysis sessions side-by-side:
+
+1. Run at least two queries to build analysis history
+2. Open the Simulation Arena from the toolbar
+3. Review the **Simulation Guide** (4-step walkthrough) at the top
+
+**Contextual Benchmarks**: Instead of generic benchmarks, the arena derives benchmarks from your actual causal effect:
+- **Measured Baseline** — the actual effect size from your analysis
+- **Min Detectable Effect** — 10% of measured (smallest meaningful difference)
+- **Strong Effect (2x)** — double the measured effect (ambitious target)
+
+Compare treatment effects, p-values, and confidence intervals across scenarios.
+
+#### 9. Agents Involved
+
+View all AI agents that participated in your analysis:
+
+- Each agent card shows: **name**, **category** (causal/bayesian/guardian/oracle/router), and **reliability score**
+- Category colors: blue (causal/bayesian), green (guardian), amber (oracle), purple (router)
+- Reliability scores default to 85% and are enriched with live tracker statistics when available
+- Full dark theme support for all agent cards
+
+#### 10. Executive Summary
+
+Get a plain-English summary for decision-makers:
+
+**Option A — Chat Command:**
+Type `/summary` in the chat panel. CARF synthesizes the current analysis into a formatted summary with key finding, confidence level, risk assessment, and recommended action.
+
+**Option B — Response Panel Button:**
+Click the amber "Executive Summary" button below any analysis result. A collapsible panel shows:
+- **Key Finding**: Human-readable interpretation of the causal effect
+- **Confidence**: Derived from domain confidence, refutation pass rate, and Bayesian uncertainty
+- **Risk Assessment**: Checks for policy violations, failed robustness, high uncertainty
+- **Recommendation**: Action guidance based on Guardian verdict and domain type
+- **Plain Explanation**: Narrative paragraph combining all findings
+
 ---
 
 ## Developer Walkthrough
@@ -242,6 +296,43 @@ View the current EpistemicState:
 }
 ```
 
+#### 6. CSL Tool Guard & Audit
+
+View CSL policy enforcement in the execution trace:
+
+- **CSLToolGuard** wraps workflow nodes with real-time policy checks
+- Two modes: **enforce** (blocks on violation) and **log-only** (audit only)
+- Bounded audit log (max 1,000 entries) tracks every policy evaluation
+- Kafka audit events now include CSL fields: `csl_rules_checked`, `csl_rules_failed`, `csl_engine`, `csl_latency_ms`, `csl_violations`
+
+#### 7. CSL API Endpoints
+
+Test policies directly via the API:
+
+```bash
+# Check engine status
+curl http://localhost:8000/csl/status
+
+# List all policies
+curl http://localhost:8000/csl/policies
+
+# Get specific policy
+curl http://localhost:8000/csl/policies/budget_limits
+
+# Add a rule
+curl -X POST http://localhost:8000/csl/policies/budget_limits/rules \
+  -H "Content-Type: application/json" \
+  -d '{"rule_name": "test_limit", "condition": {"user.role": "intern"}, "constraint": {"action.amount": {"op": "<=", "value": 100}}, "message": "Interns limited to $100"}'
+
+# Test-evaluate a policy
+curl -X POST http://localhost:8000/csl/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{"context": {"user.role": "junior", "action.type": "transfer", "action.amount": 5000}}'
+
+# Hot-reload policies
+curl -X POST http://localhost:8000/csl/reload
+```
+
 ### Key Code Locations
 
 | Component | Path |
@@ -251,8 +342,14 @@ View the current EpistemicState:
 | Bayesian Service | `src/services/bayesian.py` |
 | Guardian Layer | `src/workflows/guardian.py` |
 | Graph Orchestration | `src/workflows/graph.py` |
-| API Endpoints | `src/main.py` |
+| CSL Policy Service | `src/services/csl_policy_service.py` |
+| CSL Tool Guard | `src/services/csl_tool_guard.py` |
+| CSL API Router | `src/api/routers/csl.py` |
+| Executive Summary | `src/api/routers/transparency.py` |
+| API Entry Point | `src/main.py` |
 | React Components | `carf-cockpit/src/components/carf/` |
+| Policy Editor | `carf-cockpit/src/components/carf/PolicyEditorModal.tsx` |
+| Policy Files | `config/policies/*.csl` |
 
 ---
 
@@ -296,6 +393,27 @@ Guardian policy evaluation:
 - Pass/fail status
 - Required escalations
 - Auto-applied remediations
+
+#### 3a. CSL Policy Editor
+
+Click **"Configure"** in the Guardian panel to open the full-screen Policy Editor:
+
+- **Left sidebar**: Lists all CSL policies (budget_limits, action_gates, chimera_guards, data_access, cross_cutting) with rule counts
+- **Main area**: Displays rules for the selected policy as readable cards showing when-condition and then-constraint
+- **Add Rule**: Type a natural language description (e.g., "Block transfers over $5000 for junior users") and the system parses it into a structured rule
+- **Test Policy**: Evaluate the selected policy against a sample context to see pass/fail results with violation details
+- **Reload**: Hot-reload policies from the backend without restart
+- **Status bar**: Shows engine name, total policy count, and total rule count
+
+CSL (Constraint Specification Language) policies enforce guardrails non-programmatically. The 5 built-in policies cover:
+
+| Policy | Rules | Purpose |
+|--------|-------|---------|
+| budget_limits | 9 | Financial action limits by role and domain |
+| action_gates | 8 | Approval requirements for high-risk actions |
+| chimera_guards | 7 | Prediction safety bounds for ChimeraOracle |
+| data_access | 6 | PII, encryption, and data residency rules |
+| cross_cutting | 5 | Cross-domain rules spanning multiple areas |
 
 #### 4. Transparency Indicators
 
@@ -546,6 +664,19 @@ export CARF_TEST_MODE=1
 1. Verify LLM provider is configured
 2. Check API key validity
 3. Try test mode: `CARF_TEST_MODE=1`
+
+### CSL Policy Issues
+
+```bash
+# Verify all policy files parse correctly
+python scripts/verify_policies.py
+
+# Check CSL engine status
+curl http://localhost:8000/csl/status
+
+# Disable CSL if causing issues
+export CSL_ENABLED=false
+```
 
 ---
 

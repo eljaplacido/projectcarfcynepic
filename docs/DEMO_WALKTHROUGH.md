@@ -52,9 +52,30 @@ npm run dev
 - View execution trace timeline
 - Inspect architecture flow and state
 
-### 5. Chat with CARF
+### 5. Deep Analysis & Sensitivity
+- After results load, click **"Deep Analysis"** to re-run with multiple estimators (linear regression, propensity score matching, PS stratification) and heterogeneous treatment effects
+- Click **"Sensitivity Check"** to run 3 refutation tests (placebo, random common cause, data subset) with per-test p-values
+
+### 6. Configure Policies
+- In the Guardian panel, click **"Configure"** to open the Policy Editor
+- Browse 5 built-in CSL policies (35 rules total)
+- Add rules via natural language (e.g., "Block transfers over $5000")
+- Test policies against sample context to see pass/fail results
+
+### 7. Simulation Arena
+- Run at least 2 queries to build history
+- Open the Simulation Arena to compare sessions side-by-side
+- Benchmarks are derived from your actual data (not generic)
+- Follow the 4-step Simulation Guide
+
+### 8. Executive Summary
+- Type `/summary` in the chat for a plain-English summary
+- Or click the amber **"Executive Summary"** button on any result
+- Shows: key finding, confidence, risk assessment, recommendation
+
+### 9. Chat with CARF
 - Use the chat panel for follow-up questions
-- Try slash commands: `/help`, `/history`, `/analyze`
+- Try slash commands: `/help`, `/history`, `/analyze`, `/summary`
 - Socratic mode asks clarifying questions
 
 ## Docker Full Stack (Optional)
@@ -89,6 +110,12 @@ curl -X POST http://localhost:8000/chat \
 
 - **AI Act Transparency**: Explainable results with confidence levels
 - **Causal Reasoning**: DAG discovery and effect estimation
+- **Deep Analysis**: Multi-estimator validation and heterogeneous treatment effects
+- **Sensitivity Testing**: Placebo, random common cause, and data subset refutation
 - **Uncertainty Quantification**: Bayesian belief updates
 - **Human-in-the-Loop**: Guardian policy enforcement
-- **Developer Visibility**: Full execution trace and state inspection
+- **CSL Policy Management**: Non-programmatic constraint editing via Policy Editor
+- **Executive Summaries**: Plain-English findings via `/summary` command
+- **Simulation Arena**: Side-by-side session comparison with contextual benchmarks
+- **Agent Transparency**: Reliability scores and category-coded agent cards
+- **Developer Visibility**: Full execution trace, CSL audit logs, and state inspection
