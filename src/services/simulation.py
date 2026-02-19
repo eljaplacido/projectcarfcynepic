@@ -1,5 +1,9 @@
 """Simulation Service for CARF - What-If Scenario Management.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 Provides multi-scenario simulation capabilities for comparing
 different intervention strategies and their projected outcomes.
 

@@ -1,5 +1,9 @@
 """Cynefin Router - Layer 1 of the CARF Cognitive Stack.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 The Router is the entry point that classifies incoming signals into Cynefin domains
 and routes them to the appropriate cognitive agent.
 

@@ -230,7 +230,7 @@ def test_causal_effect_estimation():
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the project's [BSL 1.1 License](LICENSE). You may be asked to sign a [Contributor License Agreement (CLA)](CLA.md).
 
 ---
 

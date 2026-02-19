@@ -1,5 +1,9 @@
 """Causal Inference Engine for CARF.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 Implements causal reasoning using the PyWhy ecosystem:
 - DoWhy: Causal inference framework
 - EconML: Heterogeneous treatment effects

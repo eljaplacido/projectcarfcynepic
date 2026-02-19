@@ -1,21 +1,60 @@
-MIT License
+Business Source License 1.1
 
-Copyright (c) 2026 CARF Contributors
+Parameters
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Licensor:             Cisuregen
+Licensed Work:        CARF - Complex-Adaptive Reasoning Fabric
+                      The Licensed Work is (c) 2026 Cisuregen.
+Additional Use Grant: You may make production use of the Licensed Work,
+                      provided such use does not include offering the
+                      Licensed Work to third parties on a hosted or
+                      embedded basis which is competitive with
+                      Cisuregen's products.
+                      Non-production uses including development, testing,
+                      personal use, academic research, and educational
+                      purposes are always permitted.
+Change Date:          February 19, 2030
+Change License:       Apache License, Version 2.0
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+TERMS AND CONDITIONS
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. Definitions
+
+"Licensor" means the Licensor identified above.
+
+"Licensed Work" means the original work of authorship identified above.
+
+"Licensed Work Version" means a specific version of the Licensed Work.
+
+"Change Date" means the date identified above.
+
+"Change License" means the license identified above.
+
+"Additional Use Grant" means the additional use grant identified above.
+
+2. License Grant
+
+Subject to the terms of this License, the Licensor grants you a non-exclusive,
+worldwide, royalty-free, non-transferable license to copy, modify, create
+derivative works, redistribute, and make non-production use of the Licensed Work.
+The Licensor also grants you the Additional Use Grant described above.
+
+3. Change Date
+
+On the Change Date, the above conditions will no longer apply, and the Licensed
+Work will be made available under the Change License.
+
+4. Commercial Use
+
+Any use of the Licensed Work in production that is not permitted by the Additional
+Use Grant requires a separate commercial license from the Licensor. Contact
+licensing@cisuregen.com for commercial licensing.
+
+5. Contributions
+
+Any Contribution intentionally submitted for inclusion in the Licensed Work shall
+be under the terms of this License, without any additional terms or conditions.
+
+6. Disclaimer
+
+THE LICENSED WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.

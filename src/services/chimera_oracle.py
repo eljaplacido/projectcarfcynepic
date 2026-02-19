@@ -1,5 +1,9 @@
 """Chimera Oracle Engine for CARF.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 Fast causal effect prediction using pre-trained CausalForestDML models.
 Provides low-latency scoring for routine queries while maintaining
 the option for rigorous DoWhy analysis on high-stakes decisions.

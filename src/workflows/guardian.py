@@ -1,5 +1,9 @@
 """Guardian Layer - Layer 4 of the CARF Cognitive Stack.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 The Guardian is the non-negotiable safety net that checks all actions against
 immutable policy constraints before execution.
 

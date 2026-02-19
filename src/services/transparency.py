@@ -1,5 +1,9 @@
 """Transparency and Reliability Service for CARF.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 Provides comprehensive transparency, traceability, and reliability metrics for:
 - Agent chain-of-thought visibility
 - Data quality and reliability scoring

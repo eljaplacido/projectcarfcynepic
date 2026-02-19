@@ -1,5 +1,9 @@
 """CARF LangGraph Workflow - The Cognitive Spine.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 This module defines the complete LangGraph StateGraph that orchestrates
 the 4-layer cognitive architecture:
 

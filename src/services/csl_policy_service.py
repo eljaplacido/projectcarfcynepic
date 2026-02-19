@@ -1,5 +1,9 @@
 """CSL-Core policy management service for CARF Guardian.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 Provides formal verification via CSL-Core's Z3-based policy evaluation.
 Falls back gracefully to OPA/YAML when CSL-Core is not available.
 

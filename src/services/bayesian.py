@@ -1,5 +1,9 @@
 """Bayesian Active Inference Engine for CARF.
 
+Copyright (c) 2026 Cisuregen
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details.
+
 Implements Active Inference for navigating the Complex domain where:
 - Cause and effect are only coherent in retrospect
 - The system must "probe" to learn

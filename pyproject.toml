@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Complex-Adaptive Reasoning Fabric: A Neuro-Symbolic-Causal Agentic System"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
+license = {text = "BSL 1.1"}
 authors = [
     {name = "CARF Team"}
 ]

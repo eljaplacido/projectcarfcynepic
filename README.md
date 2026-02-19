@@ -4,7 +4,7 @@
 and epistemic awareness. 
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-red.svg)](LICENSE)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18.3+-61DAFB.svg)](https://react.dev/)
 
@@ -577,7 +577,9 @@ We welcome contributions! Please review the following guides based on your inter
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+Business Source License 1.1 (BSL) - see [LICENSE](LICENSE) for details.
+For production use, see [COMMERCIAL_LICENSE](COMMERCIAL_LICENSE.md).
+
 
 ## Acknowledgments
 
