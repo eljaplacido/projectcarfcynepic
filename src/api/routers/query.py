@@ -241,23 +241,18 @@ async def process_query_stream(request: QueryRequest):
             yield f"data: {json.dumps({'step': 'router', 'status': 'started', 'message': 'Classifying query into Cynefin domain...', 'progress_percent': 15, 'timestamp': datetime.now().isoformat()})}\n\n"
             await asyncio.sleep(0.1)
 
-            from src.core.state import EpistemicState
-            from src.workflows.router import cynefin_router_node
-
-            initial_state = EpistemicState(user_input=request.query, context=context)
-
-            state = await cynefin_router_node(initial_state)
-            domain = state.cynefin_domain.value
-            confidence = state.domain_confidence
-
-            yield f"data: {json.dumps({'step': 'router', 'status': 'completed', 'message': f'Classified as {domain} (confidence: {confidence:.0%})', 'progress_percent': 30, 'timestamp': datetime.now().isoformat(), 'details': {'domain': domain, 'confidence': confidence, 'entropy': state.domain_entropy}})}\n\n"
-            await asyncio.sleep(0.1)
-
-            triggered_method = state.triggered_method or "unknown"
-            yield f"data: {json.dumps({'step': 'domain_agent', 'status': 'started', 'message': f'Running {triggered_method} analysis...', 'progress_percent': 35, 'timestamp': datetime.now().isoformat()})}\n\n"
-            await asyncio.sleep(0.1)
-
+            # Run the full CARF pipeline ONCE (router + domain agent + guardian)
             final_state = await run_carf(user_input=request.query, context=context)
+
+            domain = final_state.cynefin_domain.value
+            confidence = final_state.domain_confidence
+
+            yield f"data: {json.dumps({'step': 'router', 'status': 'completed', 'message': f'Classified as {domain} (confidence: {confidence:.0%})', 'progress_percent': 30, 'timestamp': datetime.now().isoformat(), 'details': {'domain': domain, 'confidence': confidence, 'entropy': final_state.domain_entropy}})}\n\n"
+            await asyncio.sleep(0.1)
+
+            triggered_method = final_state.triggered_method or "unknown"
+            yield f"data: {json.dumps({'step': 'domain_agent', 'status': 'started', 'message': f'Ran {triggered_method} analysis', 'progress_percent': 35, 'timestamp': datetime.now().isoformat()})}\n\n"
+            await asyncio.sleep(0.1)
 
             yield f"data: {json.dumps({'step': 'domain_agent', 'status': 'completed', 'message': 'Analysis complete', 'progress_percent': 70, 'timestamp': datetime.now().isoformat()})}\n\n"
             await asyncio.sleep(0.1)

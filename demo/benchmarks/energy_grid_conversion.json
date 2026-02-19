@@ -1,0 +1,28 @@
+{
+    "id": "energy_grid_conversion",
+    "name": "Energy Grid Conversion Rate",
+    "description": "Simple deterministic calculation of solar panel energy conversion efficiency",
+    "domain": "energy",
+    "expected_classification": "clear",
+    "query": "What is the conversion efficiency if a 100kW solar panel array produces 82kWh in one hour?",
+    "context": {
+        "type": "deterministic_calculation",
+        "formula": "efficiency = output / input * 100",
+        "input_power_kw": 100,
+        "output_energy_kwh": 82,
+        "time_hours": 1
+    },
+    "data": [],
+    "expected_results": {
+        "domain": "Clear",
+        "requires_human": false,
+        "has_response": true,
+        "response_contains": ["82", "efficiency", "conversion"]
+    },
+    "validation_criteria": {
+        "domain_match": true,
+        "confidence_min": 0.8,
+        "action_type": "lookup",
+        "should_escalate": false
+    }
+}

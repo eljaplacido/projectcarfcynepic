@@ -138,16 +138,17 @@ async def assess_scenario_data_realism(request: RealismAssessmentRequest):
     import pandas as pd
 
     dataset_store = get_dataset_store()
-    dataset_info = dataset_store.get_metadata(request.dataset_id)
 
-    if dataset_info is None:
+    try:
+        dataset_info = dataset_store.get_dataset(request.dataset_id)
+    except KeyError:
         raise HTTPException(
             status_code=404,
             detail=f"Dataset not found: {request.dataset_id}"
         )
 
     try:
-        df = pd.read_csv(dataset_info.file_path)
+        df = pd.read_csv(dataset_info.storage_path)
         realism = assess_scenario_realism(
             df=df,
             treatment_col=request.treatment_col,
@@ -179,12 +180,13 @@ async def run_simulation_with_transparency(
 
     df = None
     if config.baseline_dataset_id:
-        dataset_info = dataset_store.get_metadata(config.baseline_dataset_id)
-        if dataset_info:
-            try:
-                df = pd.read_csv(dataset_info.file_path)
-            except Exception as e:
-                logger.warning(f"Could not load dataset for realism assessment: {e}")
+        try:
+            dataset_info = dataset_store.get_dataset(config.baseline_dataset_id)
+            df = pd.read_csv(dataset_info.storage_path)
+        except KeyError:
+            logger.warning(f"Dataset not found: {config.baseline_dataset_id}")
+        except Exception as e:
+            logger.warning(f"Could not load dataset for realism assessment: {e}")
 
     try:
         result = await sim_service.run_scenario_with_transparency(

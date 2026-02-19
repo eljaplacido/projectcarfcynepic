@@ -38,7 +38,7 @@ async def cynefin_classify(
         "domain": result.cynefin_domain.value if hasattr(result.cynefin_domain, "value") else str(result.cynefin_domain),
         "confidence": result.domain_confidence,
         "entropy": result.domain_entropy,
-        "requires_human": result.requires_human,
+        "requires_human": result.should_escalate_to_human(),
     }
 
 

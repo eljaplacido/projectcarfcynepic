@@ -378,19 +378,31 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
             # Budget-related repairs
             if "budget" in violation_lower or "cost" in violation_lower:
                 # Reduce any numerical values by 20%
-                for key, value in repaired_action.items():
-                    if isinstance(value, (int, float)) and value > 0:
+                for key in list(repaired_action.keys()):
+                    value = repaired_action[key]
+                    if isinstance(value, (int, float)) and not isinstance(value, bool) and value > 0:
                         repaired_action[key] = value * 0.8
                         repair_details.append(f"Reduced {key} by 20%")
+                    elif isinstance(value, dict):
+                        for sub_key, sub_val in list(value.items()):
+                            if isinstance(sub_val, (int, float)) and not isinstance(sub_val, bool) and sub_val > 0:
+                                value[sub_key] = sub_val * 0.8
+                                repair_details.append(f"Reduced {key}.{sub_key} by 20%")
                 repair_attempted = True
-            
+
             # Threshold-related repairs
             elif "threshold" in violation_lower or "limit" in violation_lower:
                 # Apply safety margin
-                for key, value in repaired_action.items():
-                    if isinstance(value, (int, float)) and value > 0:
+                for key in list(repaired_action.keys()):
+                    value = repaired_action[key]
+                    if isinstance(value, (int, float)) and not isinstance(value, bool) and value > 0:
                         repaired_action[key] = value * 0.9
                         repair_details.append(f"Applied 10% safety margin to {key}")
+                    elif isinstance(value, dict):
+                        for sub_key, sub_val in list(value.items()):
+                            if isinstance(sub_val, (int, float)) and not isinstance(sub_val, bool) and sub_val > 0:
+                                value[sub_key] = sub_val * 0.9
+                                repair_details.append(f"Applied 10% safety margin to {key}.{sub_key}")
                 repair_attempted = True
             
             # Approval-related - flag for targeted human review

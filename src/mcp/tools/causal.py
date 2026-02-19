@@ -71,21 +71,16 @@ async def causal_analyze(
     engine = get_causal_engine()
     result, graph = await engine.analyze(query, context, session_id=session_id)
     return {
-        "effect": result.effect,
+        "effect": result.effect_estimate,
         "p_value": result.p_value,
         "confidence_interval": list(result.confidence_interval) if result.confidence_interval else None,
-        "method": result.method,
         "interpretation": result.interpretation,
         "refutations": {
-            "passed": result.refutations_passed,
-            "total": result.refutations_total,
+            "passed": result.passed_refutation,
+            "total": len(result.refutation_results),
             "results": [
-                {
-                    "test": r.get("test_name", "unknown"),
-                    "passed": r.get("passed", False),
-                    "p_value": r.get("p_value"),
-                }
-                for r in result.refutation_results
+                {"test": name, "passed": passed}
+                for name, passed in result.refutation_results.items()
             ],
         },
         "graph_nodes": len(graph.nodes),

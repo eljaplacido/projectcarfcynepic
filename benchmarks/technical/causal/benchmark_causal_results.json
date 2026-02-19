@@ -1,0 +1,232 @@
+{
+  "benchmark": "carf_causal_inference",
+  "version": "2.0",
+  "timestamp": "2026-02-19T17:26:09.354267+00:00",
+  "n_test_cases": 9,
+  "n_successful": 9,
+  "aggregate_metrics": {
+    "all": {
+      "n": 9,
+      "mse": 1.193987,
+      "mean_abs_bias": 0.556221,
+      "ci_coverage_95": 0.8889,
+      "ci_coverage_90": 0.5556,
+      "mean_refutation_pass_rate": 1.0
+    },
+    "synthetic": {
+      "n": 3,
+      "mse": 0.052237,
+      "mean_abs_bias": 0.183987,
+      "ci_coverage_95": 0.6667,
+      "ci_coverage_90": 0.0,
+      "mean_refutation_pass_rate": 1.0
+    },
+    "industry": {
+      "n": 5,
+      "mse": 2.082692,
+      "mean_abs_bias": 0.80697,
+      "ci_coverage_95": 1.0,
+      "ci_coverage_90": 0.8,
+      "mean_refutation_pass_rate": 1.0
+    },
+    "heterogeneous": {
+      "n": 1,
+      "mse": 0.17571,
+      "mean_abs_bias": 0.419178,
+      "ci_coverage_95": 1.0,
+      "ci_coverage_90": 1.0,
+      "mean_refutation_pass_rate": 1.0
+    }
+  },
+  "test_results": [
+    {
+      "name": "synthetic_linear",
+      "true_ate": 3.0,
+      "category": "synthetic",
+      "estimated_ate": 2.909683,
+      "bias": -0.090317,
+      "mse": 0.008157,
+      "ci_lower": 2.818427,
+      "ci_upper": 3.000939,
+      "ci_covers_true": true,
+      "ci_lower_90": 2.833093,
+      "ci_upper_90": 2.986273,
+      "ci_covers_true_90": false,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 32.865799,
+      "error": null
+    },
+    {
+      "name": "synthetic_nonlinear",
+      "true_ate": 2.5,
+      "category": "synthetic",
+      "estimated_ate": 2.875731,
+      "bias": 0.375731,
+      "mse": 0.141173,
+      "ci_lower": 2.630108,
+      "ci_upper": 3.121354,
+      "ci_covers_true": false,
+      "ci_lower_90": 2.669583,
+      "ci_upper_90": 3.081878,
+      "ci_covers_true_90": false,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 1.812308,
+      "error": null
+    },
+    {
+      "name": "synthetic_null",
+      "true_ate": 0.0,
+      "category": "synthetic",
+      "estimated_ate": -0.085915,
+      "bias": -0.085915,
+      "mse": 0.007381,
+      "ci_lower": -0.177572,
+      "ci_upper": 0.005743,
+      "ci_covers_true": true,
+      "ci_lower_90": -0.162841,
+      "ci_upper_90": -0.008988,
+      "ci_covers_true_90": false,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 1.81942,
+      "error": null
+    },
+    {
+      "name": "industry_supply_chain",
+      "true_ate": -8.5,
+      "category": "industry",
+      "estimated_ate": -8.205505,
+      "bias": 0.294495,
+      "mse": 0.086727,
+      "ci_lower": -9.226453,
+      "ci_upper": -7.184557,
+      "ci_covers_true": true,
+      "ci_lower_90": -9.062372,
+      "ci_upper_90": -7.348638,
+      "ci_covers_true_90": true,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 1.83461,
+      "error": null
+    },
+    {
+      "name": "industry_healthcare",
+      "true_ate": -5.2,
+      "category": "industry",
+      "estimated_ate": -5.03727,
+      "bias": 0.16273,
+      "mse": 0.026481,
+      "ci_lower": -5.430321,
+      "ci_upper": -4.644218,
+      "ci_covers_true": true,
+      "ci_lower_90": -5.367152,
+      "ci_upper_90": -4.707387,
+      "ci_covers_true_90": true,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 1.856408,
+      "error": null
+    },
+    {
+      "name": "industry_marketing_roi",
+      "true_ate": 0.045,
+      "category": "industry",
+      "estimated_ate": 0.042153,
+      "bias": -0.002847,
+      "mse": 8e-06,
+      "ci_lower": 0.038783,
+      "ci_upper": 0.045523,
+      "ci_covers_true": true,
+      "ci_lower_90": 0.039324,
+      "ci_upper_90": 0.044981,
+      "ci_covers_true_90": false,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 2.018277,
+      "error": null
+    },
+    {
+      "name": "industry_sustainability",
+      "true_ate": -45.0,
+      "category": "industry",
+      "estimated_ate": -41.814268,
+      "bias": 3.185732,
+      "mse": 10.148887,
+      "ci_lower": -46.927434,
+      "ci_upper": -36.701102,
+      "ci_covers_true": true,
+      "ci_lower_90": -46.105675,
+      "ci_upper_90": -37.522861,
+      "ci_covers_true_90": true,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 1.868672,
+      "error": null
+    },
+    {
+      "name": "industry_education",
+      "true_ate": 7.8,
+      "category": "industry",
+      "estimated_ate": 7.410956,
+      "bias": -0.389044,
+      "mse": 0.151355,
+      "ci_lower": 6.612483,
+      "ci_upper": 8.209429,
+      "ci_covers_true": true,
+      "ci_lower_90": 6.740809,
+      "ci_upper_90": 8.081103,
+      "ci_covers_true_90": true,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 1.837687,
+      "error": null
+    },
+    {
+      "name": "heterogeneous_treatment_effect",
+      "true_ate": 7.94,
+      "category": "heterogeneous",
+      "estimated_ate": 7.520822,
+      "bias": -0.419178,
+      "mse": 0.17571,
+      "ci_lower": 7.017557,
+      "ci_upper": 8.024088,
+      "ci_covers_true": true,
+      "ci_lower_90": 7.098439,
+      "ci_upper_90": 7.943206,
+      "ci_covers_true_90": true,
+      "refutation_results": {
+        "placebo_treatment_refuter": true,
+        "random_common_cause": true
+      },
+      "refutation_pass_rate": 1.0,
+      "elapsed_seconds": 1.865065,
+      "error": null
+    }
+  ]
+}

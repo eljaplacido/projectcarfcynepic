@@ -29,12 +29,12 @@ async def oracle_predict(
     engine = get_oracle_engine()
     prediction = engine.predict_effect(scenario_id, context)
     return {
-        "effect": prediction.effect,
+        "effect": prediction.effect_estimate,
         "confidence_interval": list(prediction.confidence_interval),
-        "reliability": prediction.reliability,
-        "drift_detected": prediction.drift_detected,
-        "drift_warnings": prediction.drift_warnings,
-        "latency_ms": prediction.latency_ms,
+        "reliability": prediction.reliability_score,
+        "drift_detected": prediction.drift_warning,
+        "drift_details": prediction.drift_details,
+        "latency_ms": prediction.prediction_time_ms,
     }
 
 
@@ -73,13 +73,12 @@ async def oracle_train(
         n_estimators=n_estimators,
     )
     return {
-        "scenario_id": result.scenario_id,
+        "scenario_id": scenario_id,
         "model_version": result.model_version,
-        "ate": result.ate,
-        "ate_std": result.ate_std,
+        "ate": result.average_treatment_effect,
+        "ate_std": result.effect_std,
         "n_samples": result.n_samples,
-        "cv_score": result.cv_score,
-        "feature_importance": result.feature_importance,
+        "cv_score": result.cross_validation_score,
     }
 
 

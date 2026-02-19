@@ -1,0 +1,93 @@
+{
+    "id": "market_uncertainty_exploration",
+    "name": "Market Recovery Uncertainty Exploration",
+    "description": "Explore uncertain market conditions where causal mechanisms are unclear and Bayesian probing is needed",
+    "domain": "finance",
+    "expected_classification": "complex",
+    "query": "Will the emerging market recover after the currency crisis, and what probes should we run to reduce our uncertainty?",
+    "context": {
+        "hypothesis": "Market recovery depends on multiple interacting factors with high uncertainty",
+        "uncertainty_factors": [
+            "central_bank_response",
+            "capital_flight_magnitude",
+            "trade_partner_stability",
+            "domestic_inflation"
+        ],
+        "prior_beliefs": {
+            "recovery_probability": 0.5,
+            "confidence": "low"
+        }
+    },
+    "data": [
+        {
+            "period": 1,
+            "gdp_growth": -2.1,
+            "inflation": 8.5,
+            "capital_flow": -500,
+            "interest_rate": 12.0
+        },
+        {
+            "period": 2,
+            "gdp_growth": -1.8,
+            "inflation": 9.2,
+            "capital_flow": -420,
+            "interest_rate": 14.0
+        },
+        {
+            "period": 3,
+            "gdp_growth": -0.5,
+            "inflation": 7.8,
+            "capital_flow": -180,
+            "interest_rate": 13.5
+        },
+        {
+            "period": 4,
+            "gdp_growth": 0.2,
+            "inflation": 6.5,
+            "capital_flow": 50,
+            "interest_rate": 11.0
+        },
+        {
+            "period": 5,
+            "gdp_growth": 0.8,
+            "inflation": 5.8,
+            "capital_flow": 200,
+            "interest_rate": 9.5
+        },
+        {
+            "period": 6,
+            "gdp_growth": -0.3,
+            "inflation": 7.1,
+            "capital_flow": -100,
+            "interest_rate": 10.5
+        },
+        {
+            "period": 7,
+            "gdp_growth": 1.1,
+            "inflation": 5.2,
+            "capital_flow": 300,
+            "interest_rate": 8.0
+        },
+        {
+            "period": 8,
+            "gdp_growth": 0.6,
+            "inflation": 6.0,
+            "capital_flow": 150,
+            "interest_rate": 8.5
+        }
+    ],
+    "expected_results": {
+        "domain": "Complex",
+        "has_bayesian_evidence": true,
+        "uncertainty_reduced": true,
+        "probes_designed": true,
+        "requires_human": false
+    },
+    "validation_criteria": {
+        "domain_match": true,
+        "confidence_min": 0.5,
+        "should_have_probes": true,
+        "uncertainty_quantified": true,
+        "should_escalate": false
+    }
+}

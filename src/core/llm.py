@@ -1,11 +1,16 @@
 """LLM Provider Configuration for CARF.
 
-Supports multiple LLM providers with OpenAI-compatible APIs:
+Supports multiple LLM providers:
 - DeepSeek (recommended for cost efficiency)
 - OpenAI
+- Anthropic (Claude)
+- Google (Gemini)
+- Mistral
+- Ollama (local)
+- Together AI (open-source models)
 
-DeepSeek offers significantly lower costs while maintaining strong reasoning capabilities,
-making it ideal for the CARF cognitive pipeline.
+Providers using OpenAI-compatible APIs (DeepSeek, OpenAI, Mistral, Ollama, Together)
+use langchain-openai. Anthropic and Google use their dedicated langchain integrations.
 """
 
 import os
@@ -14,6 +19,7 @@ import json
 from enum import Enum
 from functools import lru_cache
 
+from langchain_core.language_models import BaseChatModel
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
@@ -171,6 +177,11 @@ class LLMProvider(str, Enum):
     """Supported LLM providers."""
     DEEPSEEK = "deepseek"
     OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    MISTRAL = "mistral"
+    OLLAMA = "ollama"
+    TOGETHER = "together"
 
 
 class LLMConfig(BaseModel):
@@ -187,13 +198,45 @@ class LLMConfig(BaseModel):
 PROVIDER_CONFIGS = {
     LLMProvider.DEEPSEEK: {
         "base_url": "https://api.deepseek.com",
-        "default_model": "deepseek-chat",  # DeepSeek-V3, excellent for reasoning
+        "default_model": "deepseek-chat",
         "env_key": "DEEPSEEK_API_KEY",
+        "client_type": "openai_compat",
     },
     LLMProvider.OPENAI: {
-        "base_url": None,  # Uses default OpenAI URL
+        "base_url": None,
         "default_model": "gpt-4o-mini",
         "env_key": "OPENAI_API_KEY",
+        "client_type": "openai_compat",
+    },
+    LLMProvider.ANTHROPIC: {
+        "base_url": None,
+        "default_model": "claude-sonnet-4-5-20250929",
+        "env_key": "ANTHROPIC_API_KEY",
+        "client_type": "anthropic",
+    },
+    LLMProvider.GOOGLE: {
+        "base_url": None,
+        "default_model": "gemini-2.0-flash",
+        "env_key": "GOOGLE_API_KEY",
+        "client_type": "google",
+    },
+    LLMProvider.MISTRAL: {
+        "base_url": "https://api.mistral.ai/v1",
+        "default_model": "mistral-large-latest",
+        "env_key": "MISTRAL_API_KEY",
+        "client_type": "openai_compat",
+    },
+    LLMProvider.OLLAMA: {
+        "base_url": "http://localhost:11434/v1",
+        "default_model": "llama3.1",
+        "env_key": None,
+        "client_type": "openai_compat",
+    },
+    LLMProvider.TOGETHER: {
+        "base_url": "https://api.together.xyz/v1",
+        "default_model": "meta-llama/Llama-3.1-70B-Instruct-Turbo",
+        "env_key": "TOGETHER_API_KEY",
+        "client_type": "openai_compat",
     },
 }
 
@@ -209,9 +252,10 @@ def get_llm_config() -> LLMConfig:
         provider = LLMProvider.DEEPSEEK
 
     config = PROVIDER_CONFIGS[provider]
-    api_key = os.getenv(config["env_key"])
+    env_key = config["env_key"]
+    api_key = os.getenv(env_key) if env_key else None
 
-    if not api_key:
+    if not api_key and provider != LLMProvider.OLLAMA:
         # Fallback to OPENAI_API_KEY for compatibility
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key and provider == LLMProvider.DEEPSEEK:
@@ -230,10 +274,12 @@ def get_chat_model(
     model: str | None = None,
     temperature: float = 0.1,
     purpose: str = "general",
-) -> ChatOpenAI:
-    """Get a configured ChatOpenAI instance.
+) -> BaseChatModel:
+    """Get a configured LLM instance for any supported provider.
 
-    Uses DeepSeek by default for cost efficiency. DeepSeek's API is OpenAI-compatible.
+    Dispatches to the correct LangChain chat model class based on provider's
+    client_type: openai_compat uses ChatOpenAI, anthropic uses ChatAnthropic,
+    google uses ChatGoogleGenerativeAI.
 
     Args:
         model: Override model name (optional)
@@ -241,31 +287,27 @@ def get_chat_model(
         purpose: Usage context for logging ("router", "causal", "bayesian", etc.)
 
     Returns:
-        Configured ChatOpenAI instance
-
-    Usage:
-        # Default (uses env config)
-        llm = get_chat_model()
-
-        # For classification (low temperature)
-        llm = get_chat_model(temperature=0.1, purpose="router")
-
-        # For creative exploration (higher temperature)
-        llm = get_chat_model(temperature=0.7, purpose="bayesian")
+        Configured BaseChatModel instance
     """
     if os.getenv("CARF_TEST_MODE") == "1":
         logger.info(f"Using test-mode LLM stub for purpose={purpose}")
         return _FakeChatModel(purpose=purpose)  # type: ignore[return-value]
 
     config = get_llm_config()
+    provider_config = PROVIDER_CONFIGS[config.provider]
+    client_type = provider_config["client_type"]
 
     model_name = model or config.model
     api_key = config.api_key
 
-    if not api_key:
+    # Ollama doesn't need an API key
+    if config.provider == LLMProvider.OLLAMA:
+        api_key = "ollama"  # placeholder for ChatOpenAI requirement
+    elif not api_key:
+        env_key = provider_config["env_key"]
         raise ValueError(
             f"No API key found for {config.provider.value}. "
-            f"Set {PROVIDER_CONFIGS[config.provider]['env_key']} environment variable."
+            f"Set {env_key} environment variable."
         )
 
     logger.info(
@@ -273,8 +315,38 @@ def get_chat_model(
         f"model={model_name}, temperature={temperature}, purpose={purpose}"
     )
 
-    # Create ChatOpenAI with provider-specific config
-    llm = ChatOpenAI(
+    if client_type == "anthropic":
+        try:
+            from langchain_anthropic import ChatAnthropic
+        except ImportError:
+            raise ImportError(
+                "langchain-anthropic is required for Anthropic provider. "
+                "Install it with: pip install 'carf[providers]' or pip install langchain-anthropic"
+            )
+        return ChatAnthropic(
+            model=model_name,
+            temperature=temperature,
+            api_key=api_key,
+            max_tokens=config.max_tokens,
+        )
+
+    if client_type == "google":
+        try:
+            from langchain_google_genai import ChatGoogleGenerativeAI
+        except ImportError:
+            raise ImportError(
+                "langchain-google-genai is required for Google provider. "
+                "Install it with: pip install 'carf[providers]' or pip install langchain-google-genai"
+            )
+        return ChatGoogleGenerativeAI(
+            model=model_name,
+            temperature=temperature,
+            google_api_key=api_key,
+            max_output_tokens=config.max_tokens,
+        )
+
+    # client_type == "openai_compat" (DeepSeek, OpenAI, Mistral, Ollama, Together)
+    return ChatOpenAI(
         model=model_name,
         temperature=temperature,
         api_key=api_key,
@@ -282,19 +354,17 @@ def get_chat_model(
         max_tokens=config.max_tokens,
     )
 
-    return llm
 
-
-def get_router_model() -> ChatOpenAI:
+def get_router_model() -> BaseChatModel:
     """Get LLM configured for Cynefin routing (low temperature, fast)."""
     return get_chat_model(temperature=0.1, purpose="router")
 
 
-def get_analyst_model() -> ChatOpenAI:
+def get_analyst_model() -> BaseChatModel:
     """Get LLM configured for causal analysis (moderate temperature)."""
     return get_chat_model(temperature=0.3, purpose="causal_analyst")
 
 
-def get_explorer_model() -> ChatOpenAI:
+def get_explorer_model() -> BaseChatModel:
     """Get LLM configured for Bayesian exploration (higher temperature)."""
     return get_chat_model(temperature=0.7, purpose="bayesian_explorer")

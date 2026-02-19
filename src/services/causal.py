@@ -913,9 +913,10 @@ async def run_causal_analysis(
     """
     engine = get_causal_engine()
 
-    # Fast Oracle Path (Chimera)
-    if state.context.get("use_fast_oracle"):
-        scenario_id = state.context.get("scenario_id")
+    # Fast Oracle Path (Chimera) — auto-activate when a trained model exists
+    scenario_id = state.context.get("scenario_id")
+    use_fast_oracle = state.context.get("use_fast_oracle", False)
+    if scenario_id or use_fast_oracle:
         if scenario_id:
             try:
                 from src.services.chimera_oracle import get_oracle_engine

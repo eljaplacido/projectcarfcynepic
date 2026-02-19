@@ -1,0 +1,30 @@
+{
+    "id": "contradictory_requirements",
+    "name": "Contradictory Business Requirements",
+    "description": "Query with internally contradictory requirements that cannot be resolved without human clarification",
+    "domain": "general",
+    "expected_classification": "disorder",
+    "query": "We need to maximize growth while minimizing all investment, reduce risk to zero while entering new markets, and guarantee outcomes in a completely unpredictable environment.",
+    "context": {
+        "type": "contradictory",
+        "contradictions": [
+            "maximize_growth vs minimize_investment",
+            "zero_risk vs new_markets",
+            "guaranteed_outcomes vs unpredictable_environment"
+        ],
+        "classification_note": "Contains mutually exclusive requirements needing human judgment to resolve"
+    },
+    "data": [],
+    "expected_results": {
+        "domain": "Disorder",
+        "requires_human": true,
+        "has_response": true,
+        "low_confidence": true
+    },
+    "validation_criteria": {
+        "domain_match": true,
+        "must_escalate": true,
+        "confidence_max": 0.85,
+        "should_escalate": true
+    }
+}

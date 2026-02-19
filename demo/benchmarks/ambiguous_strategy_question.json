@@ -1,0 +1,31 @@
+{
+    "id": "ambiguous_strategy_question",
+    "name": "Ambiguous Strategic Direction Question",
+    "description": "Deliberately ambiguous question that cannot be classified into a single Cynefin domain, requiring human escalation",
+    "domain": "general",
+    "expected_classification": "disorder",
+    "query": "Should we do something different?",
+    "context": {
+        "type": "ambiguous",
+        "missing_information": [
+            "what_domain",
+            "what_objective",
+            "what_constraints",
+            "what_timeframe"
+        ],
+        "classification_note": "This query lacks sufficient context for any domain classification"
+    },
+    "data": [],
+    "expected_results": {
+        "domain": "Disorder",
+        "requires_human": true,
+        "has_response": true,
+        "low_confidence": true
+    },
+    "validation_criteria": {
+        "domain_match": true,
+        "must_escalate": true,
+        "confidence_max": 0.85,
+        "should_escalate": true
+    }
+}

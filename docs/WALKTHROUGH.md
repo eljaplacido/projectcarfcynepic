@@ -680,6 +680,305 @@ export CSL_ENABLED=false
 
 ---
 
+## Data Feasibility Guide
+
+Understanding which analysis types work best with your data is essential for reliable results.
+
+### Quantitative / Tabular Data (Best Fit)
+
+CARF's causal and Bayesian engines are purpose-built for structured, quantitative data:
+
+| Analysis | Data Requirements | Minimum Rows | Key Columns |
+|----------|-------------------|--------------|-------------|
+| **Causal (DoWhy)** | CSV/JSON with treatment + outcome | ~50+ | Treatment (binary/continuous), Outcome (numeric), Covariates |
+| **Bayesian (PyMC)** | Observations or counts | ~20+ | Parameter of interest, priors |
+| **Fast Oracle (ChimeraOracle)** | Pre-trained on scenario data | Trained model required | Same as causal |
+| **Deep Analysis** | Same as causal, larger preferred | ~100+ | Same as causal |
+| **Sensitivity Check** | Same as causal | ~50+ | Same as causal |
+
+**ChimeraOracle Auto-Activation**: When a scenario has a pre-trained CausalForestDML model, the pipeline automatically uses it for sub-millisecond predictions — no `use_fast_oracle` flag needed. Falls back to full DoWhy analysis if no trained model exists.
+
+### Qualitative / Document Data (Semantic Analysis)
+
+For non-tabular data (reports, documents, mixed media), CARF leverages semantic understanding through:
+
+- **Natural language queries**: The LLM layer interprets qualitative questions and routes them through the Cynefin framework
+- **Semantic classification**: Queries about policies, strategies, or qualitative relationships are routed to appropriate domains
+- **Chat-guided analysis**: The AI chat helps users formulate quantifiable hypotheses from qualitative observations
+
+**Important**: Causal effect estimation and Bayesian inference require numeric data. When working with qualitative data, the platform guides you toward formulating testable hypotheses and identifying measurable proxies.
+
+### What to Expect Per Domain
+
+| Cynefin Domain | Data Type | What You Get |
+|----------------|-----------|-------------|
+| **Clear** | Any | Deterministic lookup, rule-based response |
+| **Complicated** | Tabular (numeric) | Full causal DAG, effect estimates, refutation tests, confidence intervals |
+| **Complex** | Tabular or observations | Bayesian belief updates, uncertainty decomposition, probe recommendations |
+| **Chaotic** | Any | Emergency protocol, human escalation |
+| **Disorder** | Any | Human review required |
+
+---
+
+## Feedback System
+
+CARF includes a persistent feedback loop for continuous improvement:
+
+- **Quality Ratings**: Rate analysis results 1-5 stars
+- **Domain Overrides**: Correct Cynefin domain classifications to improve routing
+- **Issue Reports**: Flag problems for investigation
+- **Improvement Suggestions**: Propose enhancements
+
+All feedback is persisted to SQLite (`var/carf_feedback.db`) and available for downstream learning pipelines. Domain overrides can be exported for Router retraining.
+
+---
+
+## Benchmark Testing Guide
+
+CARF includes a comprehensive benchmark suite to validate every component and compare CARF against raw LLM baselines. The benchmarks test 9 falsifiable hypotheses (H1-H9).
+
+### Prerequisites
+
+Ensure the backend API is running:
+```bash
+python -m uvicorn src.main:app --reload --port 8000
+```
+
+### Technical Benchmarks
+
+#### 1. Router Classification Benchmark (H1-related)
+
+Tests Cynefin domain routing accuracy against 456 labeled queries.
+
+```bash
+# Generate the test set (one-time)
+python benchmarks/technical/router/generate_test_set.py
+
+# Run the benchmark
+python benchmarks/technical/router/benchmark_router.py
+python benchmarks/technical/router/benchmark_router.py -o results/router_results.json
+```
+
+**Pass Criteria:** F1 >= 0.85, ECE < 0.10
+**Metrics:** Overall accuracy, weighted F1, per-domain accuracy, confusion matrix, latency P50/P95/P99
+
+**What to look for:**
+- Per-domain accuracy: Clear and Complicated should be highest, Disorder lowest
+- ECE (Expected Calibration Error): Measures whether confidence scores match actual accuracy
+- Confusion matrix: Reveals systematic misclassification patterns
+
+#### 2. Causal Inference Benchmark (H1)
+
+Tests DoWhy/EconML causal effect estimation against 3 synthetic data-generating processes.
+
+```bash
+python benchmarks/technical/causal/benchmark_causal.py
+python benchmarks/technical/causal/benchmark_causal.py -o results/causal_results.json
+```
+
+**Pass Criteria:** ATE MSE < 0.5 (IHDP dataset standard)
+**Metrics:** ATE MSE, bias, CI coverage, refutation pass rate
+
+**What to look for:**
+- Linear DGP (true ATE=3.0): Should produce ATE close to 3.0
+- Nonlinear DGP (true ATE=2.5): Tests robustness to model misspecification
+- Null effect DGP (true ATE=0.0): Should NOT find a significant effect
+
+#### 3. Bayesian Inference Benchmark (H2)
+
+Tests PyMC posterior calibration across 3 scenario types.
+
+```bash
+python benchmarks/technical/bayesian/benchmark_bayesian.py
+python benchmarks/technical/bayesian/benchmark_bayesian.py -o results/bayesian_results.json
+```
+
+**Pass Criteria:** Coverage >= 90%
+**Metrics:** Posterior presence, uncertainty bounds, probe count, response quality
+
+**What to look for:**
+- `posterior_present`: Should be `true` for all scenarios
+- `uncertainty_bounded`: Credible intervals should be finite and ordered
+- `uncertainty_tracked`: Epistemic and aleatoric uncertainty separated
+
+#### 4. Guardian Policy Benchmark (H3, H4)
+
+Tests CSL/OPA policy enforcement: violation detection and determinism.
+
+```bash
+python benchmarks/technical/guardian/benchmark_guardian.py
+python benchmarks/technical/guardian/benchmark_guardian.py -o results/guardian_results.json
+```
+
+**Pass Criteria:** 100% detection rate, < 5% FPR, 100% determinism
+**Metrics:** Detection rate, false positive rate, determinism rate (5 runs per case)
+
+**What to look for:**
+- 3 violation cases: `budget_exceeded`, `unauthorized_high_risk`, `low_confidence_action` — all must be detected
+- 2 legitimate cases: `safe_lookup`, `authorized_causal` — should NOT trigger violations
+- Determinism: Same input must produce same output across all 5 runs
+
+#### 5. Performance/Latency Benchmark (H6, H9)
+
+Tests P50/P95/P99 latency and memory stability across domains.
+
+```bash
+python benchmarks/technical/performance/benchmark_latency.py
+python benchmarks/technical/performance/benchmark_latency.py --queries 100
+python benchmarks/technical/performance/benchmark_latency.py -o results/latency_results.json
+```
+
+**Pass Criteria:** P95 < 10s, memory stable over 500+ queries
+**Metrics:** Per-domain P50/P95/P99, RSS memory growth
+
+**What to look for:**
+- Clear domain should be fastest (< 1s)
+- Complicated domain (DoWhy): expect 2-5s
+- Complex domain (PyMC): expect 3-8s
+- Memory RSS should not grow unboundedly over iterations
+
+#### 6. ChimeraOracle Benchmark (H8)
+
+Tests fast CausalForestDML prediction speed vs full DoWhy pipeline.
+
+```bash
+python benchmarks/technical/chimera/benchmark_oracle.py
+python benchmarks/technical/chimera/benchmark_oracle.py -o results/oracle_results.json
+```
+
+**Pass Criteria:** Speed ratio >= 10x, accuracy loss < 20%
+**Metrics:** Speed ratio (DoWhy time / Oracle time), accuracy loss percentage
+
+**What to look for:**
+- Oracle auto-trains if no model exists (first run will include training time)
+- Speed ratio: Oracle should be 10-100x faster than DoWhy
+- Accuracy loss: |Oracle ATE - DoWhy ATE| / |DoWhy ATE| should be < 20%
+
+### Use Case Benchmarks (End-to-End)
+
+Runs CARF pipeline and raw LLM baseline side-by-side across 6 industries.
+
+```bash
+# Run all use case scenarios
+python benchmarks/use_cases/benchmark_e2e.py
+
+# Run specific scenarios
+python benchmarks/use_cases/benchmark_e2e.py --scenarios supply_chain,finance
+
+# Save results
+python benchmarks/use_cases/benchmark_e2e.py --output results/e2e_results.json
+```
+
+**Industries covered:**
+
+| Industry | Domain | Query Example |
+|----------|--------|---------------|
+| Supply Chain | Complicated | Supplier diversification effect on disruption |
+| Financial Risk | Complicated | Discount impact on customer churn |
+| Sustainability | Complicated | Scope 3 emissions attribution |
+| Critical Infrastructure | Chaotic | Grid voltage stability |
+| Healthcare | Complex | Treatment protocol uncertainty |
+| Energy | Complicated | Renewable energy ROI |
+
+**What to look for per scenario:**
+- **Domain classification**: Does CARF route to the expected Cynefin domain?
+- **Causal evidence**: Are treatment effects detected with correct direction?
+- **Policy compliance**: Does Guardian catch violations in risky scenarios?
+- **LLM comparison**: How does raw LLM reasoning compare to CARF's structured approach?
+
+### Raw LLM Baseline
+
+Runs queries through a raw LLM without CARF pipeline for comparison.
+
+```bash
+python benchmarks/baselines/raw_llm_baseline.py --test-set benchmarks/technical/router/test_set.jsonl
+```
+
+### Generating the Unified Report
+
+Aggregates all benchmark results and tests the 9 falsifiable hypotheses.
+
+```bash
+python benchmarks/reports/generate_report.py
+python benchmarks/reports/generate_report.py --results-dir benchmarks/results
+python benchmarks/reports/generate_report.py --output report.json
+```
+
+**The 9 Hypotheses Tested:**
+
+| ID | Claim | Pass Criteria |
+|----|-------|---------------|
+| H1 | CARF DoWhy achieves >= 50% lower ATE MSE than raw LLM | MSE ratio < 0.5 |
+| H2 | Bayesian posterior coverage >= 90% vs LLM ~60-70% | Coverage >= 0.9 |
+| H3 | Guardian achieves 100% violation detection | Detection rate = 1.0 |
+| H4 | Guardian 100% deterministic across runs | Determinism = 1.0 |
+| H5 | EU AI Act compliance >= 90% vs LLM < 30% | Compliance >= 0.9 |
+| H6 | CARF 2-5x slower but quality compensates | Latency within bounds |
+| H7 | Hallucination reduction >= 40% | Reduction rate >= 0.4 |
+| H8 | ChimeraOracle >= 10x faster, < 20% accuracy loss | Speed >= 10x |
+| H9 | Memory stable over 500+ queries | RSS growth bounded |
+
+### Running All Benchmarks at Once
+
+```bash
+# Via API (backend must be running)
+curl -X POST http://localhost:8000/benchmarks/run-all
+
+# Or run each script sequentially
+python benchmarks/technical/router/benchmark_router.py -o results/router.json && \
+python benchmarks/technical/causal/benchmark_causal.py -o results/causal.json && \
+python benchmarks/technical/bayesian/benchmark_bayesian.py -o results/bayesian.json && \
+python benchmarks/technical/guardian/benchmark_guardian.py -o results/guardian.json && \
+python benchmarks/technical/performance/benchmark_latency.py -o results/latency.json && \
+python benchmarks/technical/chimera/benchmark_oracle.py -o results/oracle.json && \
+python benchmarks/use_cases/benchmark_e2e.py -o results/e2e.json && \
+python benchmarks/reports/generate_report.py --results-dir results -o results/report.json
+```
+
+### Interpreting Benchmark Results in the UI
+
+Benchmark results surface in the CARF Cockpit in several places:
+
+1. **Simulation Arena**: Compare two analysis sessions against contextual benchmarks derived from your actual data (not generic numbers)
+2. **Developer View → Evaluation Metrics**: See per-step quality scores (Relevancy, Hallucination Risk, Reasoning Depth)
+3. **Executive Dashboard**: Aggregate quality KPIs and compliance scores
+4. **Guardian Panel**: Policy enforcement results match the Guardian benchmark criteria
+
+---
+
+## TLA+ Formal Verification
+
+CARF includes TLA+ specifications for formal verification of workflow invariants.
+
+### StateGraph Specification
+
+Verifies the core LangGraph workflow properties:
+- **Liveness**: Every request terminates
+- **Safety**: No domain agent runs without Router classification
+- **Bounded reflections**: Self-correction limited to MaxReflections=2
+- **Guardian invariant**: No final response without Guardian check
+
+```bash
+# Run with TLC model checker (requires TLA+ toolbox)
+java -jar tla2tools.jar -config tla_specs/StateGraph.cfg tla_specs/StateGraph.tla
+```
+
+### Escalation Protocol Specification
+
+Verifies human-in-the-loop escalation behavior:
+- Chaotic/Disorder domains always escalate
+- Low-confidence queries trigger escalation
+- No escalation is silently dropped
+- All pending escalations resolve within bounded time
+
+```bash
+java -jar tla2tools.jar -config tla_specs/EscalationProtocol.cfg tla_specs/EscalationProtocol.tla
+```
+
+See `tla_specs/README.md` for detailed TLC configuration and concept mapping.
+
+---
+
 ## Additional Resources
 
 - **API Documentation**: http://localhost:8000/docs
@@ -687,6 +986,9 @@ export CSL_ENABLED=false
 - **Architecture**: `docs/SOLUTION_VISION.md`
 - **LLM Strategy**: `docs/LLM_AGENTIC_STRATEGY.md`
 - **Router Training**: `docs/ROUTER_TRAINING.md`
+- **Data Layer**: `docs/DATA_LAYER.md`
+- **Evaluation Framework**: `docs/EVALUATION_FRAMEWORK.md`
+- **Benchmark Suite**: `benchmarks/README.md`
 
 ---
 

@@ -4,11 +4,16 @@ Implements the feedback loop identified in platform evaluation §2.6:
 - User feedback on analysis quality (correct/wrong/refine)
 - Domain override corrections for Router retraining
 - Issue reports and improvement suggestions
-- Feedback persisted for downstream learning pipelines
+- Feedback persisted to SQLite for downstream learning pipelines
 """
 
+import json
 import logging
+import os
+import sqlite3
+from contextlib import contextmanager
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -64,64 +69,129 @@ class FeedbackSummary(BaseModel):
 
 
 # ============================================================================
-# In-memory feedback store (production: persist to DB/LightRAG)
+# SQLite-backed feedback store
 # ============================================================================
 
 class FeedbackStore:
-    """Thread-safe feedback storage with bounded capacity."""
+    """Persistent feedback storage backed by SQLite."""
 
-    def __init__(self, max_items: int = 5000):
-        from collections import deque
-        self._items: deque[dict[str, Any]] = deque(maxlen=max_items)
-        self._domain_overrides: deque[dict[str, Any]] = deque(maxlen=1000)
+    def __init__(self, db_path: Path | None = None):
+        self._db_path = db_path or Path(
+            os.getenv("CARF_DATA_DIR", Path(__file__).resolve().parents[3] / "var")
+        ) / "carf_feedback.db"
+        self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._init_db()
+
+    @contextmanager
+    def _conn(self):
+        conn = sqlite3.connect(str(self._db_path))
+        conn.row_factory = sqlite3.Row
+        try:
+            yield conn
+            conn.commit()
+        finally:
+            conn.close()
+
+    def _init_db(self) -> None:
+        with self._conn() as conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS feedback (
+                    feedback_id TEXT PRIMARY KEY,
+                    type TEXT NOT NULL,
+                    description TEXT NOT NULL,
+                    context TEXT DEFAULT '{}',
+                    rating INTEGER,
+                    correct_domain TEXT,
+                    received_at TEXT NOT NULL
+                )
+            """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS domain_overrides (
+                    feedback_id TEXT PRIMARY KEY,
+                    session_id TEXT,
+                    original_domain TEXT,
+                    correct_domain TEXT,
+                    query TEXT,
+                    timestamp TEXT NOT NULL
+                )
+            """)
 
     def add(self, item: dict[str, Any]) -> str:
         feedback_id = str(uuid4())[:12]
-        record = {
-            "feedback_id": feedback_id,
-            "received_at": datetime.now(timezone.utc).isoformat(),
-            **item,
-        }
-        self._items.append(record)
+        received_at = datetime.now(timezone.utc).isoformat()
 
-        # Track domain overrides separately for Router retraining
-        if item.get("type") == "domain_override" and item.get("correct_domain"):
-            self._domain_overrides.append({
-                "feedback_id": feedback_id,
-                "session_id": item.get("context", {}).get("sessionId"),
-                "original_domain": item.get("context", {}).get("domain"),
-                "correct_domain": item["correct_domain"],
-                "query": item.get("context", {}).get("query"),
-                "timestamp": record["received_at"],
-            })
+        with self._conn() as conn:
+            conn.execute(
+                "INSERT INTO feedback (feedback_id, type, description, context, rating, correct_domain, received_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    feedback_id,
+                    item.get("type", "unknown"),
+                    item.get("description", ""),
+                    json.dumps(item.get("context", {})),
+                    item.get("rating"),
+                    item.get("correct_domain"),
+                    received_at,
+                ),
+            )
+
+            # Track domain overrides separately for Router retraining
+            if item.get("type") == "domain_override" and item.get("correct_domain"):
+                conn.execute(
+                    "INSERT INTO domain_overrides (feedback_id, session_id, original_domain, correct_domain, query, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
+                    (
+                        feedback_id,
+                        item.get("context", {}).get("sessionId"),
+                        item.get("context", {}).get("domain"),
+                        item["correct_domain"],
+                        item.get("context", {}).get("query"),
+                        received_at,
+                    ),
+                )
 
         return feedback_id
 
-    def get_summary(self) -> dict[str, Any]:
-        items = list(self._items)
-        by_type: dict[str, int] = {}
-        ratings: list[int] = []
+    def _row_to_dict(self, row: sqlite3.Row) -> dict[str, Any]:
+        d = dict(row)
+        if "context" in d and isinstance(d["context"], str):
+            d["context"] = json.loads(d["context"])
+        return d
 
-        for item in items:
-            t = item.get("type", "unknown")
-            by_type[t] = by_type.get(t, 0) + 1
-            if item.get("rating") is not None:
-                ratings.append(item["rating"])
+    def get_summary(self) -> dict[str, Any]:
+        with self._conn() as conn:
+            rows = conn.execute("SELECT * FROM feedback ORDER BY received_at DESC").fetchall()
+            items = [self._row_to_dict(r) for r in rows]
+
+            by_type: dict[str, int] = {}
+            ratings: list[int] = []
+            for item in items:
+                t = item.get("type", "unknown")
+                by_type[t] = by_type.get(t, 0) + 1
+                if item.get("rating") is not None:
+                    ratings.append(item["rating"])
+
+            overrides = [
+                dict(r)
+                for r in conn.execute("SELECT * FROM domain_overrides ORDER BY timestamp DESC").fetchall()
+            ]
 
         return {
             "total_items": len(items),
             "by_type": by_type,
             "avg_rating": sum(ratings) / len(ratings) if ratings else None,
-            "domain_overrides": list(self._domain_overrides),
-            "recent_items": items[-20:],
+            "domain_overrides": overrides,
+            "recent_items": items[:20],
         }
 
     def get_domain_overrides(self) -> list[dict[str, Any]]:
         """Get domain overrides for Router retraining pipeline."""
-        return list(self._domain_overrides)
+        with self._conn() as conn:
+            rows = conn.execute("SELECT * FROM domain_overrides ORDER BY timestamp DESC").fetchall()
+            return [dict(r) for r in rows]
 
     def get_all(self) -> list[dict[str, Any]]:
-        return list(self._items)
+        with self._conn() as conn:
+            rows = conn.execute("SELECT * FROM feedback ORDER BY received_at DESC").fetchall()
+            return [self._row_to_dict(r) for r in rows]
 
 
 _feedback_store: FeedbackStore | None = None

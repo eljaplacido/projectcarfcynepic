@@ -1,0 +1,88 @@
+{
+  "causal_mse": 1355.136225,
+  "causal_details": [
+    {
+      "dgp": "linear",
+      "true_ate": 3.0,
+      "llm_ate_estimate": 3.3637,
+      "mse": 0.132278
+    },
+    {
+      "dgp": "nonlinear",
+      "true_ate": 2.5,
+      "llm_ate_estimate": 2.9078,
+      "mse": 0.166301
+    },
+    {
+      "dgp": "null_effect",
+      "true_ate": 0.0,
+      "llm_ate_estimate": 0.6131,
+      "mse": 0.375892
+    },
+    {
+      "dgp": "supply_chain",
+      "true_ate": -8.5,
+      "llm_ate_estimate": -106.173,
+      "mse": 9540.014929
+    },
+    {
+      "dgp": "healthcare",
+      "true_ate": -5.2,
+      "llm_ate_estimate": 0.5221,
+      "mse": 32.742428
+    },
+    {
+      "dgp": "marketing",
+      "true_ate": 0.045,
+      "llm_ate_estimate": 0.0452,
+      "mse": 0.0
+    },
+    {
+      "dgp": "sustainability",
+      "true_ate": -45.0,
+      "llm_ate_estimate": -9.7427,
+      "mse": 1243.077203
+    },
+    {
+      "dgp": "education",
+      "true_ate": 7.8,
+      "llm_ate_estimate": 2.8421,
+      "mse": 24.580772
+    }
+  ],
+  "llm_hallucination_rate": 0.0667,
+  "carf_hallucination_rate": 0.0,
+  "llm_hallucinations": 1,
+  "llm_total_claims": 15,
+  "carf_hallucinations": 0,
+  "carf_total_claims": 5,
+  "hallucination_details": [
+    {
+      "name": "supply_chain_stats",
+      "llm_response_preview": "Let\u2019s calculate it step by step.\n\n**Data given:**  \n1. For `num_suppliers = 3`, `disruption_count = 5`  \n2. For `num_suppliers = 3`, `disruption_count = 6`  \n\n**Step 1: Add disruption counts**  \n\\[\n5 ",
+      "carf_response_preview": "[Clear Domain] Processing deterministic request: Based on the data, what is the average disruption count for companies with 3 suppliers?"
+    },
+    {
+      "name": "treatment_effect_direction",
+      "llm_response_preview": "Let\u2019s go step-by-step.\n\n---\n\n**Step 1: Understanding the data**\n\nWe have 4 patients:\n\n- **New protocol (1):** 14 days, 12 days  \n- **Old protocol (0):** 28 days, 25 days  \n\nSo:\n\nNew protocol group: \\(",
+      "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+    },
+    {
+      "name": "nonexistent_variable",
+      "llm_response_preview": "Looking at the data you provided, I don\u2019t see any information about **employee satisfaction** \u2014 only `revenue` and `cost` for two entries.  \n\nTo calculate correlation, you would need at least two vari",
+      "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+    },
+    {
+      "name": "fabricated_source",
+      "llm_response_preview": "Let\u2019s break this down step by step.\n\n---\n\n**1. Understanding the data**  \nWe have three observations:\n\n| Marketing Spend ($) | Sales ($) |\n|---------------------|-----------|\n| 1000                | 5",
+      "carf_response_preview": "Error: No data provided for Bayesian inference. Supply observations (list of floats) or successes/trials (binomial) via bayesian_inference config."
+    },
+    {
+      "name": "precision_hallucination",
+      "llm_response_preview": "Alright, let\u2019s go step-by-step.\n\n---\n\n## **1. Understanding the data**\n\nWe have 4 observations:\n\n| Unit | Treatment (T) | Outcome (Y) |\n|------|---------------|-------------|\n| 1    | 1             | ",
+      "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+    }
+  ],
+  "router_accuracy": 0.98,
+  "avg_duration_ms": 2650.25
+}

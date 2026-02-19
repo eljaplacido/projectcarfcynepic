@@ -66,3 +66,50 @@ To run without external LLM calls:
 set CARF_TEST_MODE=1
 ```
 This enables deterministic stub responses for routing and analysis.
+
+## 6) Benchmark Validation
+
+Run the benchmark suite to validate that all CARF components meet their pass criteria. These benchmarks map directly to the platform's use cases and user stories.
+
+### Quick Run (All Benchmarks)
+```bash
+curl -X POST http://localhost:8000/benchmarks/run-all
+```
+
+### Technical Benchmarks
+
+| Benchmark | Command | User Story | Pass Criteria |
+|-----------|---------|------------|---------------|
+| Router Classification | `python benchmarks/technical/router/benchmark_router.py` | US-1: Accurate domain routing | F1 >= 0.85, ECE < 0.10 |
+| Causal Engine | `python benchmarks/technical/causal/benchmark_causal.py` | US-2: Reliable effect estimation | ATE MSE < 0.5 |
+| Bayesian Engine | `python benchmarks/technical/bayesian/benchmark_bayesian.py` | US-3: Calibrated uncertainty | Coverage >= 90% |
+| Guardian Policy | `python benchmarks/technical/guardian/benchmark_guardian.py` | US-4: Policy enforcement | 100% detection, < 5% FPR |
+| Performance | `python benchmarks/technical/performance/benchmark_latency.py` | US-5: Responsive analysis | P95 < 10s |
+| ChimeraOracle | `python benchmarks/technical/chimera/benchmark_oracle.py` | US-6: Fast predictions | >= 10x speed, < 20% loss |
+
+### End-to-End Use Case Benchmarks
+
+Tests full CARF pipeline vs raw LLM across 6 industry scenarios:
+
+```bash
+python benchmarks/use_cases/benchmark_e2e.py
+```
+
+| Industry | Use Case | What's Validated |
+|----------|----------|-----------------|
+| Supply Chain | Disruption risk analysis | Causal effect + correct domain routing |
+| Financial Risk | Discount impact on churn | Effect estimation + Guardian compliance |
+| Sustainability | Scope 3 emissions attribution | Data provenance + causal reasoning |
+| Critical Infra | Grid voltage stability | Circuit breaker activation + escalation |
+| Healthcare | Treatment protocol uncertainty | Bayesian inference + uncertainty tracking |
+| Energy | Renewable investment ROI | Multi-estimator consistency |
+
+### Generating the Comparison Report
+
+Aggregates all results and tests 9 falsifiable hypotheses (H1-H9):
+
+```bash
+python benchmarks/reports/generate_report.py --output results/report.json
+```
+
+See `benchmarks/README.md` and `docs/WALKTHROUGH.md` (Benchmark Testing Guide section) for detailed instructions and interpretation guidance.

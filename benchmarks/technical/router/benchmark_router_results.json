@@ -1,0 +1,618 @@
+{
+  "benchmark": "cynefin_router",
+  "total_queries": 50,
+  "error_count": 0,
+  "overall_accuracy": 0.94,
+  "weighted_f1": 0.9386,
+  "expected_calibration_error": 0.2082,
+  "ece_bins": [
+    {
+      "bin": "[0.0, 0.1)",
+      "count": 0
+    },
+    {
+      "bin": "[0.1, 0.2)",
+      "count": 0
+    },
+    {
+      "bin": "[0.2, 0.3)",
+      "count": 9,
+      "mean_confidence": 0.2222,
+      "mean_accuracy": 1.0,
+      "gap": 0.7778
+    },
+    {
+      "bin": "[0.3, 0.4)",
+      "count": 0
+    },
+    {
+      "bin": "[0.4, 0.5)",
+      "count": 0
+    },
+    {
+      "bin": "[0.5, 0.6)",
+      "count": 0
+    },
+    {
+      "bin": "[0.6, 0.7)",
+      "count": 0
+    },
+    {
+      "bin": "[0.7, 0.8)",
+      "count": 4,
+      "mean_confidence": 0.75,
+      "mean_accuracy": 0.5,
+      "gap": 0.25
+    },
+    {
+      "bin": "[0.8, 0.9)",
+      "count": 16,
+      "mean_confidence": 0.8469,
+      "mean_accuracy": 0.9375,
+      "gap": 0.0906
+    },
+    {
+      "bin": "[0.9, 1.0)",
+      "count": 21,
+      "mean_confidence": 0.9543,
+      "mean_accuracy": 1.0,
+      "gap": 0.0457
+    }
+  ],
+  "per_domain_accuracy": {
+    "Clear": {
+      "count": 10,
+      "correct": 10,
+      "accuracy": 1.0,
+      "latency": {
+        "mean_ms": 3113.12,
+        "median_ms": 2931.03,
+        "p95_ms": 4774.71
+      }
+    },
+    "Complicated": {
+      "count": 10,
+      "correct": 7,
+      "accuracy": 0.7,
+      "latency": {
+        "mean_ms": 3079.36,
+        "median_ms": 3109.3,
+        "p95_ms": 3487.23
+      }
+    },
+    "Complex": {
+      "count": 10,
+      "correct": 10,
+      "accuracy": 1.0,
+      "latency": {
+        "mean_ms": 2922.31,
+        "median_ms": 2903.35,
+        "p95_ms": 3319.4
+      }
+    },
+    "Chaotic": {
+      "count": 10,
+      "correct": 10,
+      "accuracy": 1.0,
+      "latency": {
+        "mean_ms": 2815.28,
+        "median_ms": 2870.88,
+        "p95_ms": 3089.83
+      }
+    },
+    "Disorder": {
+      "count": 10,
+      "correct": 10,
+      "accuracy": 1.0,
+      "latency": {
+        "mean_ms": 2812.52,
+        "median_ms": 2771.93,
+        "p95_ms": 3310.54
+      }
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      "Chaotic",
+      "Clear",
+      "Complex",
+      "Complicated",
+      "Disorder"
+    ],
+    "matrix": [
+      [
+        10,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        10,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        10,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        3,
+        7,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        10
+      ]
+    ]
+  },
+  "latency": {
+    "mean_ms": 2948.52,
+    "median_ms": 2894.49,
+    "p95_ms": 3385.0,
+    "p99_ms": 4844.57
+  },
+  "individual_results": [
+    {
+      "query": "What is 2+2?",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 1.0,
+      "correct": true,
+      "latency_ms": 6045.97,
+      "error": null
+    },
+    {
+      "query": "Convert 100 USD to EUR at rate 0.92",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 3147.45,
+      "error": null
+    },
+    {
+      "query": "What is the boiling point of water in Celsius?",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2936.19,
+      "error": null
+    },
+    {
+      "query": "Look up the current exchange rate for GBP to USD",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2428.89,
+      "error": null
+    },
+    {
+      "query": "What day of the week is January 1, 2026?",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2663.5,
+      "error": null
+    },
+    {
+      "query": "Calculate 15% tip on a $85 bill",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2495.6,
+      "error": null
+    },
+    {
+      "query": "What is the square root of 144?",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2328.39,
+      "error": null
+    },
+    {
+      "query": "Convert 5 miles to kilometers",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2938.36,
+      "error": null
+    },
+    {
+      "query": "What is the ISO country code for Germany?",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2925.88,
+      "error": null
+    },
+    {
+      "query": "How many days are in February 2024?",
+      "ground_truth": "Clear",
+      "predicted": "Clear",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 3220.94,
+      "error": null
+    },
+    {
+      "query": "What is the causal effect of marketing spend on customer acquisition?",
+      "ground_truth": "Complicated",
+      "predicted": "Complex",
+      "confidence": 0.8,
+      "correct": false,
+      "latency_ms": 3352.61,
+      "error": null
+    },
+    {
+      "query": "Why did our costs increase by 15% last quarter?",
+      "ground_truth": "Complicated",
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3594.13,
+      "error": null
+    },
+    {
+      "query": "What caused the database query slowdown last week?",
+      "ground_truth": "Complicated",
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3034.0,
+      "error": null
+    },
+    {
+      "query": "Analyze the root cause of the production error rate spike",
+      "ground_truth": "Complicated",
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2629.37,
+      "error": null
+    },
+    {
+      "query": "What factors are driving customer churn in the premium segment?",
+      "ground_truth": "Complicated",
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3184.6,
+      "error": null
+    },
+    {
+      "query": "Determine the impact of the new pricing strategy on revenue",
+      "ground_truth": "Complicated",
+      "predicted": "Complex",
+      "confidence": 0.75,
+      "correct": false,
+      "latency_ms": 2739.35,
+      "error": null
+    },
+    {
+      "query": "What is the causal relationship between employee training hours and productivity?",
+      "ground_truth": "Complicated",
+      "predicted": "Complex",
+      "confidence": 0.75,
+      "correct": false,
+      "latency_ms": 3323.31,
+      "error": null
+    },
+    {
+      "query": "Analyze why conversion rates dropped after the UI redesign",
+      "ground_truth": "Complicated",
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3356.57,
+      "error": null
+    },
+    {
+      "query": "What caused the increase in supply chain lead times?",
+      "ground_truth": "Complicated",
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2718.0,
+      "error": null
+    },
+    {
+      "query": "Determine the effect of temperature on manufacturing defect rates",
+      "ground_truth": "Complicated",
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2861.67,
+      "error": null
+    },
+    {
+      "query": "Will the market recover after the currency crisis? What probes should we run?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2776.67,
+      "error": null
+    },
+    {
+      "query": "How might climate change affect crop yields over the next decade?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2835.54,
+      "error": null
+    },
+    {
+      "query": "What is the likelihood of a successful digital transformation given our current state?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2603.42,
+      "error": null
+    },
+    {
+      "query": "How should we update our beliefs about customer preferences after the survey?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.75,
+      "correct": true,
+      "latency_ms": 2807.84,
+      "error": null
+    },
+    {
+      "query": "What is the probability of a supply chain disruption in the next 6 months?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.75,
+      "correct": true,
+      "latency_ms": 2971.15,
+      "error": null
+    },
+    {
+      "query": "How might emerging regulations affect our business model?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2452.48,
+      "error": null
+    },
+    {
+      "query": "What are the possible outcomes of entering the Chinese market?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3093.76,
+      "error": null
+    },
+    {
+      "query": "How should we explore the impact of AI on our workforce planning?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3269.01,
+      "error": null
+    },
+    {
+      "query": "What safe-to-fail experiments could we design to test this strategy?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3052.59,
+      "error": null
+    },
+    {
+      "query": "How might gene therapy adoption evolve over the next 5 years?",
+      "ground_truth": "Complex",
+      "predicted": "Complex",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3360.62,
+      "error": null
+    },
+    {
+      "query": "URGENT: Massive data breach detected \u2014 all customer records exposed",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 3045.96,
+      "error": null
+    },
+    {
+      "query": "EMERGENCY: Chemical spill in manufacturing facility, evacuation in progress",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 3125.72,
+      "error": null
+    },
+    {
+      "query": "CRITICAL: Stock price crashed 40% in 5 minutes, trading halted",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2645.75,
+      "error": null
+    },
+    {
+      "query": "ALERT: Ransomware has encrypted all production servers",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2911.38,
+      "error": null
+    },
+    {
+      "query": "EMERGENCY: Hospital IT systems down, patient records inaccessible",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2830.38,
+      "error": null
+    },
+    {
+      "query": "URGENT: Massive coordinated fraud \u2014 500 suspicious transactions in 3 minutes",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2969.19,
+      "error": null
+    },
+    {
+      "query": "CRITICAL: Pipeline rupture detected, environmental contamination imminent",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2485.92,
+      "error": null
+    },
+    {
+      "query": "EMERGENCY: Power grid cascade failure, 200,000 customers at risk of blackout",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2443.54,
+      "error": null
+    },
+    {
+      "query": "ALERT: Food contamination detected in shipped products, recall needed immediately",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2950.03,
+      "error": null
+    },
+    {
+      "query": "CRITICAL: Aircraft systems failure mid-flight, emergency protocols needed NOW",
+      "ground_truth": "Chaotic",
+      "predicted": "Chaotic",
+      "confidence": 0.99,
+      "correct": true,
+      "latency_ms": 2744.92,
+      "error": null
+    },
+    {
+      "query": "Should we do something different?",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.3,
+      "correct": true,
+      "latency_ms": 2877.61,
+      "error": null
+    },
+    {
+      "query": "Things aren't working well",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.2,
+      "correct": true,
+      "latency_ms": 2614.34,
+      "error": null
+    },
+    {
+      "query": "Help",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.2,
+      "correct": true,
+      "latency_ms": 2552.0,
+      "error": null
+    },
+    {
+      "query": "What should we do?",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.2,
+      "correct": true,
+      "latency_ms": 2980.59,
+      "error": null
+    },
+    {
+      "query": "Is this good or bad?",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.2,
+      "correct": true,
+      "latency_ms": 2545.46,
+      "error": null
+    },
+    {
+      "query": "We need to maximize growth while minimizing all investment and reduce risk to zero while entering new markets",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.3,
+      "correct": true,
+      "latency_ms": 3404.94,
+      "error": null
+    },
+    {
+      "query": "Fix everything",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.2,
+      "correct": true,
+      "latency_ms": 2806.75,
+      "error": null
+    },
+    {
+      "query": "Make it better",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.2,
+      "correct": true,
+      "latency_ms": 3195.17,
+      "error": null
+    },
+    {
+      "query": "I don't know what to ask",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.95,
+      "correct": true,
+      "latency_ms": 2737.12,
+      "error": null
+    },
+    {
+      "query": "Do the thing with the data",
+      "ground_truth": "Disorder",
+      "predicted": "Disorder",
+      "confidence": 0.2,
+      "correct": true,
+      "latency_ms": 2411.25,
+      "error": null
+    }
+  ]
+}

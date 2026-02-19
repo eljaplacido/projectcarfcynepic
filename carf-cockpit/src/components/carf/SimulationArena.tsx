@@ -69,7 +69,7 @@ function getContextualBenchmarks(session: AnalysisSession | null): Benchmark[] {
             { id: 'historical', name: 'Historical Mean', type: 'historical', value: 0.12, description: 'Your historical average effect' },
         ];
     }
-    const effect = Math.abs(session.result.causalResult.effect || 0);
+    const effect = Math.abs(session.result?.causalResult?.effect || 0);
     const baseline = effect;
     const minDetectable = effect * 0.1;
     const strongEffect = effect * 2;
@@ -88,15 +88,8 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
     onRerunWithChanges,
 }) => {
     const [activeTab, setActiveTab] = useState<'overview' | 'causal' | 'bayesian' | 'simulation' | 'parameters'>('overview');
-    const [simulatedChange, setSimulatedChange] = useState<number>(0); // Percentage change in treatment
+    const [simulatedChange, setSimulatedChange] = useState<number>(0);
     const [showGuide, setShowGuide] = useState(true);
-
-    // Null safety: don't render if sessions are missing
-    if (!isOpen || !sessionA || !sessionB) return null;
-
-    const contextualBenchmarks = getContextualBenchmarks(sessionA);
-
-    // Enhanced simulation controls
     const [methodToggles, setMethodToggles] = useState<AnalysisMethodToggles>({
         causalAnalysis: true,
         bayesianAnalysis: true,
@@ -105,7 +98,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
     const [selectedBenchmark, setSelectedBenchmark] = useState<string | null>(null);
     const [customBenchmark, setCustomBenchmark] = useState<number>(0);
     const [showMethodImpact, setShowMethodImpact] = useState(false);
-    const [confidenceThreshold, setConfidenceThreshold] = useState<number>(70); // Percentage
+    const [confidenceThreshold, setConfidenceThreshold] = useState<number>(70);
 
     const comparisonMetrics = useMemo((): ComparisonMetric[] => {
         // Guard against undefined sessions
@@ -132,14 +125,15 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
         });
 
         // Entropy (lower is better)
-        const entropyA = sessionA.result.domainEntropy;
-        const entropyB = sessionB.result.domainEntropy;
+        const entropyA = sessionA.result?.domainEntropy ?? null;
+        const entropyB = sessionB.result?.domainEntropy ?? null;
         metrics.push({
             label: 'Entropy',
             valueA: formatNumber(entropyA, 3),
             valueB: formatNumber(entropyB, 3),
-            highlight: entropyA < entropyB ? 'a-better'
-                : entropyB < entropyA ? 'b-better' : 'equal',
+            highlight: (entropyA != null && entropyB != null)
+                ? (entropyA < entropyB ? 'a-better' : entropyB < entropyA ? 'b-better' : 'equal')
+                : 'neutral',
         });
 
         // Duration (lower is better)
@@ -156,8 +150,8 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
     }, [sessionA, sessionB]);
 
     const causalMetrics = useMemo((): ComparisonMetric[] => {
-        // Guard against undefined sessions
-        if (!sessionA || !sessionB) {
+        // Guard against undefined sessions or missing result
+        if (!sessionA?.result || !sessionB?.result) {
             return [];
         }
         const causalA = sessionA.result?.causalResult;
@@ -241,6 +235,11 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
             },
         ];
     }, [sessionA, sessionB]);
+
+    // Null safety: don't render if sessions are missing (AFTER all hooks)
+    if (!isOpen || !sessionA || !sessionB) return null;
+
+    const contextualBenchmarks = getContextualBenchmarks(sessionA);
 
     const getHighlightClass = (highlight?: string): string => {
         switch (highlight) {
@@ -442,7 +441,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                             </span>
                                         </li>
                                     )}
-                                    {sessionA.result.causalResult && sessionB.result.causalResult && (
+                                    {sessionA.result?.causalResult && sessionB.result?.causalResult && (
                                         <li className="flex items-start gap-2">
                                             <span className="text-green-600">•</span>
                                             <span>
@@ -461,7 +460,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                             {renderMetricsTable(causalMetrics, 'Causal')}
 
                             {/* Effect Size Visualization */}
-                            {sessionA.result.causalResult && sessionB.result.causalResult && (
+                            {sessionA.result?.causalResult && sessionB.result?.causalResult && (
                                 <div className="bg-gray-50 rounded-xl p-4">
                                     <h4 className="font-semibold text-gray-900 mb-3">Effect Size Comparison</h4>
                                     <div className="flex items-center gap-4">
@@ -471,7 +470,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                                 <div
                                                     className="h-4 bg-primary rounded"
                                                     style={{
-                                                        width: `${Math.min(100, Math.abs(sessionA.result.causalResult.effect) * 20)}%`
+                                                        width: `${Math.min(100, Math.abs(sessionA.result?.causalResult?.effect) * 20)}%`
                                                     }}
                                                 />
                                             </div>
@@ -482,7 +481,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                                 <div
                                                     className="h-4 bg-accent rounded"
                                                     style={{
-                                                        width: `${Math.min(100, Math.abs(sessionB.result.causalResult.effect) * 20)}%`
+                                                        width: `${Math.min(100, Math.abs(sessionB.result?.causalResult?.effect) * 20)}%`
                                                     }}
                                                 />
                                             </div>
@@ -499,7 +498,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                             {renderMetricsTable(bayesianMetrics, 'Bayesian')}
 
                             {/* Uncertainty Visualization */}
-                            {sessionA.result.bayesianResult && sessionB.result.bayesianResult && (
+                            {sessionA.result?.bayesianResult && sessionB.result?.bayesianResult && (
                                 <div className="bg-gray-50 rounded-xl p-4">
                                     <h4 className="font-semibold text-gray-900 mb-3">Uncertainty Breakdown</h4>
                                     <div className="grid grid-cols-2 gap-6">
@@ -509,24 +508,24 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                                 <div>
                                                     <div className="flex justify-between text-xs mb-1">
                                                         <span>Epistemic</span>
-                                                        <span>{formatPercentage(sessionA.result.bayesianResult.epistemicUncertainty)}</span>
+                                                        <span>{formatPercentage(sessionA.result?.bayesianResult?.epistemicUncertainty)}</span>
                                                     </div>
                                                     <div className="h-3 bg-gray-200 rounded-full">
                                                         <div
                                                             className="h-3 bg-blue-500 rounded-full"
-                                                            style={{ width: `${sessionA.result.bayesianResult.epistemicUncertainty * 100}%` }}
+                                                            style={{ width: `${sessionA.result?.bayesianResult?.epistemicUncertainty * 100}%` }}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div>
                                                     <div className="flex justify-between text-xs mb-1">
                                                         <span>Aleatoric</span>
-                                                        <span>{formatPercentage(sessionA.result.bayesianResult.aleatoricUncertainty)}</span>
+                                                        <span>{formatPercentage(sessionA.result?.bayesianResult?.aleatoricUncertainty)}</span>
                                                     </div>
                                                     <div className="h-3 bg-gray-200 rounded-full">
                                                         <div
                                                             className="h-3 bg-orange-500 rounded-full"
-                                                            style={{ width: `${sessionA.result.bayesianResult.aleatoricUncertainty * 100}%` }}
+                                                            style={{ width: `${sessionA.result?.bayesianResult?.aleatoricUncertainty * 100}%` }}
                                                         />
                                                     </div>
                                                 </div>
@@ -538,24 +537,24 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                                 <div>
                                                     <div className="flex justify-between text-xs mb-1">
                                                         <span>Epistemic</span>
-                                                        <span>{formatPercentage(sessionB.result.bayesianResult.epistemicUncertainty)}</span>
+                                                        <span>{formatPercentage(sessionB.result?.bayesianResult?.epistemicUncertainty)}</span>
                                                     </div>
                                                     <div className="h-3 bg-gray-200 rounded-full">
                                                         <div
                                                             className="h-3 bg-blue-500 rounded-full"
-                                                            style={{ width: `${sessionB.result.bayesianResult.epistemicUncertainty * 100}%` }}
+                                                            style={{ width: `${sessionB.result?.bayesianResult?.epistemicUncertainty * 100}%` }}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div>
                                                     <div className="flex justify-between text-xs mb-1">
                                                         <span>Aleatoric</span>
-                                                        <span>{formatPercentage(sessionB.result.bayesianResult.aleatoricUncertainty)}</span>
+                                                        <span>{formatPercentage(sessionB.result?.bayesianResult?.aleatoricUncertainty)}</span>
                                                     </div>
                                                     <div className="h-3 bg-gray-200 rounded-full">
                                                         <div
                                                             className="h-3 bg-orange-500 rounded-full"
-                                                            style={{ width: `${sessionB.result.bayesianResult.aleatoricUncertainty * 100}%` }}
+                                                            style={{ width: `${sessionB.result?.bayesianResult?.aleatoricUncertainty * 100}%` }}
                                                         />
                                                     </div>
                                                 </div>
@@ -646,7 +645,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                 </div>
                             )}
 
-                            {!sessionA.result.causalResult ? (
+                            {!sessionA.result?.causalResult ? (
                                 <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
                                     Simulation requires successful causal analysis in Scenario A
                                 </div>
@@ -656,7 +655,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                     <div className="col-span-4 space-y-4">
                                         <div className="card bg-gray-50 p-4 rounded-xl border border-gray-200">
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Adjust Treatment: <span className="text-primary">{sessionA.result.causalResult.treatment}</span>
+                                                Adjust Treatment: <span className="text-primary">{sessionA.result?.causalResult?.treatment}</span>
                                             </label>
                                             <div className="flex items-center gap-4">
                                                 <span className="text-xs text-gray-500">-50%</span>
@@ -734,7 +733,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                         <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
                                             <h4 className="text-sm font-semibold text-blue-900 mb-2">Simulation Logic</h4>
                                             <p className="text-xs text-blue-800">
-                                                Based on estimated effect size of <strong>{formatNumber(sessionA.result.causalResult.effect)}</strong>.
+                                                Based on estimated effect size of <strong>{formatNumber(sessionA.result?.causalResult?.effect)}</strong>.
                                                 Linear extrapolation assumes constant causal effect across the range.
                                             </p>
                                         </div>
@@ -744,7 +743,7 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                     <div className="col-span-8">
                                         <div className="h-64 relative bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-center items-center">
                                             <div className="text-sm text-gray-500 mb-8 absolute top-4 left-4">
-                                                Predicted Outcome: <span className="font-semibold text-gray-900">{sessionA.result.causalResult.outcome}</span>
+                                                Predicted Outcome: <span className="font-semibold text-gray-900">{sessionA.result?.causalResult?.outcome}</span>
                                             </div>
 
                                             <div className="flex items-end gap-12 h-40">
@@ -766,16 +765,16 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                                     <div
                                                         className={`w-16 rounded-t-lg transition-all duration-300 ${simulatedChange >= 0 ? 'bg-primary' : 'bg-red-500'}`}
                                                         style={{
-                                                            height: `${Math.max(10, Math.min(100, 50 + (simulatedChange * sessionA.result.causalResult.effect)))}%`
+                                                            height: `${Math.max(10, Math.min(100, 50 + (simulatedChange * sessionA.result?.causalResult?.effect)))}%`
                                                         }}
                                                     ></div>
                                                     <div className="flex flex-col items-center">
                                                         <span className="text-sm font-mono font-bold text-gray-900">
-                                                            {(100 + (simulatedChange * sessionA.result.causalResult.effect)).toFixed(1)}
+                                                            {(100 + (simulatedChange * sessionA.result?.causalResult?.effect)).toFixed(1)}
                                                         </span>
-                                                        <span className={`text-xs ${simulatedChange * sessionA.result.causalResult.effect >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-                                                            {(simulatedChange * sessionA.result.causalResult.effect) > 0 ? '+' : ''}
-                                                            {(simulatedChange * sessionA.result.causalResult.effect).toFixed(1)}
+                                                        <span className={`text-xs ${simulatedChange * sessionA.result?.causalResult?.effect >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                                                            {(simulatedChange * sessionA.result?.causalResult?.effect) > 0 ? '+' : ''}
+                                                            {(simulatedChange * sessionA.result?.causalResult?.effect).toFixed(1)}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -809,18 +808,18 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                         <tr>
                                             <td className="px-4 py-3 text-sm font-medium text-gray-900">Variables</td>
                                             <td className="px-4 py-3 text-sm text-gray-700">
-                                                {sessionA.result.causalResult ? (
+                                                {sessionA.result?.causalResult ? (
                                                     <div className="space-y-1">
-                                                        <div className="text-xs"><span className="text-gray-500">T:</span> {sessionA.result.causalResult.treatment}</div>
-                                                        <div className="text-xs"><span className="text-gray-500">O:</span> {sessionA.result.causalResult.outcome}</div>
+                                                        <div className="text-xs"><span className="text-gray-500">T:</span> {sessionA.result?.causalResult?.treatment}</div>
+                                                        <div className="text-xs"><span className="text-gray-500">O:</span> {sessionA.result?.causalResult?.outcome}</div>
                                                     </div>
                                                 ) : <span className="text-gray-400 italic">None</span>}
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-700">
-                                                {sessionB.result.causalResult ? (
+                                                {sessionB.result?.causalResult ? (
                                                     <div className="space-y-1">
-                                                        <div className="text-xs"><span className="text-gray-500">T:</span> {sessionB.result.causalResult.treatment}</div>
-                                                        <div className="text-xs"><span className="text-gray-500">O:</span> {sessionB.result.causalResult.outcome}</div>
+                                                        <div className="text-xs"><span className="text-gray-500">T:</span> {sessionB.result?.causalResult?.treatment}</div>
+                                                        <div className="text-xs"><span className="text-gray-500">O:</span> {sessionB.result?.causalResult?.outcome}</div>
                                                     </div>
                                                 ) : <span className="text-gray-400 italic">None</span>}
                                             </td>
@@ -828,10 +827,10 @@ const SimulationArena: React.FC<SimulationArenaProps> = ({
                                         <tr>
                                             <td className="px-4 py-3 text-sm font-medium text-gray-900">Confounders</td>
                                             <td className="px-4 py-3 text-sm text-gray-700">
-                                                {sessionA.result.causalResult?.confoundersControlled?.map(c => c.name).join(', ') || '-'}
+                                                {sessionA.result?.causalResult?.confoundersControlled?.map(c => c.name).join(', ') || '-'}
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-700">
-                                                {sessionB.result.causalResult?.confoundersControlled?.map(c => c.name).join(', ') || '-'}
+                                                {sessionB.result?.causalResult?.confoundersControlled?.map(c => c.name).join(', ') || '-'}
                                             </td>
                                         </tr>
                                     </tbody>

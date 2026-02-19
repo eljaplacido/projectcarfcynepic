@@ -611,9 +611,44 @@ print(f"Suggested outcome: {result.suggested_outcome}")
 
 ---
 
+## Benchmark Suite Integration
+
+The CARF Benchmark Suite (`benchmarks/`) provides **quantitative, reproducible validation** complementing the DeepEval quality metrics. While DeepEval measures per-response quality in real-time, benchmarks validate component-level and end-to-end correctness.
+
+### Benchmark ↔ Evaluation Mapping
+
+| Benchmark | Evaluation Metric | User Story |
+|-----------|-------------------|------------|
+| Router (F1, ECE) | Relevancy Score on router output | Accurate Cynefin classification |
+| Causal (ATE MSE) | Hallucination Risk on causal claims | Reliable effect estimation |
+| Bayesian (Coverage) | Reasoning Depth on uncertainty | Calibrated uncertainty quantification |
+| Guardian (Detection) | Task Completion on policy checks | 100% violation detection |
+| Performance (Latency) | — (infrastructure) | Responsive user experience |
+| ChimeraOracle (Speed) | Chimera vs DoWhy consistency | Fast predictions when available |
+| E2E Use Cases | All metrics combined | Full pipeline validation |
+
+### 9 Falsifiable Hypotheses
+
+The benchmark suite tests 9 hypotheses comparing CARF vs raw LLM:
+
+- **H1**: ATE accuracy >= 50% lower MSE (validated by causal benchmark)
+- **H2**: Posterior coverage >= 90% (validated by bayesian benchmark)
+- **H3**: 100% violation detection (validated by guardian benchmark)
+- **H4**: 100% deterministic policy decisions (validated by guardian benchmark)
+- **H5**: EU AI Act compliance >= 90% (validated by transparency + guardian)
+- **H6**: Latency 2-5x slower but quality compensates (validated by performance benchmark)
+- **H7**: Hallucination reduction >= 40% (validated by DeepEval hallucination scores)
+- **H8**: ChimeraOracle >= 10x faster, < 20% accuracy loss (validated by chimera benchmark)
+- **H9**: Memory stable over 500+ queries (validated by performance benchmark)
+
+See `benchmarks/README.md` for running instructions and `docs/WALKTHROUGH.md` for detailed testing guide.
+
+---
+
 ## References
 
 - [DeepEval Documentation](https://docs.confident-ai.com/)
 - [CARF UIX Interaction Guidelines](./CARF_UIX_INTERACTION_GUIDELINES.md)
 - [LLM Agentic Strategy](./LLM_AGENTIC_STRATEGY.md)
 - [EU AI Act Compliance](https://artificialintelligenceact.eu/)
+- [Benchmark Suite](../benchmarks/README.md)

@@ -106,6 +106,56 @@ curl -X POST http://localhost:8000/chat \
   -d '{"messages": [{"role": "user", "content": "Explain the results"}]}'
 ```
 
+### 10. Data Feasibility Guidance
+- CARF communicates clearly which analysis is feasible per data type
+- **Tabular/quantitative data**: Full causal inference (DoWhy), Bayesian analysis (PyMC), fast Oracle predictions
+- **Qualitative/document data**: Semantic routing, chat-guided hypothesis formulation, domain classification
+- The Data Onboarding Wizard (5-step flow) validates data suitability before analysis begins
+- ChimeraOracle auto-activates when a pre-trained model exists for the scenario
+
+### 11. Feedback Loop
+- Rate analysis quality (1-5 stars) via the Feedback panel
+- Correct domain classifications to improve Router accuracy
+- All feedback is persisted to SQLite for continuous improvement
+- Export domain overrides for Router retraining: `GET /feedback/domain-overrides`
+
+### 12. Benchmark Testing
+
+CARF includes 6 technical benchmarks and end-to-end use case benchmarks for validation.
+
+**Quick benchmark demo (API must be running):**
+
+```bash
+# Run all benchmarks via API
+curl -X POST http://localhost:8000/benchmarks/run-all
+
+# Run individual technical benchmarks
+python benchmarks/technical/router/benchmark_router.py       # Router classification accuracy
+python benchmarks/technical/causal/benchmark_causal.py       # Causal effect estimation
+python benchmarks/technical/bayesian/benchmark_bayesian.py   # Bayesian posterior calibration
+python benchmarks/technical/guardian/benchmark_guardian.py    # Policy enforcement
+python benchmarks/technical/performance/benchmark_latency.py # Latency profiling
+python benchmarks/technical/chimera/benchmark_oracle.py      # Oracle vs DoWhy speed
+
+# End-to-end use case benchmarks (6 industries)
+python benchmarks/use_cases/benchmark_e2e.py
+
+# Generate unified comparison report (H1-H9 hypotheses)
+python benchmarks/reports/generate_report.py
+```
+
+**Benchmarks connect to use cases:**
+
+| Use Case | Benchmark | Hypothesis |
+|----------|-----------|------------|
+| Scope 3 Attribution | Causal benchmark (ATE accuracy) | H1: >= 50% lower MSE |
+| Market Uncertainty | Bayesian benchmark (posterior coverage) | H2: >= 90% coverage |
+| Budget Compliance | Guardian benchmark (violation detection) | H3: 100% detection |
+| All scenarios | Performance benchmark (latency) | H6: 2-5x slower, quality compensates |
+| Fast predictions | ChimeraOracle benchmark (speed) | H8: >= 10x faster |
+
+See `benchmarks/README.md` for complete instructions and `docs/WALKTHROUGH.md` for detailed testing guide.
+
 ## Key Features Demonstrated
 
 - **AI Act Transparency**: Explainable results with confidence levels
@@ -119,3 +169,9 @@ curl -X POST http://localhost:8000/chat \
 - **Simulation Arena**: Side-by-side session comparison with contextual benchmarks
 - **Agent Transparency**: Reliability scores and category-coded agent cards
 - **Developer Visibility**: Full execution trace, CSL audit logs, and state inspection
+- **Persistent Feedback**: SQLite-backed feedback store with domain override export
+- **ChimeraOracle Auto-Activation**: Fast predictions when trained models are available
+- **Configurable Regions**: CSL region validation configurable via `CSL_APPROVED_REGIONS` env var
+- **Data Feasibility**: Clear guidance on what data types suit each analysis method
+- **Benchmark Suite**: 6 technical benchmarks + end-to-end use case benchmarks testing 9 falsifiable hypotheses (H1-H9)
+- **TLA+ Formal Verification**: StateGraph and EscalationProtocol formally verified with TLC model checker

@@ -1,7 +1,7 @@
 # CARF Development Reference
 
-> Last Updated: 2026-01-16
-> Current Phase: Phase 5 Complete - Phase 6 (Enhanced UIX & Explainability) Starting
+> Last Updated: 2026-02-17
+> Current Phase: Phase 12 - CHIMEPIC Integration + Platform Hardening
 
 ## Quick Start
 
@@ -19,7 +19,7 @@
 python -c "from dotenv import load_dotenv; load_dotenv(); import subprocess; subprocess.run(['python', '-m', 'pytest', 'tests/unit/', '-v'])"
 
 # Run the CARF test script
-.\.venv\Scripts\python.exe test_carf.py
+.\.venv\Scripts\python.exe scripts/test_carf.py
 ```
 
 ---
@@ -33,15 +33,22 @@ projectcarf/
   .env.example                # Environment template
   .gitignore                  # Git ignore rules
   pyproject.toml              # Project dependencies and config
-  test_carf.py                # Integration test script
   CURRENT_STATUS.md           # Project status tracker
   DEV_REFERENCE.md            # This file
   AGENTS.md                   # Agent architecture docs
 
+  carf-cockpit/               # React Platform Cockpit (Vite + TypeScript + Tailwind)
+    src/
+      components/carf/        # 44 React components
+      __tests__/              # Frontend test suite (5 test files)
+      services/               # API client layer (apiService.ts)
+      hooks/                  # Custom React hooks
+      types/                  # TypeScript type definitions
+
   demo/
-    data/                     # Sample datasets
-    payloads/                 # Demo request payloads
-    scenarios.json            # Scenario registry for UI
+    data/                     # 8 sample datasets (scope3, supply_chain, pricing, etc.)
+    payloads/                 # 10 demo request payloads
+    scenarios.json            # Scenario registry (10 scenarios across all 5 Cynefin domains)
 
   config/
     agents.yaml               # Agent configurations
@@ -51,21 +58,24 @@ projectcarf/
   docs/
     PRD.md                    # Product requirements
     DATA_LAYER.md             # Data architecture
-    UI_UIX_CURRENT_STREAMLIT.md  # Current Streamlit implementation
-    UI_UIX_VISION_REACT.md       # Future React architecture vision
+    UI_UIX_VISION_REACT.md    # React architecture vision
+    WALKTHROUGH.md            # Full testing walkthrough
+    DEMO_WALKTHROUGH.md       # Demo walkthrough
     DEV_PRACTICES_AND_LIVING_DOCS.md
     CARF_UIX_INTERACTION_GUIDELINES.md
+    archive/                  # Legacy docs (Streamlit UI, etc.)
 
   src/
     core/
       state.py                # EpistemicState, CynefinDomain, etc.
       llm.py                  # LLM configuration (DeepSeek/OpenAI)
-    dashboard/
-      app.py                  # Streamlit Epistemic Cockpit
-    services/
+    api/routers/              # 12 modularized API routers (incl. feedback, CSL)
+    services/                 # 16 services
       causal.py               # Causal Inference Engine
       bayesian.py             # Bayesian Active Inference
       human_layer.py          # Human-in-the-loop service
+      chimera_oracle.py       # ChimeraOracle (fast causal predictions)
+      visualization_engine.py # Visualization config per Cynefin domain
       dataset_store.py        # Local dataset registry (SQLite + JSON)
       neo4j_service.py        # Neo4j graph persistence
       kafka_audit.py          # Kafka audit trail
@@ -73,21 +83,28 @@ projectcarf/
       router.py               # Cynefin domain classifier
       guardian.py             # Policy enforcement layer
       graph.py                # LangGraph workflow
+    mcp/                      # MCP server (15 cognitive tools)
     utils/
       resiliency.py           # Retry, circuit breaker utils
     main.py                   # FastAPI application
 
   tests/
-    unit/
-      test_state.py
-      test_router.py
-      test_guardian.py
-      test_dataset_store.py   # Dataset registry tests
-      test_neo4j_service.py   # Neo4j tests
-    eval/
-      test_workflow_integration.py
-    mocks/
-      mock_human_layer.py
+    unit/                     # 27 unit test files
+    e2e/                      # End-to-end tests (gold standard scenarios)
+    integration/              # API flow integration tests
+    deepeval/                 # LLM output quality evaluation (8 test files)
+    eval/                     # Workflow integration tests
+    mocks/                    # Mock HumanLayer, Neo4j, etc.
+
+  benchmarks/                 # Technical & use-case benchmarks (H1-H9)
+    technical/                # Router, causal, bayesian, guardian, performance, chimera
+    use_cases/                # End-to-end industry scenarios
+    baselines/                # Raw LLM baseline comparison
+    reports/                  # Unified report generation
+
+  tla_specs/                  # TLA+ formal verification (StateGraph, EscalationProtocol)
+
+  scripts/                    # Demo seed scripts, data generation, test scripts
 ```
 
 ---
@@ -248,15 +265,18 @@ Limits: `causal_estimation.data` up to 5000 rows, `bayesian_inference.observatio
 
 ---
 
-## Streamlit Cockpit
+## React Cockpit (carf-cockpit)
 
 ```bash
-pip install -e ".[dashboard]"
-streamlit run src/dashboard/app.py
+cd carf-cockpit
+npm install
+npm run dev
+# Opens at http://localhost:5175
 ```
 
-Cockpit features include demo scenarios, dataset upload/selection, causal graph lookup,
-reasoning chain inspection, and Kafka audit previews.
+The React Cockpit includes 44 components: three-view architecture (Analyst/Executive/Developer),
+Cynefin domain visualizations (all 5 domains with Plotly.js charts), simulation arena with
+benchmarking, data onboarding wizard, feedback collection, and MCP server integration.
 
 ## Demo Seeding
 
@@ -276,20 +296,28 @@ The platform includes pre-configured **demo scenarios** that run real analysis w
 
 ### Available Scenarios
 
-| ID | Name | Description |
-|---|---|---|
-| `scope3_attribution` | Scope 3 Attribution | Causal analysis of supplier sustainability programs |
-| `causal_discount_churn` | Discount vs Churn | Causal effect of discount offers on customer churn |
-| `bayesian_conversion_rate` | Conversion Belief Update | Bayesian inference on website conversion rates |
+| ID | Name | Domain | Description |
+|---|---|---|---|
+| `scope3_attribution` | Scope 3 Attribution | Complicated | Causal analysis of supplier sustainability programs |
+| `causal_discount_churn` | Discount vs Churn | Complicated | Causal effect of discount offers on customer churn |
+| `bayesian_conversion_rate` | Conversion Belief Update | Complex | Bayesian inference on website conversion rates |
+| `renewable_energy_roi` | Renewable Energy ROI | Complicated | ROI from renewable energy investments across facilities |
+| `shipping_carbon_footprint` | Shipping Mode Analysis | Complicated | Shipping mode changes and carbon footprint impact |
+| `supply_chain_resilience` | Supply Chain Resilience | Complicated | Climate stress impact on supply chain disruption risk |
+| `pricing_optimization` | Pricing Strategy | Complicated | Causal impact of price changes on sales volume |
+| `market_adoption` | Market Adoption | Complex | Bayesian uncertainty in new product market adoption |
+| `crisis_response` | Crisis Response | Chaotic | Critical supplier failure requiring immediate stabilization |
+| `data_lookup` | Inventory Lookup | Clear | Simple deterministic inventory and product queries |
 
 ### How to Use Scenarios
 
-**Via Dashboard (UI):**
-1. Launch dashboard: `streamlit run src/dashboard/app.py`
-2. Select a scenario from the dropdown in the header
+**Via React Cockpit (UI):**
+1. Launch cockpit: `cd carf-cockpit && npm run dev` (opens at http://localhost:5175)
+2. Select a scenario from the Data Onboarding Wizard or header dropdown
 3. Enter a query (or use suggested query)
 4. Click "Analyze" to run the full analysis pipeline
 5. View real results in Cynefin, Causal, Bayesian, and Guardian panels
+6. Switch views (Analyst / Executive / Developer) for different perspectives
 
 **Via API:**
 ```bash
@@ -320,7 +348,7 @@ docker compose up --build
 docker compose --profile demo run --rm seed
 ```
 
-Streamlit runs on `http://localhost:8501`.
+React Cockpit runs on `http://localhost:5175`, FastAPI on `http://localhost:8000`.
 Kafka is exposed on `localhost:29092` for host clients.
 Dataset registry storage lives under `./var` (bind-mounted in compose).
 
@@ -339,7 +367,7 @@ Dataset registry storage lives under `./var` (bind-mounted in compose).
 .\.venv\Scripts\python.exe -m pytest tests/unit/ --cov=src --cov-report=term-missing
 
 # Integration tests (requires API keys)
-python test_carf.py
+python scripts/test_carf.py
 ```
 
 ### Known Test Issues
@@ -376,7 +404,7 @@ python test_carf.py
 - [x] Virtual environment setup
 - [x] DoWhy/EconML integration (optional path + fallback)
 - [x] PyMC integration (optional path + fallback)
-- [x] Streamlit Dashboard (Epistemic Cockpit)
+- [x] Streamlit Dashboard (deprecated — replaced by React Cockpit)
 - [x] Kafka Audit Trail
 
 ### Phase 4 - Research Demo UIX (Complete)
@@ -388,27 +416,31 @@ python test_carf.py
 
 ---
 
-## Next Development Steps (Phase 6 - Enhanced UIX & Explainability)
+### Phase 5-11 - UIX, Explainability, CHIMEPIC (Complete)
+- [x] React Cockpit (44 components, three-view architecture)
+- [x] Explainability drill-down modals for all analytical results
+- [x] Confidence decomposition and zones
+- [x] Data Onboarding Wizard with sample datasets
+- [x] ConversationalResponse with confidence zones
+- [x] FloatingChatTab, WalkthroughManager, OnboardingOverlay
+- [x] ChimeraOracle fast causal predictions
+- [x] CSL-Core policy engine integration
+- [x] MCP server (15 cognitive tools)
+- [x] Cynefin domain visualizations (all 5 domains with Plotly.js)
+- [x] Feedback API (closed-loop learning)
+- [x] Benchmark suite (6 technical + use case benchmarks)
+- [x] TLA+ formal verification specs
 
-**Explainability & Transparency:**
-- Drill-down modals for all analytical results
-- Confidence decomposition (data/model/validation sources)
-- Data provenance links from results to source data
-- "Why not?" alternative Cynefin paths
+## Remaining Gaps (Phase 12+)
 
-**Enhanced React Components:**
-- `OnboardingOverlay.tsx` - First-run scenario discovery
-- `DataOnboardingWizard.tsx` - 5-step data upload flow
-- `ConversationalResponse.tsx` - Dialog with confidence zones
-- `FloatingChatTab.tsx` - Persistent bottom-right chat
-- `WalkthroughManager.tsx` - Multi-track guided tours
-
-**Release Readiness:**
-- LICENSE, SECURITY.md, CONTRIBUTING.md
+- ChimeraOracle not yet wired into LangGraph StateGraph (standalone API only)
+- LightRAG / Vector Store (no implementation — semantic search missing)
+- Guardian currency-aware comparisons ($50K USD ≠ ¥50K JPY)
+- Router retraining pipeline from feedback data
 - GitHub Actions CI workflow
 - Demo GIF and live deployment
 
-**Reference**: See `docs/CARF UI Development.md` and `docs/UI_UIX_VISION_REACT.md` for detailed specifications.
+**Reference**: See `docs/UI_UIX_VISION_REACT.md` for React architecture specifications.
 
 ---
 
@@ -440,30 +472,13 @@ python test_carf.py
 
 ---
 
-## Files Changed This Session (2026-01-11)
+## Recent Changes (2026-02-17)
 
-### Modified Files
-- `src/dashboard/app.py` - Response badges, color-coded confidence, improved reasoning chain
-- `docs/UI_UIX_VISION_REACT.md` - Added implementation status checkboxes, marked Phase 4 complete
-- `CURRENT_STATUS.md` - Updated Phase 4 to complete, added 2026-01-11 session log
-- `DEV_REFERENCE.md` - Updated Phase 4 status, next steps for Phase 5
-
-## Files Changed Previous Session (2026-01-10)
-
-### New Files
-- `src/services/dataset_store.py` - Local dataset registry (SQLite + JSON)
-- `tests/unit/test_dataset_store.py` - Dataset registry tests
-- `demo/scenarios.json` - Scenario registry
-- `docs/RFC_UIX_001_SCENARIO_REGISTRY.md` - UIX chunk RFC
-- `docs/RFC_UIX_002_DATA_ONBOARDING.md` - UIX chunk RFC
-
-### Modified Files
-- `src/main.py` - Dataset/scenario endpoints, dataset selection handling
-- `src/services/causal.py` - Dataset ID support for causal estimation
-- `src/dashboard/app.py` - Scenario selector + data onboarding UI
-- `docs/UI_UIX_VISION_REACT.md` - UIX plan aligned with implemented features
-- `README.md` - Updated endpoints and data onboarding notes
-- `CURRENT_STATUS.md` - Updated Phase 4 UIX progress
+- Documentation alignment pass: fixed 42+ stale references across all docs
+- Frontend safety fixes: optional chaining on deep property access in AnalysisHistoryPanel, ConversationalResponse
+- SimulationArena hooks order fix (React Rules of Hooks compliance)
+- Benchmark suite integration into all walkthrough and evaluation docs
+- AGENTS.md antipattern documentation (AP-1 through AP-8)
 
 ---
 

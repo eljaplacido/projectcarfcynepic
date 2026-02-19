@@ -51,6 +51,58 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 
 ### User interface samples (New coming soon)
 
+---
+
+## Benchmark Results
+
+CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark categories, using synthetic data with known ground truth and a raw LLM baseline (same model, no pipeline) for comparison. All benchmarks use fixed random seeds for full reproducibility.
+
+### Overall Grade: A — 7/8 Hypotheses Passed
+
+| # | Hypothesis | Measured | Threshold | Result |
+|---|-----------|----------|-----------|--------|
+| H1 | **Causal Accuracy** — DoWhy ATE vs raw LLM | MSE ratio **0.0009** (1,138x more accurate) | ≤ 0.5 | **PASS** |
+| H2 | **Bayesian Calibration** — posterior coverage | **100%** (8/8 scenarios well-calibrated) | ≥ 90% | **PASS** |
+| H3 | **Violation Detection** — Guardian catches all violations | **100%** detection, 0% false positives | ≥ 100% | **PASS** |
+| H4 | **Determinism** — same input → same Guardian decision | **100%** (5x repetitions) | ≥ 100% | **PASS** |
+| H5 | **EU AI Act Compliance** — Art. 9, 12, 13, 14 | **100%** | ≥ 90% | **PASS** |
+| H6 | **Latency Overhead** — CARF vs raw LLM | **3.45x** (9.1s avg vs 2.65s baseline) | ≤ 5x | **PASS** |
+| H7 | **Hallucination Reduction** — grounded data queries | **100% reduction** (0% vs 6.7% baseline) | ≥ 40% | **PASS** |
+| H8 | ChimeraOracle speedup | N/A (not yet benchmarked) | ≥ 10x | — |
+| H9 | Memory stability over 500+ queries | 1,589% RSS growth | ≤ 10% | FAIL |
+
+> Full machine-readable results: [`benchmarks/reports/benchmark_report.json`](benchmarks/reports/benchmark_report.json)
+
+### Indicated Use Cases
+
+Based on the benchmark evidence, CARF is particularly suited for:
+
+| Use Case | Why CARF Helps | Supporting Evidence |
+|----------|---------------|---------------------|
+| **Causal Decision Support** — supply chain, marketing attribution, policy evaluation | Separates cause from correlation with statistical rigor | H1: 1,138x more accurate causal estimates than raw LLM |
+| **Risk Quantification Under Uncertainty** — investment, insurance, clinical trials, grid capacity | Calibrated posteriors with epistemic/aleatoric decomposition | H2: 100% calibrated across 8 Bayesian scenarios |
+| **Regulated AI Systems** — EU AI Act, financial audit, healthcare decision support | Deterministic, compliant, and fully auditable | H3–H5: 100% violation detection, determinism, and compliance |
+| **Strategic Analysis** — market entry, R&D allocation, scenario planning | Cynefin routing ensures the right analytical method per problem type | Router: 94% accuracy, F1 = 0.939 across 5 domains |
+
+### Benchmark Data Sources & Methodology
+
+All evaluation data is **synthetic with known ground truth**, enabling objective measurement. No proprietary or third-party datasets are required to reproduce results.
+
+| Category | Description | Details |
+|----------|-------------|---------|
+| Causal (Synthetic) | 3 DGPs with known ATEs (linear, nonlinear, null) | n=500 each, confounded via logistic propensity scores. True ATEs: 3.0, 2.5, 0.0 |
+| Causal (Industry) | 5 sector-specific DGPs with realistic confounding | Supply chain (n=500, ATE=−8.5 days), Healthcare (n=800), Marketing (n=600), Sustainability (n=400), Education (n=700) |
+| Causal (Heterogeneous) | 1 DGP with age-dependent treatment effects | n=800, subgroup ATEs: young=4.0, middle=8.0, senior=12.0 |
+| Bayesian (Normal) | 4 continuous-observation scenarios | Market returns (n=50), Crop yields (n=40), Supply chain lead times (n=60), Energy demand (n=80) |
+| Bayesian (Binomial) | 4 success/trial count scenarios | Tech migration (45 trials), Drug trial (120 trials), Insurance (200 policies), Conversion (500 visitors) |
+| Router | 456-query labeled test set across 5 Cynefin domains | Clear (101), Complicated (102), Complex (101), Chaotic (50), Disorder (102) |
+| E2E Use Cases | 13 end-to-end scenarios with 420 data rows | Numpy-generated industry data across 7 sectors |
+| Baselines | Raw LLM (same model, no pipeline) on identical data | Router (50 balanced), causal ATE (8 DGPs), hallucination (5 test cases) |
+
+**Methodology:** DoWhy for causal estimation with refutation tests, PyMC for Bayesian posterior inference, balanced Cynefin domain sampling for router evaluation. Baselines use the same LLM model (DeepSeek) without the CARF pipeline. All benchmark scripts and data generators are in [`benchmarks/`](benchmarks/).
+
+---
+
 ## Quick Start
 
 ### Option 1: Local Development (Recommended)
@@ -261,7 +313,7 @@ All paths -> Guardian (policy check) -> [Approve | Reject | Escalate to Human]
 | `/escalations` | GET | List pending human escalations |
 | `/escalations/{id}` | GET | Get escalation details |
 | `/escalations/{id}/resolve` | POST | Resolve an escalation |
-| `/transparency/compliance` | GET | EU AI Act compliance report |
+| `/transparency/compliance` | POST | EU AI Act compliance report |
 | `/transparency/data-quality` | POST | Assess data quality |
 | `/transparency/guardian` | POST | Guardian decision transparency |
 | `/sessions/{id}/lineage` | GET | Data lineage and provenance tracking |
@@ -271,10 +323,15 @@ All paths -> Guardian (policy check) -> [Approve | Reject | Escalate to Human]
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/developer/state` | GET | Full system state dump |
-| `/developer/logs` | WebSocket | Live log streaming |
+| `/developer/logs` | GET | Filtered log entries (layer, level, limit) |
+| `/developer/ws` | WebSocket | Live log streaming |
 | `/analyze` | POST | File analysis for CSV/JSON |
 | `/agent/suggest-improvements` | POST | Automated improvement suggestions |
-| `/explain/{type}` | POST | Generate explanations for analyses |
+| `/explain` | POST | Generate explanations for analyses |
+| `/explain/{domain}/{element}` | GET | Domain-specific element explanations |
+| `/benchmarks/run-all` | POST | Run all benchmark suites |
+| `/feedback` | POST | Submit analysis feedback |
+| `/summary/executive` | POST | Generate executive summary |
 
 ### Example API Calls
 
@@ -346,7 +403,7 @@ See [docs/DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) for a step-by-step guid
 
 Bring your own CSV to run causal analysis:
 
-1. **Generate Sample Data** (optional): `python generate_chain_data.py` to create `supply_chain_resilience.csv`.
+1. **Generate Sample Data** (optional): `python scripts/generate_chain_data.py` to create `supply_chain_resilience.csv`.
 2. **Open Data Onboarding**: In the dashboard, click "Upload your own data".
 3. **Map Variables**: Identify the **Treatment** (e.g., `climate_stress_index`), **Outcome** (e.g., `disruption_risk_percent`), and **Confounders**.
 4. **Run Analysis**: The platform will automatically classify the query, build a causal model, and display results.
@@ -375,12 +432,14 @@ projectcarf/
 │   └── policy_scaffolds/ # Domain-specific policy templates
 ├── demo/               # Demo scenarios and sample data
 ├── tests/
-│   ├── unit/           # 598 unit tests (72% coverage)
+│   ├── unit/           # 35 unit test files
 │   ├── deepeval/       # LLM quality evaluation tests
 │   ├── e2e/            # End-to-end gold standard tests
 │   └── integration/    # API flow integration tests
+├── benchmarks/         # Technical & use-case benchmarks (H1-H9 hypotheses)
+├── tla_specs/          # TLA+ formal verification specs
 ├── scripts/            # Training, data generation, evaluation scripts
-├── docs/               # 28 documentation files
+├── docs/               # 27 documentation files
 └── docker-compose.yml  # Full stack deployment
 ```
 
@@ -394,7 +453,7 @@ pytest tests/ -v
 pytest tests/ -v --cov=src --cov-report=term-missing
 
 # Run manual test suite
-python test_carf.py
+python scripts/test_carf.py
 
 # Type checking
 mypy src/ --strict

@@ -1,0 +1,19 @@
+{
+  "benchmark": "chimera_oracle_vs_dowhy",
+  "timestamp": "2026-02-18T10:51:40.667033+00:00",
+  "true_ate": 3.0,
+  "oracle_available": false,
+  "dowhy": {
+    "n_runs": 5,
+    "mean_ate": 2.983509,
+    "mean_latency_ms": 2323.71
+  },
+  "oracle": {
+    "n_runs": 0,
+    "mean_ate": null,
+    "mean_latency_ms": null
+  },
+  "speed_ratio": null,
+  "accuracy_loss_pct": null,
+  "h8_passed": false
+}

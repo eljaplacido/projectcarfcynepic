@@ -12,10 +12,12 @@
 Total Tests: 380+ passing
 Overall Coverage: 64%
 Python Lines: 5,000+ lines
-React Components: 34 components
-Backend Unit Tests: 31 test files
+React Components: 44 components
+Backend Unit Tests: 35 test files
 Frontend Tests: 65 tests (5 test files, all passing)
 E2E Tests: 16 tests (Data Quality: 6/6 pass, API: varies by network)
+Benchmark Scripts: 6 technical + 1 e2e + 1 baseline + 1 report generator
+TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 ```
 
 ## Feature Completion Matrix
@@ -252,7 +254,7 @@ OPA_ENABLED=false
 cd projectcarf
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -e ".[dev,dashboard]"
+pip install -e ".[dev,causal,bayesian]"
 python -m src.main
 ```
 
@@ -324,7 +326,7 @@ projectcarf/
 │   ├── core/                # State schemas, LLM config
 │   ├── services/            # 16 services (incl. chimera_oracle, visualization_engine)
 │   ├── workflows/           # LangGraph nodes (router, guardian, graph)
-│   └── dashboard/           # Streamlit (legacy)
+│   └── mcp/                 # MCP server (15 cognitive tools)
 ├── carf-cockpit/
 │   └── src/
 │       ├── components/carf/ # 34 React components (incl. PlotlyChart, DomainVisualization)

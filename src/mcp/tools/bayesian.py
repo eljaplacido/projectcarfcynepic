@@ -44,9 +44,9 @@ async def bayesian_explore(
         "probes": [
             {
                 "description": p.description,
-                "expected_info_gain": p.expected_info_gain,
+                "expected_info_gain": p.expected_information_gain,
                 "risk_level": p.risk_level,
-                "cost_estimate": p.cost_estimate,
+                "reversible": p.reversible,
             }
             for p in result.probes_designed
         ],
@@ -66,8 +66,6 @@ async def bayesian_run_inference(
     observations: list[float] | None = None,
     successes: int | None = None,
     trials: int | None = None,
-    prior_alpha: float = 1.0,
-    prior_beta: float = 1.0,
 ) -> dict[str, Any]:
     """Run PyMC Bayesian inference on provided data.
 
@@ -79,23 +77,18 @@ async def bayesian_run_inference(
         observations: List of numeric observations (for mean estimation)
         successes: Number of successes (for binomial inference)
         trials: Number of trials (for binomial inference)
-        prior_alpha: Beta prior alpha parameter (default 1.0)
-        prior_beta: Beta prior beta parameter (default 1.0)
     """
     engine = get_bayesian_engine()
     config = BayesianInferenceConfig(
         observations=observations,
         successes=successes,
         trials=trials,
-        prior_alpha=prior_alpha,
-        prior_beta=prior_beta,
     )
     result = engine._run_pymc_inference(config)
     return {
         "posterior_mean": result.posterior_mean,
         "credible_interval": list(result.credible_interval),
-        "posterior_std": result.posterior_std,
+        "uncertainty": result.uncertainty,
         "epistemic_uncertainty": result.epistemic_uncertainty,
         "aleatoric_uncertainty": result.aleatoric_uncertainty,
-        "n_samples": result.n_samples,
     }

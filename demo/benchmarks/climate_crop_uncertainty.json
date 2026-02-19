@@ -1,0 +1,93 @@
+{
+    "id": "climate_crop_uncertainty",
+    "name": "Climate Impact on Crop Yield Uncertainty",
+    "description": "Explore how climate variability affects crop yields with high epistemic uncertainty requiring Bayesian probing",
+    "domain": "sustainability",
+    "expected_classification": "complex",
+    "query": "How might increasing climate variability affect wheat crop yields over the next decade, and what should we monitor?",
+    "context": {
+        "hypothesis": "Climate variability creates non-linear, uncertain effects on crop productivity",
+        "uncertainty_factors": [
+            "precipitation_variance",
+            "temperature_extremes",
+            "soil_degradation",
+            "pest_migration"
+        ],
+        "prior_beliefs": {
+            "yield_decline_probability": 0.6,
+            "confidence": "low"
+        }
+    },
+    "data": [
+        {
+            "year": 2020,
+            "yield_tonnes_ha": 3.2,
+            "precip_variance": 0.15,
+            "temp_extreme_days": 12,
+            "soil_organic_pct": 3.8
+        },
+        {
+            "year": 2021,
+            "yield_tonnes_ha": 2.9,
+            "precip_variance": 0.22,
+            "temp_extreme_days": 18,
+            "soil_organic_pct": 3.6
+        },
+        {
+            "year": 2022,
+            "yield_tonnes_ha": 3.5,
+            "precip_variance": 0.10,
+            "temp_extreme_days": 8,
+            "soil_organic_pct": 3.7
+        },
+        {
+            "year": 2023,
+            "yield_tonnes_ha": 2.4,
+            "precip_variance": 0.35,
+            "temp_extreme_days": 25,
+            "soil_organic_pct": 3.4
+        },
+        {
+            "year": 2024,
+            "yield_tonnes_ha": 3.0,
+            "precip_variance": 0.18,
+            "temp_extreme_days": 15,
+            "soil_organic_pct": 3.5
+        },
+        {
+            "year": 2025,
+            "yield_tonnes_ha": 2.6,
+            "precip_variance": 0.28,
+            "temp_extreme_days": 22,
+            "soil_organic_pct": 3.3
+        },
+        {
+            "year": 2026,
+            "yield_tonnes_ha": 2.8,
+            "precip_variance": 0.20,
+            "temp_extreme_days": 16,
+            "soil_organic_pct": 3.2
+        },
+        {
+            "year": 2027,
+            "yield_tonnes_ha": 2.3,
+            "precip_variance": 0.40,
+            "temp_extreme_days": 30,
+            "soil_organic_pct": 3.0
+        }
+    ],
+    "expected_results": {
+        "domain": "Complex",
+        "has_bayesian_evidence": true,
+        "uncertainty_reduced": true,
+        "probes_designed": true,
+        "requires_human": false
+    },
+    "validation_criteria": {
+        "domain_match": true,
+        "confidence_min": 0.5,
+        "should_have_probes": true,
+        "uncertainty_quantified": true,
+        "should_escalate": false
+    }
+}

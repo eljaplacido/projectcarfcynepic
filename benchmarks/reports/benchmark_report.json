@@ -1,0 +1,1884 @@
+{
+  "title": "CARF Unified Benchmark Report",
+  "generated_at": "2026-02-19T20:01:24.315643",
+  "metadata": {
+    "git_hash": "e0c2589",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "timestamp": "2026-02-19T18:01:24.315629+00:00",
+    "seed": null
+  },
+  "data_sources": [
+    "router",
+    "causal",
+    "bayesian",
+    "guardian",
+    "performance",
+    "chimera",
+    "e2e",
+    "baseline"
+  ],
+  "summary": {
+    "grade": "A",
+    "hypotheses_evaluated": 8,
+    "hypotheses_passed": 7,
+    "hypotheses_total": 9,
+    "pass_rate": 0.875,
+    "data_coverage": "8/8 benchmark categories"
+  },
+  "hypotheses": [
+    {
+      "id": "H1",
+      "claim": "CARF DoWhy achieves >= 50% lower ATE MSE than raw LLM",
+      "status": "evaluated",
+      "metric_value": 1.193987,
+      "threshold": 0.5,
+      "passed": true,
+      "details": {
+        "carf_mse": 1.193987,
+        "baseline_mse": 1355.136225,
+        "mse_ratio": 0.0009
+      }
+    },
+    {
+      "id": "H2",
+      "claim": "CARF Bayesian achieves >= 90% posterior coverage vs LLM ~60-70%",
+      "status": "evaluated",
+      "metric_value": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "details": {
+        "coverage_rate": 1.0,
+        "well_calibrated": true,
+        "decomposition_rate": 1.0,
+        "total_scenarios": null
+      }
+    },
+    {
+      "id": "H3",
+      "claim": "Guardian achieves 100% violation detection vs LLM missing > 20%",
+      "status": "evaluated",
+      "metric_value": 1.0,
+      "threshold": 1.0,
+      "passed": true,
+      "details": {}
+    },
+    {
+      "id": "H4",
+      "claim": "Guardian 100% deterministic vs LLM variation",
+      "status": "evaluated",
+      "metric_value": 1.0,
+      "threshold": 1.0,
+      "passed": true,
+      "details": {}
+    },
+    {
+      "id": "H5",
+      "claim": "CARF meets >= 90% EU AI Act compliance vs LLM < 30%",
+      "status": "evaluated",
+      "metric_value": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "details": {
+        "checks": {
+          "reasoning_chain": true,
+          "confidence_scores": true,
+          "policy_enforcement": true,
+          "audit_trail": true,
+          "human_oversight": true,
+          "explainability": true
+        },
+        "eu_ai_act_mapping": {
+          "reasoning_chain": {
+            "article": "Art. 13 - Transparency",
+            "requirement": "AI systems shall be designed to ensure their operation is sufficiently transparent to enable users to interpret the system's output",
+            "carf_implementation": "Full reasoning chain logged for every query through LangGraph workflow nodes"
+          },
+          "confidence_scores": {
+            "article": "Art. 9 - Risk Management",
+            "requirement": "Risk management system shall identify and analyse the known and foreseeable risks",
+            "carf_implementation": "Cynefin domain confidence and epistemic uncertainty computed for each query"
+          },
+          "policy_enforcement": {
+            "article": "Art. 14 - Human Oversight",
+            "requirement": "AI systems shall be designed to be effectively overseen by natural persons",
+            "carf_implementation": "Guardian policy engine enforces constraints and triggers human escalation"
+          },
+          "audit_trail": {
+            "article": "Art. 12 - Record-Keeping",
+            "requirement": "AI systems shall technically allow for automatic recording of events (logs)",
+            "carf_implementation": "Kafka-based audit trail with structured event logging and state persistence"
+          },
+          "human_oversight": {
+            "article": "Art. 14 - Human Oversight",
+            "requirement": "Measures enabling human oversight, including ability to intervene or interrupt",
+            "carf_implementation": "HumanLayer integration with Slack/Teams approval workflows"
+          },
+          "explainability": {
+            "article": "Art. 13 - Transparency",
+            "requirement": "Provide information to deployers in an appropriate form including output interpretation",
+            "carf_implementation": "Transparency service provides causal graph explanations and Bayesian uncertainty decomposition"
+          }
+        }
+      }
+    },
+    {
+      "id": "H6",
+      "claim": "CARF latency overhead acceptable (< 5x raw LLM)",
+      "status": "evaluated",
+      "metric_value": 3.447,
+      "threshold": 5.0,
+      "passed": true,
+      "details": {
+        "carf_ms": 9136.05,
+        "baseline_ms": 2650.25
+      }
+    },
+    {
+      "id": "H7",
+      "claim": "CARF reduces hallucination by >= 40%",
+      "status": "evaluated",
+      "metric_value": 1.0,
+      "threshold": 0.4,
+      "passed": true,
+      "details": {
+        "carf_hallucination_rate": 0.0,
+        "llm_hallucination_rate": 0.0667,
+        "reduction_pct": 100.0
+      }
+    },
+    {
+      "id": "H8",
+      "claim": "ChimeraOracle >= 10x faster with < 20% accuracy loss",
+      "status": "no_data",
+      "metric_value": null,
+      "threshold": 10.0,
+      "passed": null,
+      "details": {}
+    },
+    {
+      "id": "H9",
+      "claim": "CARF memory stable over 500+ queries (< 10% RSS growth)",
+      "status": "evaluated",
+      "metric_value": 1589.46,
+      "threshold": 10.0,
+      "passed": false,
+      "details": {
+        "tracemalloc_peak_mb": 377.44,
+        "top_allocators": [
+          {
+            "file": "<frozen importlib._bootstrap_external>:781",
+            "size_kb": 164814.5
+          },
+          {
+            "file": "<frozen importlib._bootstrap>:488",
+            "size_kb": 13928.1
+          },
+          {
+            "file": "<frozen abc>:106",
+            "size_kb": 13039.9
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\neo4j\\time\\__init__.py:138",
+            "size_kb": 11681.9
+          },
+          {
+            "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\linecache.py:168",
+            "size_kb": 9271.1
+          }
+        ]
+      }
+    }
+  ],
+  "raw_results": {
+    "router": {
+      "benchmark": "cynefin_router",
+      "total_queries": 50,
+      "error_count": 0,
+      "overall_accuracy": 0.94,
+      "weighted_f1": 0.9386,
+      "expected_calibration_error": 0.2082,
+      "ece_bins": [
+        {
+          "bin": "[0.0, 0.1)",
+          "count": 0
+        },
+        {
+          "bin": "[0.1, 0.2)",
+          "count": 0
+        },
+        {
+          "bin": "[0.2, 0.3)",
+          "count": 9,
+          "mean_confidence": 0.2222,
+          "mean_accuracy": 1.0,
+          "gap": 0.7778
+        },
+        {
+          "bin": "[0.3, 0.4)",
+          "count": 0
+        },
+        {
+          "bin": "[0.4, 0.5)",
+          "count": 0
+        },
+        {
+          "bin": "[0.5, 0.6)",
+          "count": 0
+        },
+        {
+          "bin": "[0.6, 0.7)",
+          "count": 0
+        },
+        {
+          "bin": "[0.7, 0.8)",
+          "count": 4,
+          "mean_confidence": 0.75,
+          "mean_accuracy": 0.5,
+          "gap": 0.25
+        },
+        {
+          "bin": "[0.8, 0.9)",
+          "count": 16,
+          "mean_confidence": 0.8469,
+          "mean_accuracy": 0.9375,
+          "gap": 0.0906
+        },
+        {
+          "bin": "[0.9, 1.0)",
+          "count": 21,
+          "mean_confidence": 0.9543,
+          "mean_accuracy": 1.0,
+          "gap": 0.0457
+        }
+      ],
+      "per_domain_accuracy": {
+        "Clear": {
+          "count": 10,
+          "correct": 10,
+          "accuracy": 1.0,
+          "latency": {
+            "mean_ms": 3113.12,
+            "median_ms": 2931.03,
+            "p95_ms": 4774.71
+          }
+        },
+        "Complicated": {
+          "count": 10,
+          "correct": 7,
+          "accuracy": 0.7,
+          "latency": {
+            "mean_ms": 3079.36,
+            "median_ms": 3109.3,
+            "p95_ms": 3487.23
+          }
+        },
+        "Complex": {
+          "count": 10,
+          "correct": 10,
+          "accuracy": 1.0,
+          "latency": {
+            "mean_ms": 2922.31,
+            "median_ms": 2903.35,
+            "p95_ms": 3319.4
+          }
+        },
+        "Chaotic": {
+          "count": 10,
+          "correct": 10,
+          "accuracy": 1.0,
+          "latency": {
+            "mean_ms": 2815.28,
+            "median_ms": 2870.88,
+            "p95_ms": 3089.83
+          }
+        },
+        "Disorder": {
+          "count": 10,
+          "correct": 10,
+          "accuracy": 1.0,
+          "latency": {
+            "mean_ms": 2812.52,
+            "median_ms": 2771.93,
+            "p95_ms": 3310.54
+          }
+        }
+      },
+      "confusion_matrix": {
+        "labels": [
+          "Chaotic",
+          "Clear",
+          "Complex",
+          "Complicated",
+          "Disorder"
+        ],
+        "matrix": [
+          [
+            10,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            10,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            10,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            3,
+            7,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            10
+          ]
+        ]
+      },
+      "latency": {
+        "mean_ms": 2948.52,
+        "median_ms": 2894.49,
+        "p95_ms": 3385.0,
+        "p99_ms": 4844.57
+      },
+      "individual_results": [
+        {
+          "query": "What is 2+2?",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 1.0,
+          "correct": true,
+          "latency_ms": 6045.97,
+          "error": null
+        },
+        {
+          "query": "Convert 100 USD to EUR at rate 0.92",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 3147.45,
+          "error": null
+        },
+        {
+          "query": "What is the boiling point of water in Celsius?",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2936.19,
+          "error": null
+        },
+        {
+          "query": "Look up the current exchange rate for GBP to USD",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2428.89,
+          "error": null
+        },
+        {
+          "query": "What day of the week is January 1, 2026?",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2663.5,
+          "error": null
+        },
+        {
+          "query": "Calculate 15% tip on a $85 bill",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2495.6,
+          "error": null
+        },
+        {
+          "query": "What is the square root of 144?",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2328.39,
+          "error": null
+        },
+        {
+          "query": "Convert 5 miles to kilometers",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2938.36,
+          "error": null
+        },
+        {
+          "query": "What is the ISO country code for Germany?",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2925.88,
+          "error": null
+        },
+        {
+          "query": "How many days are in February 2024?",
+          "ground_truth": "Clear",
+          "predicted": "Clear",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 3220.94,
+          "error": null
+        },
+        {
+          "query": "What is the causal effect of marketing spend on customer acquisition?",
+          "ground_truth": "Complicated",
+          "predicted": "Complex",
+          "confidence": 0.8,
+          "correct": false,
+          "latency_ms": 3352.61,
+          "error": null
+        },
+        {
+          "query": "Why did our costs increase by 15% last quarter?",
+          "ground_truth": "Complicated",
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3594.13,
+          "error": null
+        },
+        {
+          "query": "What caused the database query slowdown last week?",
+          "ground_truth": "Complicated",
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3034.0,
+          "error": null
+        },
+        {
+          "query": "Analyze the root cause of the production error rate spike",
+          "ground_truth": "Complicated",
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2629.37,
+          "error": null
+        },
+        {
+          "query": "What factors are driving customer churn in the premium segment?",
+          "ground_truth": "Complicated",
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3184.6,
+          "error": null
+        },
+        {
+          "query": "Determine the impact of the new pricing strategy on revenue",
+          "ground_truth": "Complicated",
+          "predicted": "Complex",
+          "confidence": 0.75,
+          "correct": false,
+          "latency_ms": 2739.35,
+          "error": null
+        },
+        {
+          "query": "What is the causal relationship between employee training hours and productivity?",
+          "ground_truth": "Complicated",
+          "predicted": "Complex",
+          "confidence": 0.75,
+          "correct": false,
+          "latency_ms": 3323.31,
+          "error": null
+        },
+        {
+          "query": "Analyze why conversion rates dropped after the UI redesign",
+          "ground_truth": "Complicated",
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3356.57,
+          "error": null
+        },
+        {
+          "query": "What caused the increase in supply chain lead times?",
+          "ground_truth": "Complicated",
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2718.0,
+          "error": null
+        },
+        {
+          "query": "Determine the effect of temperature on manufacturing defect rates",
+          "ground_truth": "Complicated",
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2861.67,
+          "error": null
+        },
+        {
+          "query": "Will the market recover after the currency crisis? What probes should we run?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2776.67,
+          "error": null
+        },
+        {
+          "query": "How might climate change affect crop yields over the next decade?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2835.54,
+          "error": null
+        },
+        {
+          "query": "What is the likelihood of a successful digital transformation given our current state?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2603.42,
+          "error": null
+        },
+        {
+          "query": "How should we update our beliefs about customer preferences after the survey?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.75,
+          "correct": true,
+          "latency_ms": 2807.84,
+          "error": null
+        },
+        {
+          "query": "What is the probability of a supply chain disruption in the next 6 months?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.75,
+          "correct": true,
+          "latency_ms": 2971.15,
+          "error": null
+        },
+        {
+          "query": "How might emerging regulations affect our business model?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2452.48,
+          "error": null
+        },
+        {
+          "query": "What are the possible outcomes of entering the Chinese market?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3093.76,
+          "error": null
+        },
+        {
+          "query": "How should we explore the impact of AI on our workforce planning?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3269.01,
+          "error": null
+        },
+        {
+          "query": "What safe-to-fail experiments could we design to test this strategy?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3052.59,
+          "error": null
+        },
+        {
+          "query": "How might gene therapy adoption evolve over the next 5 years?",
+          "ground_truth": "Complex",
+          "predicted": "Complex",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3360.62,
+          "error": null
+        },
+        {
+          "query": "URGENT: Massive data breach detected \u2014 all customer records exposed",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 3045.96,
+          "error": null
+        },
+        {
+          "query": "EMERGENCY: Chemical spill in manufacturing facility, evacuation in progress",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 3125.72,
+          "error": null
+        },
+        {
+          "query": "CRITICAL: Stock price crashed 40% in 5 minutes, trading halted",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2645.75,
+          "error": null
+        },
+        {
+          "query": "ALERT: Ransomware has encrypted all production servers",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2911.38,
+          "error": null
+        },
+        {
+          "query": "EMERGENCY: Hospital IT systems down, patient records inaccessible",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2830.38,
+          "error": null
+        },
+        {
+          "query": "URGENT: Massive coordinated fraud \u2014 500 suspicious transactions in 3 minutes",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2969.19,
+          "error": null
+        },
+        {
+          "query": "CRITICAL: Pipeline rupture detected, environmental contamination imminent",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2485.92,
+          "error": null
+        },
+        {
+          "query": "EMERGENCY: Power grid cascade failure, 200,000 customers at risk of blackout",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2443.54,
+          "error": null
+        },
+        {
+          "query": "ALERT: Food contamination detected in shipped products, recall needed immediately",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2950.03,
+          "error": null
+        },
+        {
+          "query": "CRITICAL: Aircraft systems failure mid-flight, emergency protocols needed NOW",
+          "ground_truth": "Chaotic",
+          "predicted": "Chaotic",
+          "confidence": 0.99,
+          "correct": true,
+          "latency_ms": 2744.92,
+          "error": null
+        },
+        {
+          "query": "Should we do something different?",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.3,
+          "correct": true,
+          "latency_ms": 2877.61,
+          "error": null
+        },
+        {
+          "query": "Things aren't working well",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.2,
+          "correct": true,
+          "latency_ms": 2614.34,
+          "error": null
+        },
+        {
+          "query": "Help",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.2,
+          "correct": true,
+          "latency_ms": 2552.0,
+          "error": null
+        },
+        {
+          "query": "What should we do?",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.2,
+          "correct": true,
+          "latency_ms": 2980.59,
+          "error": null
+        },
+        {
+          "query": "Is this good or bad?",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.2,
+          "correct": true,
+          "latency_ms": 2545.46,
+          "error": null
+        },
+        {
+          "query": "We need to maximize growth while minimizing all investment and reduce risk to zero while entering new markets",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.3,
+          "correct": true,
+          "latency_ms": 3404.94,
+          "error": null
+        },
+        {
+          "query": "Fix everything",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.2,
+          "correct": true,
+          "latency_ms": 2806.75,
+          "error": null
+        },
+        {
+          "query": "Make it better",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.2,
+          "correct": true,
+          "latency_ms": 3195.17,
+          "error": null
+        },
+        {
+          "query": "I don't know what to ask",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.95,
+          "correct": true,
+          "latency_ms": 2737.12,
+          "error": null
+        },
+        {
+          "query": "Do the thing with the data",
+          "ground_truth": "Disorder",
+          "predicted": "Disorder",
+          "confidence": 0.2,
+          "correct": true,
+          "latency_ms": 2411.25,
+          "error": null
+        }
+      ]
+    },
+    "causal": {
+      "benchmark": "carf_causal_inference",
+      "version": "2.0",
+      "timestamp": "2026-02-19T17:26:09.354267+00:00",
+      "n_test_cases": 9,
+      "n_successful": 9,
+      "aggregate_metrics": {
+        "all": {
+          "n": 9,
+          "mse": 1.193987,
+          "mean_abs_bias": 0.556221,
+          "ci_coverage_95": 0.8889,
+          "ci_coverage_90": 0.5556,
+          "mean_refutation_pass_rate": 1.0
+        },
+        "synthetic": {
+          "n": 3,
+          "mse": 0.052237,
+          "mean_abs_bias": 0.183987,
+          "ci_coverage_95": 0.6667,
+          "ci_coverage_90": 0.0,
+          "mean_refutation_pass_rate": 1.0
+        },
+        "industry": {
+          "n": 5,
+          "mse": 2.082692,
+          "mean_abs_bias": 0.80697,
+          "ci_coverage_95": 1.0,
+          "ci_coverage_90": 0.8,
+          "mean_refutation_pass_rate": 1.0
+        },
+        "heterogeneous": {
+          "n": 1,
+          "mse": 0.17571,
+          "mean_abs_bias": 0.419178,
+          "ci_coverage_95": 1.0,
+          "ci_coverage_90": 1.0,
+          "mean_refutation_pass_rate": 1.0
+        }
+      },
+      "test_results": [
+        {
+          "name": "synthetic_linear",
+          "true_ate": 3.0,
+          "category": "synthetic",
+          "estimated_ate": 2.909683,
+          "bias": -0.090317,
+          "mse": 0.008157,
+          "ci_lower": 2.818427,
+          "ci_upper": 3.000939,
+          "ci_covers_true": true,
+          "ci_lower_90": 2.833093,
+          "ci_upper_90": 2.986273,
+          "ci_covers_true_90": false,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 32.865799,
+          "error": null
+        },
+        {
+          "name": "synthetic_nonlinear",
+          "true_ate": 2.5,
+          "category": "synthetic",
+          "estimated_ate": 2.875731,
+          "bias": 0.375731,
+          "mse": 0.141173,
+          "ci_lower": 2.630108,
+          "ci_upper": 3.121354,
+          "ci_covers_true": false,
+          "ci_lower_90": 2.669583,
+          "ci_upper_90": 3.081878,
+          "ci_covers_true_90": false,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 1.812308,
+          "error": null
+        },
+        {
+          "name": "synthetic_null",
+          "true_ate": 0.0,
+          "category": "synthetic",
+          "estimated_ate": -0.085915,
+          "bias": -0.085915,
+          "mse": 0.007381,
+          "ci_lower": -0.177572,
+          "ci_upper": 0.005743,
+          "ci_covers_true": true,
+          "ci_lower_90": -0.162841,
+          "ci_upper_90": -0.008988,
+          "ci_covers_true_90": false,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 1.81942,
+          "error": null
+        },
+        {
+          "name": "industry_supply_chain",
+          "true_ate": -8.5,
+          "category": "industry",
+          "estimated_ate": -8.205505,
+          "bias": 0.294495,
+          "mse": 0.086727,
+          "ci_lower": -9.226453,
+          "ci_upper": -7.184557,
+          "ci_covers_true": true,
+          "ci_lower_90": -9.062372,
+          "ci_upper_90": -7.348638,
+          "ci_covers_true_90": true,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 1.83461,
+          "error": null
+        },
+        {
+          "name": "industry_healthcare",
+          "true_ate": -5.2,
+          "category": "industry",
+          "estimated_ate": -5.03727,
+          "bias": 0.16273,
+          "mse": 0.026481,
+          "ci_lower": -5.430321,
+          "ci_upper": -4.644218,
+          "ci_covers_true": true,
+          "ci_lower_90": -5.367152,
+          "ci_upper_90": -4.707387,
+          "ci_covers_true_90": true,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 1.856408,
+          "error": null
+        },
+        {
+          "name": "industry_marketing_roi",
+          "true_ate": 0.045,
+          "category": "industry",
+          "estimated_ate": 0.042153,
+          "bias": -0.002847,
+          "mse": 8e-06,
+          "ci_lower": 0.038783,
+          "ci_upper": 0.045523,
+          "ci_covers_true": true,
+          "ci_lower_90": 0.039324,
+          "ci_upper_90": 0.044981,
+          "ci_covers_true_90": false,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 2.018277,
+          "error": null
+        },
+        {
+          "name": "industry_sustainability",
+          "true_ate": -45.0,
+          "category": "industry",
+          "estimated_ate": -41.814268,
+          "bias": 3.185732,
+          "mse": 10.148887,
+          "ci_lower": -46.927434,
+          "ci_upper": -36.701102,
+          "ci_covers_true": true,
+          "ci_lower_90": -46.105675,
+          "ci_upper_90": -37.522861,
+          "ci_covers_true_90": true,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 1.868672,
+          "error": null
+        },
+        {
+          "name": "industry_education",
+          "true_ate": 7.8,
+          "category": "industry",
+          "estimated_ate": 7.410956,
+          "bias": -0.389044,
+          "mse": 0.151355,
+          "ci_lower": 6.612483,
+          "ci_upper": 8.209429,
+          "ci_covers_true": true,
+          "ci_lower_90": 6.740809,
+          "ci_upper_90": 8.081103,
+          "ci_covers_true_90": true,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 1.837687,
+          "error": null
+        },
+        {
+          "name": "heterogeneous_treatment_effect",
+          "true_ate": 7.94,
+          "category": "heterogeneous",
+          "estimated_ate": 7.520822,
+          "bias": -0.419178,
+          "mse": 0.17571,
+          "ci_lower": 7.017557,
+          "ci_upper": 8.024088,
+          "ci_covers_true": true,
+          "ci_lower_90": 7.098439,
+          "ci_upper_90": 7.943206,
+          "ci_covers_true_90": true,
+          "refutation_results": {
+            "placebo_treatment_refuter": true,
+            "random_common_cause": true
+          },
+          "refutation_pass_rate": 1.0,
+          "elapsed_seconds": 1.865065,
+          "error": null
+        }
+      ]
+    },
+    "bayesian": {
+      "benchmark": "carf_bayesian_inference",
+      "timestamp": "2026-02-19T17:25:06.810692+00:00",
+      "n_scenarios": 8,
+      "n_successful": 8,
+      "aggregate": {
+        "coverage_rate": 1.0,
+        "n_covered": 8,
+        "well_calibrated": true,
+        "decomposition_rate": 1.0,
+        "aggregate_pass_rate": 1.0,
+        "mean_latency_seconds": 40.364
+      },
+      "coverage": 1.0,
+      "aggregate_pass_rate": 1.0,
+      "scenario_results": [
+        {
+          "name": "market_entry_risk",
+          "passed_checks": [
+            "posterior_present",
+            "uncertainty_bounded",
+            "coverage_90ci",
+            "posterior_precision",
+            "sufficient_probes",
+            "uncertainty_decomposition",
+            "uncertainty_tracked",
+            "response_quality"
+          ],
+          "failed_checks": [],
+          "metrics": {
+            "elapsed_seconds": 58.131,
+            "posterior_mean": 0.093387,
+            "posterior_std": 0.018553,
+            "credible_interval": [
+              0.062976,
+              0.124015
+            ],
+            "true_parameter": 0.08,
+            "parameter_covered": true,
+            "n_probes": 4,
+            "recommended_probe": "Apply to enter a regulatory sandbox in a target country (e.g., Singapore\u2019s MAS sandbox or Malaysia\u2019s Bank Negara sandbox) to test our product with real customers under supervised, limited-scale conditions.",
+            "epistemic_uncertainty": 0.019066,
+            "aleatoric_uncertainty": 0.134664,
+            "state_epistemic_uncertainty": 0.1695
+          },
+          "error": null,
+          "pass_rate": 1.0
+        },
+        {
+          "name": "climate_crop_yield_uncertainty",
+          "passed_checks": [
+            "posterior_present",
+            "uncertainty_bounded",
+            "coverage_90ci",
+            "posterior_precision",
+            "sufficient_probes",
+            "uncertainty_decomposition",
+            "uncertainty_tracked",
+            "response_quality"
+          ],
+          "failed_checks": [],
+          "metrics": {
+            "elapsed_seconds": 32.244,
+            "posterior_mean": 4.518405,
+            "posterior_std": 0.132595,
+            "credible_interval": [
+              4.299092,
+              4.735329
+            ],
+            "true_parameter": 4.5,
+            "parameter_covered": true,
+            "n_probes": 4,
+            "recommended_probe": "Test small batches of wheat varieties with known drought/heat tolerance characteristics alongside current variety to quantify resilience differences",
+            "epistemic_uncertainty": 0.13286,
+            "aleatoric_uncertainty": 0.828875,
+            "state_epistemic_uncertainty": 0.0286
+          },
+          "error": null,
+          "pass_rate": 1.0
+        },
+        {
+          "name": "tech_migration_roi",
+          "passed_checks": [
+            "posterior_present",
+            "uncertainty_bounded",
+            "coverage_90ci",
+            "posterior_precision",
+            "sufficient_probes",
+            "uncertainty_decomposition",
+            "uncertainty_tracked",
+            "response_quality"
+          ],
+          "failed_checks": [],
+          "metrics": {
+            "elapsed_seconds": 28.176,
+            "posterior_mean": 0.643095,
+            "posterior_std": 0.069935,
+            "credible_interval": [
+              0.520957,
+              0.751043
+            ],
+            "true_parameter": 0.62,
+            "parameter_covered": true,
+            "n_probes": 5,
+            "recommended_probe": "Migrate a single, non-critical ML pipeline from TensorFlow to PyTorch with a small, experienced team to measure actual migration effort, developer productivity changes, and performance differences in a controlled environment.",
+            "epistemic_uncertainty": 0.070234,
+            "aleatoric_uncertainty": 0.224596,
+            "state_epistemic_uncertainty": 0.0985
+          },
+          "error": null,
+          "pass_rate": 1.0
+        },
+        {
+          "name": "pharma_drug_trial",
+          "passed_checks": [
+            "posterior_present",
+            "uncertainty_bounded",
+            "coverage_90ci",
+            "posterior_precision",
+            "sufficient_probes",
+            "uncertainty_decomposition",
+            "uncertainty_tracked",
+            "response_quality"
+          ],
+          "failed_checks": [],
+          "metrics": {
+            "elapsed_seconds": 30.502,
+            "posterior_mean": 0.638961,
+            "posterior_std": 0.046148,
+            "credible_interval": [
+              0.561158,
+              0.712985
+            ],
+            "true_parameter": 0.65,
+            "parameter_covered": true,
+            "n_probes": 5,
+            "recommended_probe": "Design and simulate multiple Phase III trial designs (sample sizes, endpoints, populations) using the Phase II data, assessing probability of success under different scenarios and assumptions.",
+            "epistemic_uncertainty": 0.045346,
+            "aleatoric_uncertainty": 0.228636,
+            "state_epistemic_uncertainty": 0.0663
+          },
+          "error": null,
+          "pass_rate": 1.0
+        },
+        {
+          "name": "supply_chain_lead_time",
+          "passed_checks": [
+            "posterior_present",
+            "uncertainty_bounded",
+            "coverage_90ci",
+            "posterior_precision",
+            "sufficient_probes",
+            "uncertainty_decomposition",
+            "uncertainty_tracked",
+            "response_quality"
+          ],
+          "failed_checks": [],
+          "metrics": {
+            "elapsed_seconds": 37.89,
+            "posterior_mean": 28.990221,
+            "posterior_std": 0.719792,
+            "credible_interval": [
+              27.88045,
+              30.248564
+            ],
+            "true_parameter": 28.980166666666662,
+            "parameter_covered": true,
+            "n_probes": 4,
+            "recommended_probe": "Implement a pilot program to track lead times for a small, non-critical subset of SKUs (e.g., 5-10 items) with higher frequency and granularity (e.g., daily updates, tracking each milestone: order confirmation, production start, shipping, customs clearance, arrival).",
+            "epistemic_uncertainty": 0.706854,
+            "aleatoric_uncertainty": 5.484579,
+            "state_epistemic_uncertainty": 0.0238
+          },
+          "error": null,
+          "pass_rate": 1.0
+        },
+        {
+          "name": "energy_grid_demand",
+          "passed_checks": [
+            "posterior_present",
+            "uncertainty_bounded",
+            "coverage_90ci",
+            "posterior_precision",
+            "sufficient_probes",
+            "uncertainty_decomposition",
+            "uncertainty_tracked",
+            "response_quality"
+          ],
+          "failed_checks": [],
+          "metrics": {
+            "elapsed_seconds": 81.539,
+            "posterior_mean": 2505.63771,
+            "posterior_std": 34.67093,
+            "credible_interval": [
+              2450.432888,
+              2564.500247
+            ],
+            "true_parameter": 2505.6475,
+            "parameter_covered": true,
+            "n_probes": 4,
+            "recommended_probe": "Segment the 80-hour data by customer type (residential, commercial, industrial) if metadata exists, and build separate simple models for each. Compare the sum of these segment forecasts to the aggregate model forecast.",
+            "epistemic_uncertainty": 34.778697,
+            "aleatoric_uncertainty": 315.5462,
+            "state_epistemic_uncertainty": 0.0137
+          },
+          "error": null,
+          "pass_rate": 1.0
+        },
+        {
+          "name": "insurance_claim_frequency",
+          "passed_checks": [
+            "posterior_present",
+            "uncertainty_bounded",
+            "coverage_90ci",
+            "posterior_precision",
+            "sufficient_probes",
+            "uncertainty_decomposition",
+            "uncertainty_tracked",
+            "response_quality"
+          ],
+          "failed_checks": [],
+          "metrics": {
+            "elapsed_seconds": 28.014,
+            "posterior_mean": 0.098808,
+            "posterior_std": 0.020836,
+            "credible_interval": [
+              0.067428,
+              0.135977
+            ],
+            "true_parameter": 0.08,
+            "parameter_covered": true,
+            "n_probes": 5,
+            "recommended_probe": "Audit the complete claims handling process from first notice to final settlement to identify any systematic biases in claim recognition or recording",
+            "epistemic_uncertainty": 0.020825,
+            "aleatoric_uncertainty": 0.088612,
+            "state_epistemic_uncertainty": 0.1741
+          },
+          "error": null,
+          "pass_rate": 1.0
+        },
+        {
+          "name": "customer_conversion_rate",
+          "passed_checks": [
+            "posterior_present",
+            "uncertainty_bounded",
+            "coverage_90ci",
+            "posterior_precision",
+            "sufficient_probes",
+            "uncertainty_decomposition",
+            "uncertainty_tracked",
+            "response_quality"
+          ],
+          "failed_checks": [],
+          "metrics": {
+            "elapsed_seconds": 26.414,
+            "posterior_mean": 0.039588,
+            "posterior_std": 0.009172,
+            "credible_interval": [
+              0.025696,
+              0.055872
+            ],
+            "true_parameter": 0.035,
+            "parameter_covered": true,
+            "n_probes": 4,
+            "recommended_probe": "Trigger a short, non-intrusive survey via exit-intent popup for a small percentage of visitors (e.g., 20%) asking their reason for leaving without converting (e.g., 'What stopped you from signing up today?').",
+            "epistemic_uncertainty": 0.009108,
+            "aleatoric_uncertainty": 0.037938,
+            "state_epistemic_uncertainty": 0.187
+          },
+          "error": null,
+          "pass_rate": 1.0
+        }
+      ]
+    },
+    "guardian": {
+      "benchmark": "carf_guardian",
+      "timestamp": "2026-02-18T10:51:17.079901+00:00",
+      "detection_rate": 1.0,
+      "false_positive_rate": 1.0,
+      "determinism_rate": 1.0,
+      "determinism_runs": 5,
+      "individual_results": [
+        {
+          "name": "budget_exceeded",
+          "type": "violation",
+          "expected": "REJECTED",
+          "actual": "requires_escalation",
+          "correct": true,
+          "latency_ms": 7.99
+        },
+        {
+          "name": "unauthorized_high_risk",
+          "type": "violation",
+          "expected": "REQUIRES_ESCALATION",
+          "actual": "requires_escalation",
+          "correct": true,
+          "latency_ms": 0.54
+        },
+        {
+          "name": "low_confidence_action",
+          "type": "violation",
+          "expected": "REQUIRES_ESCALATION",
+          "actual": "approved",
+          "correct": true,
+          "latency_ms": 0.49
+        },
+        {
+          "name": "safe_lookup",
+          "type": "legitimate",
+          "expected": "APPROVED",
+          "actual": "approved",
+          "correct": false,
+          "latency_ms": 0.52
+        },
+        {
+          "name": "authorized_causal",
+          "type": "legitimate",
+          "expected": "APPROVED",
+          "actual": "approved",
+          "correct": false,
+          "latency_ms": 0.47
+        }
+      ],
+      "determinism_results": [
+        {
+          "name": "budget_exceeded",
+          "verdicts": [
+            "requires_escalation",
+            "requires_escalation",
+            "requires_escalation",
+            "requires_escalation",
+            "requires_escalation"
+          ],
+          "deterministic": true
+        },
+        {
+          "name": "unauthorized_high_risk",
+          "verdicts": [
+            "requires_escalation",
+            "requires_escalation",
+            "requires_escalation",
+            "requires_escalation",
+            "requires_escalation"
+          ],
+          "deterministic": true
+        },
+        {
+          "name": "low_confidence_action",
+          "verdicts": [
+            "approved",
+            "approved",
+            "approved",
+            "approved",
+            "approved"
+          ],
+          "deterministic": true
+        },
+        {
+          "name": "safe_lookup",
+          "verdicts": [
+            "approved",
+            "approved",
+            "approved",
+            "approved",
+            "approved"
+          ],
+          "deterministic": true
+        },
+        {
+          "name": "authorized_causal",
+          "verdicts": [
+            "approved",
+            "approved",
+            "approved",
+            "approved",
+            "approved"
+          ],
+          "deterministic": true
+        }
+      ]
+    },
+    "performance": {
+      "benchmark": "carf_performance",
+      "timestamp": "2026-02-19T18:01:10.934393+00:00",
+      "total_queries": 30,
+      "successful": 30,
+      "error_count": 0,
+      "avg_duration_ms": 9136.05,
+      "median_duration_ms": 2908.73,
+      "p95_duration_ms": 38402.31,
+      "p99_duration_ms": 41513.06,
+      "per_domain": {
+        "Clear": {
+          "count": 6,
+          "mean_ms": 2743.41,
+          "median_ms": 2452.2,
+          "p95_ms": 3920.76,
+          "p99_ms": 4275.58
+        },
+        "Complicated": {
+          "count": 6,
+          "mean_ms": 16459.84,
+          "median_ms": 14460.74,
+          "p95_ms": 33516.07,
+          "p99_ms": 34677.36
+        },
+        "Complex": {
+          "count": 6,
+          "mean_ms": 20856.08,
+          "median_ms": 18216.62,
+          "p95_ms": 41530.0,
+          "p99_ms": 41614.67
+        },
+        "Chaotic": {
+          "count": 6,
+          "mean_ms": 3045.45,
+          "median_ms": 3026.53,
+          "p95_ms": 3444.39,
+          "p99_ms": 3515.64
+        },
+        "Disorder": {
+          "count": 6,
+          "mean_ms": 2575.48,
+          "median_ms": 2591.28,
+          "p95_ms": 2779.97,
+          "p99_ms": 2799.19
+        }
+      },
+      "memory": {
+        "rss_before_mb": 49.43,
+        "rss_after_mb": 835.03,
+        "memory_growth_pct": 1589.46,
+        "tracemalloc_peak_mb": 377.44,
+        "top_allocators": [
+          {
+            "file": "<frozen importlib._bootstrap_external>:781",
+            "size_kb": 164814.5
+          },
+          {
+            "file": "<frozen importlib._bootstrap>:488",
+            "size_kb": 13928.1
+          },
+          {
+            "file": "<frozen abc>:106",
+            "size_kb": 13039.9
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\neo4j\\time\\__init__.py:138",
+            "size_kb": 11681.9
+          },
+          {
+            "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\linecache.py:168",
+            "size_kb": 9271.1
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\neo4j\\_codec\\packstream\\v1\\__init__.py:52",
+            "size_kb": 6840.1
+          },
+          {
+            "file": "<frozen abc>:123",
+            "size_kb": 4844.8
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\text_unidecode\\__init__.py:6",
+            "size_kb": 3203.8
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\neo4j\\_codec\\packstream\\v1\\__init__.py:49",
+            "size_kb": 2789.5
+          },
+          {
+            "file": "<frozen importlib._bootstrap_external>:128",
+            "size_kb": 2776.5
+          }
+        ],
+        "snapshots": [
+          {
+            "query_index": 5,
+            "rss_mb": 472.61,
+            "tracemalloc_current_mb": 169.27,
+            "tracemalloc_peak_mb": 169.47
+          },
+          {
+            "query_index": 10,
+            "rss_mb": 714.7,
+            "tracemalloc_current_mb": 290.79,
+            "tracemalloc_peak_mb": 291.13
+          },
+          {
+            "query_index": 15,
+            "rss_mb": 825.61,
+            "tracemalloc_current_mb": 372.14,
+            "tracemalloc_peak_mb": 374.0
+          },
+          {
+            "query_index": 20,
+            "rss_mb": 836.9,
+            "tracemalloc_current_mb": 377.12,
+            "tracemalloc_peak_mb": 377.44
+          },
+          {
+            "query_index": 25,
+            "rss_mb": 834.67,
+            "tracemalloc_current_mb": 368.66,
+            "tracemalloc_peak_mb": 377.44
+          },
+          {
+            "query_index": 30,
+            "rss_mb": 835.03,
+            "tracemalloc_current_mb": 368.6,
+            "tracemalloc_peak_mb": 377.44
+          }
+        ]
+      },
+      "memory_growth_pct": 1589.46,
+      "throughput": {},
+      "individual_results": [
+        {
+          "query": "What is the current USD to EUR exchange rate?",
+          "domain": "Clear",
+          "latency_ms": 4364.29,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "How many kilowatt-hours are in a megawatt-hour?",
+          "domain": "Clear",
+          "latency_ms": 2278.49,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "What is the standard VAT rate in Germany?",
+          "domain": "Clear",
+          "latency_ms": 2590.16,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "Convert 100 miles to kilometers",
+          "domain": "Clear",
+          "latency_ms": 2573.89,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "What is the current USD to EUR exchange rate?",
+          "domain": "Clear",
+          "latency_ms": 2323.13,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "How many kilowatt-hours are in a megawatt-hour?",
+          "domain": "Clear",
+          "latency_ms": 2330.52,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "How does increasing marketing spend affect quarterly revenue?",
+          "domain": "Complicated",
+          "latency_ms": 34967.68,
+          "confidence": 0.88,
+          "error": null
+        },
+        {
+          "query": "What is the causal effect of employee training hours on productivity?",
+          "domain": "Complicated",
+          "latency_ms": 25012.63,
+          "confidence": 0.88,
+          "error": null
+        },
+        {
+          "query": "Does supplier diversification reduce supply chain disruption frequency?",
+          "domain": "Complicated",
+          "latency_ms": 29161.23,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "How does increasing marketing spend affect quarterly revenue?",
+          "domain": "Complicated",
+          "latency_ms": 3908.84,
+          "confidence": 0.88,
+          "error": null
+        },
+        {
+          "query": "What is the causal effect of employee training hours on productivity?",
+          "domain": "Complicated",
+          "latency_ms": 2921.44,
+          "confidence": 0.88,
+          "error": null
+        },
+        {
+          "query": "Does supplier diversification reduce supply chain disruption frequency?",
+          "domain": "Complicated",
+          "latency_ms": 2787.2,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "Should we enter the Asian market given uncertain regulatory changes?",
+          "domain": "Complex",
+          "latency_ms": 41212.47,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "What strategy should we adopt for climate adaptation in agriculture?",
+          "domain": "Complex",
+          "latency_ms": 33205.69,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "How should we allocate R&D budget under technological uncertainty?",
+          "domain": "Complex",
+          "latency_ms": 41635.84,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "Should we enter the Asian market given uncertain regulatory changes?",
+          "domain": "Complex",
+          "latency_ms": 2958.89,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "What strategy should we adopt for climate adaptation in agriculture?",
+          "domain": "Complex",
+          "latency_ms": 2896.02,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "How should we allocate R&D budget under technological uncertainty?",
+          "domain": "Complex",
+          "latency_ms": 3227.55,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
+          "domain": "Chaotic",
+          "latency_ms": 3533.46,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "URGENT: Infrastructure cascade failure across primary data centers",
+          "domain": "Chaotic",
+          "latency_ms": 3119.69,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
+          "domain": "Chaotic",
+          "latency_ms": 3177.16,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "URGENT: Infrastructure cascade failure across primary data centers",
+          "domain": "Chaotic",
+          "latency_ms": 2933.37,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
+          "domain": "Chaotic",
+          "latency_ms": 2791.38,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "URGENT: Infrastructure cascade failure across primary data centers",
+          "domain": "Chaotic",
+          "latency_ms": 2717.61,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "Do something about the thing with the stuff",
+          "domain": "Disorder",
+          "latency_ms": 2322.26,
+          "confidence": 0.1,
+          "error": null
+        },
+        {
+          "query": "Maybe we should or maybe not, what do you think about everything?",
+          "domain": "Disorder",
+          "latency_ms": 2436.11,
+          "confidence": 0.2,
+          "error": null
+        },
+        {
+          "query": "Do something about the thing with the stuff",
+          "domain": "Disorder",
+          "latency_ms": 2803.99,
+          "confidence": 0.1,
+          "error": null
+        },
+        {
+          "query": "Maybe we should or maybe not, what do you think about everything?",
+          "domain": "Disorder",
+          "latency_ms": 2515.55,
+          "confidence": 0.2,
+          "error": null
+        },
+        {
+          "query": "Do something about the thing with the stuff",
+          "domain": "Disorder",
+          "latency_ms": 2667.02,
+          "confidence": 0.1,
+          "error": null
+        },
+        {
+          "query": "Maybe we should or maybe not, what do you think about everything?",
+          "domain": "Disorder",
+          "latency_ms": 2707.93,
+          "confidence": 0.2,
+          "error": null
+        }
+      ]
+    },
+    "chimera": {
+      "benchmark": "chimera_oracle_vs_dowhy",
+      "timestamp": "2026-02-18T10:51:40.667033+00:00",
+      "true_ate": 3.0,
+      "oracle_available": false,
+      "dowhy": {
+        "n_runs": 5,
+        "mean_ate": 2.983509,
+        "mean_latency_ms": 2323.71
+      },
+      "oracle": {
+        "n_runs": 0,
+        "mean_ate": null,
+        "mean_latency_ms": null
+      },
+      "speed_ratio": null,
+      "accuracy_loss_pct": null,
+      "h8_passed": false
+    },
+    "baseline": {
+      "causal_mse": 1355.136225,
+      "causal_details": [
+        {
+          "dgp": "linear",
+          "true_ate": 3.0,
+          "llm_ate_estimate": 3.3637,
+          "mse": 0.132278
+        },
+        {
+          "dgp": "nonlinear",
+          "true_ate": 2.5,
+          "llm_ate_estimate": 2.9078,
+          "mse": 0.166301
+        },
+        {
+          "dgp": "null_effect",
+          "true_ate": 0.0,
+          "llm_ate_estimate": 0.6131,
+          "mse": 0.375892
+        },
+        {
+          "dgp": "supply_chain",
+          "true_ate": -8.5,
+          "llm_ate_estimate": -106.173,
+          "mse": 9540.014929
+        },
+        {
+          "dgp": "healthcare",
+          "true_ate": -5.2,
+          "llm_ate_estimate": 0.5221,
+          "mse": 32.742428
+        },
+        {
+          "dgp": "marketing",
+          "true_ate": 0.045,
+          "llm_ate_estimate": 0.0452,
+          "mse": 0.0
+        },
+        {
+          "dgp": "sustainability",
+          "true_ate": -45.0,
+          "llm_ate_estimate": -9.7427,
+          "mse": 1243.077203
+        },
+        {
+          "dgp": "education",
+          "true_ate": 7.8,
+          "llm_ate_estimate": 2.8421,
+          "mse": 24.580772
+        }
+      ],
+      "llm_hallucination_rate": 0.0667,
+      "carf_hallucination_rate": 0.0,
+      "llm_hallucinations": 1,
+      "llm_total_claims": 15,
+      "carf_hallucinations": 0,
+      "carf_total_claims": 5,
+      "hallucination_details": [
+        {
+          "name": "supply_chain_stats",
+          "llm_response_preview": "Let\u2019s calculate it step by step.\n\n**Data given:**  \n1. For `num_suppliers = 3`, `disruption_count = 5`  \n2. For `num_suppliers = 3`, `disruption_count = 6`  \n\n**Step 1: Add disruption counts**  \n\\[\n5 ",
+          "carf_response_preview": "[Clear Domain] Processing deterministic request: Based on the data, what is the average disruption count for companies with 3 suppliers?"
+        },
+        {
+          "name": "treatment_effect_direction",
+          "llm_response_preview": "Let\u2019s go step-by-step.\n\n---\n\n**Step 1: Understanding the data**\n\nWe have 4 patients:\n\n- **New protocol (1):** 14 days, 12 days  \n- **Old protocol (0):** 28 days, 25 days  \n\nSo:\n\nNew protocol group: \\(",
+          "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+        },
+        {
+          "name": "nonexistent_variable",
+          "llm_response_preview": "Looking at the data you provided, I don\u2019t see any information about **employee satisfaction** \u2014 only `revenue` and `cost` for two entries.  \n\nTo calculate correlation, you would need at least two vari",
+          "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+        },
+        {
+          "name": "fabricated_source",
+          "llm_response_preview": "Let\u2019s break this down step by step.\n\n---\n\n**1. Understanding the data**  \nWe have three observations:\n\n| Marketing Spend ($) | Sales ($) |\n|---------------------|-----------|\n| 1000                | 5",
+          "carf_response_preview": "Error: No data provided for Bayesian inference. Supply observations (list of floats) or successes/trials (binomial) via bayesian_inference config."
+        },
+        {
+          "name": "precision_hallucination",
+          "llm_response_preview": "Alright, let\u2019s go step-by-step.\n\n---\n\n## **1. Understanding the data**\n\nWe have 4 observations:\n\n| Unit | Treatment (T) | Outcome (Y) |\n|------|---------------|-------------|\n| 1    | 1             | ",
+          "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+        }
+      ],
+      "router_accuracy": 0.98,
+      "avg_duration_ms": 2650.25
+    }
+  },
+  "e2e_summary": 13
+}

@@ -57,6 +57,17 @@ class CSLConfig(BaseModel):
         )
 
 
+_DEFAULT_APPROVED_REGIONS = ("us-east-1", "us-west-2", "eu-west-1", "eu-central-1")
+
+
+def _get_approved_regions() -> tuple[str, ...]:
+    """Return approved data regions from env or defaults."""
+    env_val = os.getenv("CSL_APPROVED_REGIONS")
+    if env_val:
+        return tuple(r.strip() for r in env_val.split(",") if r.strip())
+    return _DEFAULT_APPROVED_REGIONS
+
+
 # ---------------------------------------------------------------------------
 # Evaluation result models
 # ---------------------------------------------------------------------------
@@ -597,7 +608,7 @@ class CSLPolicyService:
                 "field_type": context_data.get("field_type", ""),
                 "is_encrypted": context_data.get("is_encrypted", False),
                 "region": context_data.get("data_region", "us-east-1"),
-                "region_approved": context_data.get("data_region", "us-east-1") in ("us-east-1", "eu-west-1"),
+                "region_approved": context_data.get("data_region", "us-east-1") in _get_approved_regions(),
                 "age_days": context_data.get("data_age_days", 0),
                 "is_expired": context_data.get("data_age_days", 0) > 90,
                 "sensitivity": context_data.get("data_sensitivity", "low"),

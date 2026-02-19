@@ -136,6 +136,30 @@ class TestLLMProvider:
         """Test OpenAI provider value."""
         assert LLMProvider.OPENAI.value == "openai"
 
+    def test_anthropic_value(self):
+        """Test Anthropic provider value."""
+        assert LLMProvider.ANTHROPIC.value == "anthropic"
+
+    def test_google_value(self):
+        """Test Google provider value."""
+        assert LLMProvider.GOOGLE.value == "google"
+
+    def test_mistral_value(self):
+        """Test Mistral provider value."""
+        assert LLMProvider.MISTRAL.value == "mistral"
+
+    def test_ollama_value(self):
+        """Test Ollama provider value."""
+        assert LLMProvider.OLLAMA.value == "ollama"
+
+    def test_together_value(self):
+        """Test Together provider value."""
+        assert LLMProvider.TOGETHER.value == "together"
+
+    def test_all_seven_providers_exist(self):
+        """Test all 7 providers are defined."""
+        assert len(LLMProvider) == 7
+
 
 class TestLLMConfig:
     """Tests for LLMConfig model."""
@@ -178,12 +202,26 @@ class TestLLMConfig:
 class TestProviderConfigs:
     """Tests for PROVIDER_CONFIGS."""
 
+    def test_all_providers_have_configs(self):
+        """Test every LLMProvider has an entry in PROVIDER_CONFIGS."""
+        for provider in LLMProvider:
+            assert provider in PROVIDER_CONFIGS, f"Missing config for {provider.value}"
+
+    def test_all_configs_have_required_keys(self):
+        """Test every config has base_url, default_model, env_key, client_type."""
+        for provider, config in PROVIDER_CONFIGS.items():
+            assert "base_url" in config, f"{provider.value} missing base_url"
+            assert "default_model" in config, f"{provider.value} missing default_model"
+            assert "env_key" in config, f"{provider.value} missing env_key"
+            assert "client_type" in config, f"{provider.value} missing client_type"
+
     def test_deepseek_config(self):
         """Test DeepSeek provider config."""
         config = PROVIDER_CONFIGS[LLMProvider.DEEPSEEK]
         assert config["base_url"] == "https://api.deepseek.com"
         assert config["default_model"] == "deepseek-chat"
         assert config["env_key"] == "DEEPSEEK_API_KEY"
+        assert config["client_type"] == "openai_compat"
 
     def test_openai_config(self):
         """Test OpenAI provider config."""
@@ -191,6 +229,42 @@ class TestProviderConfigs:
         assert config["base_url"] is None
         assert config["default_model"] == "gpt-4o-mini"
         assert config["env_key"] == "OPENAI_API_KEY"
+        assert config["client_type"] == "openai_compat"
+
+    def test_anthropic_config(self):
+        """Test Anthropic provider config."""
+        config = PROVIDER_CONFIGS[LLMProvider.ANTHROPIC]
+        assert config["client_type"] == "anthropic"
+        assert config["env_key"] == "ANTHROPIC_API_KEY"
+        assert "claude" in config["default_model"]
+
+    def test_google_config(self):
+        """Test Google provider config."""
+        config = PROVIDER_CONFIGS[LLMProvider.GOOGLE]
+        assert config["client_type"] == "google"
+        assert config["env_key"] == "GOOGLE_API_KEY"
+        assert "gemini" in config["default_model"]
+
+    def test_mistral_config(self):
+        """Test Mistral provider config."""
+        config = PROVIDER_CONFIGS[LLMProvider.MISTRAL]
+        assert config["client_type"] == "openai_compat"
+        assert config["env_key"] == "MISTRAL_API_KEY"
+        assert "mistral.ai" in config["base_url"]
+
+    def test_ollama_config(self):
+        """Test Ollama provider config."""
+        config = PROVIDER_CONFIGS[LLMProvider.OLLAMA]
+        assert config["client_type"] == "openai_compat"
+        assert config["env_key"] is None  # No API key needed
+        assert "localhost" in config["base_url"]
+
+    def test_together_config(self):
+        """Test Together provider config."""
+        config = PROVIDER_CONFIGS[LLMProvider.TOGETHER]
+        assert config["client_type"] == "openai_compat"
+        assert config["env_key"] == "TOGETHER_API_KEY"
+        assert "together.xyz" in config["base_url"]
 
 
 class TestGetLLMConfig:
@@ -207,6 +281,20 @@ class TestGetLLMConfig:
         with patch.dict(os.environ, {"LLM_PROVIDER": "openai"}, clear=True):
             config = get_llm_config()
             assert config.provider == LLMProvider.OPENAI
+
+    def test_anthropic_provider_from_env(self):
+        """Test setting Anthropic provider from environment."""
+        with patch.dict(os.environ, {"LLM_PROVIDER": "anthropic", "ANTHROPIC_API_KEY": "sk-ant-test"}, clear=True):
+            config = get_llm_config()
+            assert config.provider == LLMProvider.ANTHROPIC
+            assert config.api_key == "sk-ant-test"
+
+    def test_ollama_provider_no_key_needed(self):
+        """Test Ollama provider doesn't require an API key."""
+        with patch.dict(os.environ, {"LLM_PROVIDER": "ollama"}, clear=True):
+            config = get_llm_config()
+            assert config.provider == LLMProvider.OLLAMA
+            assert config.api_key is None  # No key needed
 
     def test_invalid_provider_defaults_to_deepseek(self):
         """Test invalid provider defaults to DeepSeek."""
@@ -275,3 +363,73 @@ class TestGetExplorerModel:
             model = get_explorer_model()
             assert isinstance(model, _FakeChatModel)
             assert model.purpose == "bayesian_explorer"
+
+
+class TestFactoryDispatch:
+    """Tests for get_chat_model provider dispatch."""
+
+    def test_openai_compat_creates_chatopenai(self):
+        """Test openai_compat client_type returns ChatOpenAI."""
+        from langchain_openai import ChatOpenAI
+
+        with patch.dict(os.environ, {"LLM_PROVIDER": "deepseek", "DEEPSEEK_API_KEY": "sk-test123"}, clear=True):
+            get_chat_model.cache_clear()
+            model = get_chat_model(purpose="test_openai_compat")
+            assert isinstance(model, ChatOpenAI)
+
+    def test_ollama_no_key_creates_chatopenai(self):
+        """Test Ollama creates ChatOpenAI with placeholder key."""
+        from langchain_openai import ChatOpenAI
+
+        with patch.dict(os.environ, {"LLM_PROVIDER": "ollama"}, clear=True):
+            get_chat_model.cache_clear()
+            model = get_chat_model(purpose="test_ollama")
+            assert isinstance(model, ChatOpenAI)
+
+    def test_anthropic_dispatch(self):
+        """Test Anthropic dispatch creates ChatAnthropic (or raises ImportError)."""
+        with patch.dict(os.environ, {"LLM_PROVIDER": "anthropic", "ANTHROPIC_API_KEY": "sk-ant-test123"}, clear=True):
+            get_chat_model.cache_clear()
+            try:
+                model = get_chat_model(purpose="test_anthropic")
+                # If langchain-anthropic is installed, verify it's the right type
+                from langchain_anthropic import ChatAnthropic
+                assert isinstance(model, ChatAnthropic)
+            except ImportError as e:
+                assert "langchain-anthropic" in str(e)
+
+    def test_google_dispatch(self):
+        """Test Google dispatch creates ChatGoogleGenerativeAI (or raises ImportError)."""
+        with patch.dict(os.environ, {"LLM_PROVIDER": "google", "GOOGLE_API_KEY": "AItest123456789012345"}, clear=True):
+            get_chat_model.cache_clear()
+            try:
+                model = get_chat_model(purpose="test_google")
+                from langchain_google_genai import ChatGoogleGenerativeAI
+                assert isinstance(model, ChatGoogleGenerativeAI)
+            except ImportError as e:
+                assert "langchain-google-genai" in str(e)
+
+    def test_missing_key_raises_valueerror(self):
+        """Test missing API key raises ValueError."""
+        with patch.dict(os.environ, {"LLM_PROVIDER": "openai"}, clear=True):
+            get_chat_model.cache_clear()
+            with pytest.raises(ValueError, match="No API key found"):
+                get_chat_model(purpose="test_missing_key")
+
+    def test_mistral_creates_chatopenai(self):
+        """Test Mistral uses openai_compat path."""
+        from langchain_openai import ChatOpenAI
+
+        with patch.dict(os.environ, {"LLM_PROVIDER": "mistral", "MISTRAL_API_KEY": "test-key-123456789012345"}, clear=True):
+            get_chat_model.cache_clear()
+            model = get_chat_model(purpose="test_mistral")
+            assert isinstance(model, ChatOpenAI)
+
+    def test_together_creates_chatopenai(self):
+        """Test Together uses openai_compat path."""
+        from langchain_openai import ChatOpenAI
+
+        with patch.dict(os.environ, {"LLM_PROVIDER": "together", "TOGETHER_API_KEY": "test-key-123456789012345"}, clear=True):
+            get_chat_model.cache_clear()
+            model = get_chat_model(purpose="test_together")
+            assert isinstance(model, ChatOpenAI)

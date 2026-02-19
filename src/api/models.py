@@ -413,12 +413,24 @@ class BenchmarkResult(BaseModel):
 
     benchmark_id: str
     passed: bool
+    # --- Causal-specific (existing, keep for backward compat) ---
     actual_effect: float | None = None
     expected_range: list[float] | None = None
     actual_confidence: float | None = None
     expected_confidence_min: float | None = None
     effect_direction_match: bool | None = None
+    # --- Domain-generic ---
+    actual_domain: str | None = None
+    expected_domain: str | None = None
+    domain_match: bool | None = None
+    escalation_triggered: bool | None = None
+    expected_escalation: bool | None = None
+    action_type: str | None = None
+    expected_action_type: str | None = None
+    pipeline_duration_ms: float | None = None
+    # --- Summary ---
     message: str
+    validation_details: dict[str, Any] | None = None
 
 
 # ── Simulation models ─────────────────────────────────────────────────────

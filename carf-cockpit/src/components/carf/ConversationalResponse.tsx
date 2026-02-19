@@ -39,7 +39,7 @@ const ConversationalResponse: React.FC<ConversationalResponseProps> = ({
         if (response.causalResult) {
             const cr = response.causalResult;
             highItems.push({
-                text: `Effect of ${cr.treatment} on ${cr.outcome}: ${cr.effect != null && cr.effect > 0 ? '+' : ''}${cr.effect?.toFixed(2) ?? 'N/A'} ${cr.unit}`,
+                text: `Effect of ${cr.treatment ?? 'treatment'} on ${cr.outcome ?? 'outcome'}: ${cr.effect != null && cr.effect > 0 ? '+' : ''}${cr.effect?.toFixed(2) ?? 'N/A'} ${cr.unit ?? ''}`,
                 action: { label: 'View Methodology', onClick: () => onViewMethodology('causal') },
             });
             highItems.push({
@@ -120,7 +120,7 @@ const ConversationalResponse: React.FC<ConversationalResponseProps> = ({
         response.domain,
         response.causalResult?.treatment,
         response.causalResult?.outcome,
-        response.causalResult?.confoundersControlled.filter(c => c.controlled).map(c => c.name)
+        response.causalResult?.confoundersControlled?.filter(c => c.controlled).map(c => c.name)
     );
 
     const getZoneStyles = (level: string) => {

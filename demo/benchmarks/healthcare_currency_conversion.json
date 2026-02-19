@@ -1,0 +1,31 @@
+{
+    "id": "healthcare_currency_conversion",
+    "name": "Healthcare Budget Currency Conversion",
+    "description": "Deterministic conversion of healthcare budget from EUR to USD using known exchange rate",
+    "domain": "healthcare",
+    "expected_classification": "clear",
+    "query": "Convert a healthcare budget of 500,000 EUR to USD at the current exchange rate of 1.08",
+    "context": {
+        "type": "deterministic_calculation",
+        "formula": "usd_amount = eur_amount * exchange_rate",
+        "eur_amount": 500000,
+        "exchange_rate": 1.08
+    },
+    "data": [],
+    "expected_results": {
+        "domain": "Clear",
+        "requires_human": false,
+        "has_response": true,
+        "response_contains": [
+            "540000",
+            "conversion",
+            "USD"
+        ]
+    },
+    "validation_criteria": {
+        "domain_match": true,
+        "confidence_min": 0.8,
+        "action_type": "lookup",
+        "should_escalate": false
+    }
+}

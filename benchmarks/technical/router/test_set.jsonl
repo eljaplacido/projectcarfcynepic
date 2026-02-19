@@ -1,0 +1,456 @@
+{"query": "What is 2+2?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Convert 100 USD to EUR at rate 0.92", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "What is the boiling point of water in Celsius?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Look up the current exchange rate for GBP to USD", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "What day of the week is January 1, 2026?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Calculate 15% tip on a $85 bill", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "What is the square root of 144?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Convert 5 miles to kilometers", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "What is the ISO country code for Germany?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "How many days are in February 2024?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Look up customer ID 12345 in the database", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "Get current stock price for AAPL", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "Retrieve order status for order #789", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What is our current inventory level for SKU-100?", "domain": "clear", "industry": "supply_chain", "confidence": 1.0}
+{"query": "Show the last 5 transactions for account 9876", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "What is the current server CPU utilization?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "List all employees in the marketing department", "domain": "clear", "industry": "hr", "confidence": 1.0}
+{"query": "What is the shipping cost for a 5kg package to France?", "domain": "clear", "industry": "logistics", "confidence": 1.0}
+{"query": "Show the current balance for account 456", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "What are our business hours on weekends?", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What is the standard dosage of ibuprofen for adults?", "domain": "clear", "industry": "healthcare", "confidence": 1.0}
+{"query": "Look up the ICD-10 code for type 2 diabetes", "domain": "clear", "industry": "healthcare", "confidence": 1.0}
+{"query": "What is the normal range for blood pressure?", "domain": "clear", "industry": "healthcare", "confidence": 1.0}
+{"query": "Find patient record for MRN 112233", "domain": "clear", "industry": "healthcare", "confidence": 1.0}
+{"query": "What vaccines are required for travel to Brazil?", "domain": "clear", "industry": "healthcare", "confidence": 1.0}
+{"query": "What is the energy output of a 100kW solar panel in 1 hour?", "domain": "clear", "industry": "energy", "confidence": 1.0}
+{"query": "Convert 500 BTU to kilowatt-hours", "domain": "clear", "industry": "energy", "confidence": 1.0}
+{"query": "What is the current grid frequency standard in Europe?", "domain": "clear", "industry": "energy", "confidence": 1.0}
+{"query": "Look up the melting point of steel", "domain": "clear", "industry": "manufacturing", "confidence": 1.0}
+{"query": "What is the chemical formula for methane?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "What is the default port for PostgreSQL?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What version of Python are we running in production?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the API rate limit for our Stripe account?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "Show the current DNS records for example.com", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the maximum file upload size?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the GDPR data retention period for marketing data?", "domain": "clear", "industry": "compliance", "confidence": 1.0}
+{"query": "What is the minimum capital requirement for Basel III?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "What is the current EU ETS carbon price per tonne?", "domain": "clear", "industry": "sustainability", "confidence": 1.0}
+{"query": "What tax rate applies to income over $100,000 in California?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "What is the statutory notice period for employee termination in the UK?", "domain": "clear", "industry": "hr", "confidence": 1.0}
+{"query": "Check the weather forecast for London today", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "What time does the stock market close in New York?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "Show the latest backup status for the production database", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the distance from New York to London?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "List the ingredients in our best-selling product", "domain": "clear", "industry": "manufacturing", "confidence": 1.0}
+{"query": "What is our current SLA uptime percentage?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "Show the current queue length for support tickets", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What was our total revenue last quarter?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "What is the current price of crude oil per barrel?", "domain": "clear", "industry": "energy", "confidence": 1.0}
+{"query": "How many units did we ship last month?", "domain": "clear", "industry": "supply_chain", "confidence": 1.0}
+{"query": "What is the VAT rate in Germany?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "Look up the flight status for BA123", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What is the Wi-Fi password for the guest network?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "Check if the SSL certificate for api.example.com is valid", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the formula for calculating compound interest?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "Show the latest quarterly earnings for MSFT", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "What is the atomic number of carbon?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Look up the tracking number for shipment SH-456", "domain": "clear", "industry": "logistics", "confidence": 1.0}
+{"query": "What is the recommended tire pressure for a Toyota Camry?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Convert 20 degrees Celsius to Fahrenheit", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "What is the population of Tokyo?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Get the current humidity reading from sensor #7", "domain": "clear", "industry": "manufacturing", "confidence": 1.0}
+{"query": "What is the maximum occupancy for conference room B?", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "Show the current pipeline throughput in barrels per hour", "domain": "clear", "industry": "energy", "confidence": 1.0}
+{"query": "What is the density of aluminum?", "domain": "clear", "industry": "manufacturing", "confidence": 1.0}
+{"query": "How many calories are in 100g of chicken breast?", "domain": "clear", "industry": "healthcare", "confidence": 1.0}
+{"query": "What is the standard deviation of our last 30 daily returns?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "Check if user admin@company.com has MFA enabled", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the current disk space usage on server prod-01?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "How many parking spots are available in lot C?", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What is the pH of pure water?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Look up the warranty status for device SN-789", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What is the minimum order quantity for supplier XYZ?", "domain": "clear", "industry": "supply_chain", "confidence": 1.0}
+{"query": "Check the status of Jenkins build #1234", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the speed of light in meters per second?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Show the current fuel level in tank #3", "domain": "clear", "industry": "energy", "confidence": 1.0}
+{"query": "What is the current headcount for the engineering team?", "domain": "clear", "industry": "hr", "confidence": 1.0}
+{"query": "Check the expiry date for SSL cert on portal.example.com", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the Unicode value of the letter A?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "How many items are currently in the return queue?", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What is our current NPS score?", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "Show the latest audit log entries for user john.doe", "domain": "clear", "industry": "compliance", "confidence": 1.0}
+{"query": "What is the freezing point of ethanol?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Look up the routing number for Bank of America", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "How much RAM is installed on server db-primary?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the maximum payload for our REST API?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "Show the current reactor temperature in zone 4", "domain": "clear", "industry": "manufacturing", "confidence": 1.0}
+{"query": "What are the opening hours for our Tokyo office?", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What is the spot price of gold per ounce?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "How many active user sessions are there right now?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What color is our corporate logo?", "domain": "clear", "industry": "general", "confidence": 1.0}
+{"query": "Check the battery level of IoT device 0x4F2A", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the annual depreciation rate for IT equipment?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "Show the number of open pull requests in the main repo", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the pH of our wastewater discharge?", "domain": "clear", "industry": "sustainability", "confidence": 1.0}
+{"query": "How many support agents are currently online?", "domain": "clear", "industry": "operations", "confidence": 1.0}
+{"query": "What is the reorder point for product SKU-200?", "domain": "clear", "industry": "supply_chain", "confidence": 1.0}
+{"query": "Show the latest code coverage report percentage", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What was the closing price of TSLA yesterday?", "domain": "clear", "industry": "finance", "confidence": 1.0}
+{"query": "How many containers are running in the production cluster?", "domain": "clear", "industry": "technology", "confidence": 1.0}
+{"query": "What is the molecular weight of aspirin?", "domain": "clear", "industry": "healthcare", "confidence": 1.0}
+{"query": "What is the causal effect of marketing spend on customer acquisition?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Why did our costs increase by 15% last quarter?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What caused the database query slowdown last week?", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "Analyze the root cause of the production error rate spike", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "What factors are driving customer churn in the premium segment?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Determine the impact of the new pricing strategy on revenue", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What is the causal relationship between employee training hours and productivity?", "domain": "complicated", "industry": "hr", "confidence": 0.9}
+{"query": "Analyze why conversion rates dropped after the UI redesign", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "What caused the increase in supply chain lead times?", "domain": "complicated", "industry": "supply_chain", "confidence": 0.9}
+{"query": "Determine the effect of temperature on manufacturing defect rates", "domain": "complicated", "industry": "manufacturing", "confidence": 0.9}
+{"query": "Optimize the logistics network to reduce delivery times by 20%", "domain": "complicated", "industry": "supply_chain", "confidence": 0.9}
+{"query": "What is the optimal inventory level given seasonal demand patterns?", "domain": "complicated", "industry": "supply_chain", "confidence": 0.9}
+{"query": "Analyze the impact of interest rate changes on our loan portfolio", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Determine the best treatment protocol based on patient demographics", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "What is the effect of renewable energy subsidies on adoption rates?", "domain": "complicated", "industry": "energy", "confidence": 0.9}
+{"query": "Analyze the root cause of the elevated bounce rate on our landing page", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "What explains the difference in outcomes between treatment group A and B?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Determine the optimal pricing for our new SaaS tier", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "Why are our Scope 3 emissions increasing despite supplier programs?", "domain": "complicated", "industry": "sustainability", "confidence": 0.9}
+{"query": "What is the effect of discount offers on customer lifetime value?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Perform a regression analysis of sales against advertising spend", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What variables best predict employee attrition?", "domain": "complicated", "industry": "hr", "confidence": 0.9}
+{"query": "Analyze the correlation between weather patterns and retail sales", "domain": "complicated", "industry": "retail", "confidence": 0.9}
+{"query": "What is the attributable risk of smoking on lung cancer incidence?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Determine the optimal A/B test duration given current sample sizes", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "What is the marginal effect of an additional sales representative?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Analyze the impact of work-from-home policy on team productivity", "domain": "complicated", "industry": "hr", "confidence": 0.9}
+{"query": "What is the dose-response relationship for this medication?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Determine the break-even point for our new product line", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What is the optimal batch size for our machine learning training pipeline?", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "What is the causal effect of supplier diversification on supply chain resilience?", "domain": "complicated", "industry": "supply_chain", "confidence": 0.9}
+{"query": "Analyze the impact of carbon tax on our manufacturing costs", "domain": "complicated", "industry": "sustainability", "confidence": 0.9}
+{"query": "What drives readmission rates in our cardiac surgery department?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Determine the effect of grid modernization on outage frequency", "domain": "complicated", "industry": "energy", "confidence": 0.9}
+{"query": "What explains the variance in loan default rates across regions?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Analyze why certain product categories have higher return rates", "domain": "complicated", "industry": "retail", "confidence": 0.9}
+{"query": "What is the effect of automation on labor costs per unit?", "domain": "complicated", "industry": "manufacturing", "confidence": 0.9}
+{"query": "Determine the causal impact of ESG reporting on investor sentiment", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What factors explain the variation in student test scores?", "domain": "complicated", "industry": "education", "confidence": 0.9}
+{"query": "Analyze the impact of telemedicine on patient outcomes", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "What is the effect of remote work on commercial real estate occupancy?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Analyze the causal chain from raw material prices to product margins", "domain": "complicated", "industry": "manufacturing", "confidence": 0.9}
+{"query": "Why is our customer satisfaction declining despite increased investment?", "domain": "complicated", "industry": "operations", "confidence": 0.9}
+{"query": "Determine the optimal staffing levels for the holiday season", "domain": "complicated", "industry": "retail", "confidence": 0.9}
+{"query": "What explains the geographic disparity in insurance claims?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Analyze the impact of new regulations on compliance costs", "domain": "complicated", "industry": "compliance", "confidence": 0.9}
+{"query": "What caused the spike in error rates after the last deployment?", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "Determine the effect of loyalty programs on repeat purchase rates", "domain": "complicated", "industry": "retail", "confidence": 0.9}
+{"query": "What is the causal effect of air quality on respiratory admissions?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Analyze why certain suppliers consistently deliver late", "domain": "complicated", "industry": "supply_chain", "confidence": 0.9}
+{"query": "What is the effect of page load time on conversion rate?", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "Analyze the impact of oil prices on airline profitability", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What factors contribute to equipment failure in factory line 3?", "domain": "complicated", "industry": "manufacturing", "confidence": 0.9}
+{"query": "Determine the effect of class size on student learning outcomes", "domain": "complicated", "industry": "education", "confidence": 0.9}
+{"query": "What explains differences in mortality rates across hospital wards?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Analyze the impact of trade tariffs on export volumes", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What is the causal effect of vaccination campaigns on disease incidence?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Determine why customer complaints increased in Q3", "domain": "complicated", "industry": "operations", "confidence": 0.9}
+{"query": "What drives differences in credit scores across demographic groups?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Analyze the impact of urbanization on water consumption per capita", "domain": "complicated", "industry": "sustainability", "confidence": 0.9}
+{"query": "What is the effect of minimum wage increases on employment levels?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Determine the root cause of elevated NOx emissions in plant B", "domain": "complicated", "industry": "sustainability", "confidence": 0.9}
+{"query": "Why do some branches consistently outperform others in loan origination?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Analyze the impact of packaging redesign on shelf appeal and sales", "domain": "complicated", "industry": "retail", "confidence": 0.9}
+{"query": "What is the causal pathway from social media engagement to sales?", "domain": "complicated", "industry": "retail", "confidence": 0.9}
+{"query": "Determine why certain customer segments have higher support costs", "domain": "complicated", "industry": "operations", "confidence": 0.9}
+{"query": "What explains the seasonal pattern in our energy consumption?", "domain": "complicated", "industry": "energy", "confidence": 0.9}
+{"query": "Analyze the effect of price elasticity across different markets", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What caused the decline in organ donor registration rates?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Determine the impact of mentor programs on employee retention", "domain": "complicated", "industry": "hr", "confidence": 0.9}
+{"query": "Analyze the causal effect of deforestation on local precipitation", "domain": "complicated", "industry": "sustainability", "confidence": 0.9}
+{"query": "What drives variation in project completion times?", "domain": "complicated", "industry": "operations", "confidence": 0.9}
+{"query": "What is the effect of warehouse layout on picking efficiency?", "domain": "complicated", "industry": "supply_chain", "confidence": 0.9}
+{"query": "Analyze why server response times degrade under moderate load", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "Determine the causal impact of school lunch programs on attendance", "domain": "complicated", "industry": "education", "confidence": 0.9}
+{"query": "What factors explain the disparity in broadband adoption rates?", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "Analyze the effect of noise levels on worker productivity", "domain": "complicated", "industry": "manufacturing", "confidence": 0.9}
+{"query": "What is the causal relationship between rainfall and crop yield?", "domain": "complicated", "industry": "sustainability", "confidence": 0.9}
+{"query": "Determine why patient wait times vary across clinics", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Analyze the impact of fleet electrification on total cost of ownership", "domain": "complicated", "industry": "logistics", "confidence": 0.9}
+{"query": "What explains the variance in insurance premium pricing?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Determine the effect of store location on foot traffic", "domain": "complicated", "industry": "retail", "confidence": 0.9}
+{"query": "Why do treatment adherence rates differ by age group?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Analyze the causal impact of R&D spending on patent filings", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "What factors drive variation in manufacturing cycle times?", "domain": "complicated", "industry": "manufacturing", "confidence": 0.9}
+{"query": "Determine the effect of green building certification on property values", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What caused the recent uptick in fraud attempts?", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Analyze the impact of supplier lead time on inventory holding costs", "domain": "complicated", "industry": "supply_chain", "confidence": 0.9}
+{"query": "What is the effect of commute distance on employee satisfaction?", "domain": "complicated", "industry": "hr", "confidence": 0.9}
+{"query": "Determine why some marketing channels have higher CAC than others", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Analyze the causal relationship between sleep duration and test performance", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "What drives differences in recycling rates across municipalities?", "domain": "complicated", "industry": "sustainability", "confidence": 0.9}
+{"query": "Determine the effect of algorithmic trading on market volatility", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "Why do some product batches have higher defect rates?", "domain": "complicated", "industry": "manufacturing", "confidence": 0.9}
+{"query": "Analyze the impact of transit accessibility on property prices", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What is the causal effect of exercise on blood pressure reduction?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Determine why certain API endpoints have higher error rates", "domain": "complicated", "industry": "technology", "confidence": 0.9}
+{"query": "Analyze the effect of reforestation on carbon sequestration rates", "domain": "complicated", "industry": "sustainability", "confidence": 0.9}
+{"query": "What factors predict successful outcomes in knee replacement surgery?", "domain": "complicated", "industry": "healthcare", "confidence": 0.9}
+{"query": "Determine the optimal maintenance schedule based on failure patterns", "domain": "complicated", "industry": "manufacturing", "confidence": 0.9}
+{"query": "Analyze the impact of digital payments on financial inclusion", "domain": "complicated", "industry": "finance", "confidence": 0.9}
+{"query": "What explains the correlation between education spending and GDP growth?", "domain": "complicated", "industry": "education", "confidence": 0.9}
+{"query": "Will the market recover after the currency crisis? What probes should we run?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How might climate change affect crop yields over the next decade?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What is the likelihood of a successful digital transformation given our current state?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "How should we update our beliefs about customer preferences after the survey?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "What is the probability of a supply chain disruption in the next 6 months?", "domain": "complex", "industry": "supply_chain", "confidence": 0.85}
+{"query": "How might emerging regulations affect our business model?", "domain": "complex", "industry": "compliance", "confidence": 0.85}
+{"query": "What are the possible outcomes of entering the Chinese market?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How should we explore the impact of AI on our workforce planning?", "domain": "complex", "industry": "hr", "confidence": 0.85}
+{"query": "What safe-to-fail experiments could we design to test this strategy?", "domain": "complex", "industry": "operations", "confidence": 0.85}
+{"query": "How might gene therapy adoption evolve over the next 5 years?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "What is the probability distribution of demand for our new product?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "How should we update our risk model given the recent geopolitical events?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What are the emergent patterns in our customer behavior data?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "How might quantum computing affect our encryption strategy?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "What probes should we design to understand this new market segment?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "How should we navigate the uncertainty around Brexit trade impacts?", "domain": "complex", "industry": "supply_chain", "confidence": 0.85}
+{"query": "What experiments would help us understand the adoption curve for this technology?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "How might demographic shifts affect healthcare demand in rural areas?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "What is our belief about the effectiveness of this new intervention?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "How should we explore the relationship between social media and brand loyalty?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "What are the possible failure modes of our new energy storage system?", "domain": "complex", "industry": "energy", "confidence": 0.85}
+{"query": "How uncertain are we about the long-term effects of this policy change?", "domain": "complex", "industry": "compliance", "confidence": 0.85}
+{"query": "What leading indicators might signal a regime change in our market?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How should we adaptively manage this ecosystem restoration project?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What is the probability of achieving our emissions reduction targets?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "How might autonomous vehicles disrupt our logistics operations?", "domain": "complex", "industry": "logistics", "confidence": 0.85}
+{"query": "What experiments should we run to validate our growth hypothesis?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How should we update our pandemic preparedness plan given new variants?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "What is the uncertain impact of remote work on long-term innovation?", "domain": "complex", "industry": "hr", "confidence": 0.85}
+{"query": "How should we explore potential unintended consequences of this merger?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What probes could help us understand the talent market in Southeast Asia?", "domain": "complex", "industry": "hr", "confidence": 0.85}
+{"query": "How might changes in consumer values affect our sustainability strategy?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What is our Bayesian estimate of the true defect rate given limited samples?", "domain": "complex", "industry": "manufacturing", "confidence": 0.85}
+{"query": "How should we explore the viability of hydrogen as an energy source?", "domain": "complex", "industry": "energy", "confidence": 0.85}
+{"query": "What experiments would validate our hypothesis about personalized pricing?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "How might space weather events affect our satellite communications?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "What safe-to-fail probes could we design for testing this new therapy?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "How should we update our beliefs about competitor strategy after their announcement?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What are the emergent risks in our global supply chain network?", "domain": "complex", "industry": "supply_chain", "confidence": 0.85}
+{"query": "How uncertain are we about the return on our renewable energy investments?", "domain": "complex", "industry": "energy", "confidence": 0.85}
+{"query": "What adaptive management strategies suit this conservation effort?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "How might blockchain adoption evolve in our industry over the next 3 years?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "What is the probability of a cybersecurity breach given our current posture?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "How should we probe the unknown effects of microplastics on marine ecosystems?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What experiments could reveal the true impact of our training program?", "domain": "complex", "industry": "hr", "confidence": 0.85}
+{"query": "How should we update our inflation forecast given the latest economic data?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What are the uncertain long-term effects of this medication on elderly patients?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "How might CRISPR technology reshape agricultural practices?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What safe-to-fail experiments would help us test this market entry strategy?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How uncertain are we about the scalability of our current architecture?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "What Bayesian priors should we use for this clinical trial?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "How should we explore the non-linear effects of urbanization?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What probe could test whether this intervention works in developing markets?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How do we quantify the epistemic uncertainty in our climate models?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What are the possible regime shifts in this ecosystem?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "How should we update our revenue forecast given conflicting signals?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What adaptive strategies suit a market with high Knightian uncertainty?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How might ocean acidification affect fisheries production?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What experiments should we design to test our new drug formulation?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "How uncertain is the impact of social determinants on health outcomes?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "What probes could help us understand changing consumer dietary preferences?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "How should we navigate uncertainty about future energy storage costs?", "domain": "complex", "industry": "energy", "confidence": 0.85}
+{"query": "What is our posterior belief about the conversion rate after 500 trials?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "How might permafrost thawing create feedback loops in our climate model?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What adaptive experiments could reveal the true ROI of employee wellness?", "domain": "complex", "industry": "hr", "confidence": 0.85}
+{"query": "How do we probe whether this new material is viable for mass production?", "domain": "complex", "industry": "manufacturing", "confidence": 0.85}
+{"query": "What are the uncertain dynamics of viral content spread?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "How should we update our beliefs about this drug's efficacy given new trial data?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "What adaptive management approach fits this urban rewilding project?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "How uncertain are we about the future price trajectory of lithium?", "domain": "complex", "industry": "energy", "confidence": 0.85}
+{"query": "What experiments test the hypothesis that gamification improves learning?", "domain": "complex", "industry": "education", "confidence": 0.85}
+{"query": "How might the transition to electric vehicles affect oil demand uncertainty?", "domain": "complex", "industry": "energy", "confidence": 0.85}
+{"query": "What is our Bayesian estimate of the true failure rate from 20 samples?", "domain": "complex", "industry": "manufacturing", "confidence": 0.85}
+{"query": "How should we explore the impact of cultural differences on merger integration?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What probes could test whether this soil remediation approach works?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "How uncertain are we about the long-term effects of screen time on children?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "What experiments might reveal hidden patterns in customer churn?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "How should we update our prior beliefs about market entry success rates?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What adaptive strategy would work for managing an evolving pandemic response?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "How might quantum sensors change environmental monitoring approaches?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What safe-to-fail probes could we design for this novel business model?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How uncertain is the projected ROI for our AI initiative?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "What leading indicators should we monitor for an economic downturn?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "How should we explore the unpredictable effects of gene drives on ecosystems?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What adaptive experiments could test the viability of vertical farming?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "How do we quantify our uncertainty about competitor actions?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What probes might reveal the true demand elasticity for our premium tier?", "domain": "complex", "industry": "retail", "confidence": 0.85}
+{"query": "How might changing demographics affect pension fund sustainability?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What Bayesian model should we use for this rare event prediction?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "How uncertain are we about the safety profile of this nanomaterial?", "domain": "complex", "industry": "manufacturing", "confidence": 0.85}
+{"query": "What experiments should we run to probe the viability of fusion energy?", "domain": "complex", "industry": "energy", "confidence": 0.85}
+{"query": "How should we navigate the unknown long-term impacts of PFAS regulation?", "domain": "complex", "industry": "compliance", "confidence": 0.85}
+{"query": "What probes would help quantify the rebound effect of energy efficiency?", "domain": "complex", "industry": "energy", "confidence": 0.85}
+{"query": "How do we update our risk models for emerging threats we haven't seen before?", "domain": "complex", "industry": "finance", "confidence": 0.85}
+{"query": "What experiments could reduce our uncertainty about this supply chain route?", "domain": "complex", "industry": "supply_chain", "confidence": 0.85}
+{"query": "How might antibiotic resistance patterns evolve in the next decade?", "domain": "complex", "industry": "healthcare", "confidence": 0.85}
+{"query": "What safe-to-fail experiments could test our decarbonization strategy?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "How uncertain is the projected timeline for commercial quantum computing?", "domain": "complex", "industry": "technology", "confidence": 0.85}
+{"query": "What probes could help us understand the true impact of our CSR programs?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "How should we explore the emerging dynamics of the circular economy?", "domain": "complex", "industry": "sustainability", "confidence": 0.85}
+{"query": "What adaptive approach is suitable for navigating geopolitical trade uncertainty?", "domain": "complex", "industry": "supply_chain", "confidence": 0.85}
+{"query": "URGENT: Massive data breach detected \u2014 all customer records exposed", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "EMERGENCY: Chemical spill in manufacturing facility, evacuation in progress", "domain": "chaotic", "industry": "manufacturing", "confidence": 0.95}
+{"query": "CRITICAL: Stock price crashed 40% in 5 minutes, trading halted", "domain": "chaotic", "industry": "finance", "confidence": 0.95}
+{"query": "ALERT: Ransomware has encrypted all production servers", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "EMERGENCY: Hospital IT systems down, patient records inaccessible", "domain": "chaotic", "industry": "healthcare", "confidence": 0.95}
+{"query": "URGENT: Massive coordinated fraud \u2014 500 suspicious transactions in 3 minutes", "domain": "chaotic", "industry": "finance", "confidence": 0.95}
+{"query": "CRITICAL: Pipeline rupture detected, environmental contamination imminent", "domain": "chaotic", "industry": "energy", "confidence": 0.95}
+{"query": "EMERGENCY: Power grid cascade failure, 200,000 customers at risk of blackout", "domain": "chaotic", "industry": "energy", "confidence": 0.95}
+{"query": "ALERT: Food contamination detected in shipped products, recall needed immediately", "domain": "chaotic", "industry": "manufacturing", "confidence": 0.95}
+{"query": "CRITICAL: Aircraft systems failure mid-flight, emergency protocols needed NOW", "domain": "chaotic", "industry": "logistics", "confidence": 0.95}
+{"query": "URGENT: Multiple building evacuations due to gas leak in city center", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "EMERGENCY: Dam integrity compromised, downstream flooding imminent", "domain": "chaotic", "industry": "energy", "confidence": 0.95}
+{"query": "CRITICAL: Nuclear reactor cooling system malfunction, containment needed", "domain": "chaotic", "industry": "energy", "confidence": 0.95}
+{"query": "ALERT: Cyberattack on financial infrastructure, transactions frozen", "domain": "chaotic", "industry": "finance", "confidence": 0.95}
+{"query": "URGENT: Earthquake detected near data center, failover required immediately", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "EMERGENCY: Mass casualty event, hospital surge capacity exceeded", "domain": "chaotic", "industry": "healthcare", "confidence": 0.95}
+{"query": "CRITICAL: Entire supply chain halted due to port closure from natural disaster", "domain": "chaotic", "industry": "supply_chain", "confidence": 0.95}
+{"query": "ALERT: Unauthorized access to classified government systems detected", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "URGENT: Bridge structural failure imminent, immediate closure needed", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "EMERGENCY: Toxic gas release from industrial plant, shelter-in-place ordered", "domain": "chaotic", "industry": "manufacturing", "confidence": 0.95}
+{"query": "CRITICAL: Central bank system failure, interbank transfers frozen", "domain": "chaotic", "industry": "finance", "confidence": 0.95}
+{"query": "ALERT: Wildfire approaching server farm, 15 minutes to evacuate", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "URGENT: Active shooter situation at corporate headquarters", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "EMERGENCY: Submarine cable severed, internet connectivity lost for entire region", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "CRITICAL: Vaccine cold chain failure, 1 million doses at risk", "domain": "chaotic", "industry": "healthcare", "confidence": 0.95}
+{"query": "ALERT: Flood waters rising at power plant, generators must be shut down", "domain": "chaotic", "industry": "energy", "confidence": 0.95}
+{"query": "URGENT: Train derailment with hazardous materials, evacuation zone expanding", "domain": "chaotic", "industry": "logistics", "confidence": 0.95}
+{"query": "EMERGENCY: Multiple simultaneous DDoS attacks on all public-facing services", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "CRITICAL: Blood supply contamination detected at regional blood bank", "domain": "chaotic", "industry": "healthcare", "confidence": 0.95}
+{"query": "ALERT: Volcanic eruption affecting air traffic across 5 countries", "domain": "chaotic", "industry": "logistics", "confidence": 0.95}
+{"query": "URGENT: Structural collapse at construction site, workers trapped", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "EMERGENCY: Pandemic variant detected with vaccine resistance, rapid response needed", "domain": "chaotic", "industry": "healthcare", "confidence": 0.95}
+{"query": "CRITICAL: Complete loss of satellite navigation systems, air traffic grounded", "domain": "chaotic", "industry": "logistics", "confidence": 0.95}
+{"query": "ALERT: Flash crash across all cryptocurrency exchanges simultaneously", "domain": "chaotic", "industry": "finance", "confidence": 0.95}
+{"query": "URGENT: Water treatment plant contamination, boil notice for 500,000 residents", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "EMERGENCY: Solar storm damaging power grid transformers across the continent", "domain": "chaotic", "industry": "energy", "confidence": 0.95}
+{"query": "CRITICAL: Massive oil tanker collision in shipping lane, spill spreading", "domain": "chaotic", "industry": "sustainability", "confidence": 0.95}
+{"query": "ALERT: Zero-day exploit actively being used against our authentication system", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "URGENT: Factory robot malfunction injuring workers, production line emergency stop", "domain": "chaotic", "industry": "manufacturing", "confidence": 0.95}
+{"query": "EMERGENCY: Tsunami warning for coastal data centers, immediate action required", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "CRITICAL: Drone swarm detected near airport, all flights diverted", "domain": "chaotic", "industry": "logistics", "confidence": 0.95}
+{"query": "ALERT: Simultaneous failure of primary and backup power at hospital", "domain": "chaotic", "industry": "healthcare", "confidence": 0.95}
+{"query": "URGENT: Levee breach detected, emergency flood response needed", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "EMERGENCY: Chemical weapon traces detected at public event venue", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "CRITICAL: Telecommunications network collapse in major metropolitan area", "domain": "chaotic", "industry": "technology", "confidence": 0.95}
+{"query": "ALERT: Meteor impact imminent in populated area, evacuation order issued", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "URGENT: Mass food poisoning outbreak traced to our products", "domain": "chaotic", "industry": "manufacturing", "confidence": 0.95}
+{"query": "EMERGENCY: Avalanche blocking major highway, hundreds of vehicles stranded", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "CRITICAL: Sewage system overflow contaminating drinking water reservoirs", "domain": "chaotic", "industry": "operations", "confidence": 0.95}
+{"query": "ALERT: Explosion at chemical storage facility, toxic cloud forming", "domain": "chaotic", "industry": "manufacturing", "confidence": 0.95}
+{"query": "Should we do something different?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Things aren't working well", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Help", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "What should we do?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Is this good or bad?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We need to maximize growth while minimizing all investment and reduce risk to zero while entering new markets", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Fix everything", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Make it better", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "I don't know what to ask", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Do the thing with the data", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Can you figure out what's wrong with everything?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We need a strategy but we don't know what kind", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "What are the implications?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Should we or shouldn't we?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Analyze", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "The situation is complicated or maybe complex or possibly chaotic", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We want to both increase and decrease spending simultaneously", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Make our product more expensive AND cheaper at the same time", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Do something about sustainability but don't change anything", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Tell me something useful", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Our stakeholders want contradictory outcomes and we need to satisfy everyone", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Implement the strategy we haven't defined yet", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "What is the answer to our question?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Guarantee success in an unpredictable market with no data", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We need to move fast but also be very careful and thorough", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "How do we solve the problem?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Provide recommendations without knowing our context", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Yes or no?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "What's the right approach when we don't know what we're approaching?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Resolve all our issues without understanding them first", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We need to increase revenue and decrease prices and reduce staff and improve service all at once", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Predict the future accurately", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Apply best practices without knowing what we're doing", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Make it work somehow", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "What about the other thing?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Optimize without constraints or objectives", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We want the impossible: zero defects with zero investment", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Give us certainty about uncertain things", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Plan for all possible scenarios simultaneously", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Our CEO and CFO disagree on everything and we need a solution that makes both happy", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Build something but we don't know what", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Find the root cause without any data or symptoms described", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We need AI to solve our undefined problem", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "How do we compete while also collaborating with all competitors?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Guarantee no risk while maximizing returns", "domain": "disorder", "industry": "finance", "confidence": 0.7}
+{"query": "Which direction should we go when all paths seem equally unclear?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Prevent all possible problems before they happen", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Make the numbers go up", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Transform our business without changing it", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Solve climate change for our company without any budget", "domain": "disorder", "industry": "sustainability", "confidence": 0.7}
+{"query": "What?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Stuff", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Run analysis", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Can you just handle it?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We need everything to be perfect immediately", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "What does the data say about the thing?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Our board wants a complete reversal of strategy while maintaining current strategy", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Improve all metrics simultaneously without tradeoffs", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Be innovative but don't take any risks or change anything", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Give me the answer before I ask the question", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "We need to both expand and contract operations at the same time", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Achieve 100% customer satisfaction with 0% effort", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Predict black swan events with certainty", "domain": "disorder", "industry": "finance", "confidence": 0.7}
+{"query": "Automate everything but keep everything manual", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Eliminate all costs while increasing all spending", "domain": "disorder", "industry": "finance", "confidence": 0.7}
+{"query": "Move to the cloud and stay on-premise simultaneously", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Hire everyone and fire everyone at the same time", "domain": "disorder", "industry": "hr", "confidence": 0.7}
+{"query": "Increase prices and decrease prices for the same products", "domain": "disorder", "industry": "retail", "confidence": 0.7}
+{"query": "Speed up delivery while adding more quality checks at every step", "domain": "disorder", "industry": "supply_chain", "confidence": 0.7}
+{"query": "Make our product both simpler and more feature-rich simultaneously", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Centralize and decentralize decision-making at the same time", "domain": "disorder", "industry": "operations", "confidence": 0.7}
+{"query": "Use more data but also use less data", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Go global and stay local", "domain": "disorder", "industry": "operations", "confidence": 0.7}
+{"query": "Standardize and customize everything simultaneously", "domain": "disorder", "industry": "manufacturing", "confidence": 0.7}
+{"query": "Be first to market and avoid all early-mover risks", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Reduce complexity by adding more processes", "domain": "disorder", "industry": "operations", "confidence": 0.7}
+{"query": "Focus on everything at once", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Make our AI both transparent and proprietary secret", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Increase diversity while hiring only from one source", "domain": "disorder", "industry": "hr", "confidence": 0.7}
+{"query": "Be sustainable while maximizing short-term extraction", "domain": "disorder", "industry": "sustainability", "confidence": 0.7}
+{"query": "Create value without investing resources", "domain": "disorder", "industry": "finance", "confidence": 0.7}
+{"query": "Open-source our competitive advantage", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "What happens if something happens?", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Do more with less while doing less with more", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Prevent future risks that we can't identify", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Align all stakeholders who fundamentally disagree", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Provide a definitive answer to an undefined question", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Revolutionize our industry without any innovation budget", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Make data-driven decisions without collecting data", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Achieve consensus among parties with mutually exclusive goals", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Lead the market while following all competitors", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Disrupt ourselves without any disruption", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Solve the problem we haven't identified yet", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Decrease time-to-market while increasing all review cycles", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Be agile and follow a strict waterfall process", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Cut emissions to zero while increasing production capacity", "domain": "disorder", "industry": "sustainability", "confidence": 0.7}
+{"query": "Comply with contradictory regulations from different jurisdictions", "domain": "disorder", "industry": "compliance", "confidence": 0.7}
+{"query": "Achieve zero downtime during a complete system replacement", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Satisfy both pro-growth and anti-growth stakeholders equally", "domain": "disorder", "industry": "general", "confidence": 0.7}
+{"query": "Maintain legacy systems while fully modernizing", "domain": "disorder", "industry": "technology", "confidence": 0.7}
+{"query": "Build trust through complete transparency while protecting all secrets", "domain": "disorder", "industry": "operations", "confidence": 0.7}
+{"query": "Minimize environmental impact while maximizing resource extraction", "domain": "disorder", "industry": "sustainability", "confidence": 0.7}

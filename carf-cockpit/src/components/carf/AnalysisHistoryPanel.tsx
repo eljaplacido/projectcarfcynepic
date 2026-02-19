@@ -334,14 +334,14 @@ const AnalysisHistoryPanel: React.FC<AnalysisHistoryPanelProps> = ({
 
                                     {/* Results Summary */}
                                     <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-                                        {session.result.causalResult && (
+                                        {session.result?.causalResult && (
                                             <span>
-                                                Effect: {session.result.causalResult.effect.toFixed(2)}
+                                                Effect: {session.result.causalResult.effect?.toFixed(2) ?? 'N/A'}
                                             </span>
                                         )}
-                                        {session.result.causalResult && (
+                                        {session.result?.causalResult && (
                                             <span>
-                                                Refutations: {session.result.causalResult.refutationsPassed}/{session.result.causalResult.refutationsTotal}
+                                                Refutations: {session.result.causalResult.refutationsPassed ?? '?'}/{session.result.causalResult.refutationsTotal ?? '?'}
                                             </span>
                                         )}
                                         <span>

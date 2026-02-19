@@ -1,0 +1,504 @@
+{
+  "total_scenarios": 13,
+  "total_data_rows": 420,
+  "carf_passed": 4,
+  "carf_pass_rate": 0.3076923076923077,
+  "carf_domain_accuracy": 0.5384615384615384,
+  "llm_domain_accuracy": 1.0,
+  "domain_breakdown": {
+    "complicated": {
+      "total": 5,
+      "passed": 0,
+      "domain_correct": 0
+    },
+    "chaotic": {
+      "total": 3,
+      "passed": 0,
+      "domain_correct": 3
+    },
+    "complex": {
+      "total": 3,
+      "passed": 3,
+      "domain_correct": 3
+    },
+    "disorder": {
+      "total": 2,
+      "passed": 1,
+      "domain_correct": 1
+    }
+  },
+  "results": [
+    {
+      "scenario": "Supply Chain Disruption Risk",
+      "domain": "complicated",
+      "industry": "supply_chain",
+      "data_rows": 80,
+      "carf": {
+        "result": {
+          "success": false,
+          "error": "No data provided for Bayesian inference. Supply observations (list of floats) or successes/trials (binomial) via bayesian_inference config.",
+          "duration_ms": 3897.9
+        },
+        "validation": {
+          "pipeline_success": false
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "complicated",
+          "confidence": 0.85,
+          "action_type": "causal_analysis",
+          "duration_ms": 2923.3187999925576
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": false,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Discount Impact on Churn",
+      "domain": "complicated",
+      "industry": "financial_risk",
+      "data_rows": 100,
+      "carf": {
+        "result": {
+          "success": false,
+          "error": "No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id).",
+          "duration_ms": 19866.87
+        },
+        "validation": {
+          "pipeline_success": false
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "complicated",
+          "confidence": 0.85,
+          "action_type": "causal_analysis",
+          "duration_ms": 2469.6211999980733
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": false,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Fraud Crisis Detection",
+      "domain": "chaotic",
+      "industry": "financial_risk",
+      "data_rows": 0,
+      "carf": {
+        "result": {
+          "success": true,
+          "domain": "Chaotic",
+          "confidence": 0.95,
+          "has_causal_evidence": false,
+          "has_bayesian_evidence": false,
+          "escalation": false,
+          "action_type": "emergency_stop",
+          "guardian_verdict": null,
+          "has_response": true,
+          "reasoning_steps": 3,
+          "duration_ms": 3181.94
+        },
+        "validation": {
+          "domain_match": true,
+          "escalation_triggered": false,
+          "action_type_match": true
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "chaotic",
+          "confidence": 0.95,
+          "action_type": "emergency_stop",
+          "duration_ms": 2844.3941000004997
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": true,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Scope 3 Supplier Program Impact",
+      "domain": "complicated",
+      "industry": "sustainability",
+      "data_rows": 60,
+      "carf": {
+        "result": {
+          "success": false,
+          "error": "No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id).",
+          "duration_ms": 19580.24
+        },
+        "validation": {
+          "pipeline_success": false
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "complicated",
+          "confidence": 0.8,
+          "action_type": "causal_analysis",
+          "duration_ms": 2804.0812999970512
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": false,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Renewable Energy ROI Uncertainty",
+      "domain": "complex",
+      "industry": "sustainability",
+      "data_rows": 0,
+      "carf": {
+        "result": {
+          "success": true,
+          "domain": "Complex",
+          "confidence": 0.85,
+          "has_causal_evidence": false,
+          "has_bayesian_evidence": true,
+          "escalation": false,
+          "action_type": "exploration_probe",
+          "guardian_verdict": "approved",
+          "has_response": true,
+          "reasoning_steps": 3,
+          "duration_ms": 42296.33
+        },
+        "validation": {
+          "domain_match": true,
+          "has_bayesian_evidence": true,
+          "has_response": true
+        },
+        "passed": true
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "complex",
+          "confidence": 0.85,
+          "action_type": "bayesian_probing",
+          "duration_ms": 3216.454599998542
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": true,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Grid Cascade Failure",
+      "domain": "chaotic",
+      "industry": "critical_infra",
+      "data_rows": 0,
+      "carf": {
+        "result": {
+          "success": true,
+          "domain": "Chaotic",
+          "confidence": 0.95,
+          "has_causal_evidence": false,
+          "has_bayesian_evidence": false,
+          "escalation": false,
+          "action_type": "emergency_stop",
+          "guardian_verdict": null,
+          "has_response": true,
+          "reasoning_steps": 3,
+          "duration_ms": 2845.86
+        },
+        "validation": {
+          "domain_match": true,
+          "escalation_triggered": false,
+          "action_type_match": true
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "chaotic",
+          "confidence": 0.95,
+          "action_type": "emergency_stop",
+          "duration_ms": 2661.557100000209
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": true,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Treatment Effect on Recovery",
+      "domain": "complicated",
+      "industry": "healthcare",
+      "data_rows": 100,
+      "carf": {
+        "result": {
+          "success": false,
+          "error": "No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id).",
+          "duration_ms": 19327.34
+        },
+        "validation": {
+          "pipeline_success": false
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "complicated",
+          "confidence": 0.85,
+          "action_type": "causal_analysis",
+          "duration_ms": 2821.730999989086
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": false,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Renewable Grid Stability Uncertainty",
+      "domain": "complex",
+      "industry": "energy",
+      "data_rows": 0,
+      "carf": {
+        "result": {
+          "success": true,
+          "domain": "Complex",
+          "confidence": 0.85,
+          "has_causal_evidence": false,
+          "has_bayesian_evidence": true,
+          "escalation": false,
+          "action_type": "exploration_probe",
+          "guardian_verdict": "approved",
+          "has_response": true,
+          "reasoning_steps": 3,
+          "duration_ms": 65279.02
+        },
+        "validation": {
+          "domain_match": true,
+          "has_bayesian_evidence": true,
+          "has_response": true
+        },
+        "passed": true
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "complex",
+          "confidence": 0.9,
+          "action_type": "bayesian_probing",
+          "duration_ms": 2804.4262000039453
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": true,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Ambiguous Strategy Question",
+      "domain": "disorder",
+      "industry": "general",
+      "data_rows": 0,
+      "carf": {
+        "result": {
+          "success": true,
+          "domain": "Disorder",
+          "confidence": 0.2,
+          "has_causal_evidence": false,
+          "has_bayesian_evidence": false,
+          "escalation": true,
+          "action_type": null,
+          "guardian_verdict": null,
+          "has_response": false,
+          "reasoning_steps": 2,
+          "duration_ms": 2284.24
+        },
+        "validation": {
+          "domain_match": true,
+          "escalation_triggered": true
+        },
+        "passed": true
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "disorder",
+          "confidence": 0.9,
+          "action_type": "human_escalation",
+          "duration_ms": 2846.511299998383
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": true,
+        "llm_domain_correct": true,
+        "carf_faster": true
+      }
+    },
+    {
+      "scenario": "Energy Grid Efficiency",
+      "domain": "complicated",
+      "industry": "energy",
+      "data_rows": 80,
+      "carf": {
+        "result": {
+          "success": false,
+          "error": "No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id).",
+          "duration_ms": 19242.9
+        },
+        "validation": {
+          "pipeline_success": false
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "complicated",
+          "confidence": 0.85,
+          "action_type": "causal_analysis",
+          "duration_ms": 2597.5560000078985
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": false,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Insurance Fraud Detection",
+      "domain": "chaotic",
+      "industry": "financial_risk",
+      "data_rows": 0,
+      "carf": {
+        "result": {
+          "success": true,
+          "domain": "Chaotic",
+          "confidence": 0.95,
+          "has_causal_evidence": false,
+          "has_bayesian_evidence": false,
+          "escalation": false,
+          "action_type": "emergency_stop",
+          "guardian_verdict": null,
+          "has_response": true,
+          "reasoning_steps": 3,
+          "duration_ms": 3078.46
+        },
+        "validation": {
+          "domain_match": true,
+          "escalation_triggered": false,
+          "action_type_match": true
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "chaotic",
+          "confidence": 0.95,
+          "action_type": "emergency_stop",
+          "duration_ms": 2929.907400000957
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": true,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Market Recovery Uncertainty",
+      "domain": "complex",
+      "industry": "financial_risk",
+      "data_rows": 0,
+      "carf": {
+        "result": {
+          "success": true,
+          "domain": "Complex",
+          "confidence": 0.85,
+          "has_causal_evidence": false,
+          "has_bayesian_evidence": true,
+          "escalation": false,
+          "action_type": "exploration_probe",
+          "guardian_verdict": "approved",
+          "has_response": true,
+          "reasoning_steps": 3,
+          "duration_ms": 49029.68
+        },
+        "validation": {
+          "domain_match": true,
+          "has_bayesian_evidence": true,
+          "has_response": true
+        },
+        "passed": true
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "complex",
+          "confidence": 0.85,
+          "action_type": "bayesian_probing",
+          "duration_ms": 3017.2122999938438
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": true,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    },
+    {
+      "scenario": "Contradictory Requirements",
+      "domain": "disorder",
+      "industry": "general",
+      "data_rows": 0,
+      "carf": {
+        "result": {
+          "success": false,
+          "error": "No data provided for Bayesian inference. Supply observations (list of floats) or successes/trials (binomial) via bayesian_inference config.",
+          "duration_ms": 3115.78
+        },
+        "validation": {
+          "pipeline_success": false
+        },
+        "passed": false
+      },
+      "llm_baseline": {
+        "result": {
+          "success": true,
+          "domain": "disorder",
+          "confidence": 0.95,
+          "action_type": "human_escalation",
+          "duration_ms": 2997.2401000122773
+        }
+      },
+      "comparison": {
+        "carf_domain_correct": false,
+        "llm_domain_correct": true,
+        "carf_faster": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+    "id": "fraud_crisis_detection",
+    "name": "Real-Time Fraud Crisis Detection",
+    "description": "Emergency fraud detection scenario where the system must activate circuit breaker and escalate to human immediately",
+    "domain": "finance",
+    "expected_classification": "chaotic",
+    "query": "URGENT: Massive coordinated fraud detected — 500+ suspicious transactions across 12 accounts in the last 3 minutes, total exposure $2.3M. System integrity compromised.",
+    "context": {
+        "type": "crisis",
+        "severity": "critical",
+        "transactions_flagged": 500,
+        "accounts_affected": 12,
+        "exposure_usd": 2300000,
+        "time_window_minutes": 3,
+        "indicators": [
+            "velocity_anomaly",
+            "geographic_impossibility",
+            "amount_clustering",
+            "credential_stuffing_pattern"
+        ]
+    },
+    "data": [],
+    "expected_results": {
+        "domain": "Chaotic",
+        "requires_human": true,
+        "circuit_breaker_activated": true,
+        "has_response": true,
+        "action_type": "emergency_stop"
+    },
+    "validation_criteria": {
+        "domain_match": true,
+        "must_escalate": true,
+        "action_type": "emergency_stop",
+        "response_urgency": "immediate",
+        "should_escalate": true
+    }
+}

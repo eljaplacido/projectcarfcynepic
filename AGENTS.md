@@ -30,7 +30,7 @@ Core Architecture: 4-layer cognitive stack
 - Wrap external API calls in tenacity retry decorators
 - Log all state transitions for audit trail
 
-### EXPLAINABILITY REQUIREMENTS (Phase 6)
+### EXPLAINABILITY REQUIREMENTS
 - Every analytical result MUST link to its data source
 - Confidence scores MUST be decomposable (show what contributes)
 - All panels MUST answer: "Why this?" + "How confident?" + "Based on what?"
@@ -74,7 +74,7 @@ OPENAI_API_KEY=                 # OpenAI fallback
 HUMANLAYER_API_KEY=             # Human-in-the-loop
 LANGSMITH_API_KEY=              # Tracing
 CARF_TEST_MODE=1                # Offline LLM stubs for tests
-CARF_API_URL=http://localhost:8000  # Streamlit -> API target
+CARF_API_URL=http://localhost:8000  # React Cockpit -> API target
 CARF_DATA_DIR=./var             # Dataset registry storage (optional)
 ```
 
@@ -142,18 +142,19 @@ def my_node(state: EpistemicState) -> EpistemicState:
 projectcarf/
   carf-cockpit/           # React Platform Cockpit (Vite + TypeScript + Tailwind)
     src/
-      components/carf/    # Core UI components (10 implemented)
-        BayesianPanel.tsx
-        CausalAnalysisCard.tsx
-        CausalDAG.tsx
-        CynefinRouter.tsx
-        DashboardHeader.tsx
-        DashboardLayout.tsx
-        ExecutionTrace.tsx
-        GuardianPanel.tsx
-        QueryInput.tsx
-        ResponsePanel.tsx
+      components/carf/    # Core UI components (44 implemented)
+        BayesianPanel.tsx, CausalAnalysisCard.tsx, CausalDAG.tsx,
+        CynefinRouter.tsx, DashboardHeader.tsx, DashboardLayout.tsx,
+        ExecutionTrace.tsx, GuardianPanel.tsx, QueryInput.tsx,
+        ResponsePanel.tsx, SimulationArena.tsx, PolicyEditorModal.tsx,
+        EscalationModal.tsx, FloatingChatTab.tsx, OnboardingOverlay.tsx,
+        DataOnboardingWizard.tsx, ConversationalResponse.tsx,
+        WalkthroughManager.tsx, MethodologyModal.tsx,
+        ExecutiveSummaryPanel.tsx, AgentsInvolvedPanel.tsx,
+        FeedbackPanel.tsx, DomainVisualization.tsx, ...
+      __tests__/          # Frontend test suite (5 test files)
       services/           # API client layer
+      hooks/              # Custom React hooks
       types/              # TypeScript type definitions
   src/
     core/               # Base classes, state schemas (NO external deps)
@@ -161,14 +162,23 @@ projectcarf/
     workflows/          # LangGraph definitions (the wiring)
     tools/              # Atomic tools (Pydantic schemas required)
     utils/              # Telemetry, resiliency decorators
-    dashboard/          # Streamlit Epistemic Cockpit (legacy)
+    dashboard/          # Streamlit Epistemic Cockpit (deprecated — use carf-cockpit/)
   config/               # YAML config and OPA policy
     opa/
   docs/                 # Architecture docs, walkthroughs
   tests/
-    unit/               # Tool logic tests
+    unit/               # 27 unit test files
+    e2e/                # End-to-end gold standard tests
+    integration/        # API flow integration tests
+    deepeval/           # LLM output quality evaluation (8 test files)
     eval/               # LLM-as-a-judge scenarios
     mocks/              # Mock HumanLayer, Neo4j, etc.
+  benchmarks/           # Technical & use-case benchmarks (H1-H9 hypotheses)
+    technical/          # Router, causal, bayesian, guardian, performance, chimera
+    use_cases/          # End-to-end industry scenarios
+    baselines/          # Raw LLM baseline comparison
+    reports/            # Unified report generation
+  tla_specs/            # TLA+ formal verification (StateGraph, EscalationProtocol)
   demo/                 # Sample datasets and payloads
   var/                  # Local dataset registry storage (gitignored)
   scripts/              # Demo seed scripts
@@ -225,28 +235,14 @@ The "3-Point Context" for notifications:
 
 ---
 
-## Current Phase: Phase 6 - Enhanced UIX & Explainability
+## Current Phase: Phase 12 - CHIMEPIC Integration + Platform Hardening
 
-### In Scope (Phase 6):
-- **Explainability & Transparency**
-  - Drill-down modals for all analytical results
-  - Confidence decomposition (data/model/validation components)
-  - Data provenance links from results to source rows
-  - "Why not?" alternative path visibility
-
-- **Enhanced UIX Components** (React Cockpit - `carf-cockpit/`)
-  - `OnboardingOverlay.tsx` - First-run scenario selection
-  - `DataOnboardingWizard.tsx` - 5-step data upload flow
-  - `ConversationalResponse.tsx` - Dialog-based results with confidence zones
-  - `FloatingChatTab.tsx` - Bottom-right persistent chat
-  - `WalkthroughManager.tsx` - Multi-track guided tours
-  - `MethodologyModal.tsx` - Transparency drill-downs
-
-- **Interactive Walkthrough**
-  - Quick Demo track (2-3 min)
-  - Analyst Onboarding track (5-7 min)
-  - Contributor Guide track (10-15 min)
-  - Production Deployment track (5-10 min)
+### Remaining Work (Phase 12+):
+- **ChimeraOracle LangGraph Integration** — Wire into StateGraph as fast-path node (currently standalone API only)
+- **LightRAG / Vector Store** — Semantic search and cross-session knowledge retrieval (not implemented)
+- **Guardian Currency-Aware Comparisons** — Financial thresholds need currency context
+- **Router Retraining Pipeline** — Feedback collection works but no automated retraining yet
+- **CI/CD** — GitHub Actions workflow for automated testing
 
 ### CSL-Core Policy Engine
 - **Role:** Primary policy enforcement layer for all CARF agent actions
@@ -256,15 +252,30 @@ The "3-Point Context" for notifications:
 - **Audit:** Bounded deque (maxlen=1000) per AP-4, Kafka audit integration for CSL fields
 - **API:** Full CRUD via `/csl/*` endpoints, natural language rule creation supported
 
-### Completed (Phases 1-5):
-- Full Cynefin router and cognitive mesh
+### Benchmark Suite
+- **Technical benchmarks**: Router classification (F1/ECE), Causal engine (ATE MSE), Bayesian (posterior coverage), Guardian (detection rate), Performance (P50/P95/P99), ChimeraOracle (speed ratio)
+- **Use case benchmarks**: End-to-end scenarios across 6 industries (supply chain, financial risk, sustainability, critical infra, healthcare, energy)
+- **9 falsifiable hypotheses** (H1-H9): CARF vs raw LLM comparison
+- **Reports**: Unified comparison report generation
+- **Location**: `benchmarks/` directory with `benchmarks/README.md` for full instructions
+
+### Completed (Phases 1-11):
+- Full Cynefin router and cognitive mesh (DistilBERT + Shannon entropy)
 - Neo4j persistence + query utilities
 - DoWhy/EconML and PyMC optional inference paths
-- Streamlit Epistemic Cockpit
-- React Cockpit foundation (10 core components)
-- Kafka audit trail (optional)
-- OPA Guardian integration (optional)
+- React Cockpit (44 components, three-view architecture, 5 test files)
+- Explainability drill-downs for all analytical results
+- Data Onboarding Wizard with 10 demo scenarios across all 5 Cynefin domains
+- ChimeraOracle fast causal predictions (standalone API)
+- CSL-Core policy engine (35 rules across 5 policy categories)
+- MCP server (15 cognitive tools for agentic AI integration)
+- Cynefin domain visualizations (Plotly.js: waterfall, radar, sankey, gauge)
+- Feedback API (closed-loop learning with domain overrides)
+- Benchmark suite (6 technical + use-case benchmarks, 9 falsifiable hypotheses)
+- TLA+ formal verification specs (StateGraph, EscalationProtocol)
+- Kafka audit trail (optional) + OPA Guardian (optional)
 - Docker Compose demo stack + seed scripts
+- Streamlit Dashboard (deprecated — replaced by React Cockpit)
 
 ### Out of Scope:
 - Production autoscaling and Kubernetes

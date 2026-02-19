@@ -72,22 +72,41 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onConfig
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                             >
                                 <option value="deepseek">DeepSeek (Recommended)</option>
-                                <option value="openai">OpenAI (GPT-4)</option>
+                                <option value="openai">OpenAI (GPT-4o)</option>
                                 <option value="anthropic">Anthropic (Claude)</option>
-                                <option value="local">Local (Ollama)</option>
+                                <option value="google">Google (Gemini)</option>
+                                <option value="mistral">Mistral</option>
+                                <option value="ollama">Ollama (Local)</option>
+                                <option value="together">Together AI (Open Source)</option>
                             </select>
                         </div>
 
-                        {provider !== 'local' && (
+                        {provider !== 'ollama' && (
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
                                 <input
                                     type="password"
                                     value={apiKey}
                                     onChange={(e) => setApiKey(e.target.value)}
-                                    placeholder={`sk-${provider === 'anthropic' ? 'ant-' : ''}...`}
+                                    placeholder={
+                                        provider === 'anthropic' ? 'sk-ant-...' :
+                                        provider === 'google' ? 'AI...' :
+                                        'sk-...'
+                                    }
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-mono"
                                 />
+                            </div>
+                        )}
+
+                        {provider === 'ollama' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Base URL</label>
+                                <input
+                                    type="text"
+                                    defaultValue="http://localhost:11434"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-mono"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">No API key needed for local Ollama</p>
                             </div>
                         )}
                     </div>
@@ -107,7 +126,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onConfig
                         </button>
                         <button
                             onClick={handleSave}
-                            disabled={status === 'validating' || status === 'saving' || (provider !== 'local' && !apiKey)}
+                            disabled={status === 'validating' || status === 'saving' || (provider !== 'ollama' && !apiKey)}
                             className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {status === 'validating' ? 'Validating...' : status === 'saving' ? 'Saving...' : 'Connect API'}

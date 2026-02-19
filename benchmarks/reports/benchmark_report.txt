@@ -1,0 +1,73 @@
+CARF UNIFIED BENCHMARK REPORT
+============================================================
+Generated: 2026-02-19T20:01:24.315643
+Data sources: router, causal, bayesian, guardian, performance, chimera, e2e, baseline
+Grade: A
+
+SUMMARY
+------------------------------------------------------------
+  Hypotheses evaluated: 8/9
+  Hypotheses passed:    7/8
+  Pass rate:            87.5%
+  Data coverage:        8/8 benchmark categories
+
+HYPOTHESIS RESULTS
+------------------------------------------------------------
+  [PASS] H1: CARF DoWhy achieves >= 50% lower ATE MSE than raw LLM
+         Measured: 1.1940  |  Threshold: 0.5
+         carf_mse: 1.193987
+         baseline_mse: 1355.136225
+         mse_ratio: 0.0009
+
+  [PASS] H2: CARF Bayesian achieves >= 90% posterior coverage vs LLM ~60-70%
+         Measured: 1.0000  |  Threshold: 0.9
+         coverage_rate: 1.0
+         well_calibrated: True
+         decomposition_rate: 1.0
+         total_scenarios: None
+
+  [PASS] H3: Guardian achieves 100% violation detection vs LLM missing > 20%
+         Measured: 1.0000  |  Threshold: 1.0
+
+  [PASS] H4: Guardian 100% deterministic vs LLM variation
+         Measured: 1.0000  |  Threshold: 1.0
+
+  [PASS] H5: CARF meets >= 90% EU AI Act compliance vs LLM < 30%
+         Measured: 1.0000  |  Threshold: 0.9
+
+  [PASS] H6: CARF latency overhead acceptable (< 5x raw LLM)
+         Measured: 3.4470  |  Threshold: 5.0
+         carf_ms: 9136.05
+         baseline_ms: 2650.25
+
+  [PASS] H7: CARF reduces hallucination by >= 40%
+         Measured: 1.0000  |  Threshold: 0.4
+         carf_hallucination_rate: 0.0
+         llm_hallucination_rate: 0.0667
+         reduction_pct: 100.0
+
+  [ N/A] H8: ChimeraOracle >= 10x faster with < 20% accuracy loss
+         Measured: —  |  Threshold: 10.0
+
+  [FAIL] H9: CARF memory stable over 500+ queries (< 10% RSS growth)
+         Measured: 1589.4600  |  Threshold: 10.0
+         tracemalloc_peak_mb: 377.44
+
+METHODOLOGY
+------------------------------------------------------------
+  - Causal: DoWhy ATE estimation on synthetic + industry DGPs
+    with confounded treatment assignment (logistic propensity).
+  - Bayesian: PyMC posterior inference with known ground truth,
+    90% HPD coverage, uncertainty decomposition.
+  - Router: Cynefin classification on 456-query labeled test set,
+    balanced domain sampling, weighted F1 + ECE.
+  - Guardian: Deterministic policy enforcement, 5x repetitions.
+  - Performance: Latency + tracemalloc memory profiling.
+  - Baselines: Raw LLM (same model, no pipeline) for comparison.
+
+EU AI ACT ALIGNMENT
+------------------------------------------------------------
+  Art. 9  — Risk Management:  Cynefin confidence + uncertainty
+  Art. 12 — Record-Keeping:   Kafka audit trail + state persistence
+  Art. 13 — Transparency:     Reasoning chain + causal explanations
+  Art. 14 — Human Oversight:  Guardian + HumanLayer escalation
