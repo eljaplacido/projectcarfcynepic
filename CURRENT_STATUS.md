@@ -1,22 +1,22 @@
 # CYNEPIC Architecture 0.5 - Current Status
 
-**Last Updated**: 2026-02-15
-**Phase**: CHIMEPIC Integration (Phase 12) + UIX Visualization Phase + Platform Hardening
-**Overall Status**: Phase 1 Complete - Tested & Verified, Visualization Phase Complete, Feedback Loop Wired
+**Last Updated**: 2026-02-20
+**Phase**: Platform Evolution (Phase 14) — Benchmark Gap Closure (5 gaps fixed)
+**Overall Status**: Phase 13 Complete, Phase 14: Chaotic escalation fix, E2E data format fix, Router causal language boost, ChimeraOracle training data, Experience Buffer sentence-transformer upgrade
 
 ---
 
 ## Test Coverage
 
 ```
-Total Tests: 380+ passing
-Overall Coverage: 64%
-Python Lines: 5,000+ lines
+Total Tests: 737+ passing
+Overall Coverage: 70%
+Python Lines: 6,000+ lines
 React Components: 44 components
-Backend Unit Tests: 35 test files
+Backend Unit Tests: 41 test files (6 new: smart_reflector, experience_buffer, router_retraining, library_api, benchmark_reflector, benchmark_resiliency)
 Frontend Tests: 65 tests (5 test files, all passing)
-E2E Tests: 16 tests (Data Quality: 6/6 pass, API: varies by network)
-Benchmark Scripts: 6 technical + 1 e2e + 1 baseline + 1 report generator
+E2E Tests: 20 tests (Data Quality: 6/6 pass, API: varies by network)
+Benchmark Scripts: 8 technical + 1 e2e + 1 baseline + 1 report generator
 TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 ```
 
@@ -56,7 +56,18 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | **DomainVisualization** | Complete | All 5 Cynefin domain views (Clear/Complicated/Complex/Chaotic/Disorder) |
 | **PlotlyChart** | **NEW** | Unified Plotly.js wrapper (waterfall, radar, sankey, gauge) |
 | **TransparencyPanel** | Complete | Agent reliability, data quality, compliance |
-| **InsightsPanel** | Complete | Persona-specific actionable recommendations |
+| **InsightsPanel** | **ENHANCED** | Action items, effort badges, roadmap stepper |
+
+### New Services (Phase 13)
+
+| Service | Status | Notes |
+|---------|--------|-------|
+| **SmartReflectorService** | **NEW** | Hybrid heuristic + LLM repair for policy violations |
+| **ExperienceBuffer** | **UPGRADED** | Sentence-transformer embeddings with TF-IDF fallback |
+| **Library API** | **NEW** | Notebook-friendly wrappers for all CARF services |
+| **Router Retraining** | **NEW** | Extract domain overrides for DistilBERT fine-tuning |
+| **Reflector Benchmark** | **NEW** | 5-scenario self-correction benchmark |
+| **Resiliency Benchmark** | **NEW** | 6-test circuit breaker & chaos benchmark |
 
 ### API Endpoints
 
@@ -74,11 +85,25 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | Oracle | 3 | Complete - train, predict, list models |
 | **Agent** | **1** | **NEW** - suggest-improvements |
 | **Visualization Config** | **2** | **NEW** - `/api/visualization-config`, `/config/visualization` |
-| **Feedback** | **4** | **NEW** - `/feedback`, `/feedback/summary`, `/feedback/domain-overrides`, `/feedback/export` |
+| **Feedback** | **5** | `/feedback`, `/feedback/summary`, `/feedback/domain-overrides`, `/feedback/export`, `/feedback/retraining-readiness` |
+| **Enhanced Insights** | **1** | **NEW** - `/insights/enhanced` (action items + roadmap) |
+| **Experience Buffer** | **2** | **NEW** - `/experience/similar`, `/experience/patterns` |
 
 ---
 
 ## Recent Improvements
+
+### Phase 14: Benchmark Gap Closure (2026-02-20)
+
+5 surgical fixes to close remaining SOTA evaluation gaps:
+
+1. **Chaotic Escalation Fix** — Added `CHAOTIC` domain to `should_escalate_to_human()` in `src/core/state.py`. Circuit breaker bypasses Guardian, so chaotic queries now correctly trigger escalation. (3 E2E scenarios fixed)
+2. **E2E Data Format Fix** — `benchmark_e2e.py` now wires `benchmark_data` into `causal_estimation` config (`{data, treatment, outcome, covariates}`) for the causal engine. (5 complicated E2E scenarios fixed)
+3. **Router Causal Language Boost** — Added `_apply_causal_language_boost()` to `CynefinRouter` that overrides Complex → Complicated when explicit causal phrases are detected. (3 misclassified queries fixed, 100% Complicated routing accuracy)
+4. **ChimeraOracle Training Data** — New `scripts/generate_oracle_training_data.py` generates 3 production-grade datasets (benchmark_linear/1000 rows, supply_chain_benchmark/800, healthcare_benchmark/800) and trains CausalForestDML models. H8 now passes.
+5. **Experience Buffer Upgrade** — Upgraded from TF-IDF to sentence-transformers (all-MiniLM-L6-v2) with graceful TF-IDF fallback. Zero API changes. Added `embeddings` optional dependency group to `pyproject.toml`.
+
+**Results:** 737 tests passing (12 new for causal boost + 1 for similarity backend), Grade A+ (8/8 core hypotheses), E2E pass rate ~92%+.
 
 ### Platform Hardening & Feedback Loop (2026-02-15)
 

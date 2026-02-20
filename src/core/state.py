@@ -273,6 +273,7 @@ class EpistemicState(BaseModel):
         """Determine if the state warrants human escalation."""
         return (
             self.cynefin_domain == CynefinDomain.DISORDER
+            or self.cynefin_domain == CynefinDomain.CHAOTIC
             or self.reflection_count >= self.max_reflections
             or self.guardian_verdict == GuardianVerdict.REQUIRES_ESCALATION
             or self.domain_confidence < 0.85

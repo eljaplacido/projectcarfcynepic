@@ -23,6 +23,7 @@ New features:
 import hashlib
 import logging
 import pickle
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -122,7 +123,8 @@ class ChimeraOracleEngine:
         self.models_dir = Path(models_dir)
         self.models_dir.mkdir(parents=True, exist_ok=True)
 
-        self._models: dict[str, Any] = {}  # scenario_id → trained model
+        self._max_models = 10
+        self._models: OrderedDict[str, Any] = OrderedDict()  # scenario_id → trained model
         self._model_metadata: dict[str, ModelMetadata | dict] = {}  # scenario_id → metadata
         self._model_versions: dict[str, list[str]] = {}  # scenario_id → version history
 
@@ -216,7 +218,13 @@ class ChimeraOracleEngine:
     def get_available_scenarios(self) -> list[str]:
         """Get list of scenarios with trained models."""
         return list(self._models.keys())
-    
+
+    def clear_models(self) -> None:
+        """Clear in-memory model caches (disk models are preserved)."""
+        self._models.clear()
+        self._model_metadata.clear()
+        self._model_versions.clear()
+
     async def train_on_scenario(
         self,
         scenario_id: str,
@@ -363,14 +371,19 @@ class ChimeraOracleEngine:
             with open(model_path, "wb") as f:
                 pickle.dump({"model": model, "metadata": metadata}, f)
 
-            # Cache in memory
+            # Cache in memory with LRU eviction
             self._models[scenario_id] = model
+            self._models.move_to_end(scenario_id)
+            while len(self._models) > self._max_models:
+                evicted_id, _ = self._models.popitem(last=False)
+                self._model_metadata.pop(evicted_id, None)
             self._model_metadata[scenario_id] = metadata
 
-            # Track version history
+            # Track version history (keep last 5 per scenario)
             if scenario_id not in self._model_versions:
                 self._model_versions[scenario_id] = []
             self._model_versions[scenario_id].append(model_version)
+            self._model_versions[scenario_id] = self._model_versions[scenario_id][-5:]
 
             logger.info(
                 f"Trained model for {scenario_id} ({model_version}): ATE={ate:.2f} (±{effect_std:.2f})"
@@ -423,6 +436,7 @@ class ChimeraOracleEngine:
             raise ValueError(f"No trained model for scenario: {scenario_id}")
 
         model = self._models[scenario_id]
+        self._models.move_to_end(scenario_id)
         metadata = self._model_metadata.get(scenario_id, {})
 
         # Handle both dict and ModelMetadata

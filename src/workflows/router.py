@@ -336,6 +336,48 @@ Respond with a JSON object only, no other text:
 
         return None, indicators
 
+    def _apply_causal_language_boost(
+        self,
+        query: str,
+        classification: DomainClassification,
+    ) -> DomainClassification:
+        """Boost Complex → Complicated when explicit causal language is present.
+
+        The LLM sometimes classifies queries with clear causal phrasing as Complex
+        (e.g., "What is the causal effect of X on Y?"). This post-hoc check
+        overrides to Complicated when strong causal indicators are found.
+
+        Only triggers when LLM classified as Complex.
+        """
+        if classification.domain != CynefinDomain.COMPLEX:
+            return classification
+
+        query_lower = query.lower()
+
+        causal_phrases = [
+            "causal effect", "causal relationship", "causal impact",
+            "root cause", "what caused",
+            "impact of", "effect of", "determine the impact",
+        ]
+        outcome_patterns = [" on ", " -> ", "effect", "impact", "relationship between"]
+
+        has_causal = any(phrase in query_lower for phrase in causal_phrases)
+        has_outcome = any(pattern in query_lower for pattern in outcome_patterns)
+
+        if has_causal and has_outcome:
+            logger.info(
+                f"Causal language boost: Complex → Complicated "
+                f"(was {classification.confidence:.2f})"
+            )
+            return DomainClassification(
+                domain=CynefinDomain.COMPLICATED,
+                confidence=max(classification.confidence, 0.85),
+                reasoning=f"Causal language boost applied: {classification.reasoning}",
+                key_indicators=classification.key_indicators + ["causal_language_boost"],
+            )
+
+        return classification
+
     def _calculate_entropy(self, text: str, context: dict[str, Any]) -> float:
         """Calculate Shannon entropy over the token distribution of the input.
 
@@ -500,6 +542,9 @@ Respond with a JSON object only, no other text:
             classification = await self._classify_with_model(state.user_input)
         else:
             classification = await self._classify_with_llm(state.user_input)
+
+        # Step 3b: Apply causal language boost (Complex → Complicated)
+        classification = self._apply_causal_language_boost(state.user_input, classification)
 
         # Step 4: Apply domain hint override when present
         # Domain hints from scenarios are explicit configuration from domain experts

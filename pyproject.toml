@@ -111,13 +111,17 @@ mcp = [
     # Model Context Protocol server
     "mcp>=1.0.0",
 ]
+embeddings = [
+    # Sentence embeddings for Experience Buffer
+    "sentence-transformers>=2.2.0",
+]
 providers = [
     # Additional LLM provider integrations (Anthropic, Google)
     "langchain-anthropic>=0.3.0",
     "langchain-google-genai>=2.0.0",
 ]
 all = [
-    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation,csl,mcp,providers]",
+    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation,csl,mcp,providers,embeddings]",
 ]
 
 [project.scripts]

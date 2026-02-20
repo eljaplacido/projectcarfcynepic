@@ -915,7 +915,7 @@ python benchmarks/reports/generate_report.py --output report.json
 | H5 | EU AI Act compliance >= 90% vs LLM < 30% | Compliance >= 0.9 |
 | H6 | CARF 2-5x slower but quality compensates | Latency within bounds |
 | H7 | Hallucination reduction >= 40% | Reduction rate >= 0.4 |
-| H8 | ChimeraOracle >= 10x faster, < 20% accuracy loss | Speed >= 10x |
+| H8 | ChimeraOracle >= 10x faster, < 20% accuracy loss | Speed >= 10x | **PASS** |
 | H9 | Memory stable over 500+ queries | RSS growth bounded |
 
 ### Running All Benchmarks at Once
@@ -976,6 +976,249 @@ java -jar tla2tools.jar -config tla_specs/EscalationProtocol.cfg tla_specs/Escal
 ```
 
 See `tla_specs/README.md` for detailed TLC configuration and concept mapping.
+
+---
+
+## Actionable Insights & Roadmaps
+
+CARF generates persona-specific action items and analysis roadmaps alongside standard insights.
+
+### How It Works
+
+After any analysis, the `/insights/enhanced` endpoint returns three types of intelligence:
+
+1. **Insights** — Standard analytical observations (existing)
+2. **Action Items** — Concrete next steps with effort estimates
+3. **Roadmap** — Sequenced analysis plan with dependencies
+
+### Action Items
+
+Each action item includes:
+- **Title and description**: What to do and why
+- **Effort badge**: `quick` (green), `medium` (yellow), or `deep` (orange)
+- **Category**: `data_quality`, `model_improvement`, `risk_mitigation`, or `exploration`
+- **API endpoint** (optional): Pre-wired endpoint for one-click execution
+
+**Persona-specific actions:**
+
+| Persona | Example Actions |
+|---------|----------------|
+| **Analyst** | Run sensitivity analysis, review confounders, improve data quality |
+| **Developer** | Train ChimeraOracle, optimize cache, set up monitoring |
+| **Executive** | Assess business impact, approve pilot programs, schedule quarterly reviews |
+
+### Roadmap
+
+The roadmap provides a sequenced analysis plan:
+- Steps are ordered with dependency tracking
+- Each step shows estimated time
+- Dependencies ensure logical ordering (e.g., "collect more data" before "re-run analysis")
+
+### Using in the UI
+
+In the React Cockpit, the InsightsPanel now has three tabs:
+1. **Insights** — Standard analytical observations
+2. **Action Items** — Clickable cards with effort badges
+3. **Roadmap** — Vertical stepper with time estimates
+
+### Using via API
+
+```bash
+curl -X POST http://localhost:8000/insights/enhanced \
+  -H "Content-Type: application/json" \
+  -d '{
+    "persona": "analyst",
+    "domain": "complicated",
+    "domain_confidence": 0.85,
+    "has_causal_result": true,
+    "causal_effect": -0.15,
+    "refutation_pass_rate": 0.6,
+    "sample_size": 200
+  }'
+```
+
+---
+
+## Smart Self-Correction (Reflector)
+
+When the Guardian rejects a proposed action, the Smart Reflector automatically attempts to repair the action to comply with policies.
+
+### How It Works
+
+The reflector uses a **hybrid strategy**:
+
+1. **Heuristic repair** (fast): Pattern-matching rules for known violation types
+   - Budget violations → reduce amount by 20%
+   - Threshold violations → reduce value by 10%
+   - Approval violations → flag for human review
+2. **LLM repair** (fallback): When heuristics don't match, the LLM generates a contextual repair with explanation
+
+### Repair Flow
+
+```
+Guardian REJECTS action
+    ↓
+Smart Reflector attempts heuristic repair
+    ↓ (if heuristic confidence < 0.7 or unknown violation)
+Falls back to LLM-based contextual repair
+    ↓
+Repaired action returned to workflow
+    ↓
+Guardian re-evaluates
+```
+
+### Observability
+
+Each repair includes:
+- `strategy_used`: Which repair method was applied (heuristic/llm/hybrid)
+- `repair_explanation`: Human-readable explanation of what was changed
+- `confidence`: How confident the reflector is in the repair (0-1)
+- `violations_addressed` / `violations_remaining`: Track what was fixed
+
+### MCP Tool
+
+External agents can use the reflector via MCP:
+```
+Tool: reflector_repair
+Input: { proposed_action, violations, context }
+Output: { repaired_action, strategy_used, explanation, confidence }
+```
+
+---
+
+## Experience Memory
+
+CARF maintains a semantic memory of past analyses to improve future queries.
+
+### How It Works
+
+The Experience Buffer uses sentence-transformers (all-MiniLM-L6-v2) for dense semantic embeddings, with automatic TF-IDF fallback when sentence-transformers is not installed. This provides:
+
+- **Context augmentation**: Similar past results inform current analysis
+- **Domain patterns**: Aggregated statistics per Cynefin domain
+- **Learning over time**: The buffer grows as more queries are processed
+
+### Querying Past Experiences
+
+**Via API:**
+```bash
+# Find similar past analyses
+curl "http://localhost:8000/experience/similar?query=supply+chain+risk&top_k=3"
+
+# Get domain-level patterns
+curl "http://localhost:8000/experience/patterns"
+```
+
+**Via MCP:**
+```
+Tool: query_experience_buffer
+Input: { query: "supply chain risk", top_k: 3 }
+
+Tool: experience_buffer_patterns
+Input: {}
+```
+
+### What Gets Stored
+
+Each completed analysis stores:
+- Query text, domain classification, confidence
+- Response summary (first 200 chars)
+- Causal effect, Bayesian posterior, Guardian verdict
+- Timestamp and session ID
+
+### In the UI
+
+The Developer view includes an **Experience Buffer Panel** showing similar past queries and domain patterns, refreshable on demand.
+
+---
+
+## Using CARF in Notebooks
+
+The Library API provides notebook-friendly wrappers for all CARF cognitive services.
+
+### Quick Start
+
+```python
+from src.api.library import classify_query, run_causal, run_pipeline, query_memory
+
+# Classify a query
+result = await classify_query("Why did costs increase 15%?")
+print(result["domain"], result["confidence"])
+
+# Run full pipeline
+result = await run_pipeline("Does supplier program reduce emissions?")
+print(result["response"])
+
+# Run causal analysis with DataFrame
+import pandas as pd
+df = pd.read_csv("my_data.csv")
+result = await run_causal(
+    "Does X cause Y?",
+    data=df,
+    treatment="X",
+    outcome="Y",
+    covariates=["Z1", "Z2"]
+)
+print(result["effect_size"], result["confidence_interval"])
+
+# Check Guardian policies
+result = await check_guardian({"action_type": "invest", "amount": 50000})
+print(result["verdict"])
+
+# Query experience memory
+result = await query_memory("supply chain risk", top_k=3)
+print(result["similar_count"])
+```
+
+### Available Functions
+
+| Function | Purpose |
+|----------|---------|
+| `classify_query(query)` | Cynefin domain classification |
+| `run_causal(query, data, ...)` | Causal inference with DoWhy |
+| `run_bayesian(query, observations, ...)` | Bayesian inference with PyMC |
+| `check_guardian(proposed_action)` | Policy compliance check |
+| `run_pipeline(query)` | Full CARF pipeline end-to-end |
+| `query_memory(query, top_k)` | Similar past analyses |
+
+All functions return plain dicts (JSON-serializable) for easy notebook display.
+
+---
+
+## Router Retraining from Feedback
+
+Domain override feedback from users can be used to improve the Cynefin Router's classification accuracy.
+
+### How It Works
+
+1. **Collect feedback**: Users correct domain classifications via the Feedback panel
+2. **Check readiness**: The system tracks override counts per domain
+3. **Export training data**: Overrides are exported as JSONL for DistilBERT fine-tuning
+
+### Checking Readiness
+
+```bash
+curl http://localhost:8000/feedback/retraining-readiness
+```
+
+Returns:
+```json
+{
+  "total_overrides": 45,
+  "domain_distribution": {"complicated": 20, "complex": 15, "clear": 10},
+  "ready_for_retraining": true,
+  "recommendation": "Sufficient overrides collected. Ready for retraining."
+}
+```
+
+### Exporting Training Data
+
+```bash
+python scripts/retrain_router_from_feedback.py --output training_data.jsonl
+python scripts/retrain_router_from_feedback.py --dry-run  # Preview without writing
+```
+
+The script validates training data (minimum samples per domain, contradiction detection) before export.
 
 ---
 

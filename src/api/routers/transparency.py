@@ -248,6 +248,70 @@ async def generate_insights(request: InsightsRequest):
     )
 
 
+@router.post("/insights/enhanced", tags=["Insights"])
+async def generate_enhanced_insights(request: InsightsRequest):
+    """Generate enhanced insights with action items and roadmap for the specified persona."""
+    service = get_insights_service()
+    context = AnalysisContext(
+        domain=request.domain,
+        domain_confidence=request.domain_confidence,
+        domain_entropy=request.domain_entropy,
+        has_causal_result=request.has_causal_result,
+        causal_effect=request.causal_effect,
+        refutation_pass_rate=request.refutation_pass_rate,
+        has_bayesian_result=request.has_bayesian_result,
+        epistemic_uncertainty=request.epistemic_uncertainty,
+        aleatoric_uncertainty=request.aleatoric_uncertainty,
+        guardian_verdict=request.guardian_verdict,
+        policies_passed=request.policies_passed,
+        policies_total=request.policies_total,
+        sample_size=request.sample_size,
+        processing_time_ms=request.processing_time_ms,
+    )
+
+    response = service.generate_enhanced_insights(context, request.persona)
+
+    return {
+        "persona": response.persona,
+        "insights": [
+            {
+                "id": i.id,
+                "type": i.type.value,
+                "priority": i.priority.value,
+                "title": i.title,
+                "description": i.description,
+                "action": i.action,
+                "related_component": i.related_component,
+            }
+            for i in response.insights
+        ],
+        "action_items": [
+            {
+                "id": a.id,
+                "title": a.title,
+                "description": a.description,
+                "effort": a.effort,
+                "category": a.category,
+                "api_endpoint": a.api_endpoint,
+                "api_payload": a.api_payload,
+            }
+            for a in response.action_items
+        ],
+        "roadmap": [
+            {
+                "step": r.step,
+                "title": r.title,
+                "description": r.description,
+                "depends_on": r.depends_on,
+                "estimated_time": r.estimated_time,
+            }
+            for r in response.roadmap
+        ],
+        "total_count": response.total_count,
+        "generated_at": response.generated_at.isoformat(),
+    }
+
+
 @router.get("/insights/types", tags=["Insights"])
 async def get_insight_types():
     """Get available insight types and priorities."""
@@ -255,6 +319,47 @@ async def get_insight_types():
         "types": [t.value for t in InsightType],
         "priorities": [p.value for p in InsightPriority],
         "personas": ["analyst", "developer", "executive"],
+    }
+
+
+# ── Experience Buffer ─────────────────────────────────────────────────────
+
+@router.get("/experience/similar", tags=["Experience Buffer"])
+async def find_similar_experiences(query: str, top_k: int = 3):
+    """Find past analyses similar to the given query using semantic memory."""
+    from src.services.experience_buffer import get_experience_buffer
+
+    buffer = get_experience_buffer()
+    similar = buffer.find_similar(query, top_k=top_k)
+
+    return {
+        "query": query,
+        "matches": [
+            {
+                "query": entry.query,
+                "domain": entry.domain,
+                "domain_confidence": entry.domain_confidence,
+                "response_summary": entry.response_summary,
+                "causal_effect": entry.causal_effect,
+                "guardian_verdict": entry.guardian_verdict,
+                "timestamp": entry.timestamp.isoformat(),
+                "similarity": round(score, 4),
+            }
+            for entry, score in similar
+        ],
+        "buffer_size": buffer.size,
+    }
+
+
+@router.get("/experience/patterns", tags=["Experience Buffer"])
+async def get_experience_patterns():
+    """Get aggregated domain-level patterns from the experience buffer."""
+    from src.services.experience_buffer import get_experience_buffer
+
+    buffer = get_experience_buffer()
+    return {
+        "patterns": buffer.get_domain_patterns(),
+        "buffer_size": buffer.size,
     }
 
 

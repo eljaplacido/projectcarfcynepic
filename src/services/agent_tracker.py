@@ -113,7 +113,7 @@ class AgentPerformanceSummary(BaseModel):
 class AgentTrackerService:
     """Service for tracking agent execution and performance."""
 
-    def __init__(self, max_traces: int = 1000):
+    def __init__(self, max_traces: int = 100):
         self._traces: dict[UUID, WorkflowTrace] = {}
         self._agent_stats: dict[str, AgentPerformanceSummary] = {}
         self._max_traces = max_traces
@@ -133,10 +133,13 @@ class AgentTrackerService:
         )
         self._traces[trace.trace_id] = trace
 
-        # Cleanup old traces if needed
+        # Batch eviction: remove oldest 20% when limit exceeded
         if len(self._traces) > self._max_traces:
-            oldest_id = min(self._traces.keys(), key=lambda k: self._traces[k].started_at)
-            del self._traces[oldest_id]
+            n_evict = max(1, self._max_traces // 5)
+            sorted_ids = sorted(self._traces.keys(), key=lambda k: self._traces[k].started_at)
+            for evict_id in sorted_ids[:n_evict]:
+                del self._traces[evict_id]
+                self._execution_times.pop(evict_id, None)
 
         logger.info(f"Started workflow trace {trace.trace_id} for session {session_id}")
         return trace
@@ -290,6 +293,11 @@ class AgentTrackerService:
             stats.total_cost_usd += execution.llm_usage.cost_usd
 
         stats.last_execution = execution.completed_at
+
+    def clear_traces(self) -> None:
+        """Clear traces and execution times, preserving agent stats."""
+        self._traces.clear()
+        self._execution_times.clear()
 
     def get_trace(self, trace_id: UUID) -> WorkflowTrace | None:
         """Get a workflow trace by ID."""

@@ -14,6 +14,7 @@ data structures for the analysis pipeline.
 import io
 import json
 import logging
+from collections import OrderedDict
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -105,8 +106,10 @@ class DataLoaderService:
         "category", "segment", "year", "month", "date"
     ]
 
+    _max_cache_size = 20
+
     def __init__(self):
-        self._cache: dict[str, LoadedData] = {}
+        self._cache: OrderedDict[str, LoadedData] = OrderedDict()
 
     async def load_json(
         self,
@@ -273,8 +276,10 @@ class DataLoaderService:
             suggested_covariates=covariates
         )
 
-        # Cache the result
+        # Cache the result with LRU eviction
         self._cache[loaded.data_id] = loaded
+        while len(self._cache) > self._max_cache_size:
+            self._cache.popitem(last=False)
 
         return loaded
 
@@ -351,7 +356,10 @@ class DataLoaderService:
 
     def get_cached_data(self, data_id: str) -> LoadedData | None:
         """Retrieve cached data by ID."""
-        return self._cache.get(data_id)
+        if data_id in self._cache:
+            self._cache.move_to_end(data_id)
+            return self._cache[data_id]
+        return None
 
     def clear_cache(self) -> None:
         """Clear the data cache."""

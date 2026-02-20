@@ -6,6 +6,9 @@ from src.services.insights_service import (
     AnalysisContext,
     InsightType,
     InsightPriority,
+    ActionItem,
+    RoadmapItem,
+    EnhancedInsightsResponse,
     get_insights_service,
 )
 
@@ -229,4 +232,103 @@ class TestInsightsService:
         assert response.persona == "analyst"
         assert isinstance(response.insights, list)
         assert response.total_count == len(response.insights)
+        assert response.generated_at is not None
+
+
+class TestActionItems:
+    """Tests for action item generation."""
+
+    def test_generate_action_items_low_refutation(self, insights_service):
+        """Low refutation rate should generate sensitivity analysis action."""
+        context = AnalysisContext(
+            domain="complicated",
+            domain_confidence=0.85,
+            refutation_pass_rate=0.6,
+        )
+        items = insights_service.generate_action_items(context, "analyst")
+        assert any("sensitivity" in a.title.lower() for a in items)
+
+    def test_generate_action_items_small_sample(self, insights_service):
+        """Small sample should generate upload data action."""
+        context = AnalysisContext(
+            domain="complicated",
+            domain_confidence=0.85,
+            sample_size=100,
+        )
+        items = insights_service.generate_action_items(context, "analyst")
+        assert any("upload" in a.title.lower() or "data" in a.title.lower() for a in items)
+
+    def test_generate_action_items_executive_impact(self, insights_service):
+        """Executive persona should get impact assessment action."""
+        context = AnalysisContext(
+            domain="complicated",
+            domain_confidence=0.85,
+            has_causal_result=True,
+            causal_effect=0.25,
+        )
+        items = insights_service.generate_action_items(context, "executive")
+        assert any("impact" in a.title.lower() or "review" in a.title.lower() for a in items)
+
+    def test_generate_action_items_developer_perf(self, insights_service):
+        """Developer persona should get Oracle training action on slow queries."""
+        context = AnalysisContext(
+            domain="complicated",
+            domain_confidence=0.85,
+            processing_time_ms=6000,
+        )
+        items = insights_service.generate_action_items(context, "developer")
+        assert any("oracle" in a.title.lower() or "monitor" in a.title.lower() for a in items)
+
+    def test_action_items_empty_when_clean(self, insights_service):
+        """Clean analysis should not produce false-positive actions."""
+        context = AnalysisContext(
+            domain="clear",
+            domain_confidence=0.95,
+            refutation_pass_rate=0.95,
+            sample_size=1000,
+        )
+        items = insights_service.generate_action_items(context, "analyst")
+        # Should have at most confounder review for causal results
+        assert len(items) <= 1
+
+
+class TestRoadmap:
+    """Tests for roadmap generation."""
+
+    def test_generate_roadmap_ordering(self, insights_service):
+        """Steps should be sequential with correct dependencies."""
+        context = AnalysisContext(domain="complicated", domain_confidence=0.85)
+        roadmap = insights_service.generate_roadmap(context, "analyst")
+
+        assert len(roadmap) >= 4
+        # Steps must be increasing
+        steps = [r.step for r in roadmap]
+        assert steps == sorted(steps)
+        # Step 1 should have no dependencies
+        assert roadmap[0].depends_on == []
+        # Step 2+ should depend on prior steps
+        for item in roadmap[1:]:
+            assert len(item.depends_on) > 0
+            for dep in item.depends_on:
+                assert dep < item.step
+
+
+class TestEnhancedResponse:
+    """Tests for full enhanced insights response."""
+
+    def test_enhanced_response_structure(self, insights_service):
+        """Enhanced response should have all three sections populated."""
+        context = AnalysisContext(
+            domain="complicated",
+            domain_confidence=0.85,
+            refutation_pass_rate=0.6,
+            sample_size=200,
+        )
+        response = insights_service.generate_enhanced_insights(context, "analyst")
+
+        assert isinstance(response, EnhancedInsightsResponse)
+        assert response.persona == "analyst"
+        assert len(response.insights) > 0
+        assert len(response.action_items) > 0
+        assert len(response.roadmap) > 0
         assert response.generated_at is not None

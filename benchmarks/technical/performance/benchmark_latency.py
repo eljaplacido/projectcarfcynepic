@@ -119,13 +119,13 @@ def get_rss_mb() -> float:
 
 
 def _clear_caches() -> None:
-    """Clear LRU caches and run garbage collection to prevent memory accumulation."""
+    """Clear all in-memory caches via central registry."""
     try:
-        from src.core.llm import get_chat_model
-        get_chat_model.cache_clear()
+        from src.utils.cache_registry import clear_all_caches
+        clear_all_caches()
     except Exception:
-        pass
-    gc.collect()
+        # Fallback: at minimum run GC
+        gc.collect()
 
 
 async def measure_single_query(
@@ -181,6 +181,16 @@ async def run_benchmark(
             queries.append((domain, item["query"], item.get("context")))
     queries = queries[:n_queries]
 
+    # Warm-up phase: run one query per domain so all lazy imports and one-time
+    # initializations are complete before we take the memory baseline.
+    # This prevents counting import-time module loading (~164+ MB) as "growth".
+    logger.info("  Warm-up: running one query per domain to trigger all imports...")
+    for domain, domain_items in SAMPLE_QUERIES.items():
+        item = domain_items[0]
+        await measure_single_query(item["query"], item.get("context"))
+    _clear_caches()
+    logger.info("  Warm-up complete.")
+
     # Start tracemalloc for detailed memory profiling
     tracemalloc.start()
     rss_before = get_rss_mb()
@@ -197,7 +207,11 @@ async def run_benchmark(
         actual_domain = res["domain"]
         domain_latencies.setdefault(actual_domain, []).append(res["latency_ms"])
 
-        # Record memory snapshot every 5 queries for growth curve analysis
+        # Clear caches every 5 iterations to prevent memory accumulation
+        if i % 5 == 0:
+            _clear_caches()
+
+        # Record memory snapshot every 5 queries (after clearing for accurate measurement)
         if i % 5 == 0:
             tm_current, tm_peak = tracemalloc.get_traced_memory()
             memory_snapshots.append({
@@ -207,9 +221,7 @@ async def run_benchmark(
                 "tracemalloc_peak_mb": round(tm_peak / (1024 * 1024), 2),
             })
 
-        # Clear caches every 10 iterations to prevent LRU accumulation
         if i % 10 == 0:
-            _clear_caches()
             logger.info(f"  Progress: {i}/{len(queries)}")
 
     rss_after = get_rss_mb()

@@ -7,7 +7,9 @@
  * - Pattern recognition from similar queries
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 interface ExperienceEntry {
     id: string;
@@ -35,8 +37,41 @@ const ExperienceBufferPanel: React.FC<ExperienceBufferProps> = ({
     const [loading, setLoading] = useState(false);
     const [selectedEntry, setSelectedEntry] = useState<ExperienceEntry | null>(null);
 
-    // Demo data - in production this would come from Neo4j/API
-    useEffect(() => {
+    const fetchExperiences = useCallback(async () => {
+        setLoading(true);
+        try {
+            // Fetch patterns to get overall buffer data
+            const patternsRes = await fetch(`${API_BASE_URL}/experience/patterns`);
+            // Fetch similar experiences based on latest query if sessionId available
+            const similarRes = await fetch(`${API_BASE_URL}/experience/similar?query=recent+analysis&top_k=10`);
+
+            if (similarRes.ok) {
+                const data = await similarRes.json();
+                const apiEntries: ExperienceEntry[] = (data.matches || []).map((m: Record<string, unknown>, idx: number) => ({
+                    id: `exp-${idx}`,
+                    timestamp: m.timestamp as string || new Date().toISOString(),
+                    query_summary: (m.query as string || '').slice(0, 80),
+                    domain: m.domain as string || 'unknown',
+                    outcome: m.guardian_verdict === 'approved' ? 'success' as const
+                        : m.guardian_verdict === 'rejected' ? 'corrected' as const
+                        : 'success' as const,
+                    correction_source: m.guardian_verdict === 'rejected' ? 'guardian' as const : undefined,
+                    effect_estimate: m.causal_effect as number | undefined,
+                    confidence: m.domain_confidence as number || 0,
+                }));
+
+                if (apiEntries.length > 0) {
+                    setEntries(apiEntries);
+                    return;
+                }
+            }
+        } catch {
+            // API unavailable — fall through to demo data
+        } finally {
+            setLoading(false);
+        }
+
+        // Fallback demo data when API is unavailable or returns empty
         setEntries([
             {
                 id: 'exp-001',
@@ -80,6 +115,10 @@ const ExperienceBufferPanel: React.FC<ExperienceBufferProps> = ({
             },
         ]);
     }, [sessionId]);
+
+    useEffect(() => {
+        fetchExperiences();
+    }, [fetchExperiences]);
 
     const getOutcomeIcon = (outcome: ExperienceEntry['outcome']) => {
         switch (outcome) {
@@ -132,11 +171,8 @@ const ExperienceBufferPanel: React.FC<ExperienceBufferProps> = ({
 
     const patternsLearned = entries.filter(e => e.learned_pattern).length;
 
-    const handleRefresh = async () => {
-        setLoading(true);
-        // In production, this would fetch from /api/developer/experience-buffer
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setLoading(false);
+    const handleRefresh = () => {
+        fetchExperiences();
     };
 
     return (

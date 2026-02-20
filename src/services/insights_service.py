@@ -75,6 +75,36 @@ class AnalysisContext(BaseModel):
     processing_time_ms: int | None = None
 
 
+class ActionItem(BaseModel):
+    """A concrete action a user can take, optionally with an API call."""
+    id: str = Field(default_factory=lambda: str(uuid4())[:8])
+    title: str
+    description: str
+    effort: str = Field(description="quick | medium | deep")
+    category: str = Field(description="data_quality | model_improvement | risk_mitigation | exploration")
+    api_endpoint: str | None = None
+    api_payload: dict[str, Any] | None = None
+
+
+class RoadmapItem(BaseModel):
+    """A single step in a recommended analysis roadmap."""
+    step: int
+    title: str
+    description: str
+    depends_on: list[int] = Field(default_factory=list)
+    estimated_time: str = ""
+
+
+class EnhancedInsightsResponse(BaseModel):
+    """Full enhanced response with insights, action items, and roadmap."""
+    persona: str
+    insights: list[Insight]
+    action_items: list[ActionItem]
+    roadmap: list[RoadmapItem]
+    total_count: int
+    generated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 class InsightsService:
     """Service for generating contextual insights."""
 
@@ -338,6 +368,206 @@ class InsightsService:
             ))
 
         return insights
+
+    def generate_action_items(
+        self,
+        context: AnalysisContext,
+        persona: str = "analyst",
+    ) -> list[ActionItem]:
+        """Generate rule-based action items keyed on analysis state and persona."""
+        items: list[ActionItem] = []
+
+        # Common actions based on analysis state
+        if context.refutation_pass_rate is not None and context.refutation_pass_rate < 0.8:
+            items.append(ActionItem(
+                title="Run sensitivity analysis",
+                description="Refutation pass rate is low — run additional sensitivity tests to validate the causal estimate.",
+                effort="medium",
+                category="data_quality",
+                api_endpoint="/query",
+                api_payload={"query": "Run sensitivity analysis on the current causal estimate", "context": {"run_type": "sensitivity"}},
+            ))
+
+        if context.sample_size is not None and context.sample_size < 500:
+            items.append(ActionItem(
+                title="Upload more data",
+                description=f"Current sample size ({context.sample_size}) is small. Upload additional data for more robust results.",
+                effort="medium",
+                category="data_quality",
+            ))
+
+        if context.processing_time_ms is not None and context.processing_time_ms > 5000:
+            items.append(ActionItem(
+                title="Train ChimeraOracle for fast predictions",
+                description="Processing time is high. Train the Oracle on this scenario for sub-100ms predictions.",
+                effort="deep",
+                category="model_improvement",
+                api_endpoint="/oracle/train",
+            ))
+
+        if context.epistemic_uncertainty is not None and context.epistemic_uncertainty > 0.3:
+            items.append(ActionItem(
+                title="Design safe-to-fail probe",
+                description="High epistemic uncertainty detected. Design a targeted experiment to reduce uncertainty.",
+                effort="deep",
+                category="exploration",
+                api_endpoint="/query",
+                api_payload={"query": "Design safe-to-fail probes for the current hypothesis", "context": {"run_type": "probe_design"}},
+            ))
+
+        # Persona-specific actions
+        if persona == "analyst":
+            if context.has_causal_result and context.causal_effect is not None:
+                items.append(ActionItem(
+                    title="Review confounder coverage",
+                    description="Verify that all relevant confounders are included in the causal model.",
+                    effort="quick",
+                    category="data_quality",
+                ))
+
+        elif persona == "developer":
+            items.append(ActionItem(
+                title="Check cache hit rates",
+                description="Monitor cache performance and optimize if hit rate is below 70%.",
+                effort="quick",
+                category="model_improvement",
+            ))
+            if context.processing_time_ms and context.processing_time_ms > 3000:
+                items.append(ActionItem(
+                    title="Set up performance monitoring",
+                    description="Configure latency alerts for queries exceeding 3 seconds.",
+                    effort="medium",
+                    category="model_improvement",
+                ))
+
+        elif persona == "executive":
+            if context.has_causal_result and context.causal_effect:
+                items.append(ActionItem(
+                    title="Schedule impact assessment review",
+                    description="The causal analysis has results. Schedule a review with stakeholders to assess business impact.",
+                    effort="quick",
+                    category="risk_mitigation",
+                ))
+            if context.domain_confidence and context.domain_confidence >= 0.85:
+                items.append(ActionItem(
+                    title="Approve pilot program",
+                    description="High-confidence results support a controlled pilot implementation.",
+                    effort="medium",
+                    category="risk_mitigation",
+                ))
+
+        return items
+
+    def generate_roadmap(
+        self,
+        context: AnalysisContext,
+        persona: str = "analyst",
+    ) -> list[RoadmapItem]:
+        """Generate a sequenced analysis roadmap with dependency tracking."""
+        roadmap: list[RoadmapItem] = []
+        step = 1
+
+        # Step 1: Data validation (always first)
+        roadmap.append(RoadmapItem(
+            step=step,
+            title="Validate data quality",
+            description="Run data quality checks on input data. Verify completeness, distributions, and outliers.",
+            estimated_time="5 min",
+        ))
+
+        # Step 2: Domain classification review
+        step += 1
+        roadmap.append(RoadmapItem(
+            step=step,
+            title="Review domain classification",
+            description=f"Current domain: {context.domain or 'unknown'} ({context.domain_confidence or 0:.0%} confidence). Verify this is correct.",
+            depends_on=[1],
+            estimated_time="2 min",
+        ))
+
+        # Step 3: Analysis (depends on domain)
+        step += 1
+        if context.domain in ("complicated", "Complicated"):
+            roadmap.append(RoadmapItem(
+                step=step,
+                title="Run causal analysis",
+                description="Execute the full causal pipeline: DAG discovery, effect estimation, and refutation tests.",
+                depends_on=[2],
+                estimated_time="15 min",
+            ))
+        elif context.domain in ("complex", "Complex"):
+            roadmap.append(RoadmapItem(
+                step=step,
+                title="Run Bayesian exploration",
+                description="Establish priors, design probes, and update beliefs through active inference.",
+                depends_on=[2],
+                estimated_time="10 min",
+            ))
+        else:
+            roadmap.append(RoadmapItem(
+                step=step,
+                title="Run primary analysis",
+                description="Execute the appropriate analysis for the classified domain.",
+                depends_on=[2],
+                estimated_time="10 min",
+            ))
+
+        # Step 4: Validation
+        step += 1
+        roadmap.append(RoadmapItem(
+            step=step,
+            title="Validate results",
+            description="Review Guardian policy checks, refutation tests, and confidence levels.",
+            depends_on=[3],
+            estimated_time="5 min",
+        ))
+
+        # Step 5: Persona-specific final step
+        step += 1
+        if persona == "analyst":
+            roadmap.append(RoadmapItem(
+                step=step,
+                title="Document findings and limitations",
+                description="Create a summary of findings, limitations, and recommended follow-up analyses.",
+                depends_on=[4],
+                estimated_time="10 min",
+            ))
+        elif persona == "developer":
+            roadmap.append(RoadmapItem(
+                step=step,
+                title="Optimize and deploy",
+                description="Train ChimeraOracle on validated scenario, set up monitoring, and optimize caching.",
+                depends_on=[4],
+                estimated_time="30 min",
+            ))
+        elif persona == "executive":
+            roadmap.append(RoadmapItem(
+                step=step,
+                title="Prepare decision brief",
+                description="Synthesize findings into an executive brief with recommendations and risk assessment.",
+                depends_on=[4],
+                estimated_time="15 min",
+            ))
+
+        return roadmap
+
+    def generate_enhanced_insights(
+        self,
+        context: AnalysisContext,
+        persona: str = "analyst",
+    ) -> EnhancedInsightsResponse:
+        """Generate enhanced insights with action items and roadmap."""
+        base = self.generate_insights(context, persona)
+        action_items = self.generate_action_items(context, persona)
+        roadmap = self.generate_roadmap(context, persona)
+
+        return EnhancedInsightsResponse(
+            persona=base.persona,
+            insights=base.insights,
+            action_items=action_items,
+            roadmap=roadmap,
+            total_count=base.total_count,
+        )
 
     def generate_insights(
         self,

@@ -30,6 +30,33 @@ interface Insight {
     related_component: string | null;
 }
 
+interface ActionItem {
+    id: string;
+    title: string;
+    description: string;
+    effort: 'quick' | 'medium' | 'deep';
+    category: string;
+    api_endpoint: string | null;
+    api_payload: Record<string, unknown> | null;
+}
+
+interface RoadmapItem {
+    step: number;
+    title: string;
+    description: string;
+    depends_on: number[];
+    estimated_time: string;
+}
+
+interface EnhancedInsightsResponse {
+    persona: string;
+    insights: Insight[];
+    action_items: ActionItem[];
+    roadmap: RoadmapItem[];
+    total_count: number;
+    generated_at: string;
+}
+
 const typeIcons: Record<string, string> = {
     improvement: '🔧',
     warning: '⚠️',
@@ -64,10 +91,13 @@ const InsightsPanel: React.FC<InsightsPanelProps> = ({
     maxInsights = 5,
 }) => {
     const [insights, setInsights] = useState<Insight[]>([]);
+    const [actionItems, setActionItems] = useState<ActionItem[]>([]);
+    const [roadmap, setRoadmap] = useState<RoadmapItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [filterType, setFilterType] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<'insights' | 'actions' | 'roadmap'>('insights');
 
     // Fetch insights from API
     useEffect(() => {
@@ -80,34 +110,52 @@ const InsightsPanel: React.FC<InsightsPanelProps> = ({
             setLoading(true);
             setError(null);
 
+            const requestBody = {
+                    persona,
+                    domain: queryResponse.domain,
+                    domain_confidence: queryResponse.domainConfidence,
+                    domain_entropy: queryResponse.domainEntropy,
+                    has_causal_result: !!causalResult,
+                    causal_effect: causalResult?.effect,
+                    refutation_pass_rate: causalResult?.refutationsTotal
+                        ? (causalResult.refutationsPassed || 0) / causalResult.refutationsTotal
+                        : null,
+                    has_bayesian_result: !!bayesianResult,
+                    epistemic_uncertainty: bayesianResult?.epistemicUncertainty,
+                    aleatoric_uncertainty: bayesianResult?.aleatoricUncertainty,
+                    guardian_verdict: queryResponse.guardianVerdict,
+                    policies_passed: guardianResult?.policiesPassed || 0,
+                    policies_total: guardianResult?.policiesTotal || 0,
+                };
+
             try {
-                const response = await fetch(`${API_BASE_URL}/insights/generate`, {
+                // Try enhanced endpoint first, fall back to basic
+                let response = await fetch(`${API_BASE_URL}/insights/enhanced`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        persona,
-                        domain: queryResponse.domain,
-                        domain_confidence: queryResponse.domainConfidence,
-                        domain_entropy: queryResponse.domainEntropy,
-                        has_causal_result: !!causalResult,
-                        causal_effect: causalResult?.effect,
-                        refutation_pass_rate: causalResult?.refutationsTotal
-                            ? (causalResult.refutationsPassed || 0) / causalResult.refutationsTotal
-                            : null,
-                        has_bayesian_result: !!bayesianResult,
-                        epistemic_uncertainty: bayesianResult?.epistemicUncertainty,
-                        aleatoric_uncertainty: bayesianResult?.aleatoricUncertainty,
-                        guardian_verdict: queryResponse.guardianVerdict,
-                        policies_passed: guardianResult?.policiesPassed || 0,
-                        policies_total: guardianResult?.policiesTotal || 0,
-                    }),
+                    body: JSON.stringify(requestBody),
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
+                    const data: EnhancedInsightsResponse = await response.json();
                     setInsights(data.insights || []);
+                    setActionItems(data.action_items || []);
+                    setRoadmap(data.roadmap || []);
                 } else {
-                    throw new Error('Failed to fetch insights');
+                    // Fall back to basic insights
+                    response = await fetch(`${API_BASE_URL}/insights/generate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody),
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setInsights(data.insights || []);
+                        setActionItems([]);
+                        setRoadmap([]);
+                    } else {
+                        throw new Error('Failed to fetch insights');
+                    }
                 }
             } catch (err) {
                 console.error('Failed to fetch insights:', err);
@@ -327,6 +375,94 @@ const InsightsPanel: React.FC<InsightsPanelProps> = ({
                         <button className="text-sm text-primary hover:underline">
                             View all {filteredInsights.length} insights
                         </button>
+                    </div>
+                )}
+
+                {/* Tab navigation for Action Items & Roadmap */}
+                {(actionItems.length > 0 || roadmap.length > 0) && (
+                    <div className="mt-4 border-t border-gray-200 dark:border-slate-700 pt-4">
+                        <div className="flex gap-2 mb-3">
+                            {['insights', 'actions', 'roadmap'].map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab as typeof activeTab)}
+                                    className={`px-3 py-1 text-xs rounded-full capitalize transition-colors ${
+                                        activeTab === tab
+                                            ? 'bg-primary text-white'
+                                            : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                                    }`}
+                                >
+                                    {tab === 'actions' ? `Actions (${actionItems.length})` : tab === 'roadmap' ? `Roadmap (${roadmap.length})` : `Insights (${insights.length})`}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Action Items Section */}
+                        {activeTab === 'actions' && actionItems.length > 0 && (
+                            <div className="space-y-2">
+                                {actionItems.map(item => {
+                                    const effortColors: Record<string, string> = {
+                                        quick: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
+                                        medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
+                                        deep: 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300',
+                                    };
+                                    return (
+                                        <div
+                                            key={item.id}
+                                            className="p-3 rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-800/50 hover:shadow-sm transition-shadow"
+                                        >
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="font-medium text-gray-900 dark:text-slate-100 text-sm">
+                                                        {item.title}
+                                                    </div>
+                                                    <p className="text-xs text-gray-600 dark:text-slate-400 mt-1">{item.description}</p>
+                                                </div>
+                                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase flex-shrink-0 ${effortColors[item.effort] || effortColors.medium}`}>
+                                                    {item.effort}
+                                                </span>
+                                            </div>
+                                            {item.api_endpoint && (
+                                                <div className="mt-2">
+                                                    <span className="text-[10px] text-gray-500 dark:text-slate-500 font-mono">
+                                                        API: {item.api_endpoint}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* Roadmap Section */}
+                        {activeTab === 'roadmap' && roadmap.length > 0 && (
+                            <div className="space-y-1">
+                                {roadmap.map((item, idx) => (
+                                    <div key={item.step} className="flex gap-3 items-start">
+                                        <div className="flex flex-col items-center flex-shrink-0">
+                                            <div className="w-6 h-6 rounded-full bg-primary text-white text-xs flex items-center justify-center font-bold">
+                                                {item.step}
+                                            </div>
+                                            {idx < roadmap.length - 1 && (
+                                                <div className="w-0.5 h-6 bg-gray-300 dark:bg-slate-600 mt-1" />
+                                            )}
+                                        </div>
+                                        <div className="pb-3 flex-1 min-w-0">
+                                            <div className="font-medium text-gray-900 dark:text-slate-100 text-sm flex items-center gap-2">
+                                                {item.title}
+                                                {item.estimated_time && (
+                                                    <span className="text-[10px] text-gray-500 dark:text-slate-500 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">
+                                                        {item.estimated_time}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-gray-600 dark:text-slate-400 mt-0.5">{item.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

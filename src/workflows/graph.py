@@ -349,13 +349,15 @@ async def circuit_breaker_node(state: EpistemicState) -> EpistemicState:
 async def reflector_node(state: EpistemicState) -> EpistemicState:
     """Self-correction node - attempts to fix rejected actions.
 
-    Called when Guardian rejects an action. First attempts auto-repair based on
-    violation type, then feeds the violation reasons back into context if repair fails.
-    
-    Auto-repair strategies:
+    Called when Guardian rejects an action. Uses SmartReflectorService for
+    hybrid heuristic + LLM repair, then feeds violation reasons back into
+    context if repair fails.
+
+    Auto-repair strategies (via SmartReflectorService):
     - budget_exceeded: Reduce proposed values by 20%
-    - threshold_exceeded: Apply safety margin
+    - threshold_exceeded: Apply 10% safety margin
     - missing_approval: Flag for human review instead of full escalation
+    - Unknown violations: LLM-based contextual repair (hybrid mode)
     """
     logger.info(f"Reflector attempting self-correction (attempt {state.reflection_count + 1})")
 
@@ -363,65 +365,39 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
 
     violations = state.policy_violations or []
     original_action = state.proposed_action
-    
+
     # Store original action for transparency
     if original_action and not state.context.get("original_action"):
         state.context["original_action"] = original_action
-    
-    # Attempt auto-repair based on violation types
+
+    # Use SmartReflectorService for repair
     repair_attempted = False
     repair_successful = False
-    repair_details = []
-    
-    if original_action and isinstance(original_action, dict):
-        repaired_action = original_action.copy()
-        
-        for violation in violations:
-            violation_lower = violation.lower()
-            
-            # Budget-related repairs
-            if "budget" in violation_lower or "cost" in violation_lower:
-                # Reduce any numerical values by 20%
-                for key in list(repaired_action.keys()):
-                    value = repaired_action[key]
-                    if isinstance(value, (int, float)) and not isinstance(value, bool) and value > 0:
-                        repaired_action[key] = value * 0.8
-                        repair_details.append(f"Reduced {key} by 20%")
-                    elif isinstance(value, dict):
-                        for sub_key, sub_val in list(value.items()):
-                            if isinstance(sub_val, (int, float)) and not isinstance(sub_val, bool) and sub_val > 0:
-                                value[sub_key] = sub_val * 0.8
-                                repair_details.append(f"Reduced {key}.{sub_key} by 20%")
-                repair_attempted = True
+    repair_details: list[str] = []
+    repair_strategy = "none"
 
-            # Threshold-related repairs
-            elif "threshold" in violation_lower or "limit" in violation_lower:
-                # Apply safety margin
-                for key in list(repaired_action.keys()):
-                    value = repaired_action[key]
-                    if isinstance(value, (int, float)) and not isinstance(value, bool) and value > 0:
-                        repaired_action[key] = value * 0.9
-                        repair_details.append(f"Applied 10% safety margin to {key}")
-                    elif isinstance(value, dict):
-                        for sub_key, sub_val in list(value.items()):
-                            if isinstance(sub_val, (int, float)) and not isinstance(sub_val, bool) and sub_val > 0:
-                                value[sub_key] = sub_val * 0.9
-                                repair_details.append(f"Applied 10% safety margin to {key}.{sub_key}")
+    if original_action and isinstance(original_action, dict) and violations:
+        try:
+            from src.services.smart_reflector import get_smart_reflector
+            reflector = get_smart_reflector()
+            repair_result = await reflector.repair(state)
+
+            repair_strategy = repair_result.strategy_used.value
+            state.context["repair_strategy"] = repair_strategy
+
+            if repair_result.confidence > 0 and repair_result.repaired_action != original_action:
+                state.proposed_action = repair_result.repaired_action
+                state.context["action_was_repaired"] = True
+                state.context["repair_details"] = [repair_result.repair_explanation]
+                repair_details = [repair_result.repair_explanation]
                 repair_attempted = True
-            
-            # Approval-related - flag for targeted human review
-            elif "approval" in violation_lower or "authorization" in violation_lower:
-                repaired_action["requires_human_review"] = True
-                repaired_action["review_reason"] = violation
-                repair_details.append("Flagged for targeted human review")
-                repair_attempted = True
-        
-        if repair_attempted:
-            state.proposed_action = repaired_action
-            state.context["action_was_repaired"] = True
-            state.context["repair_details"] = repair_details
-            repair_successful = True
-            logger.info(f"Auto-repair applied: {repair_details}")
+                repair_successful = True
+                logger.info(f"Smart repair applied ({repair_strategy}): {repair_result.repair_explanation}")
+            elif repair_result.violations_remaining:
+                repair_attempted = repair_result.confidence > 0
+                repair_details = [repair_result.repair_explanation]
+        except Exception as e:
+            logger.warning(f"SmartReflector failed, skipping repair: {e}")
 
     # Feed rejection reasons into context so the domain agent can adapt
     rejections = state.context.get("guardian_rejections", [])
@@ -431,6 +407,7 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
         "repair_attempted": repair_attempted,
         "repair_successful": repair_successful,
         "repair_details": repair_details,
+        "repair_strategy": repair_strategy,
     })
     state.context["guardian_rejections"] = rejections
 
@@ -439,8 +416,8 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
         action=f"Self-correction attempt {state.reflection_count}",
         input_summary=f"Violations: {violations}",
         output_summary=(
-            f"Auto-repair {'succeeded' if repair_successful else 'not attempted'}: {repair_details}"
-            if repair_attempted else 
+            f"Smart repair ({repair_strategy}) {'succeeded' if repair_successful else 'not attempted'}: {repair_details}"
+            if repair_attempted else
             f"Feeding {len(violations)} violation(s) back to domain agent for retry"
         ),
         confidence=ConfidenceLevel.MEDIUM if repair_successful else ConfidenceLevel.LOW,
@@ -680,6 +657,22 @@ async def run_carf(
         await log_state_to_kafka(final_state)
     except Exception as exc:
         logger.warning(f"Kafka audit logging failed: {exc}")
+
+    # Store experience for future retrieval (non-critical)
+    try:
+        from src.services.experience_buffer import get_experience_buffer, ExperienceEntry
+        buffer = get_experience_buffer()
+        buffer.add(ExperienceEntry(
+            query=user_input,
+            domain=final_state.cynefin_domain.value,
+            domain_confidence=final_state.domain_confidence,
+            response_summary=(final_state.final_response or "")[:200],
+            causal_effect=final_state.causal_evidence.effect_size if final_state.causal_evidence else None,
+            guardian_verdict=final_state.guardian_verdict.value if final_state.guardian_verdict else None,
+            session_id=str(final_state.session_id),
+        ))
+    except Exception:
+        pass  # Experience buffer is non-critical
 
     logger.info(
         f"CARF pipeline complete. Domain: {final_state.cynefin_domain.value}, "

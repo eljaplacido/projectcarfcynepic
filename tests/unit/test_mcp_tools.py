@@ -51,11 +51,11 @@ class TestMCPToolImports:
         assert callable(router.cynefin_config)
 
     def test_total_tool_count(self):
-        """Verify we have exactly 15 tools registered in the MCP server."""
+        """Verify we have exactly 18 tools registered in the MCP server."""
         from src.mcp.server import mcp
 
         tools = mcp._tool_manager._tools
-        assert len(tools) == 15, f"Expected 15 tools, got {len(tools)}: {list(tools.keys())}"
+        assert len(tools) == 18, f"Expected 18 tools, got {len(tools)}: {list(tools.keys())}"
 
 
 class TestMCPServerModule:

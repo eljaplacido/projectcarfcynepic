@@ -1235,6 +1235,111 @@ const stepDelays = [400, 600, 1200, 800, 500];  // ms per step
 
 ---
 
+## InsightsPanel (Enhanced)
+
+**Location:** `src/components/carf/InsightsPanel.tsx`
+
+**Purpose:** Displays analytical insights, actionable next steps, and sequenced roadmaps per persona. Enhanced in Phase 13 with Action Items and Roadmap subsections.
+
+### Props Interface
+
+```typescript
+interface InsightsPanelProps {
+  persona: string;
+  domain: string;
+  domainConfidence: number;
+  hasCausalResult: boolean;
+  causalEffect: number | null;
+  refutationPassRate: number | null;
+  sampleSize: number | null;
+}
+```
+
+### Data Structures
+
+```typescript
+interface ActionItem {
+  id: string;
+  title: string;
+  description: string;
+  effort: 'quick' | 'medium' | 'deep';
+  category: 'data_quality' | 'model_improvement' | 'risk_mitigation' | 'exploration';
+  api_endpoint: string | null;
+  api_payload: Record<string, unknown> | null;
+}
+
+interface RoadmapItem {
+  step: number;
+  title: string;
+  description: string;
+  depends_on: number[];
+  estimated_time: string;
+}
+
+interface EnhancedInsightsResponse {
+  persona: string;
+  insights: Insight[];
+  action_items: ActionItem[];
+  roadmap: RoadmapItem[];
+  total_count: number;
+  generated_at: string;
+}
+```
+
+### Visual Layout
+
+```
+┌───────────────────────────────────────────────────────────┐
+│ 💡 Insights & Actions                                     │
+├───────────────────────────────────────────────────────────┤
+│ [Insights] [Action Items] [Roadmap]   ← Tab navigation    │
+│                                                           │
+│ ── Action Items Tab ──                                    │
+│ ┌─────────────────────────────────────────────────────┐   │
+│ │ 🔬 Run sensitivity analysis           [quick] 🟢    │   │
+│ │ Low refutation pass rate detected...                │   │
+│ └─────────────────────────────────────────────────────┘   │
+│ ┌─────────────────────────────────────────────────────┐   │
+│ │ 📊 Upload additional data             [medium] 🟡   │   │
+│ │ Sample size below recommended threshold...          │   │
+│ └─────────────────────────────────────────────────────┘   │
+│                                                           │
+│ ── Roadmap Tab ──                                         │
+│ ① Validate data quality                    ~30 min        │
+│ │  Check for missing values and outliers                  │
+│ ②─┤ Run sensitivity analysis               ~1 hour       │
+│ │  Multiple estimator comparison                          │
+│ ③─┤ Collect additional data                ~1 week        │
+│    Increase sample size for robustness                    │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Key Features
+
+| Feature | Implementation |
+|---------|----------------|
+| **Tabbed navigation** | Three tabs: Insights, Action Items, Roadmap |
+| **Effort badges** | Color-coded: quick (green), medium (yellow), deep (orange) |
+| **API endpoint linking** | Action items can include pre-wired API call payloads |
+| **Dependency tracking** | Roadmap steps show `depends_on` relationships |
+| **Persona filtering** | Actions tailored to analyst/developer/executive |
+| **Graceful fallback** | Falls back to `/insights/generate` if enhanced endpoint unavailable |
+
+### Fetch Logic
+
+```typescript
+// Try enhanced endpoint first
+const enhanced = await fetch('/insights/enhanced', { method: 'POST', body: context });
+if (enhanced.ok) {
+  // Use action_items + roadmap + insights
+} else {
+  // Fall back to standard insights
+  const standard = await fetch('/insights/generate', { method: 'POST', body: context });
+}
+```
+
+---
+
 ## Implementation Status
 
 ### Current Phase: Phase 5 - React Platform Cockpit Development

@@ -156,6 +156,53 @@ python benchmarks/reports/generate_report.py
 
 See `benchmarks/README.md` for complete instructions and `docs/WALKTHROUGH.md` for detailed testing guide.
 
+### 13. Enhanced Insights & Roadmaps
+
+After running any analysis, explore the enhanced insights:
+
+1. In the InsightsPanel, click the **"Action Items"** tab to see persona-specific next steps
+2. Each action shows an effort badge: `quick` (green), `medium` (yellow), `deep` (orange)
+3. Click the **"Roadmap"** tab for a sequenced analysis plan with time estimates
+4. Switch persona views (Analyst/Developer/Executive) to see different action recommendations
+
+**Via API:**
+```bash
+curl -X POST http://localhost:8000/insights/enhanced \
+  -H "Content-Type: application/json" \
+  -d '{
+    "persona": "analyst",
+    "domain": "complicated",
+    "domain_confidence": 0.85,
+    "has_causal_result": true,
+    "causal_effect": -0.15,
+    "refutation_pass_rate": 0.6,
+    "sample_size": 200
+  }'
+```
+
+### 14. Smart Self-Correction Demo
+
+To see the Smart Reflector in action:
+
+1. Submit a query that triggers a Guardian violation (e.g., a high-budget action)
+2. Watch the execution trace — the Reflector attempts to repair the action
+3. In Developer view, check `repair_strategy` in the context (heuristic or LLM)
+4. The repaired action is re-evaluated by the Guardian
+
+### 15. Experience Memory
+
+After running multiple queries:
+
+1. Switch to Developer view and find the **Experience Buffer Panel**
+2. Click "Refresh" to see past queries ranked by similarity
+3. Domain patterns show aggregate statistics per Cynefin domain
+
+**Via API:**
+```bash
+curl "http://localhost:8000/experience/similar?query=supply+chain+risk&top_k=3"
+curl "http://localhost:8000/experience/patterns"
+```
+
 ## Key Features Demonstrated
 
 - **AI Act Transparency**: Explainable results with confidence levels
@@ -173,5 +220,10 @@ See `benchmarks/README.md` for complete instructions and `docs/WALKTHROUGH.md` f
 - **ChimeraOracle Auto-Activation**: Fast predictions when trained models are available
 - **Configurable Regions**: CSL region validation configurable via `CSL_APPROVED_REGIONS` env var
 - **Data Feasibility**: Clear guidance on what data types suit each analysis method
-- **Benchmark Suite**: 6 technical benchmarks + end-to-end use case benchmarks testing 9 falsifiable hypotheses (H1-H9)
+- **Benchmark Suite**: 8 technical benchmarks + end-to-end use case benchmarks testing 11 falsifiable hypotheses (H1-H11, 8/8 core passed — Grade A+)
 - **TLA+ Formal Verification**: StateGraph and EscalationProtocol formally verified with TLC model checker
+- **Smart Self-Correction**: Hybrid heuristic + LLM repair for policy violations
+- **Experience Memory**: Sentence-transformer semantic buffer (with TF-IDF fallback) for similar past query retrieval
+- **Actionable Insights**: Persona-specific action items with effort badges and sequenced roadmaps
+- **Library API**: Notebook-friendly wrappers (`from src.api.library import run_pipeline`)
+- **Router Retraining**: Feedback-driven domain override export for DistilBERT fine-tuning

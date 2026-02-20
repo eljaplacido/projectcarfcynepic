@@ -259,6 +259,45 @@ async def get_domain_overrides():
     }
 
 
+@router.get("/feedback/retraining-readiness")
+async def check_retraining_readiness():
+    """Check if there's enough domain override feedback for Router retraining.
+
+    Returns total overrides, distribution across domains, and a recommendation.
+    """
+    store = get_feedback_store()
+    overrides = store.get_domain_overrides()
+
+    domain_distribution: dict[str, int] = {}
+    for override in overrides:
+        domain = (override.get("correct_domain") or "unknown").lower()
+        domain_distribution[domain] = domain_distribution.get(domain, 0) + 1
+
+    total = len(overrides)
+    min_per_domain = 3
+    has_enough = total >= 10 and all(
+        count >= min_per_domain
+        for count in domain_distribution.values()
+    )
+
+    if total == 0:
+        recommendation = "No domain overrides collected yet. Encourage users to correct misclassifications."
+    elif total < 10:
+        recommendation = f"Only {total} overrides collected. Need at least 10 for meaningful retraining."
+    elif not has_enough:
+        under_represented = [d for d, c in domain_distribution.items() if c < min_per_domain]
+        recommendation = f"Some domains under-represented ({under_represented}). Collect more samples for these."
+    else:
+        recommendation = "Ready for retraining. Run: python scripts/retrain_router_from_feedback.py"
+
+    return {
+        "total_overrides": total,
+        "domain_distribution": domain_distribution,
+        "ready_for_retraining": has_enough,
+        "recommendation": recommendation,
+    }
+
+
 @router.get("/feedback/export")
 async def export_feedback():
     """Export all feedback as JSON for analysis."""

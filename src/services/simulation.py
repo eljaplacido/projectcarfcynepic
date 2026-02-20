@@ -13,6 +13,7 @@ scenario realism scoring, and transparency integration.
 
 import logging
 import math
+from collections import OrderedDict
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -1080,7 +1081,8 @@ class SimulationService:
         self.causal_engine = CausalInferenceEngine()
         self.neo4j = get_neo4j_service()
         self._running_simulations: dict[str, SimulationResult] = {}
-        self._realism_cache: dict[str, ScenarioRealismScore] = {}
+        self._max_cache_size = 50
+        self._realism_cache: OrderedDict[str, ScenarioRealismScore] = OrderedDict()
     
     async def run_scenario(
         self,
@@ -1324,6 +1326,8 @@ class SimulationService:
                 covariates=covariates,
             )
             self._realism_cache[config.id] = realism_score
+            while len(self._realism_cache) > self._max_cache_size:
+                self._realism_cache.popitem(last=False)
 
         # Calculate reliability score
         reliability_components = []
@@ -1425,7 +1429,15 @@ class SimulationService:
 
     def get_cached_realism_score(self, scenario_id: str) -> ScenarioRealismScore | None:
         """Get cached realism score for a scenario."""
-        return self._realism_cache.get(scenario_id)
+        if scenario_id in self._realism_cache:
+            self._realism_cache.move_to_end(scenario_id)
+            return self._realism_cache[scenario_id]
+        return None
+
+    def clear_caches(self) -> None:
+        """Clear realism and simulation caches."""
+        self._realism_cache.clear()
+        self._running_simulations.clear()
 
 
 # Singleton instance

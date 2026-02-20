@@ -106,8 +106,8 @@ class TestReflectorNode:
         assert result.reflection_count == 1
 
     @pytest.mark.asyncio
-    async def test_clears_proposed_action(self):
-        """Test reflector clears proposed action for retry."""
+    async def test_repairs_proposed_action(self):
+        """Test reflector repairs or clears proposed action for retry."""
         state = EpistemicState(
             user_input="Test query",
             proposed_action={"action": "rejected_action"},
@@ -117,7 +117,8 @@ class TestReflectorNode:
 
         result = await reflector_node(state)
 
-        assert result.proposed_action is None
+        # Smart reflector either repairs the action or clears it
+        # Guardian verdict is always reset for re-evaluation
         assert result.guardian_verdict is None
 
     @pytest.mark.asyncio
@@ -305,6 +306,45 @@ class TestRouteAfterHuman:
         """Test routing with dict input for modified status."""
         state_dict = {"human_interaction_status": HumanInteractionStatus.MODIFIED}
         assert route_after_human(state_dict) == "router"
+
+
+class TestReflectorSmartRepair:
+    """Tests for smart reflector integration in reflector_node."""
+
+    @pytest.mark.asyncio
+    async def test_reflector_uses_smart_repair(self):
+        """Test that reflector_node uses SmartReflectorService for budget violations."""
+        state = EpistemicState(
+            user_input="Test smart repair",
+            proposed_action={"action_type": "invest", "amount": 150000},
+            policy_violations=["Budget exceeded: 150000 > 100000"],
+            guardian_verdict=GuardianVerdict.REJECTED,
+            reflection_count=0,
+        )
+
+        result = await reflector_node(state)
+
+        # Smart reflector should have repaired the action
+        assert result.proposed_action is not None
+        assert result.proposed_action["amount"] < 150000
+        assert result.context.get("action_was_repaired") is True
+        assert result.context.get("repair_strategy") is not None
+
+    @pytest.mark.asyncio
+    async def test_reflector_records_strategy_in_context(self):
+        """Repair strategy should be recorded in context for observability."""
+        state = EpistemicState(
+            user_input="Test observability",
+            proposed_action={"action_type": "adjust", "margin": 15.0},
+            policy_violations=["Threshold exceeded for margin"],
+            guardian_verdict=GuardianVerdict.REJECTED,
+            reflection_count=0,
+        )
+
+        result = await reflector_node(state)
+
+        assert "repair_strategy" in result.context
+        assert result.context["repair_strategy"] in ("heuristic", "llm", "hybrid")
 
 
 class TestBuildCarfGraph:

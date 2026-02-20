@@ -240,7 +240,7 @@ Respond with a JSON object:
 }"""
 
     @async_retry_with_backoff(max_attempts=2, exceptions=(Exception,))
-    @async_lru_cache(maxsize=100)
+    @async_lru_cache(maxsize=12)
     async def discover_causal_structure(
         self,
         query: str,
@@ -503,7 +503,7 @@ Respond with a JSON object:
             interpretation=interpretation,
         )
 
-    @async_lru_cache(maxsize=100)
+    @async_lru_cache(maxsize=12)
     async def estimate_effect(
         self,
         hypothesis: CausalHypothesis,

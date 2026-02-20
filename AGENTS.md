@@ -158,23 +158,25 @@ projectcarf/
       types/              # TypeScript type definitions
   src/
     core/               # Base classes, state schemas (NO external deps)
-    services/           # External integrations (Neo4j, HumanLayer, Kafka, OPA)
+    services/           # External integrations (Neo4j, HumanLayer, Kafka, OPA, SmartReflector, ExperienceBuffer)
     workflows/          # LangGraph definitions (the wiring)
     tools/              # Atomic tools (Pydantic schemas required)
     utils/              # Telemetry, resiliency decorators
+    api/                # FastAPI routers + library.py (notebook API)
+    mcp/tools/          # MCP tool modules (reflector, memory, causal, etc.)
     dashboard/          # Streamlit Epistemic Cockpit (deprecated — use carf-cockpit/)
   config/               # YAML config and OPA policy
     opa/
   docs/                 # Architecture docs, walkthroughs
   tests/
-    unit/               # 27 unit test files
+    unit/               # 41 unit test files
     e2e/                # End-to-end gold standard tests
     integration/        # API flow integration tests
     deepeval/           # LLM output quality evaluation (8 test files)
     eval/               # LLM-as-a-judge scenarios
     mocks/              # Mock HumanLayer, Neo4j, etc.
-  benchmarks/           # Technical & use-case benchmarks (H1-H9 hypotheses)
-    technical/          # Router, causal, bayesian, guardian, performance, chimera
+  benchmarks/           # Technical & use-case benchmarks (H1-H11 hypotheses)
+    technical/          # Router, causal, bayesian, guardian, performance, chimera, reflector, resiliency
     use_cases/          # End-to-end industry scenarios
     baselines/          # Raw LLM baseline comparison
     reports/            # Unified report generation
@@ -235,13 +237,12 @@ The "3-Point Context" for notifications:
 
 ---
 
-## Current Phase: Phase 12 - CHIMEPIC Integration + Platform Hardening
+## Current Phase: Phase 13 - Platform Evolution (Smart Reflector, Experience Buffer, MLOps)
 
-### Remaining Work (Phase 12+):
+### Remaining Work (Phase 13+):
 - **ChimeraOracle LangGraph Integration** — Wire into StateGraph as fast-path node (currently standalone API only)
 - **LightRAG / Vector Store** — Semantic search and cross-session knowledge retrieval (not implemented)
 - **Guardian Currency-Aware Comparisons** — Financial thresholds need currency context
-- **Router Retraining Pipeline** — Feedback collection works but no automated retraining yet
 - **CI/CD** — GitHub Actions workflow for automated testing
 
 ### CSL-Core Policy Engine
@@ -253,13 +254,13 @@ The "3-Point Context" for notifications:
 - **API:** Full CRUD via `/csl/*` endpoints, natural language rule creation supported
 
 ### Benchmark Suite
-- **Technical benchmarks**: Router classification (F1/ECE), Causal engine (ATE MSE), Bayesian (posterior coverage), Guardian (detection rate), Performance (P50/P95/P99), ChimeraOracle (speed ratio)
+- **Technical benchmarks**: Router classification (F1/ECE), Causal engine (ATE MSE), Bayesian (posterior coverage), Guardian (detection rate), Performance (P50/P95/P99), ChimeraOracle (speed ratio), Reflector self-correction, Resiliency/chaos
 - **Use case benchmarks**: End-to-end scenarios across 6 industries (supply chain, financial risk, sustainability, critical infra, healthcare, energy)
-- **9 falsifiable hypotheses** (H1-H9): CARF vs raw LLM comparison
+- **11 falsifiable hypotheses** (H1-H11): CARF vs raw LLM comparison
 - **Reports**: Unified comparison report generation
 - **Location**: `benchmarks/` directory with `benchmarks/README.md` for full instructions
 
-### Completed (Phases 1-11):
+### Completed (Phases 1-12):
 - Full Cynefin router and cognitive mesh (DistilBERT + Shannon entropy)
 - Neo4j persistence + query utilities
 - DoWhy/EconML and PyMC optional inference paths
@@ -268,14 +269,19 @@ The "3-Point Context" for notifications:
 - Data Onboarding Wizard with 10 demo scenarios across all 5 Cynefin domains
 - ChimeraOracle fast causal predictions (standalone API)
 - CSL-Core policy engine (35 rules across 5 policy categories)
-- MCP server (15 cognitive tools for agentic AI integration)
+- MCP server (18 cognitive tools for agentic AI integration)
 - Cynefin domain visualizations (Plotly.js: waterfall, radar, sankey, gauge)
 - Feedback API (closed-loop learning with domain overrides)
-- Benchmark suite (6 technical + use-case benchmarks, 9 falsifiable hypotheses)
+- Benchmark suite (8 technical + use-case benchmarks, 11 falsifiable hypotheses)
 - TLA+ formal verification specs (StateGraph, EscalationProtocol)
 - Kafka audit trail (optional) + OPA Guardian (optional)
 - Docker Compose demo stack + seed scripts
 - Streamlit Dashboard (deprecated — replaced by React Cockpit)
+- Smart Reflector (hybrid heuristic + LLM repair for policy violations)
+- Experience Buffer (TF-IDF semantic memory for similar query retrieval)
+- Library API (notebook-friendly wrappers for all CARF services)
+- Router Retraining pipeline (feedback extraction + JSONL export)
+- Actionable Insights with persona-specific action items and roadmaps
 
 ### Out of Scope:
 - Production autoscaling and Kubernetes

@@ -302,6 +302,18 @@ async def run_carf_scenario(scenario: BenchmarkScenario) -> dict[str, Any]:
     context: dict[str, Any] = dict(scenario.context)
     if scenario.data:
         context["benchmark_data"] = scenario.data
+        # Wire data into causal_estimation config for the causal engine
+        treatment = scenario.context.get("treatment_variable")
+        outcome = scenario.context.get("outcome_variable")
+        if treatment and outcome and scenario.data:
+            all_keys = set(scenario.data[0].keys())
+            covariates = sorted(all_keys - {treatment, outcome})
+            context["causal_estimation"] = {
+                "data": scenario.data,
+                "treatment": treatment,
+                "outcome": outcome,
+                "covariates": covariates,
+            }
     start_time = time.perf_counter()
     try:
         state = await run_carf(user_input=scenario.query, context=context)
@@ -353,6 +365,20 @@ def validate_carf_result(result: dict, validation: dict) -> dict[str, bool]:
     if validation.get("expect_response"):
         checks["has_response"] = result.get("has_response", False)
     return checks
+
+
+def validate_experience_buffer() -> dict[str, Any]:
+    """Validate that the experience buffer has accumulated entries from benchmark runs."""
+    try:
+        from src.services.experience_buffer import get_experience_buffer
+        buffer = get_experience_buffer()
+        return {
+            "buffer_size": buffer.size,
+            "has_entries": buffer.size > 0,
+            "patterns": buffer.get_domain_patterns(),
+        }
+    except Exception as e:
+        return {"buffer_size": 0, "has_entries": False, "error": str(e)}
 
 
 async def run_all_scenarios(
@@ -410,6 +436,9 @@ async def run_all_scenarios(
         if r["comparison"]["carf_domain_correct"]:
             domain_stats[d]["domain_correct"] += 1
 
+    # Validate experience buffer accumulation
+    buffer_status = validate_experience_buffer()
+
     summary = {
         "total_scenarios": total,
         "total_data_rows": total_data_rows,
@@ -418,6 +447,7 @@ async def run_all_scenarios(
         "carf_domain_accuracy": carf_domain_correct / total if total else 0,
         "llm_domain_accuracy": llm_domain_correct / total if total else 0,
         "domain_breakdown": domain_stats,
+        "experience_buffer": buffer_status,
         "results": results,
     }
 

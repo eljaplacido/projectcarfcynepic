@@ -358,7 +358,7 @@ Respond with a JSON object:
         return -probability * math.log2(probability) - (1 - probability) * math.log2(1 - probability)
 
     @async_retry_with_backoff(max_attempts=2, exceptions=(Exception,))
-    @async_lru_cache(maxsize=100)
+    @async_lru_cache(maxsize=12)
     async def establish_priors(
         self,
         query: str,
@@ -428,7 +428,7 @@ Respond with a JSON object:
             ], 1.0
 
     @async_retry_with_backoff(max_attempts=2, exceptions=(Exception,))
-    @async_lru_cache(maxsize=100)
+    @async_lru_cache(maxsize=12)
     async def design_probes(
         self,
         beliefs: list[BayesianBelief],
@@ -538,7 +538,7 @@ Design probes that would help us learn more."""),
             confidence_interval=(max(0, posterior - base_width), min(1, posterior + base_width)),
         )
 
-    @async_lru_cache(maxsize=100)
+    @async_lru_cache(maxsize=8)
     async def explore(
         self,
         query: str,

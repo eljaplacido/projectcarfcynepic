@@ -24,7 +24,7 @@ mcp = FastMCP(
 )
 
 # Register tool modules (side-effect imports register @mcp.tool decorators)
-from src.mcp.tools import bayesian, causal, guardian, oracle, router  # noqa: E402, F401
+from src.mcp.tools import bayesian, causal, guardian, memory, oracle, reflector, router  # noqa: E402, F401
 
 
 def main() -> None:

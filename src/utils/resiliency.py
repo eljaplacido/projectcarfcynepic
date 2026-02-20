@@ -89,6 +89,11 @@ def async_retry_with_backoff(
             # This should never be reached due to tenacity's behavior
             raise RetryError(None)  # type: ignore
 
+        # Forward cache_clear/cache_info from inner decorator (e.g. async_lru_cache)
+        for attr in ("cache_clear", "cache_info"):
+            if hasattr(func, attr):
+                setattr(wrapper, attr, getattr(func, attr))
+
         return wrapper  # type: ignore
 
     return decorator
