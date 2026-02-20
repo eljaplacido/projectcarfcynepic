@@ -1,19 +1,19 @@
 {
   "benchmark": "chimera_oracle_vs_dowhy",
-  "timestamp": "2026-02-18T10:51:40.667033+00:00",
+  "timestamp": "2026-02-20T12:00:48.367180+00:00",
   "true_ate": 3.0,
-  "oracle_available": false,
+  "oracle_available": true,
   "dowhy": {
     "n_runs": 5,
     "mean_ate": 2.983509,
-    "mean_latency_ms": 2323.71
+    "mean_latency_ms": 2265.42
   },
   "oracle": {
-    "n_runs": 0,
-    "mean_ate": null,
-    "mean_latency_ms": null
+    "n_runs": 5,
+    "mean_ate": 2.883139,
+    "mean_latency_ms": 69.28
   },
-  "speed_ratio": null,
-  "accuracy_loss_pct": null,
-  "h8_passed": false
+  "speed_ratio": 32.7,
+  "accuracy_loss_pct": 3.36,
+  "h8_passed": true
 }

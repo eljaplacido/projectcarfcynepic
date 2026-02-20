@@ -1,7 +1,7 @@
 {
   "benchmark": "carf_causal_inference",
   "version": "2.0",
-  "timestamp": "2026-02-19T17:26:09.354267+00:00",
+  "timestamp": "2026-02-20T11:54:38.154543+00:00",
   "n_test_cases": 9,
   "n_successful": 9,
   "aggregate_metrics": {
@@ -57,7 +57,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 32.865799,
+      "elapsed_seconds": 9.790696,
       "error": null
     },
     {
@@ -78,7 +78,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.812308,
+      "elapsed_seconds": 1.890677,
       "error": null
     },
     {
@@ -99,7 +99,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.81942,
+      "elapsed_seconds": 1.873611,
       "error": null
     },
     {
@@ -120,7 +120,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.83461,
+      "elapsed_seconds": 1.889318,
       "error": null
     },
     {
@@ -141,7 +141,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.856408,
+      "elapsed_seconds": 1.885053,
       "error": null
     },
     {
@@ -162,7 +162,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 2.018277,
+      "elapsed_seconds": 2.069329,
       "error": null
     },
     {
@@ -183,7 +183,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.868672,
+      "elapsed_seconds": 2.210294,
       "error": null
     },
     {
@@ -204,7 +204,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.837687,
+      "elapsed_seconds": 2.040651,
       "error": null
     },
     {
@@ -225,7 +225,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.865065,
+      "elapsed_seconds": 2.192545,
       "error": null
     }
   ]

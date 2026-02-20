@@ -1,0 +1,45 @@
+{
+  "script": "generate_oracle_training_data",
+  "timestamp": "2026-02-20T11:54:10.354793+00:00",
+  "models_trained": 3,
+  "models_failed": 0,
+  "available_scenarios": [
+    "scope3_attribution",
+    "supply_chain_resilience",
+    "benchmark_linear",
+    "supply_chain_benchmark",
+    "healthcare_benchmark"
+  ],
+  "results": [
+    {
+      "scenario_id": "benchmark_linear",
+      "status": "trained",
+      "n_samples": 1000,
+      "true_ate": 3.0,
+      "estimated_ate": 2.953831922163169,
+      "effect_std": 0.09648584322027617,
+      "model_version": "v20260220_135409_4c39fb",
+      "model_path": "models\\benchmark_linear_causal_forest.pkl"
+    },
+    {
+      "scenario_id": "supply_chain_benchmark",
+      "status": "trained",
+      "n_samples": 800,
+      "true_ate": -8.5,
+      "estimated_ate": -8.32363092993488,
+      "effect_std": 0.49964041119157454,
+      "model_version": "v20260220_135409_2c8092",
+      "model_path": "models\\supply_chain_benchmark_causal_forest.pkl"
+    },
+    {
+      "scenario_id": "healthcare_benchmark",
+      "status": "trained",
+      "n_samples": 800,
+      "true_ate": -5.2,
+      "estimated_ate": -5.017241716833454,
+      "effect_std": 0.4211593638513556,
+      "model_version": "v20260220_135410_7f3373",
+      "model_path": "models\\healthcare_benchmark_causal_forest.pkl"
+    }
+  ]
+}

@@ -2,9 +2,9 @@
   "benchmark": "cynefin_router",
   "total_queries": 50,
   "error_count": 0,
-  "overall_accuracy": 0.94,
-  "weighted_f1": 0.9386,
-  "expected_calibration_error": 0.2082,
+  "overall_accuracy": 0.98,
+  "weighted_f1": 0.9799,
+  "expected_calibration_error": 0.2052,
   "ece_bins": [
     {
       "bin": "[0.0, 0.1)",
@@ -17,9 +17,9 @@
     {
       "bin": "[0.2, 0.3)",
       "count": 9,
-      "mean_confidence": 0.2222,
+      "mean_confidence": 0.2111,
       "mean_accuracy": 1.0,
-      "gap": 0.7778
+      "gap": 0.7889
     },
     {
       "bin": "[0.3, 0.4)",
@@ -39,17 +39,17 @@
     },
     {
       "bin": "[0.7, 0.8)",
-      "count": 4,
+      "count": 2,
       "mean_confidence": 0.75,
-      "mean_accuracy": 0.5,
+      "mean_accuracy": 1.0,
       "gap": 0.25
     },
     {
       "bin": "[0.8, 0.9)",
-      "count": 16,
-      "mean_confidence": 0.8469,
-      "mean_accuracy": 0.9375,
-      "gap": 0.0906
+      "count": 18,
+      "mean_confidence": 0.85,
+      "mean_accuracy": 0.9444,
+      "gap": 0.0944
     },
     {
       "bin": "[0.9, 1.0)",
@@ -65,29 +65,29 @@
       "correct": 10,
       "accuracy": 1.0,
       "latency": {
-        "mean_ms": 3113.12,
-        "median_ms": 2931.03,
-        "p95_ms": 4774.71
+        "mean_ms": 2547.7,
+        "median_ms": 2464.41,
+        "p95_ms": 3062.68
       }
     },
     "Complicated": {
       "count": 10,
-      "correct": 7,
-      "accuracy": 0.7,
+      "correct": 10,
+      "accuracy": 1.0,
       "latency": {
-        "mean_ms": 3079.36,
-        "median_ms": 3109.3,
-        "p95_ms": 3487.23
+        "mean_ms": 2871.6,
+        "median_ms": 2813.76,
+        "p95_ms": 3325.05
       }
     },
     "Complex": {
       "count": 10,
-      "correct": 10,
-      "accuracy": 1.0,
+      "correct": 9,
+      "accuracy": 0.9,
       "latency": {
-        "mean_ms": 2922.31,
-        "median_ms": 2903.35,
-        "p95_ms": 3319.4
+        "mean_ms": 2878.11,
+        "median_ms": 2842.6,
+        "p95_ms": 3254.59
       }
     },
     "Chaotic": {
@@ -95,9 +95,9 @@
       "correct": 10,
       "accuracy": 1.0,
       "latency": {
-        "mean_ms": 2815.28,
-        "median_ms": 2870.88,
-        "p95_ms": 3089.83
+        "mean_ms": 2692.37,
+        "median_ms": 2688.2,
+        "p95_ms": 2924.36
       }
     },
     "Disorder": {
@@ -105,9 +105,9 @@
       "correct": 10,
       "accuracy": 1.0,
       "latency": {
-        "mean_ms": 2812.52,
-        "median_ms": 2771.93,
-        "p95_ms": 3310.54
+        "mean_ms": 2654.88,
+        "median_ms": 2734.27,
+        "p95_ms": 2860.53
       }
     }
   },
@@ -137,15 +137,15 @@
       [
         0,
         0,
-        10,
-        0,
+        9,
+        1,
         0
       ],
       [
         0,
         0,
-        3,
-        7,
+        0,
+        10,
         0
       ],
       [
@@ -158,10 +158,10 @@
     ]
   },
   "latency": {
-    "mean_ms": 2948.52,
-    "median_ms": 2894.49,
-    "p95_ms": 3385.0,
-    "p99_ms": 4844.57
+    "mean_ms": 2728.93,
+    "median_ms": 2729.65,
+    "p95_ms": 3271.94,
+    "p99_ms": 3351.72
   },
   "individual_results": [
     {
@@ -170,7 +170,7 @@
       "predicted": "Clear",
       "confidence": 1.0,
       "correct": true,
-      "latency_ms": 6045.97,
+      "latency_ms": 3291.29,
       "error": null
     },
     {
@@ -179,7 +179,7 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 3147.45,
+      "latency_ms": 2347.18,
       "error": null
     },
     {
@@ -188,7 +188,7 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2936.19,
+      "latency_ms": 2395.0,
       "error": null
     },
     {
@@ -197,7 +197,7 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2428.89,
+      "latency_ms": 2231.39,
       "error": null
     },
     {
@@ -206,7 +206,7 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2663.5,
+      "latency_ms": 2616.06,
       "error": null
     },
     {
@@ -215,7 +215,7 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2495.6,
+      "latency_ms": 2261.91,
       "error": null
     },
     {
@@ -224,7 +224,7 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2328.39,
+      "latency_ms": 2324.66,
       "error": null
     },
     {
@@ -233,7 +233,7 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2938.36,
+      "latency_ms": 2692.44,
       "error": null
     },
     {
@@ -242,7 +242,7 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2925.88,
+      "latency_ms": 2533.82,
       "error": null
     },
     {
@@ -251,16 +251,16 @@
       "predicted": "Clear",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 3220.94,
+      "latency_ms": 2783.26,
       "error": null
     },
     {
       "query": "What is the causal effect of marketing spend on customer acquisition?",
       "ground_truth": "Complicated",
-      "predicted": "Complex",
-      "confidence": 0.8,
-      "correct": false,
-      "latency_ms": 3352.61,
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 3387.85,
       "error": null
     },
     {
@@ -269,7 +269,7 @@
       "predicted": "Complicated",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 3594.13,
+      "latency_ms": 2768.02,
       "error": null
     },
     {
@@ -278,7 +278,7 @@
       "predicted": "Complicated",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 3034.0,
+      "latency_ms": 2859.49,
       "error": null
     },
     {
@@ -287,7 +287,7 @@
       "predicted": "Complicated",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 2629.37,
+      "latency_ms": 2679.76,
       "error": null
     },
     {
@@ -296,25 +296,25 @@
       "predicted": "Complicated",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 3184.6,
+      "latency_ms": 2762.38,
       "error": null
     },
     {
       "query": "Determine the impact of the new pricing strategy on revenue",
       "ground_truth": "Complicated",
-      "predicted": "Complex",
-      "confidence": 0.75,
-      "correct": false,
-      "latency_ms": 2739.35,
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2530.31,
       "error": null
     },
     {
       "query": "What is the causal relationship between employee training hours and productivity?",
       "ground_truth": "Complicated",
-      "predicted": "Complex",
-      "confidence": 0.75,
-      "correct": false,
-      "latency_ms": 3323.31,
+      "predicted": "Complicated",
+      "confidence": 0.85,
+      "correct": true,
+      "latency_ms": 2991.08,
       "error": null
     },
     {
@@ -323,7 +323,7 @@
       "predicted": "Complicated",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 3356.57,
+      "latency_ms": 3248.3,
       "error": null
     },
     {
@@ -332,7 +332,7 @@
       "predicted": "Complicated",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 2718.0,
+      "latency_ms": 2611.11,
       "error": null
     },
     {
@@ -341,7 +341,7 @@
       "predicted": "Complicated",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 2861.67,
+      "latency_ms": 2877.67,
       "error": null
     },
     {
@@ -350,7 +350,7 @@
       "predicted": "Complex",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 2776.67,
+      "latency_ms": 2877.77,
       "error": null
     },
     {
@@ -359,7 +359,7 @@
       "predicted": "Complex",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 2835.54,
+      "latency_ms": 2610.89,
       "error": null
     },
     {
@@ -368,7 +368,7 @@
       "predicted": "Complex",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 2603.42,
+      "latency_ms": 2807.43,
       "error": null
     },
     {
@@ -377,7 +377,7 @@
       "predicted": "Complex",
       "confidence": 0.75,
       "correct": true,
-      "latency_ms": 2807.84,
+      "latency_ms": 2988.22,
       "error": null
     },
     {
@@ -386,7 +386,7 @@
       "predicted": "Complex",
       "confidence": 0.75,
       "correct": true,
-      "latency_ms": 2971.15,
+      "latency_ms": 3181.84,
       "error": null
     },
     {
@@ -395,7 +395,7 @@
       "predicted": "Complex",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 2452.48,
+      "latency_ms": 2712.91,
       "error": null
     },
     {
@@ -404,16 +404,16 @@
       "predicted": "Complex",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 3093.76,
+      "latency_ms": 2921.27,
       "error": null
     },
     {
       "query": "How should we explore the impact of AI on our workforce planning?",
       "ground_truth": "Complex",
-      "predicted": "Complex",
+      "predicted": "Complicated",
       "confidence": 0.85,
-      "correct": true,
-      "latency_ms": 3269.01,
+      "correct": false,
+      "latency_ms": 2728.23,
       "error": null
     },
     {
@@ -422,7 +422,7 @@
       "predicted": "Complex",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 3052.59,
+      "latency_ms": 2638.41,
       "error": null
     },
     {
@@ -431,7 +431,7 @@
       "predicted": "Complex",
       "confidence": 0.85,
       "correct": true,
-      "latency_ms": 3360.62,
+      "latency_ms": 3314.11,
       "error": null
     },
     {
@@ -440,7 +440,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 3045.96,
+      "latency_ms": 2489.53,
       "error": null
     },
     {
@@ -449,7 +449,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 3125.72,
+      "latency_ms": 2720.53,
       "error": null
     },
     {
@@ -458,7 +458,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2645.75,
+      "latency_ms": 2630.21,
       "error": null
     },
     {
@@ -467,7 +467,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2911.38,
+      "latency_ms": 2909.85,
       "error": null
     },
     {
@@ -476,7 +476,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2830.38,
+      "latency_ms": 2655.87,
       "error": null
     },
     {
@@ -485,7 +485,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2969.19,
+      "latency_ms": 2844.42,
       "error": null
     },
     {
@@ -494,7 +494,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2485.92,
+      "latency_ms": 2450.73,
       "error": null
     },
     {
@@ -503,7 +503,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2443.54,
+      "latency_ms": 2814.67,
       "error": null
     },
     {
@@ -512,7 +512,7 @@
       "predicted": "Chaotic",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2950.03,
+      "latency_ms": 2471.67,
       "error": null
     },
     {
@@ -521,16 +521,16 @@
       "predicted": "Chaotic",
       "confidence": 0.99,
       "correct": true,
-      "latency_ms": 2744.92,
+      "latency_ms": 2936.23,
       "error": null
     },
     {
       "query": "Should we do something different?",
       "ground_truth": "Disorder",
       "predicted": "Disorder",
-      "confidence": 0.3,
+      "confidence": 0.2,
       "correct": true,
-      "latency_ms": 2877.61,
+      "latency_ms": 2402.79,
       "error": null
     },
     {
@@ -539,7 +539,7 @@
       "predicted": "Disorder",
       "confidence": 0.2,
       "correct": true,
-      "latency_ms": 2614.34,
+      "latency_ms": 2731.08,
       "error": null
     },
     {
@@ -548,7 +548,7 @@
       "predicted": "Disorder",
       "confidence": 0.2,
       "correct": true,
-      "latency_ms": 2552.0,
+      "latency_ms": 2434.7,
       "error": null
     },
     {
@@ -557,7 +557,7 @@
       "predicted": "Disorder",
       "confidence": 0.2,
       "correct": true,
-      "latency_ms": 2980.59,
+      "latency_ms": 2742.21,
       "error": null
     },
     {
@@ -566,7 +566,7 @@
       "predicted": "Disorder",
       "confidence": 0.2,
       "correct": true,
-      "latency_ms": 2545.46,
+      "latency_ms": 2781.57,
       "error": null
     },
     {
@@ -575,7 +575,7 @@
       "predicted": "Disorder",
       "confidence": 0.3,
       "correct": true,
-      "latency_ms": 3404.94,
+      "latency_ms": 2737.47,
       "error": null
     },
     {
@@ -584,7 +584,7 @@
       "predicted": "Disorder",
       "confidence": 0.2,
       "correct": true,
-      "latency_ms": 2806.75,
+      "latency_ms": 2677.84,
       "error": null
     },
     {
@@ -593,7 +593,7 @@
       "predicted": "Disorder",
       "confidence": 0.2,
       "correct": true,
-      "latency_ms": 3195.17,
+      "latency_ms": 2925.13,
       "error": null
     },
     {
@@ -602,7 +602,7 @@
       "predicted": "Disorder",
       "confidence": 0.95,
       "correct": true,
-      "latency_ms": 2737.12,
+      "latency_ms": 2745.38,
       "error": null
     },
     {
@@ -611,7 +611,7 @@
       "predicted": "Disorder",
       "confidence": 0.2,
       "correct": true,
-      "latency_ms": 2411.25,
+      "latency_ms": 2370.6,
       "error": null
     }
   ]

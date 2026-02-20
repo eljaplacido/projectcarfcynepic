@@ -1,0 +1,78 @@
+{
+  "benchmark": "carf_chaos_resiliency",
+  "timestamp": "2026-02-20T11:54:14.829876+00:00",
+  "total_tests": 6,
+  "passed": 6,
+  "failed": 0,
+  "metrics": {
+    "circuit_breaker_accuracy": 1.0,
+    "failure_isolation_rate": 1.0,
+    "recovery_time_ms": 106.6,
+    "chaotic_escalation_rate": 1.0
+  },
+  "results": [
+    {
+      "test": "cb_lifecycle",
+      "checks": {
+        "starts_closed": true,
+        "stays_closed_under_threshold": true,
+        "opens_at_threshold": true,
+        "transitions_to_half_open": true,
+        "closes_on_success": true
+      },
+      "passed": true
+    },
+    {
+      "test": "cb_blocks_when_open",
+      "checks": {
+        "is_open": true,
+        "blocks_call": true
+      },
+      "passed": true
+    },
+    {
+      "test": "concurrent_stress",
+      "checks": {
+        "all_calls_handled": true,
+        "some_succeeded": true,
+        "breaker_state_valid": true
+      },
+      "passed": true,
+      "stats": {
+        "total_calls": 20,
+        "successes": 9,
+        "blocked": 0,
+        "errors": 11,
+        "final_state": "closed"
+      }
+    },
+    {
+      "test": "chaotic_emergency_protocol",
+      "checks": {
+        "has_response": true,
+        "is_chaotic_response": true,
+        "action_is_emergency": true,
+        "has_reasoning": true
+      },
+      "passed": true
+    },
+    {
+      "test": "retry_exhaustion",
+      "checks": {
+        "exception_propagated": true,
+        "retried_3_times": true
+      },
+      "passed": true,
+      "call_count": 3
+    },
+    {
+      "test": "timeout_handling",
+      "checks": {
+        "timeout_raised": true,
+        "completed_quickly": true
+      },
+      "passed": true,
+      "elapsed_ms": 106.6
+    }
+  ]
+}

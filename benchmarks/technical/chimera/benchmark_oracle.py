@@ -180,8 +180,8 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
         },
         "speed_ratio": round(speed_ratio, 2) if speed_ratio else None,
         "accuracy_loss_pct": round(accuracy_loss * 100, 2) if accuracy_loss is not None else None,
-        "h8_passed": (speed_ratio is not None and speed_ratio >= 10.0
-                      and accuracy_loss is not None and accuracy_loss < 0.20),
+        "h8_passed": bool(speed_ratio is not None and speed_ratio >= 10.0
+                         and accuracy_loss is not None and accuracy_loss < 0.20),
     }
 
     logger.info(f"\n  Speed Ratio: {speed_ratio:.1f}x" if speed_ratio else "\n  Speed Ratio: N/A")

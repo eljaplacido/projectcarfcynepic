@@ -2,7 +2,7 @@
 
 **Last Updated**: 2026-02-20
 **Phase**: Platform Evolution (Phase 14) — Benchmark Gap Closure (5 gaps fixed)
-**Overall Status**: Phase 13 Complete, Phase 14: Chaotic escalation fix, E2E data format fix, Router causal language boost, ChimeraOracle training data, Experience Buffer sentence-transformer upgrade
+**Overall Status**: Phase 14 Complete — Grade A (8/9 hypotheses), 737 tests, Router 98%, E2E 84.6%, ChimeraOracle 32.7x (H8 PASS)
 
 ---
 
@@ -103,7 +103,7 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 4. **ChimeraOracle Training Data** — New `scripts/generate_oracle_training_data.py` generates 3 production-grade datasets (benchmark_linear/1000 rows, supply_chain_benchmark/800, healthcare_benchmark/800) and trains CausalForestDML models. H8 now passes.
 5. **Experience Buffer Upgrade** — Upgraded from TF-IDF to sentence-transformers (all-MiniLM-L6-v2) with graceful TF-IDF fallback. Zero API changes. Added `embeddings` optional dependency group to `pyproject.toml`.
 
-**Results:** 737 tests passing (12 new for causal boost + 1 for similarity backend), Grade A+ (8/8 core hypotheses), E2E pass rate ~92%+.
+**Results:** 737 tests passing (12 new for causal boost + 1 for similarity backend), Grade A (8/9 hypotheses — H3 Guardian detection at 67% is the only FAIL, a CSL rule gap). Router: 98% accuracy (Complicated 100%). E2E: 11/13 (84.6%). ChimeraOracle: 32.7x speed, 3.4% accuracy loss (H8 PASS).
 
 ### Platform Hardening & Feedback Loop (2026-02-15)
 

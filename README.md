@@ -62,23 +62,23 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 
 CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark categories, using synthetic data with known ground truth and a raw LLM baseline (same model, no pipeline) for comparison. All benchmarks use fixed random seeds for full reproducibility.
 
-### Overall Grade: A+ — 8/8 Core Hypotheses Passed
+### Overall Grade: A — 8/9 Hypotheses Passed
 
 | # | Hypothesis | Measured | Threshold | Result |
 |---|-----------|----------|-----------|--------|
 | H1 | **Causal Accuracy** — DoWhy ATE vs raw LLM | MSE ratio **0.0009** (1,138x more accurate) | ≤ 0.5 | **PASS** |
 | H2 | **Bayesian Calibration** — posterior coverage | **100%** (8/8 scenarios well-calibrated) | ≥ 90% | **PASS** |
-| H3 | **Violation Detection** — Guardian catches all violations | **100%** detection, 0% false positives | ≥ 100% | **PASS** |
+| H3 | **Violation Detection** — Guardian catches all violations | **67%** detection (1 CSL rule gap), 0% false positives | 100% | FAIL |
 | H4 | **Determinism** — same input → same Guardian decision | **100%** (5x repetitions) | ≥ 100% | **PASS** |
 | H5 | **EU AI Act Compliance** — Art. 9, 12, 13, 14 | **100%** | ≥ 90% | **PASS** |
-| H6 | **Latency Overhead** — CARF vs raw LLM | **3.45x** (9.1s avg vs 2.65s baseline) | ≤ 5x | **PASS** |
+| H6 | **Latency Overhead** — CARF vs raw LLM | **3.5x** (9.3s avg vs 2.65s baseline) | ≤ 5x | **PASS** |
 | H7 | **Hallucination Reduction** — grounded data queries | **100% reduction** (0% vs 6.7% baseline) | ≥ 40% | **PASS** |
-| H8 | **ChimeraOracle Speedup** — Oracle vs full DoWhy | **≥10x faster, <20% accuracy loss** | ≥ 10x speed, <20% loss | **PASS** |
-| H9 | Memory stability over 500+ queries | **0.2% RSS growth** (post-fix) | ≤ 10% | **PASS** |
-| H10 | **Reflector Self-Correction** — repair rate for known violations | Benchmarked via `benchmark_reflector.py` | ≥ 80% | — |
-| H11 | **Resiliency** — circuit breaker accuracy & failure isolation | Benchmarked via `benchmark_resiliency.py` | ≥ 95% | — |
+| H8 | **ChimeraOracle Speedup** — Oracle vs full DoWhy | **32.7x faster, 3.4% accuracy loss** | ≥ 10x speed, <20% loss | **PASS** |
+| H9 | Memory stability over 500+ queries | **0.2% RSS growth** | ≤ 10% | **PASS** |
+| H10 | **Reflector Self-Correction** — repair rate for known violations | **80%** (4/5 scenarios) | ≥ 80% | **PASS** |
+| H11 | **Resiliency** — circuit breaker accuracy & failure isolation | **100%** (6/6 tests) | ≥ 95% | **PASS** |
 
-> Full machine-readable results: [`benchmarks/reports/benchmark_report.json`](benchmarks/reports/benchmark_report.json)
+> Full machine-readable results: [`benchmarks/reports/unified_report.json`](benchmarks/reports/unified_report.json) | E2E: 11/13 scenarios (84.6%) | Text summary: [`benchmarks/reports/unified_report.txt`](benchmarks/reports/unified_report.txt)
 
 ### Indicated Use Cases
 
@@ -88,8 +88,8 @@ Based on the benchmark evidence, CARF is particularly suited for:
 |----------|---------------|---------------------|
 | **Causal Decision Support** — supply chain, marketing attribution, policy evaluation | Separates cause from correlation with statistical rigor | H1: 1,138x more accurate causal estimates than raw LLM |
 | **Risk Quantification Under Uncertainty** — investment, insurance, clinical trials, grid capacity | Calibrated posteriors with epistemic/aleatoric decomposition | H2: 100% calibrated across 8 Bayesian scenarios |
-| **Regulated AI Systems** — EU AI Act, financial audit, healthcare decision support | Deterministic, compliant, and fully auditable | H3–H5: 100% violation detection, determinism, and compliance |
-| **Strategic Analysis** — market entry, R&D allocation, scenario planning | Cynefin routing ensures the right analytical method per problem type | Router: 94% accuracy, F1 = 0.939 across 5 domains |
+| **Regulated AI Systems** — EU AI Act, financial audit, healthcare decision support | Deterministic, compliant, and fully auditable | H4–H5: 100% determinism and compliance; H3: 67% violation detection (CSL rule gap) |
+| **Strategic Analysis** — market entry, R&D allocation, scenario planning | Cynefin routing ensures the right analytical method per problem type | Router: 98% accuracy, F1 = 0.98 across 5 domains |
 
 ### Benchmark Data Sources & Methodology
 

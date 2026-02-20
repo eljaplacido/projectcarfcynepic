@@ -1,6 +1,6 @@
 {
   "benchmark": "carf_bayesian_inference",
-  "timestamp": "2026-02-19T17:25:06.810692+00:00",
+  "timestamp": "2026-02-20T11:56:42.752239+00:00",
   "n_scenarios": 8,
   "n_successful": 8,
   "aggregate": {
@@ -8,11 +8,11 @@
     "n_covered": 8,
     "well_calibrated": true,
     "decomposition_rate": 1.0,
-    "aggregate_pass_rate": 1.0,
-    "mean_latency_seconds": 40.364
+    "aggregate_pass_rate": 0.9219,
+    "mean_latency_seconds": 17.96
   },
   "coverage": 1.0,
-  "aggregate_pass_rate": 1.0,
+  "aggregate_pass_rate": 0.9219,
   "scenario_results": [
     {
       "name": "market_entry_risk",
@@ -21,30 +21,31 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
-        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [],
+      "failed_checks": [
+        "sufficient_probes"
+      ],
       "metrics": {
-        "elapsed_seconds": 58.131,
-        "posterior_mean": 0.093387,
-        "posterior_std": 0.018553,
+        "elapsed_seconds": 23.136,
+        "posterior_mean": 0.093841,
+        "posterior_std": 0.019091,
         "credible_interval": [
-          0.062976,
-          0.124015
+          0.064089,
+          0.126899
         ],
         "true_parameter": 0.08,
         "parameter_covered": true,
-        "n_probes": 4,
-        "recommended_probe": "Apply to enter a regulatory sandbox in a target country (e.g., Singapore\u2019s MAS sandbox or Malaysia\u2019s Bank Negara sandbox) to test our product with real customers under supervised, limited-scale conditions.",
-        "epistemic_uncertainty": 0.019066,
-        "aleatoric_uncertainty": 0.134664,
-        "state_epistemic_uncertainty": 0.1695
+        "n_probes": 1,
+        "recommended_probe": "Run a small A/B test on pricing",
+        "epistemic_uncertainty": 0.019041,
+        "aleatoric_uncertainty": 0.134727,
+        "state_epistemic_uncertainty": 0.1687
       },
       "error": null,
-      "pass_rate": 1.0
+      "pass_rate": 0.875
     },
     {
       "name": "climate_crop_yield_uncertainty",
@@ -53,30 +54,31 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
-        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [],
+      "failed_checks": [
+        "sufficient_probes"
+      ],
       "metrics": {
-        "elapsed_seconds": 32.244,
-        "posterior_mean": 4.518405,
-        "posterior_std": 0.132595,
+        "elapsed_seconds": 14.564,
+        "posterior_mean": 4.518404,
+        "posterior_std": 0.116725,
         "credible_interval": [
-          4.299092,
-          4.735329
+          4.329109,
+          4.713133
         ],
         "true_parameter": 4.5,
         "parameter_covered": true,
-        "n_probes": 4,
-        "recommended_probe": "Test small batches of wheat varieties with known drought/heat tolerance characteristics alongside current variety to quantify resilience differences",
-        "epistemic_uncertainty": 0.13286,
-        "aleatoric_uncertainty": 0.828875,
-        "state_epistemic_uncertainty": 0.0286
+        "n_probes": 1,
+        "recommended_probe": "Run a small A/B test on pricing",
+        "epistemic_uncertainty": 0.120229,
+        "aleatoric_uncertainty": 0.819695,
+        "state_epistemic_uncertainty": 0.0259
       },
       "error": null,
-      "pass_rate": 1.0
+      "pass_rate": 0.875
     },
     {
       "name": "tech_migration_roi",
@@ -92,20 +94,20 @@
       ],
       "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 28.176,
-        "posterior_mean": 0.643095,
-        "posterior_std": 0.069935,
+        "elapsed_seconds": 7.96,
+        "posterior_mean": 0.632928,
+        "posterior_std": 0.06995,
         "credible_interval": [
-          0.520957,
-          0.751043
+          0.513038,
+          0.743174
         ],
         "true_parameter": 0.62,
         "parameter_covered": true,
-        "n_probes": 5,
-        "recommended_probe": "Migrate a single, non-critical ML pipeline from TensorFlow to PyTorch with a small, experienced team to measure actual migration effort, developer productivity changes, and performance differences in a controlled environment.",
-        "epistemic_uncertainty": 0.070234,
-        "aleatoric_uncertainty": 0.224596,
-        "state_epistemic_uncertainty": 0.0985
+        "n_probes": 1,
+        "recommended_probe": "Run a small A/B test on pricing",
+        "epistemic_uncertainty": 0.071394,
+        "aleatoric_uncertainty": 0.227238,
+        "state_epistemic_uncertainty": 0.1014
       },
       "error": null,
       "pass_rate": 1.0
@@ -117,30 +119,31 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
-        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [],
+      "failed_checks": [
+        "sufficient_probes"
+      ],
       "metrics": {
-        "elapsed_seconds": 30.502,
-        "posterior_mean": 0.638961,
-        "posterior_std": 0.046148,
+        "elapsed_seconds": 7.883,
+        "posterior_mean": 0.642578,
+        "posterior_std": 0.045361,
         "credible_interval": [
-          0.561158,
-          0.712985
+          0.567826,
+          0.717065
         ],
         "true_parameter": 0.65,
         "parameter_covered": true,
-        "n_probes": 5,
-        "recommended_probe": "Design and simulate multiple Phase III trial designs (sample sizes, endpoints, populations) using the Phase II data, assessing probability of success under different scenarios and assumptions.",
-        "epistemic_uncertainty": 0.045346,
-        "aleatoric_uncertainty": 0.228636,
-        "state_epistemic_uncertainty": 0.0663
+        "n_probes": 1,
+        "recommended_probe": "Run a small A/B test on pricing",
+        "epistemic_uncertainty": 0.045232,
+        "aleatoric_uncertainty": 0.227628,
+        "state_epistemic_uncertainty": 0.0658
       },
       "error": null,
-      "pass_rate": 1.0
+      "pass_rate": 0.875
     },
     {
       "name": "supply_chain_lead_time",
@@ -149,30 +152,31 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
-        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [],
+      "failed_checks": [
+        "sufficient_probes"
+      ],
       "metrics": {
-        "elapsed_seconds": 37.89,
-        "posterior_mean": 28.990221,
-        "posterior_std": 0.719792,
+        "elapsed_seconds": 18.184,
+        "posterior_mean": 28.96518,
+        "posterior_std": 0.678582,
         "credible_interval": [
-          27.88045,
-          30.248564
+          27.87954,
+          30.112074
         ],
         "true_parameter": 28.980166666666662,
         "parameter_covered": true,
-        "n_probes": 4,
-        "recommended_probe": "Implement a pilot program to track lead times for a small, non-critical subset of SKUs (e.g., 5-10 items) with higher frequency and granularity (e.g., daily updates, tracking each milestone: order confirmation, production start, shipping, customs clearance, arrival).",
-        "epistemic_uncertainty": 0.706854,
-        "aleatoric_uncertainty": 5.484579,
-        "state_epistemic_uncertainty": 0.0238
+        "n_probes": 1,
+        "recommended_probe": "Run a small A/B test on pricing",
+        "epistemic_uncertainty": 0.68308,
+        "aleatoric_uncertainty": 5.486065,
+        "state_epistemic_uncertainty": 0.023
       },
       "error": null,
-      "pass_rate": 1.0
+      "pass_rate": 0.875
     },
     {
       "name": "energy_grid_demand",
@@ -181,30 +185,31 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
-        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [],
+      "failed_checks": [
+        "sufficient_probes"
+      ],
       "metrics": {
-        "elapsed_seconds": 81.539,
-        "posterior_mean": 2505.63771,
-        "posterior_std": 34.67093,
+        "elapsed_seconds": 56.008,
+        "posterior_mean": 2505.716892,
+        "posterior_std": 36.668653,
         "credible_interval": [
-          2450.432888,
-          2564.500247
+          2447.355635,
+          2567.995502
         ],
         "true_parameter": 2505.6475,
         "parameter_covered": true,
-        "n_probes": 4,
-        "recommended_probe": "Segment the 80-hour data by customer type (residential, commercial, industrial) if metadata exists, and build separate simple models for each. Compare the sum of these segment forecasts to the aggregate model forecast.",
-        "epistemic_uncertainty": 34.778697,
-        "aleatoric_uncertainty": 315.5462,
-        "state_epistemic_uncertainty": 0.0137
+        "n_probes": 1,
+        "recommended_probe": "Run a small A/B test on pricing",
+        "epistemic_uncertainty": 35.929319,
+        "aleatoric_uncertainty": 315.69509,
+        "state_epistemic_uncertainty": 0.0141
       },
       "error": null,
-      "pass_rate": 1.0
+      "pass_rate": 0.875
     },
     {
       "name": "insurance_claim_frequency",
@@ -220,20 +225,20 @@
       ],
       "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 28.014,
-        "posterior_mean": 0.098808,
-        "posterior_std": 0.020836,
+        "elapsed_seconds": 8.008,
+        "posterior_mean": 0.098988,
+        "posterior_std": 0.019413,
         "credible_interval": [
-          0.067428,
-          0.135977
+          0.068185,
+          0.132053
         ],
         "true_parameter": 0.08,
         "parameter_covered": true,
-        "n_probes": 5,
-        "recommended_probe": "Audit the complete claims handling process from first notice to final settlement to identify any systematic biases in claim recognition or recording",
-        "epistemic_uncertainty": 0.020825,
-        "aleatoric_uncertainty": 0.088612,
-        "state_epistemic_uncertainty": 0.1741
+        "n_probes": 1,
+        "recommended_probe": "Run a small A/B test on pricing",
+        "epistemic_uncertainty": 0.02015,
+        "aleatoric_uncertainty": 0.088783,
+        "state_epistemic_uncertainty": 0.1691
       },
       "error": null,
       "pass_rate": 1.0
@@ -252,20 +257,20 @@
       ],
       "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 26.414,
-        "posterior_mean": 0.039588,
-        "posterior_std": 0.009172,
+        "elapsed_seconds": 7.937,
+        "posterior_mean": 0.040349,
+        "posterior_std": 0.008968,
         "credible_interval": [
-          0.025696,
-          0.055872
+          0.026565,
+          0.056068
         ],
         "true_parameter": 0.035,
         "parameter_covered": true,
-        "n_probes": 4,
-        "recommended_probe": "Trigger a short, non-intrusive survey via exit-intent popup for a small percentage of visitors (e.g., 20%) asking their reason for leaving without converting (e.g., 'What stopped you from signing up today?').",
-        "epistemic_uncertainty": 0.009108,
-        "aleatoric_uncertainty": 0.037938,
-        "state_epistemic_uncertainty": 0.187
+        "n_probes": 1,
+        "recommended_probe": "Run a small A/B test on pricing",
+        "epistemic_uncertainty": 0.009032,
+        "aleatoric_uncertainty": 0.038639,
+        "state_epistemic_uncertainty": 0.1829
       },
       "error": null,
       "pass_rate": 1.0

@@ -1,0 +1,201 @@
+{
+  "benchmark": "carf_reflector_self_correction",
+  "timestamp": "2026-02-20T11:54:13.298686+00:00",
+  "total_scenarios": 5,
+  "passed": 4,
+  "failed": 1,
+  "metrics": {
+    "repair_attempt_rate": 1.0,
+    "repair_success_rate": 0.8,
+    "convergence_rate": 1.0,
+    "blind_mutation_rate": 0.0
+  },
+  "results": [
+    {
+      "scenario": "budget_repair_converges",
+      "description": "Budget exceeded violation \u2014 repair should reduce amount and converge",
+      "violations": [
+        "Budget exceeded: 150000 > 100000"
+      ],
+      "original_action": {
+        "action_type": "investment",
+        "description": "Increase marketing budget",
+        "amount": 150000,
+        "parameters": {
+          "monthly_spend": 10000.0
+        }
+      },
+      "repaired_action": {
+        "action_type": "investment",
+        "description": "Increase marketing budget",
+        "amount": 120000.0,
+        "parameters": {
+          "monthly_spend": 10000.0
+        }
+      },
+      "repair_attempted": true,
+      "checks": {
+        "action_modified": true,
+        "repair_attempted": true,
+        "amount_reduced": true
+      },
+      "all_checks_passed": true,
+      "blind_mutation": false,
+      "numeric_fields_total": 2,
+      "numeric_fields_modified": 1,
+      "reflection_count": 1,
+      "repair_details": [
+        "Reduced amount by 19% (budget); Reduced parameters.monthly_spend by 19% (budget)"
+      ]
+    },
+    {
+      "scenario": "threshold_repair_converges",
+      "description": "Threshold exceeded for effect_size \u2014 0.9x reduction, passes on retry",
+      "violations": [
+        "Threshold exceeded for effect_size"
+      ],
+      "original_action": {
+        "action_type": "adjustment",
+        "description": "Apply pricing adjustment",
+        "effect_size": 0.95,
+        "parameters": {
+          "margin_pct": 13.5
+        }
+      },
+      "repaired_action": {
+        "action_type": "adjustment",
+        "description": "Apply pricing adjustment",
+        "effect_size": 0.855,
+        "parameters": {
+          "margin_pct": 13.5
+        }
+      },
+      "repair_attempted": true,
+      "checks": {
+        "action_modified": true,
+        "repair_attempted": true,
+        "values_reduced": true
+      },
+      "all_checks_passed": true,
+      "blind_mutation": false,
+      "numeric_fields_total": 2,
+      "numeric_fields_modified": 1,
+      "reflection_count": 1,
+      "repair_details": [
+        "Reduced effect_size by 9% (threshold); Reduced parameters.margin_pct by 9% (threshold)"
+      ]
+    },
+    {
+      "scenario": "approval_flags_human",
+      "description": "Missing approval for deployment \u2014 should set requires_human_review",
+      "violations": [
+        "Missing approval for deployment"
+      ],
+      "original_action": {
+        "action_type": "deployment",
+        "description": "Deploy model to production",
+        "parameters": {
+          "environment": "production"
+        }
+      },
+      "repaired_action": {
+        "action_type": "deployment",
+        "description": "Deploy model to production",
+        "parameters": {
+          "environment": "production"
+        },
+        "requires_human_review": true,
+        "review_reason": "Missing approval for deployment"
+      },
+      "repair_attempted": true,
+      "checks": {
+        "action_modified": true,
+        "repair_attempted": true,
+        "requires_human_review": true
+      },
+      "all_checks_passed": true,
+      "blind_mutation": false,
+      "numeric_fields_total": 0,
+      "numeric_fields_modified": 0,
+      "reflection_count": 1,
+      "repair_details": [
+        "Flagged for targeted human review"
+      ]
+    },
+    {
+      "scenario": "unknown_violation_no_repair",
+      "description": "Unknown violation type \u2014 repair not attempted",
+      "violations": [
+        "Data residency requires EU storage"
+      ],
+      "original_action": {
+        "action_type": "data_transfer",
+        "description": "Transfer data to US region",
+        "parameters": {
+          "region": "us-east-1"
+        }
+      },
+      "repaired_action": {
+        "action_type": "data_transfer",
+        "description": "Transfer data to US region",
+        "parameters": {
+          "region": "us-east-1"
+        },
+        "llm_repair_applied": true
+      },
+      "repair_attempted": true,
+      "checks": {
+        "action_modified": true,
+        "correctly_skipped": false
+      },
+      "all_checks_passed": false,
+      "blind_mutation": false,
+      "numeric_fields_total": 0,
+      "numeric_fields_modified": 0,
+      "reflection_count": 1,
+      "repair_details": [
+        "[test_stub] LLM-based contextual repair applied"
+      ]
+    },
+    {
+      "scenario": "multi_violation_repair",
+      "description": "Budget + threshold combined \u2014 both repairs applied",
+      "violations": [
+        "Budget exceeded: 200000 > 100000",
+        "Threshold exceeded for risk_score"
+      ],
+      "original_action": {
+        "action_type": "investment",
+        "description": "High-risk investment proposal",
+        "amount": 200000,
+        "risk_score": 0.85,
+        "parameters": {
+          "allocation_pct": 18.0
+        }
+      },
+      "repaired_action": {
+        "action_type": "investment",
+        "description": "High-risk investment proposal",
+        "amount": 144000.0,
+        "risk_score": 0.6120000000000001,
+        "parameters": {
+          "allocation_pct": 18.0
+        }
+      },
+      "repair_attempted": true,
+      "checks": {
+        "action_modified": true,
+        "repair_attempted": true,
+        "multiple_repairs_applied": true
+      },
+      "all_checks_passed": true,
+      "blind_mutation": false,
+      "numeric_fields_total": 3,
+      "numeric_fields_modified": 2,
+      "reflection_count": 1,
+      "repair_details": [
+        "Reduced amount by 19% (budget); Reduced risk_score by 19% (budget); Reduced parameters.allocation_pct by 19% (budget); Reduced amount by 9% (threshold); Reduced risk_score by 9% (threshold); Reduced parameters.allocation_pct by 9% (threshold)"
+      ]
+    }
+  ]
+}
