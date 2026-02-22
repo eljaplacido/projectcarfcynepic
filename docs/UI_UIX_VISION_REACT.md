@@ -1589,10 +1589,13 @@ Every panel must answer:
 
 | Track | Target | Duration |
 |-------|--------|----------|
-| 🎯 Quick Demo | Evaluators | 2-3 min |
-| 📊 Analyst Onboarding | Data Scientists | 5-7 min |
-| 🔧 Contributor Guide | Developers | 10-15 min |
-| 🏢 Production Path | Enterprise | 5-10 min |
+| Quick Demo | Evaluators | 2-3 min |
+| Analyst Onboarding | Data Scientists | 5-7 min |
+| Contributor Guide | Developers | 10-15 min |
+| Production Path | Enterprise | 5-10 min |
+| Causal Analysis Deep Dive | Analysts | 5-7 min |
+| Running Simulations | Analysts | 5-7 min |
+| Developer Debugging | Developers | 5-7 min |
 
 ### Transparency Enhancements
 
@@ -1605,5 +1608,39 @@ Every panel must answer:
 
 ---
 
-*Generated for CARF Epistemic Cockpit v2.1.0*
-*Phase 6: Enhanced UIX & Explainability*
+---
+
+## Phase 15: UIX Rehaul Components (2026-02-21)
+
+### New Components
+
+| Component | Purpose |
+|-----------|---------|
+| `MarkdownRenderer.tsx` | Shared markdown rendering with `react-markdown` + `remark-gfm`. Handles GFM tables, internal panel links (`#causal-results`), external links with `target=_blank`. Used by IntelligentChatTab and ConversationalResponse. |
+| `AgentFlowChart.tsx` | ReactFlow-based agent activation visualization. Color-coded nodes (green=completed, red=failed, blue=in-progress), click-to-expand detail panel with full I/O JSON. Used in Developer view. |
+| `useProactiveHighlight.ts` | Hook that analyzes `queryResponse` and returns panels to highlight: low p-value highlights causal results, Guardian rejection highlights Guardian panel, high uncertainty highlights Bayesian panel. |
+
+### Enhanced Components
+
+| Component | Changes |
+|-----------|---------|
+| `TransparencyPanel` | DataModal shows dataset info/quality/variable roles. Flowchart lineage replaces bullets. Quality score bars are clickable with baselines. |
+| `GuardianPanel` | Informative empty state with config info. Policy contextualization. Audit trail link. |
+| `SensitivityPlot` | Plain English axes. Colored Robust/Fragile zones via recharts. Expandable modal. Robustness interpretation text. |
+| `InterventionSimulator` | Multi-parameter: treatment + confounder sliders. Combined prediction. Save Scenario. Strongest effect highlight. |
+| `ExecutiveKPIPanel` | Chart type selector (Cards/Bar/Pie). Action items checklist. Roadmap stepper. |
+| `DeveloperView` | Real telemetry from system state. ImprovementModal. DeepEval drill-downs with Cynefin-aware recommendations. |
+| `DashboardLayout` | Renamed section headers (e.g., "Causal DAG" to "Cause & Effect Map"). Simulation access button. Export Report. |
+
+### Renamed Section Headers
+
+| Old | New |
+|-----|-----|
+| Causal DAG | Cause & Effect Map |
+| Causal Analysis Results | Impact Analysis |
+| Bayesian Panel | Uncertainty & Belief Update |
+| Guardian Panel | Safety & Compliance Check |
+| Execution Trace | Decision Audit Trail |
+
+*Generated for CYNEPIC Cockpit v0.5.0*
+*Phase 15: UIX Rehaul Complete*

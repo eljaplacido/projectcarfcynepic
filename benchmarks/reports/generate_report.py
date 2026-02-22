@@ -103,6 +103,30 @@ HYPOTHESES = [
         "direction": "lower_is_better",
         "test": "descriptive",
     },
+    {
+        "id": "H10",
+        "claim": "Governance MAP accuracy >= 70% cross-domain link detection",
+        "metric": "map_accuracy",
+        "threshold": 0.7,
+        "direction": "higher_is_better",
+        "test": "proportion_test",
+    },
+    {
+        "id": "H11",
+        "claim": "Governance PRICE accuracy >= 95% cost computation precision",
+        "metric": "price_accuracy",
+        "threshold": 0.95,
+        "direction": "higher_is_better",
+        "test": "proportion_test",
+    },
+    {
+        "id": "H12",
+        "claim": "Governance node latency P95 < 50ms (non-blocking)",
+        "metric": "governance_p95_ms",
+        "threshold": 50.0,
+        "direction": "lower_is_better",
+        "test": "descriptive",
+    },
 ]
 
 
@@ -214,6 +238,12 @@ def load_results(results_dir: Path) -> dict[str, Any]:
     if oracle_path.exists():
         with open(oracle_path) as f:
             collected["chimera"] = json.load(f)
+
+    # Governance results
+    governance_path = results_dir / "technical" / "governance" / "benchmark_governance_results.json"
+    if governance_path.exists():
+        with open(governance_path) as f:
+            collected["governance"] = json.load(f)
 
     # E2E results
     e2e_path = results_dir / "use_cases" / "e2e_results.json"
@@ -394,6 +424,51 @@ def evaluate_hypotheses(results: dict[str, Any]) -> list[dict[str, Any]]:
                 if "top_allocators" in mem:
                     evaluation["details"]["top_allocators"] = mem["top_allocators"][:5]
 
+        # H10: Governance MAP accuracy
+        elif h["id"] == "H10" and "governance" in results:
+            gov = results["governance"]
+            acc = gov.get("map_accuracy")
+            if acc is not None:
+                evaluation["metric_value"] = acc
+                evaluation["passed"] = acc >= h["threshold"]
+                evaluation["status"] = "evaluated"
+                evaluation["details"] = {
+                    "domain_recall": gov.get("map", {}).get("avg_domain_recall"),
+                    "cross_domain_accuracy": acc,
+                    "total_cases": gov.get("map", {}).get("total_cases"),
+                }
+
+        # H11: Governance PRICE accuracy
+        elif h["id"] == "H11" and "governance" in results:
+            gov = results["governance"]
+            acc = gov.get("price_accuracy")
+            if acc is not None:
+                evaluation["metric_value"] = acc
+                evaluation["passed"] = acc >= h["threshold"]
+                evaluation["status"] = "evaluated"
+                evaluation["details"] = {
+                    "max_absolute_error": gov.get("price", {}).get("max_absolute_error"),
+                    "breakdown_valid": gov.get("price", {}).get("breakdown_valid"),
+                    "aggregation_valid": gov.get("price", {}).get("aggregation_valid"),
+                }
+
+        # H12: Governance node latency P95 < 50ms
+        elif h["id"] == "H12" and "governance" in results:
+            gov = results["governance"]
+            p95 = gov.get("governance_p95_ms")
+            if p95 is not None:
+                evaluation["metric_value"] = p95
+                evaluation["passed"] = p95 < h["threshold"]
+                evaluation["status"] = "evaluated"
+                evaluation["details"] = {
+                    "avg_ms": gov.get("latency", {}).get("avg_ms"),
+                    "p50_ms": gov.get("latency", {}).get("p50_ms"),
+                    "p95_ms": p95,
+                    "p99_ms": gov.get("latency", {}).get("p99_ms"),
+                    "iterations": gov.get("latency", {}).get("iterations"),
+                    "feature_flag_zero_overhead": gov.get("feature_flag", {}).get("zero_overhead"),
+                }
+
         evaluations.append(evaluation)
 
     return evaluations
@@ -403,9 +478,9 @@ def compute_grade(passed: int, evaluated: int, total: int) -> str:
     """Compute a summary grade from hypothesis pass rates.
 
     Grade scale:
-        A: >= 80% passed with >= 7/9 evaluated
-        B: >= 60% passed with >= 5/9 evaluated
-        C: >= 40% passed with >= 4/9 evaluated
+        A: >= 80% passed with >= 7 evaluated
+        B: >= 60% passed with >= 5 evaluated
+        C: >= 40% passed with >= 4 evaluated
         D: < 40% passed or insufficient data
     """
     if evaluated < 4:
@@ -448,7 +523,7 @@ def generate_report(results_dir: Path, output_path: Path) -> dict[str, Any]:
             "hypotheses_passed": len(passed),
             "hypotheses_total": len(hypotheses),
             "pass_rate": round(len(passed) / max(len(evaluated), 1), 3),
-            "data_coverage": f"{len(results)}/8 benchmark categories",
+            "data_coverage": f"{len(results)}/9 benchmark categories",
         },
         "hypotheses": hypotheses,
         "raw_results": {k: v for k, v in results.items() if k != "e2e"},
@@ -508,7 +583,7 @@ def _write_text_report(
         "",
         "SUMMARY",
         "-" * 60,
-        f"  Hypotheses evaluated: {report['summary']['hypotheses_evaluated']}/9",
+        f"  Hypotheses evaluated: {report['summary']['hypotheses_evaluated']}/{len(HYPOTHESES)}",
         f"  Hypotheses passed:    {report['summary']['hypotheses_passed']}/{report['summary']['hypotheses_evaluated']}",
         f"  Pass rate:            {report['summary']['pass_rate']:.1%}",
         f"  Data coverage:        {report['summary']['data_coverage']}",
@@ -539,6 +614,8 @@ def _write_text_report(
         "    balanced domain sampling, weighted F1 + ECE.",
         "  - Guardian: Deterministic policy enforcement, 5x repetitions.",
         "  - Performance: Latency + tracemalloc memory profiling.",
+        "  - Governance: MAP triple extraction, PRICE cost precision,",
+        "    RESOLVE conflict detection, AUDIT compliance scoring.",
         "  - Baselines: Raw LLM (same model, no pipeline) for comparison.",
         "",
         "EU AI ACT ALIGNMENT",

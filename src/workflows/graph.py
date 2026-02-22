@@ -11,15 +11,18 @@ the 4-layer cognitive architecture:
 2. Cognitive Mesh → Domain-specific agents
 3. Guardian → Policy enforcement
 4. Human Escalation → HumanLayer integration
+5. Governance → Orchestration Governance (Phase 16, optional)
 
 Flow:
-    Entry → Router → [Domain Agent] → Guardian → [Approved? → END]
+    Entry → Router → [Domain Agent] → Guardian → [Approved? → Governance? → END]
                                               → [Rejected? → Reflector → Router]
                                               → [Escalate? → Human → Router]
             → [Disorder? → Human → Router]
 """
 
 import logging
+import os
+import time
 from typing import Literal
 
 from langgraph.graph import END, StateGraph
@@ -204,6 +207,7 @@ async def deterministic_runner_node(state: EpistemicState) -> EpistemicState:
     Handles simple, deterministic queries where cause-effect is obvious.
     """
     logger.info(f"Deterministic runner processing: {state.user_input[:50]}...")
+    _t0 = time.perf_counter()
 
     state.final_response = (
         f"[Clear Domain] Processing deterministic request: {state.user_input}"
@@ -220,6 +224,7 @@ async def deterministic_runner_node(state: EpistemicState) -> EpistemicState:
         input_summary=state.user_input[:50],
         output_summary="Operation completed",
         confidence=ConfidenceLevel.HIGH,
+        duration_ms=int((time.perf_counter() - _t0) * 1000),
     )
 
     return state
@@ -237,6 +242,7 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     5. Evaluate output quality (DeepEval)
     """
     logger.info(f"Causal analyst processing: {state.user_input[:50]}...")
+    _t0 = time.perf_counter()
 
     # Run full causal analysis pipeline
     state = await run_causal_analysis(state)
@@ -250,6 +256,7 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
         input_summary=state.user_input[:50],
         output_summary=f"Effect: {effect_str}, Refutation: {refutation_str}",
         confidence=state.overall_confidence,
+        duration_ms=int((time.perf_counter() - _t0) * 1000),
     )
 
     # Evaluate causal output quality
@@ -282,6 +289,7 @@ async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
     5. Evaluate output quality (DeepEval)
     """
     logger.info(f"Bayesian explorer processing: {state.user_input[:50]}...")
+    _t0 = time.perf_counter()
 
     # Run Active Inference pipeline
     state = await run_active_inference(state)
@@ -296,6 +304,7 @@ async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
             f"Hypothesis: {state.current_hypothesis[:50] if state.current_hypothesis else 'N/A'}..."
         ),
         confidence=state.overall_confidence,
+        duration_ms=int((time.perf_counter() - _t0) * 1000),
     )
 
     # Evaluate Bayesian output quality
@@ -323,6 +332,7 @@ async def circuit_breaker_node(state: EpistemicState) -> EpistemicState:
     This always triggers human escalation for crisis management.
     """
     logger.info(f"CIRCUIT BREAKER ACTIVATED for session {state.session_id}")
+    _t0 = time.perf_counter()
 
     state.final_response = (
         "[CHAOTIC Domain] Emergency protocol activated. "
@@ -340,6 +350,7 @@ async def circuit_breaker_node(state: EpistemicState) -> EpistemicState:
         input_summary=f"High entropy: {state.domain_entropy:.2f}",
         output_summary="All operations halted, human escalation required",
         confidence=ConfidenceLevel.HIGH,
+        duration_ms=int((time.perf_counter() - _t0) * 1000),
     )
 
     return state
@@ -360,6 +371,7 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
     - Unknown violations: LLM-based contextual repair (hybrid mode)
     """
     logger.info(f"Reflector attempting self-correction (attempt {state.reflection_count + 1})")
+    _t0 = time.perf_counter()
 
     state.reflection_count += 1
 
@@ -421,12 +433,100 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
             f"Feeding {len(violations)} violation(s) back to domain agent for retry"
         ),
         confidence=ConfidenceLevel.MEDIUM if repair_successful else ConfidenceLevel.LOW,
+        duration_ms=int((time.perf_counter() - _t0) * 1000),
     )
 
     # Only clear proposed action if repair wasn't attempted or failed
     if not repair_successful:
         state.proposed_action = None
     state.guardian_verdict = None
+
+    return state
+
+
+# =============================================================================
+# GOVERNANCE NODE (Phase 16 — Optional, feature-flagged)
+# =============================================================================
+
+
+@traced(name="carf.node.governance", attributes={"layer": "governance"})
+async def governance_node(state: EpistemicState) -> EpistemicState:
+    """Orchestration Governance node — MAP-PRICE-RESOLVE.
+
+    Feature-flagged: only added to the graph when GOVERNANCE_ENABLED=true.
+    Non-blocking: failures are caught and logged, never breaking the pipeline.
+
+    1. MAP: Extract cross-domain impacts → populate state.session_triples
+    2. PRICE: Compute cost breakdown → populate state.cost_breakdown
+    3. RESOLVE: Detect policy conflicts → store in state.context
+    """
+    _t0 = time.perf_counter()
+
+    try:
+        from src.services.governance_service import get_governance_service
+        gov = get_governance_service()
+
+        # 1. MAP — Extract semantic triples
+        triples = gov.map_impacts(state)
+        state.session_triples = triples
+
+        # 2. PRICE — Compute cost breakdown
+        token_usage = state.context.get("_llm_token_usage", {})
+        input_tokens = token_usage.get("input", 0)
+        output_tokens = token_usage.get("output", 0)
+        compute_ms = (time.perf_counter() - _t0) * 1000  # approx pipeline time
+        state.cost_breakdown = gov.compute_cost(
+            state, input_tokens, output_tokens, compute_ms
+        )
+
+        # 3. RESOLVE — Detect policy conflicts
+        conflicts = gov.resolve_tensions(state)
+        if conflicts:
+            state.context["governance_conflicts"] = [
+                {"id": str(c.conflict_id), "type": c.conflict_type.value,
+                 "severity": c.severity.value, "description": c.description}
+                for c in conflicts
+            ]
+
+        # Persist triples to graph (non-blocking)
+        try:
+            from src.services.governance_graph_service import get_governance_graph_service
+            graph_service = get_governance_graph_service()
+            if graph_service.is_available:
+                await graph_service.save_triples_batch(triples)
+        except Exception:
+            pass  # Graph persistence is best-effort
+
+        _duration = int((time.perf_counter() - _t0) * 1000)
+        state.add_reasoning_step(
+            node_name="governance",
+            action="Orchestration Governance (MAP-PRICE-RESOLVE)",
+            input_summary=f"Domains detected: {len(set(t.domain_source for t in triples))}",
+            output_summary=(
+                f"Triples: {len(triples)}, "
+                f"Cost: ${state.cost_breakdown.total_cost:.4f}, "
+                f"Conflicts: {len(conflicts)}"
+            ),
+            confidence=ConfidenceLevel.HIGH,
+            duration_ms=_duration,
+        )
+
+        logger.info(
+            f"Governance node complete: {len(triples)} triples, "
+            f"${state.cost_breakdown.total_cost:.4f} cost, "
+            f"{len(conflicts)} conflicts ({_duration}ms)"
+        )
+
+    except Exception as exc:
+        logger.warning(f"Governance node failed (non-blocking): {exc}")
+        state.add_reasoning_step(
+            node_name="governance",
+            action="Governance node failed (non-blocking)",
+            input_summary="N/A",
+            output_summary=f"Error: {str(exc)[:100]}",
+            confidence=ConfidenceLevel.LOW,
+            duration_ms=int((time.perf_counter() - _t0) * 1000),
+        )
 
     return state
 
@@ -458,9 +558,14 @@ def route_by_domain(state: EpistemicState | dict) -> str:
         return "human_escalation"
 
 
+def _governance_enabled() -> bool:
+    """Check if the governance subsystem is enabled."""
+    return os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true"
+
+
 def route_after_guardian(
     state: EpistemicState | dict,
-) -> Literal["end", "reflector", "human_escalation"]:
+) -> Literal["end", "governance", "reflector", "human_escalation"]:
     """Route based on Guardian verdict."""
     # Handle both dict and EpistemicState
     if isinstance(state, dict):
@@ -475,6 +580,9 @@ def route_after_guardian(
         max_reflections = state.max_reflections
 
     if verdict == GuardianVerdict.APPROVED:
+        # Route to governance node if enabled, otherwise END
+        if _governance_enabled():
+            return "governance"
         return "end"
     elif verdict == GuardianVerdict.REJECTED:
         # Check if we've exceeded reflection limit
@@ -553,16 +661,28 @@ def build_carf_graph() -> StateGraph:
     workflow.add_edge("bayesian_explorer", "guardian")
     workflow.add_edge("circuit_breaker", "human_escalation")  # Chaotic always escalates
 
-    # Guardian → End/Reflector/Human (conditional)
+    # Governance node (Phase 16 — optional, feature-flagged)
+    if _governance_enabled():
+        workflow.add_node("governance", governance_node)
+
+    # Guardian → End/Governance/Reflector/Human (conditional)
+    guardian_routes: dict[str, str] = {
+        "end": END,
+        "reflector": "reflector",
+        "human_escalation": "human_escalation",
+    }
+    if _governance_enabled():
+        guardian_routes["governance"] = "governance"
+
     workflow.add_conditional_edges(
         "guardian",
         route_after_guardian,
-        {
-            "end": END,
-            "reflector": "reflector",
-            "human_escalation": "human_escalation",
-        },
+        guardian_routes,
     )
+
+    # Governance → END
+    if _governance_enabled():
+        workflow.add_edge("governance", END)
 
     # Reflector → Router (for retry)
     workflow.add_edge("reflector", "router")
@@ -625,6 +745,13 @@ async def run_carf(
     """
     graph = get_carf_graph()
 
+    # Reset token tracking for this run (Phase 16 — PRICE pillar)
+    try:
+        from src.core.llm import reset_token_usage, get_accumulated_token_usage
+        reset_token_usage()
+    except Exception:
+        pass
+
     # Initialize state as dict for LangGraph compatibility
     initial_state = EpistemicState(
         user_input=user_input,
@@ -640,6 +767,15 @@ async def run_carf(
         final_state = EpistemicState(**result)
     else:
         final_state = result
+
+    # Store accumulated token usage in context for governance node (Phase 16)
+    try:
+        from src.core.llm import get_accumulated_token_usage
+        token_usage = get_accumulated_token_usage()
+        if token_usage["input"] > 0 or token_usage["output"] > 0:
+            final_state.context["_llm_token_usage"] = token_usage
+    except Exception:
+        pass
 
     # Record domain and verdict as span attributes for observability
     try:

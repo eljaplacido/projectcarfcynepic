@@ -1,13 +1,13 @@
 {
   "title": "CARF Unified Benchmark Report",
-  "generated_at": "2026-02-19T20:01:24.315643",
+  "generated_at": "2026-02-22T09:39:49.954180",
   "metadata": {
-    "git_hash": "e0c2589",
+    "git_hash": "6551a56",
     "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]",
     "platform": "Windows-11-10.0.26200-SP0",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "timestamp": "2026-02-19T18:01:24.315629+00:00",
+    "timestamp": "2026-02-22T07:39:49.954166+00:00",
     "seed": null
   },
   "data_sources": [
@@ -17,16 +17,17 @@
     "guardian",
     "performance",
     "chimera",
+    "governance",
     "e2e",
     "baseline"
   ],
   "summary": {
     "grade": "A",
-    "hypotheses_evaluated": 8,
-    "hypotheses_passed": 7,
-    "hypotheses_total": 9,
-    "pass_rate": 0.875,
-    "data_coverage": "8/8 benchmark categories"
+    "hypotheses_evaluated": 12,
+    "hypotheses_passed": 11,
+    "hypotheses_total": 12,
+    "pass_rate": 0.917,
+    "data_coverage": "9/9 benchmark categories"
   },
   "hypotheses": [
     {
@@ -60,9 +61,9 @@
       "id": "H3",
       "claim": "Guardian achieves 100% violation detection vs LLM missing > 20%",
       "status": "evaluated",
-      "metric_value": 1.0,
+      "metric_value": 0.6667,
       "threshold": 1.0,
-      "passed": true,
+      "passed": false,
       "details": {}
     },
     {
@@ -128,11 +129,11 @@
       "id": "H6",
       "claim": "CARF latency overhead acceptable (< 5x raw LLM)",
       "status": "evaluated",
-      "metric_value": 3.447,
+      "metric_value": 3.494,
       "threshold": 5.0,
       "passed": true,
       "details": {
-        "carf_ms": 9136.05,
+        "carf_ms": 9259.59,
         "baseline_ms": 2650.25
       }
     },
@@ -152,43 +153,85 @@
     {
       "id": "H8",
       "claim": "ChimeraOracle >= 10x faster with < 20% accuracy loss",
-      "status": "no_data",
-      "metric_value": null,
+      "status": "evaluated",
+      "metric_value": 32.7,
       "threshold": 10.0,
-      "passed": null,
+      "passed": true,
       "details": {}
     },
     {
       "id": "H9",
       "claim": "CARF memory stable over 500+ queries (< 10% RSS growth)",
       "status": "evaluated",
-      "metric_value": 1589.46,
+      "metric_value": 0.21,
       "threshold": 10.0,
-      "passed": false,
+      "passed": true,
       "details": {
-        "tracemalloc_peak_mb": 377.44,
+        "tracemalloc_peak_mb": 12.62,
         "top_allocators": [
           {
-            "file": "<frozen importlib._bootstrap_external>:781",
-            "size_kb": 164814.5
+            "file": "<frozen abc>:123",
+            "size_kb": 1374.5
           },
           {
-            "file": "<frozen importlib._bootstrap>:488",
-            "size_kb": 13928.1
+            "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\asyncio\\proactor_events.py:191",
+            "size_kb": 64.1
           },
           {
-            "file": "<frozen abc>:106",
-            "size_kb": 13039.9
+            "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\copyreg.py:99",
+            "size_kb": 17.5
           },
           {
-            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\neo4j\\time\\__init__.py:138",
-            "size_kb": 11681.9
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\scalar\\basic.py:4075",
+            "size_kb": 16.7
           },
           {
-            "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\linecache.py:168",
-            "size_kb": 9271.1
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\graph\\basic.py:552",
+            "size_kb": 14.5
           }
         ]
+      }
+    },
+    {
+      "id": "H10",
+      "claim": "Governance MAP accuracy >= 70% cross-domain link detection",
+      "status": "evaluated",
+      "metric_value": 1.0,
+      "threshold": 0.7,
+      "passed": true,
+      "details": {
+        "domain_recall": 0.8571,
+        "cross_domain_accuracy": 1.0,
+        "total_cases": 8
+      }
+    },
+    {
+      "id": "H11",
+      "claim": "Governance PRICE accuracy >= 95% cost computation precision",
+      "status": "evaluated",
+      "metric_value": 1.0,
+      "threshold": 0.95,
+      "passed": true,
+      "details": {
+        "max_absolute_error": 0.0,
+        "breakdown_valid": true,
+        "aggregation_valid": true
+      }
+    },
+    {
+      "id": "H12",
+      "claim": "Governance node latency P95 < 50ms (non-blocking)",
+      "status": "evaluated",
+      "metric_value": 0.36,
+      "threshold": 50.0,
+      "passed": true,
+      "details": {
+        "avg_ms": 0.32,
+        "p50_ms": 0.31,
+        "p95_ms": 0.36,
+        "p99_ms": 0.36,
+        "iterations": 20,
+        "feature_flag_zero_overhead": true
       }
     }
   ],
@@ -197,9 +240,9 @@
       "benchmark": "cynefin_router",
       "total_queries": 50,
       "error_count": 0,
-      "overall_accuracy": 0.94,
-      "weighted_f1": 0.9386,
-      "expected_calibration_error": 0.2082,
+      "overall_accuracy": 0.98,
+      "weighted_f1": 0.9799,
+      "expected_calibration_error": 0.2052,
       "ece_bins": [
         {
           "bin": "[0.0, 0.1)",
@@ -212,9 +255,9 @@
         {
           "bin": "[0.2, 0.3)",
           "count": 9,
-          "mean_confidence": 0.2222,
+          "mean_confidence": 0.2111,
           "mean_accuracy": 1.0,
-          "gap": 0.7778
+          "gap": 0.7889
         },
         {
           "bin": "[0.3, 0.4)",
@@ -234,17 +277,17 @@
         },
         {
           "bin": "[0.7, 0.8)",
-          "count": 4,
+          "count": 2,
           "mean_confidence": 0.75,
-          "mean_accuracy": 0.5,
+          "mean_accuracy": 1.0,
           "gap": 0.25
         },
         {
           "bin": "[0.8, 0.9)",
-          "count": 16,
-          "mean_confidence": 0.8469,
-          "mean_accuracy": 0.9375,
-          "gap": 0.0906
+          "count": 18,
+          "mean_confidence": 0.85,
+          "mean_accuracy": 0.9444,
+          "gap": 0.0944
         },
         {
           "bin": "[0.9, 1.0)",
@@ -260,29 +303,29 @@
           "correct": 10,
           "accuracy": 1.0,
           "latency": {
-            "mean_ms": 3113.12,
-            "median_ms": 2931.03,
-            "p95_ms": 4774.71
+            "mean_ms": 2547.7,
+            "median_ms": 2464.41,
+            "p95_ms": 3062.68
           }
         },
         "Complicated": {
           "count": 10,
-          "correct": 7,
-          "accuracy": 0.7,
+          "correct": 10,
+          "accuracy": 1.0,
           "latency": {
-            "mean_ms": 3079.36,
-            "median_ms": 3109.3,
-            "p95_ms": 3487.23
+            "mean_ms": 2871.6,
+            "median_ms": 2813.76,
+            "p95_ms": 3325.05
           }
         },
         "Complex": {
           "count": 10,
-          "correct": 10,
-          "accuracy": 1.0,
+          "correct": 9,
+          "accuracy": 0.9,
           "latency": {
-            "mean_ms": 2922.31,
-            "median_ms": 2903.35,
-            "p95_ms": 3319.4
+            "mean_ms": 2878.11,
+            "median_ms": 2842.6,
+            "p95_ms": 3254.59
           }
         },
         "Chaotic": {
@@ -290,9 +333,9 @@
           "correct": 10,
           "accuracy": 1.0,
           "latency": {
-            "mean_ms": 2815.28,
-            "median_ms": 2870.88,
-            "p95_ms": 3089.83
+            "mean_ms": 2692.37,
+            "median_ms": 2688.2,
+            "p95_ms": 2924.36
           }
         },
         "Disorder": {
@@ -300,9 +343,9 @@
           "correct": 10,
           "accuracy": 1.0,
           "latency": {
-            "mean_ms": 2812.52,
-            "median_ms": 2771.93,
-            "p95_ms": 3310.54
+            "mean_ms": 2654.88,
+            "median_ms": 2734.27,
+            "p95_ms": 2860.53
           }
         }
       },
@@ -332,15 +375,15 @@
           [
             0,
             0,
-            10,
-            0,
+            9,
+            1,
             0
           ],
           [
             0,
             0,
-            3,
-            7,
+            0,
+            10,
             0
           ],
           [
@@ -353,10 +396,10 @@
         ]
       },
       "latency": {
-        "mean_ms": 2948.52,
-        "median_ms": 2894.49,
-        "p95_ms": 3385.0,
-        "p99_ms": 4844.57
+        "mean_ms": 2728.93,
+        "median_ms": 2729.65,
+        "p95_ms": 3271.94,
+        "p99_ms": 3351.72
       },
       "individual_results": [
         {
@@ -365,7 +408,7 @@
           "predicted": "Clear",
           "confidence": 1.0,
           "correct": true,
-          "latency_ms": 6045.97,
+          "latency_ms": 3291.29,
           "error": null
         },
         {
@@ -374,7 +417,7 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 3147.45,
+          "latency_ms": 2347.18,
           "error": null
         },
         {
@@ -383,7 +426,7 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2936.19,
+          "latency_ms": 2395.0,
           "error": null
         },
         {
@@ -392,7 +435,7 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2428.89,
+          "latency_ms": 2231.39,
           "error": null
         },
         {
@@ -401,7 +444,7 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2663.5,
+          "latency_ms": 2616.06,
           "error": null
         },
         {
@@ -410,7 +453,7 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2495.6,
+          "latency_ms": 2261.91,
           "error": null
         },
         {
@@ -419,7 +462,7 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2328.39,
+          "latency_ms": 2324.66,
           "error": null
         },
         {
@@ -428,7 +471,7 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2938.36,
+          "latency_ms": 2692.44,
           "error": null
         },
         {
@@ -437,7 +480,7 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2925.88,
+          "latency_ms": 2533.82,
           "error": null
         },
         {
@@ -446,16 +489,16 @@
           "predicted": "Clear",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 3220.94,
+          "latency_ms": 2783.26,
           "error": null
         },
         {
           "query": "What is the causal effect of marketing spend on customer acquisition?",
           "ground_truth": "Complicated",
-          "predicted": "Complex",
-          "confidence": 0.8,
-          "correct": false,
-          "latency_ms": 3352.61,
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 3387.85,
           "error": null
         },
         {
@@ -464,7 +507,7 @@
           "predicted": "Complicated",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 3594.13,
+          "latency_ms": 2768.02,
           "error": null
         },
         {
@@ -473,7 +516,7 @@
           "predicted": "Complicated",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 3034.0,
+          "latency_ms": 2859.49,
           "error": null
         },
         {
@@ -482,7 +525,7 @@
           "predicted": "Complicated",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 2629.37,
+          "latency_ms": 2679.76,
           "error": null
         },
         {
@@ -491,25 +534,25 @@
           "predicted": "Complicated",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 3184.6,
+          "latency_ms": 2762.38,
           "error": null
         },
         {
           "query": "Determine the impact of the new pricing strategy on revenue",
           "ground_truth": "Complicated",
-          "predicted": "Complex",
-          "confidence": 0.75,
-          "correct": false,
-          "latency_ms": 2739.35,
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2530.31,
           "error": null
         },
         {
           "query": "What is the causal relationship between employee training hours and productivity?",
           "ground_truth": "Complicated",
-          "predicted": "Complex",
-          "confidence": 0.75,
-          "correct": false,
-          "latency_ms": 3323.31,
+          "predicted": "Complicated",
+          "confidence": 0.85,
+          "correct": true,
+          "latency_ms": 2991.08,
           "error": null
         },
         {
@@ -518,7 +561,7 @@
           "predicted": "Complicated",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 3356.57,
+          "latency_ms": 3248.3,
           "error": null
         },
         {
@@ -527,7 +570,7 @@
           "predicted": "Complicated",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 2718.0,
+          "latency_ms": 2611.11,
           "error": null
         },
         {
@@ -536,7 +579,7 @@
           "predicted": "Complicated",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 2861.67,
+          "latency_ms": 2877.67,
           "error": null
         },
         {
@@ -545,7 +588,7 @@
           "predicted": "Complex",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 2776.67,
+          "latency_ms": 2877.77,
           "error": null
         },
         {
@@ -554,7 +597,7 @@
           "predicted": "Complex",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 2835.54,
+          "latency_ms": 2610.89,
           "error": null
         },
         {
@@ -563,7 +606,7 @@
           "predicted": "Complex",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 2603.42,
+          "latency_ms": 2807.43,
           "error": null
         },
         {
@@ -572,7 +615,7 @@
           "predicted": "Complex",
           "confidence": 0.75,
           "correct": true,
-          "latency_ms": 2807.84,
+          "latency_ms": 2988.22,
           "error": null
         },
         {
@@ -581,7 +624,7 @@
           "predicted": "Complex",
           "confidence": 0.75,
           "correct": true,
-          "latency_ms": 2971.15,
+          "latency_ms": 3181.84,
           "error": null
         },
         {
@@ -590,7 +633,7 @@
           "predicted": "Complex",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 2452.48,
+          "latency_ms": 2712.91,
           "error": null
         },
         {
@@ -599,16 +642,16 @@
           "predicted": "Complex",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 3093.76,
+          "latency_ms": 2921.27,
           "error": null
         },
         {
           "query": "How should we explore the impact of AI on our workforce planning?",
           "ground_truth": "Complex",
-          "predicted": "Complex",
+          "predicted": "Complicated",
           "confidence": 0.85,
-          "correct": true,
-          "latency_ms": 3269.01,
+          "correct": false,
+          "latency_ms": 2728.23,
           "error": null
         },
         {
@@ -617,7 +660,7 @@
           "predicted": "Complex",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 3052.59,
+          "latency_ms": 2638.41,
           "error": null
         },
         {
@@ -626,7 +669,7 @@
           "predicted": "Complex",
           "confidence": 0.85,
           "correct": true,
-          "latency_ms": 3360.62,
+          "latency_ms": 3314.11,
           "error": null
         },
         {
@@ -635,7 +678,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 3045.96,
+          "latency_ms": 2489.53,
           "error": null
         },
         {
@@ -644,7 +687,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 3125.72,
+          "latency_ms": 2720.53,
           "error": null
         },
         {
@@ -653,7 +696,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2645.75,
+          "latency_ms": 2630.21,
           "error": null
         },
         {
@@ -662,7 +705,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2911.38,
+          "latency_ms": 2909.85,
           "error": null
         },
         {
@@ -671,7 +714,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2830.38,
+          "latency_ms": 2655.87,
           "error": null
         },
         {
@@ -680,7 +723,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2969.19,
+          "latency_ms": 2844.42,
           "error": null
         },
         {
@@ -689,7 +732,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2485.92,
+          "latency_ms": 2450.73,
           "error": null
         },
         {
@@ -698,7 +741,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2443.54,
+          "latency_ms": 2814.67,
           "error": null
         },
         {
@@ -707,7 +750,7 @@
           "predicted": "Chaotic",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2950.03,
+          "latency_ms": 2471.67,
           "error": null
         },
         {
@@ -716,16 +759,16 @@
           "predicted": "Chaotic",
           "confidence": 0.99,
           "correct": true,
-          "latency_ms": 2744.92,
+          "latency_ms": 2936.23,
           "error": null
         },
         {
           "query": "Should we do something different?",
           "ground_truth": "Disorder",
           "predicted": "Disorder",
-          "confidence": 0.3,
+          "confidence": 0.2,
           "correct": true,
-          "latency_ms": 2877.61,
+          "latency_ms": 2402.79,
           "error": null
         },
         {
@@ -734,7 +777,7 @@
           "predicted": "Disorder",
           "confidence": 0.2,
           "correct": true,
-          "latency_ms": 2614.34,
+          "latency_ms": 2731.08,
           "error": null
         },
         {
@@ -743,7 +786,7 @@
           "predicted": "Disorder",
           "confidence": 0.2,
           "correct": true,
-          "latency_ms": 2552.0,
+          "latency_ms": 2434.7,
           "error": null
         },
         {
@@ -752,7 +795,7 @@
           "predicted": "Disorder",
           "confidence": 0.2,
           "correct": true,
-          "latency_ms": 2980.59,
+          "latency_ms": 2742.21,
           "error": null
         },
         {
@@ -761,7 +804,7 @@
           "predicted": "Disorder",
           "confidence": 0.2,
           "correct": true,
-          "latency_ms": 2545.46,
+          "latency_ms": 2781.57,
           "error": null
         },
         {
@@ -770,7 +813,7 @@
           "predicted": "Disorder",
           "confidence": 0.3,
           "correct": true,
-          "latency_ms": 3404.94,
+          "latency_ms": 2737.47,
           "error": null
         },
         {
@@ -779,7 +822,7 @@
           "predicted": "Disorder",
           "confidence": 0.2,
           "correct": true,
-          "latency_ms": 2806.75,
+          "latency_ms": 2677.84,
           "error": null
         },
         {
@@ -788,7 +831,7 @@
           "predicted": "Disorder",
           "confidence": 0.2,
           "correct": true,
-          "latency_ms": 3195.17,
+          "latency_ms": 2925.13,
           "error": null
         },
         {
@@ -797,7 +840,7 @@
           "predicted": "Disorder",
           "confidence": 0.95,
           "correct": true,
-          "latency_ms": 2737.12,
+          "latency_ms": 2745.38,
           "error": null
         },
         {
@@ -806,7 +849,7 @@
           "predicted": "Disorder",
           "confidence": 0.2,
           "correct": true,
-          "latency_ms": 2411.25,
+          "latency_ms": 2370.6,
           "error": null
         }
       ]
@@ -814,7 +857,7 @@
     "causal": {
       "benchmark": "carf_causal_inference",
       "version": "2.0",
-      "timestamp": "2026-02-19T17:26:09.354267+00:00",
+      "timestamp": "2026-02-20T11:54:38.154543+00:00",
       "n_test_cases": 9,
       "n_successful": 9,
       "aggregate_metrics": {
@@ -870,7 +913,7 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 32.865799,
+          "elapsed_seconds": 9.790696,
           "error": null
         },
         {
@@ -891,7 +934,7 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 1.812308,
+          "elapsed_seconds": 1.890677,
           "error": null
         },
         {
@@ -912,7 +955,7 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 1.81942,
+          "elapsed_seconds": 1.873611,
           "error": null
         },
         {
@@ -933,7 +976,7 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 1.83461,
+          "elapsed_seconds": 1.889318,
           "error": null
         },
         {
@@ -954,7 +997,7 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 1.856408,
+          "elapsed_seconds": 1.885053,
           "error": null
         },
         {
@@ -975,7 +1018,7 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 2.018277,
+          "elapsed_seconds": 2.069329,
           "error": null
         },
         {
@@ -996,7 +1039,7 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 1.868672,
+          "elapsed_seconds": 2.210294,
           "error": null
         },
         {
@@ -1017,7 +1060,7 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 1.837687,
+          "elapsed_seconds": 2.040651,
           "error": null
         },
         {
@@ -1038,14 +1081,14 @@
             "random_common_cause": true
           },
           "refutation_pass_rate": 1.0,
-          "elapsed_seconds": 1.865065,
+          "elapsed_seconds": 2.192545,
           "error": null
         }
       ]
     },
     "bayesian": {
       "benchmark": "carf_bayesian_inference",
-      "timestamp": "2026-02-19T17:25:06.810692+00:00",
+      "timestamp": "2026-02-20T11:56:42.752239+00:00",
       "n_scenarios": 8,
       "n_successful": 8,
       "aggregate": {
@@ -1053,11 +1096,11 @@
         "n_covered": 8,
         "well_calibrated": true,
         "decomposition_rate": 1.0,
-        "aggregate_pass_rate": 1.0,
-        "mean_latency_seconds": 40.364
+        "aggregate_pass_rate": 0.9219,
+        "mean_latency_seconds": 17.96
       },
       "coverage": 1.0,
-      "aggregate_pass_rate": 1.0,
+      "aggregate_pass_rate": 0.9219,
       "scenario_results": [
         {
           "name": "market_entry_risk",
@@ -1066,30 +1109,31 @@
             "uncertainty_bounded",
             "coverage_90ci",
             "posterior_precision",
-            "sufficient_probes",
             "uncertainty_decomposition",
             "uncertainty_tracked",
             "response_quality"
           ],
-          "failed_checks": [],
+          "failed_checks": [
+            "sufficient_probes"
+          ],
           "metrics": {
-            "elapsed_seconds": 58.131,
-            "posterior_mean": 0.093387,
-            "posterior_std": 0.018553,
+            "elapsed_seconds": 23.136,
+            "posterior_mean": 0.093841,
+            "posterior_std": 0.019091,
             "credible_interval": [
-              0.062976,
-              0.124015
+              0.064089,
+              0.126899
             ],
             "true_parameter": 0.08,
             "parameter_covered": true,
-            "n_probes": 4,
-            "recommended_probe": "Apply to enter a regulatory sandbox in a target country (e.g., Singapore\u2019s MAS sandbox or Malaysia\u2019s Bank Negara sandbox) to test our product with real customers under supervised, limited-scale conditions.",
-            "epistemic_uncertainty": 0.019066,
-            "aleatoric_uncertainty": 0.134664,
-            "state_epistemic_uncertainty": 0.1695
+            "n_probes": 1,
+            "recommended_probe": "Run a small A/B test on pricing",
+            "epistemic_uncertainty": 0.019041,
+            "aleatoric_uncertainty": 0.134727,
+            "state_epistemic_uncertainty": 0.1687
           },
           "error": null,
-          "pass_rate": 1.0
+          "pass_rate": 0.875
         },
         {
           "name": "climate_crop_yield_uncertainty",
@@ -1098,30 +1142,31 @@
             "uncertainty_bounded",
             "coverage_90ci",
             "posterior_precision",
-            "sufficient_probes",
             "uncertainty_decomposition",
             "uncertainty_tracked",
             "response_quality"
           ],
-          "failed_checks": [],
+          "failed_checks": [
+            "sufficient_probes"
+          ],
           "metrics": {
-            "elapsed_seconds": 32.244,
-            "posterior_mean": 4.518405,
-            "posterior_std": 0.132595,
+            "elapsed_seconds": 14.564,
+            "posterior_mean": 4.518404,
+            "posterior_std": 0.116725,
             "credible_interval": [
-              4.299092,
-              4.735329
+              4.329109,
+              4.713133
             ],
             "true_parameter": 4.5,
             "parameter_covered": true,
-            "n_probes": 4,
-            "recommended_probe": "Test small batches of wheat varieties with known drought/heat tolerance characteristics alongside current variety to quantify resilience differences",
-            "epistemic_uncertainty": 0.13286,
-            "aleatoric_uncertainty": 0.828875,
-            "state_epistemic_uncertainty": 0.0286
+            "n_probes": 1,
+            "recommended_probe": "Run a small A/B test on pricing",
+            "epistemic_uncertainty": 0.120229,
+            "aleatoric_uncertainty": 0.819695,
+            "state_epistemic_uncertainty": 0.0259
           },
           "error": null,
-          "pass_rate": 1.0
+          "pass_rate": 0.875
         },
         {
           "name": "tech_migration_roi",
@@ -1137,20 +1182,20 @@
           ],
           "failed_checks": [],
           "metrics": {
-            "elapsed_seconds": 28.176,
-            "posterior_mean": 0.643095,
-            "posterior_std": 0.069935,
+            "elapsed_seconds": 7.96,
+            "posterior_mean": 0.632928,
+            "posterior_std": 0.06995,
             "credible_interval": [
-              0.520957,
-              0.751043
+              0.513038,
+              0.743174
             ],
             "true_parameter": 0.62,
             "parameter_covered": true,
-            "n_probes": 5,
-            "recommended_probe": "Migrate a single, non-critical ML pipeline from TensorFlow to PyTorch with a small, experienced team to measure actual migration effort, developer productivity changes, and performance differences in a controlled environment.",
-            "epistemic_uncertainty": 0.070234,
-            "aleatoric_uncertainty": 0.224596,
-            "state_epistemic_uncertainty": 0.0985
+            "n_probes": 1,
+            "recommended_probe": "Run a small A/B test on pricing",
+            "epistemic_uncertainty": 0.071394,
+            "aleatoric_uncertainty": 0.227238,
+            "state_epistemic_uncertainty": 0.1014
           },
           "error": null,
           "pass_rate": 1.0
@@ -1162,30 +1207,31 @@
             "uncertainty_bounded",
             "coverage_90ci",
             "posterior_precision",
-            "sufficient_probes",
             "uncertainty_decomposition",
             "uncertainty_tracked",
             "response_quality"
           ],
-          "failed_checks": [],
+          "failed_checks": [
+            "sufficient_probes"
+          ],
           "metrics": {
-            "elapsed_seconds": 30.502,
-            "posterior_mean": 0.638961,
-            "posterior_std": 0.046148,
+            "elapsed_seconds": 7.883,
+            "posterior_mean": 0.642578,
+            "posterior_std": 0.045361,
             "credible_interval": [
-              0.561158,
-              0.712985
+              0.567826,
+              0.717065
             ],
             "true_parameter": 0.65,
             "parameter_covered": true,
-            "n_probes": 5,
-            "recommended_probe": "Design and simulate multiple Phase III trial designs (sample sizes, endpoints, populations) using the Phase II data, assessing probability of success under different scenarios and assumptions.",
-            "epistemic_uncertainty": 0.045346,
-            "aleatoric_uncertainty": 0.228636,
-            "state_epistemic_uncertainty": 0.0663
+            "n_probes": 1,
+            "recommended_probe": "Run a small A/B test on pricing",
+            "epistemic_uncertainty": 0.045232,
+            "aleatoric_uncertainty": 0.227628,
+            "state_epistemic_uncertainty": 0.0658
           },
           "error": null,
-          "pass_rate": 1.0
+          "pass_rate": 0.875
         },
         {
           "name": "supply_chain_lead_time",
@@ -1194,30 +1240,31 @@
             "uncertainty_bounded",
             "coverage_90ci",
             "posterior_precision",
-            "sufficient_probes",
             "uncertainty_decomposition",
             "uncertainty_tracked",
             "response_quality"
           ],
-          "failed_checks": [],
+          "failed_checks": [
+            "sufficient_probes"
+          ],
           "metrics": {
-            "elapsed_seconds": 37.89,
-            "posterior_mean": 28.990221,
-            "posterior_std": 0.719792,
+            "elapsed_seconds": 18.184,
+            "posterior_mean": 28.96518,
+            "posterior_std": 0.678582,
             "credible_interval": [
-              27.88045,
-              30.248564
+              27.87954,
+              30.112074
             ],
             "true_parameter": 28.980166666666662,
             "parameter_covered": true,
-            "n_probes": 4,
-            "recommended_probe": "Implement a pilot program to track lead times for a small, non-critical subset of SKUs (e.g., 5-10 items) with higher frequency and granularity (e.g., daily updates, tracking each milestone: order confirmation, production start, shipping, customs clearance, arrival).",
-            "epistemic_uncertainty": 0.706854,
-            "aleatoric_uncertainty": 5.484579,
-            "state_epistemic_uncertainty": 0.0238
+            "n_probes": 1,
+            "recommended_probe": "Run a small A/B test on pricing",
+            "epistemic_uncertainty": 0.68308,
+            "aleatoric_uncertainty": 5.486065,
+            "state_epistemic_uncertainty": 0.023
           },
           "error": null,
-          "pass_rate": 1.0
+          "pass_rate": 0.875
         },
         {
           "name": "energy_grid_demand",
@@ -1226,30 +1273,31 @@
             "uncertainty_bounded",
             "coverage_90ci",
             "posterior_precision",
-            "sufficient_probes",
             "uncertainty_decomposition",
             "uncertainty_tracked",
             "response_quality"
           ],
-          "failed_checks": [],
+          "failed_checks": [
+            "sufficient_probes"
+          ],
           "metrics": {
-            "elapsed_seconds": 81.539,
-            "posterior_mean": 2505.63771,
-            "posterior_std": 34.67093,
+            "elapsed_seconds": 56.008,
+            "posterior_mean": 2505.716892,
+            "posterior_std": 36.668653,
             "credible_interval": [
-              2450.432888,
-              2564.500247
+              2447.355635,
+              2567.995502
             ],
             "true_parameter": 2505.6475,
             "parameter_covered": true,
-            "n_probes": 4,
-            "recommended_probe": "Segment the 80-hour data by customer type (residential, commercial, industrial) if metadata exists, and build separate simple models for each. Compare the sum of these segment forecasts to the aggregate model forecast.",
-            "epistemic_uncertainty": 34.778697,
-            "aleatoric_uncertainty": 315.5462,
-            "state_epistemic_uncertainty": 0.0137
+            "n_probes": 1,
+            "recommended_probe": "Run a small A/B test on pricing",
+            "epistemic_uncertainty": 35.929319,
+            "aleatoric_uncertainty": 315.69509,
+            "state_epistemic_uncertainty": 0.0141
           },
           "error": null,
-          "pass_rate": 1.0
+          "pass_rate": 0.875
         },
         {
           "name": "insurance_claim_frequency",
@@ -1265,20 +1313,20 @@
           ],
           "failed_checks": [],
           "metrics": {
-            "elapsed_seconds": 28.014,
-            "posterior_mean": 0.098808,
-            "posterior_std": 0.020836,
+            "elapsed_seconds": 8.008,
+            "posterior_mean": 0.098988,
+            "posterior_std": 0.019413,
             "credible_interval": [
-              0.067428,
-              0.135977
+              0.068185,
+              0.132053
             ],
             "true_parameter": 0.08,
             "parameter_covered": true,
-            "n_probes": 5,
-            "recommended_probe": "Audit the complete claims handling process from first notice to final settlement to identify any systematic biases in claim recognition or recording",
-            "epistemic_uncertainty": 0.020825,
-            "aleatoric_uncertainty": 0.088612,
-            "state_epistemic_uncertainty": 0.1741
+            "n_probes": 1,
+            "recommended_probe": "Run a small A/B test on pricing",
+            "epistemic_uncertainty": 0.02015,
+            "aleatoric_uncertainty": 0.088783,
+            "state_epistemic_uncertainty": 0.1691
           },
           "error": null,
           "pass_rate": 1.0
@@ -1297,20 +1345,20 @@
           ],
           "failed_checks": [],
           "metrics": {
-            "elapsed_seconds": 26.414,
-            "posterior_mean": 0.039588,
-            "posterior_std": 0.009172,
+            "elapsed_seconds": 7.937,
+            "posterior_mean": 0.040349,
+            "posterior_std": 0.008968,
             "credible_interval": [
-              0.025696,
-              0.055872
+              0.026565,
+              0.056068
             ],
             "true_parameter": 0.035,
             "parameter_covered": true,
-            "n_probes": 4,
-            "recommended_probe": "Trigger a short, non-intrusive survey via exit-intent popup for a small percentage of visitors (e.g., 20%) asking their reason for leaving without converting (e.g., 'What stopped you from signing up today?').",
-            "epistemic_uncertainty": 0.009108,
-            "aleatoric_uncertainty": 0.037938,
-            "state_epistemic_uncertainty": 0.187
+            "n_probes": 1,
+            "recommended_probe": "Run a small A/B test on pricing",
+            "epistemic_uncertainty": 0.009032,
+            "aleatoric_uncertainty": 0.038639,
+            "state_epistemic_uncertainty": 0.1829
           },
           "error": null,
           "pass_rate": 1.0
@@ -1319,9 +1367,9 @@
     },
     "guardian": {
       "benchmark": "carf_guardian",
-      "timestamp": "2026-02-18T10:51:17.079901+00:00",
-      "detection_rate": 1.0,
-      "false_positive_rate": 1.0,
+      "timestamp": "2026-02-20T11:54:11.696642+00:00",
+      "detection_rate": 0.6667,
+      "false_positive_rate": 0.0,
       "determinism_rate": 1.0,
       "determinism_runs": 5,
       "individual_results": [
@@ -1331,7 +1379,7 @@
           "expected": "REJECTED",
           "actual": "requires_escalation",
           "correct": true,
-          "latency_ms": 7.99
+          "latency_ms": 14.33
         },
         {
           "name": "unauthorized_high_risk",
@@ -1339,31 +1387,31 @@
           "expected": "REQUIRES_ESCALATION",
           "actual": "requires_escalation",
           "correct": true,
-          "latency_ms": 0.54
+          "latency_ms": 0.84
         },
         {
           "name": "low_confidence_action",
           "type": "violation",
           "expected": "REQUIRES_ESCALATION",
           "actual": "approved",
-          "correct": true,
-          "latency_ms": 0.49
+          "correct": false,
+          "latency_ms": 0.57
         },
         {
           "name": "safe_lookup",
           "type": "legitimate",
           "expected": "APPROVED",
           "actual": "approved",
-          "correct": false,
-          "latency_ms": 0.52
+          "correct": true,
+          "latency_ms": 0.62
         },
         {
           "name": "authorized_causal",
           "type": "legitimate",
           "expected": "APPROVED",
           "actual": "approved",
-          "correct": false,
-          "latency_ms": 0.47
+          "correct": true,
+          "latency_ms": 0.74
         }
       ],
       "determinism_results": [
@@ -1426,347 +1474,511 @@
     },
     "performance": {
       "benchmark": "carf_performance",
-      "timestamp": "2026-02-19T18:01:10.934393+00:00",
-      "total_queries": 30,
-      "successful": 30,
+      "timestamp": "2026-02-20T05:27:44.613766+00:00",
+      "total_queries": 50,
+      "successful": 50,
       "error_count": 0,
-      "avg_duration_ms": 9136.05,
-      "median_duration_ms": 2908.73,
-      "p95_duration_ms": 38402.31,
-      "p99_duration_ms": 41513.06,
+      "avg_duration_ms": 9259.59,
+      "median_duration_ms": 2750.74,
+      "p95_duration_ms": 33722.08,
+      "p99_duration_ms": 36366.91,
       "per_domain": {
         "Clear": {
-          "count": 6,
-          "mean_ms": 2743.41,
-          "median_ms": 2452.2,
-          "p95_ms": 3920.76,
-          "p99_ms": 4275.58
+          "count": 10,
+          "mean_ms": 2546.69,
+          "median_ms": 2447.52,
+          "p95_ms": 3051.4,
+          "p99_ms": 3052.82
         },
         "Complicated": {
-          "count": 6,
-          "mean_ms": 16459.84,
-          "median_ms": 14460.74,
-          "p95_ms": 33516.07,
-          "p99_ms": 34677.36
+          "count": 10,
+          "mean_ms": 16966.16,
+          "median_ms": 23544.67,
+          "p95_ms": 28722.95,
+          "p99_ms": 29138.25
         },
         "Complex": {
-          "count": 6,
-          "mean_ms": 20856.08,
-          "median_ms": 18216.62,
-          "p95_ms": 41530.0,
-          "p99_ms": 41614.67
+          "count": 10,
+          "mean_ms": 21548.91,
+          "median_ms": 32443.25,
+          "p95_ms": 36414.52,
+          "p99_ms": 36843.02
         },
         "Chaotic": {
-          "count": 6,
-          "mean_ms": 3045.45,
-          "median_ms": 3026.53,
-          "p95_ms": 3444.39,
-          "p99_ms": 3515.64
+          "count": 10,
+          "mean_ms": 2757.93,
+          "median_ms": 2723.82,
+          "p95_ms": 3059.93,
+          "p99_ms": 3151.72
         },
         "Disorder": {
-          "count": 6,
-          "mean_ms": 2575.48,
-          "median_ms": 2591.28,
-          "p95_ms": 2779.97,
-          "p99_ms": 2799.19
+          "count": 10,
+          "mean_ms": 2478.26,
+          "median_ms": 2465.34,
+          "p95_ms": 2826.41,
+          "p99_ms": 2891.63
         }
       },
       "memory": {
-        "rss_before_mb": 49.43,
-        "rss_after_mb": 835.03,
-        "memory_growth_pct": 1589.46,
-        "tracemalloc_peak_mb": 377.44,
+        "rss_before_mb": 652.75,
+        "rss_after_mb": 654.14,
+        "memory_growth_pct": 0.21,
+        "tracemalloc_peak_mb": 12.62,
         "top_allocators": [
           {
-            "file": "<frozen importlib._bootstrap_external>:781",
-            "size_kb": 164814.5
-          },
-          {
-            "file": "<frozen importlib._bootstrap>:488",
-            "size_kb": 13928.1
-          },
-          {
-            "file": "<frozen abc>:106",
-            "size_kb": 13039.9
-          },
-          {
-            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\neo4j\\time\\__init__.py:138",
-            "size_kb": 11681.9
-          },
-          {
-            "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\linecache.py:168",
-            "size_kb": 9271.1
-          },
-          {
-            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\neo4j\\_codec\\packstream\\v1\\__init__.py:52",
-            "size_kb": 6840.1
-          },
-          {
             "file": "<frozen abc>:123",
-            "size_kb": 4844.8
+            "size_kb": 1374.5
           },
           {
-            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\text_unidecode\\__init__.py:6",
-            "size_kb": 3203.8
+            "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\asyncio\\proactor_events.py:191",
+            "size_kb": 64.1
           },
           {
-            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\neo4j\\_codec\\packstream\\v1\\__init__.py:49",
-            "size_kb": 2789.5
+            "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\copyreg.py:99",
+            "size_kb": 17.5
           },
           {
-            "file": "<frozen importlib._bootstrap_external>:128",
-            "size_kb": 2776.5
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\scalar\\basic.py:4075",
+            "size_kb": 16.7
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\graph\\basic.py:552",
+            "size_kb": 14.5
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\graph\\utils.py:283",
+            "size_kb": 13.0
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\link\\utils.py:818",
+            "size_kb": 9.3
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\graph\\rewriting\\basic.py:2476",
+            "size_kb": 9.2
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\graph\\basic.py:255",
+            "size_kb": 8.5
+          },
+          {
+            "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\graph\\fg.py:397",
+            "size_kb": 7.5
           }
         ],
         "snapshots": [
           {
             "query_index": 5,
-            "rss_mb": 472.61,
-            "tracemalloc_current_mb": 169.27,
-            "tracemalloc_peak_mb": 169.47
+            "rss_mb": 647.37,
+            "tracemalloc_current_mb": 0.1,
+            "tracemalloc_peak_mb": 0.4
           },
           {
             "query_index": 10,
-            "rss_mb": 714.7,
-            "tracemalloc_current_mb": 290.79,
-            "tracemalloc_peak_mb": 291.13
+            "rss_mb": 647.23,
+            "tracemalloc_current_mb": 0.11,
+            "tracemalloc_peak_mb": 0.4
           },
           {
             "query_index": 15,
-            "rss_mb": 825.61,
-            "tracemalloc_current_mb": 372.14,
-            "tracemalloc_peak_mb": 374.0
+            "rss_mb": 649.7,
+            "tracemalloc_current_mb": 0.3,
+            "tracemalloc_peak_mb": 2.13
           },
           {
             "query_index": 20,
-            "rss_mb": 836.9,
-            "tracemalloc_current_mb": 377.12,
-            "tracemalloc_peak_mb": 377.44
+            "rss_mb": 649.71,
+            "tracemalloc_current_mb": 0.31,
+            "tracemalloc_peak_mb": 2.13
           },
           {
             "query_index": 25,
-            "rss_mb": 834.67,
-            "tracemalloc_current_mb": 368.66,
-            "tracemalloc_peak_mb": 377.44
+            "rss_mb": 658.27,
+            "tracemalloc_current_mb": 1.77,
+            "tracemalloc_peak_mb": 12.59
           },
           {
             "query_index": 30,
-            "rss_mb": 835.03,
-            "tracemalloc_current_mb": 368.6,
-            "tracemalloc_peak_mb": 377.44
+            "rss_mb": 658.69,
+            "tracemalloc_current_mb": 1.78,
+            "tracemalloc_peak_mb": 12.62
+          },
+          {
+            "query_index": 35,
+            "rss_mb": 654.2,
+            "tracemalloc_current_mb": 1.78,
+            "tracemalloc_peak_mb": 12.62
+          },
+          {
+            "query_index": 40,
+            "rss_mb": 654.2,
+            "tracemalloc_current_mb": 1.78,
+            "tracemalloc_peak_mb": 12.62
+          },
+          {
+            "query_index": 45,
+            "rss_mb": 654.17,
+            "tracemalloc_current_mb": 1.79,
+            "tracemalloc_peak_mb": 12.62
+          },
+          {
+            "query_index": 50,
+            "rss_mb": 654.14,
+            "tracemalloc_current_mb": 1.79,
+            "tracemalloc_peak_mb": 12.62
           }
         ]
       },
-      "memory_growth_pct": 1589.46,
+      "memory_growth_pct": 0.21,
       "throughput": {},
       "individual_results": [
         {
           "query": "What is the current USD to EUR exchange rate?",
           "domain": "Clear",
-          "latency_ms": 4364.29,
+          "latency_ms": 2634.04,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "How many kilowatt-hours are in a megawatt-hour?",
           "domain": "Clear",
-          "latency_ms": 2278.49,
+          "latency_ms": 2385.42,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "What is the standard VAT rate in Germany?",
           "domain": "Clear",
-          "latency_ms": 2590.16,
+          "latency_ms": 2509.62,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "Convert 100 miles to kilometers",
           "domain": "Clear",
-          "latency_ms": 2573.89,
+          "latency_ms": 3049.23,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "What is the current USD to EUR exchange rate?",
           "domain": "Clear",
-          "latency_ms": 2323.13,
+          "latency_ms": 3053.17,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "How many kilowatt-hours are in a megawatt-hour?",
           "domain": "Clear",
-          "latency_ms": 2330.52,
+          "latency_ms": 2270.51,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "What is the standard VAT rate in Germany?",
+          "domain": "Clear",
+          "latency_ms": 2205.14,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "Convert 100 miles to kilometers",
+          "domain": "Clear",
+          "latency_ms": 2694.91,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "What is the current USD to EUR exchange rate?",
+          "domain": "Clear",
+          "latency_ms": 2293.75,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "How many kilowatt-hours are in a megawatt-hour?",
+          "domain": "Clear",
+          "latency_ms": 2371.09,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "How does increasing marketing spend affect quarterly revenue?",
           "domain": "Complicated",
-          "latency_ms": 34967.68,
+          "latency_ms": 27688.15,
           "confidence": 0.88,
           "error": null
         },
         {
           "query": "What is the causal effect of employee training hours on productivity?",
           "domain": "Complicated",
-          "latency_ms": 25012.63,
+          "latency_ms": 22434.93,
           "confidence": 0.88,
           "error": null
         },
         {
           "query": "Does supplier diversification reduce supply chain disruption frequency?",
           "domain": "Complicated",
-          "latency_ms": 29161.23,
+          "latency_ms": 28088.46,
           "confidence": 0.85,
           "error": null
         },
         {
           "query": "How does increasing marketing spend affect quarterly revenue?",
           "domain": "Complicated",
-          "latency_ms": 3908.84,
+          "latency_ms": 3254.24,
           "confidence": 0.88,
           "error": null
         },
         {
           "query": "What is the causal effect of employee training hours on productivity?",
           "domain": "Complicated",
-          "latency_ms": 2921.44,
+          "latency_ms": 3208.48,
           "confidence": 0.88,
           "error": null
         },
         {
           "query": "Does supplier diversification reduce supply chain disruption frequency?",
           "domain": "Complicated",
-          "latency_ms": 2787.2,
+          "latency_ms": 29242.08,
           "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "How does increasing marketing spend affect quarterly revenue?",
+          "domain": "Complicated",
+          "latency_ms": 24654.42,
+          "confidence": 0.88,
+          "error": null
+        },
+        {
+          "query": "What is the causal effect of employee training hours on productivity?",
+          "domain": "Complicated",
+          "latency_ms": 24678.42,
+          "confidence": 0.88,
+          "error": null
+        },
+        {
+          "query": "Does supplier diversification reduce supply chain disruption frequency?",
+          "domain": "Complicated",
+          "latency_ms": 3320.56,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "How does increasing marketing spend affect quarterly revenue?",
+          "domain": "Complicated",
+          "latency_ms": 3091.85,
+          "confidence": 0.88,
           "error": null
         },
         {
           "query": "Should we enter the Asian market given uncertain regulatory changes?",
           "domain": "Complex",
-          "latency_ms": 41212.47,
+          "latency_ms": 32864.01,
           "confidence": 0.85,
           "error": null
         },
         {
           "query": "What strategy should we adopt for climate adaptation in agriculture?",
           "domain": "Complex",
-          "latency_ms": 33205.69,
+          "latency_ms": 32022.49,
           "confidence": 0.85,
           "error": null
         },
         {
           "query": "How should we allocate R&D budget under technological uncertainty?",
           "domain": "Complex",
-          "latency_ms": 41635.84,
+          "latency_ms": 32891.24,
           "confidence": 0.85,
           "error": null
         },
         {
           "query": "Should we enter the Asian market given uncertain regulatory changes?",
           "domain": "Complex",
-          "latency_ms": 2958.89,
+          "latency_ms": 2778.49,
           "confidence": 0.85,
           "error": null
         },
         {
           "query": "What strategy should we adopt for climate adaptation in agriculture?",
           "domain": "Complex",
-          "latency_ms": 2896.02,
+          "latency_ms": 2462.86,
           "confidence": 0.85,
           "error": null
         },
         {
           "query": "How should we allocate R&D budget under technological uncertainty?",
           "domain": "Complex",
-          "latency_ms": 3227.55,
+          "latency_ms": 35759.87,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "Should we enter the Asian market given uncertain regulatory changes?",
+          "domain": "Complex",
+          "latency_ms": 36950.14,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "What strategy should we adopt for climate adaptation in agriculture?",
+          "domain": "Complex",
+          "latency_ms": 34401.85,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "How should we allocate R&D budget under technological uncertainty?",
+          "domain": "Complex",
+          "latency_ms": 2886.93,
+          "confidence": 0.85,
+          "error": null
+        },
+        {
+          "query": "Should we enter the Asian market given uncertain regulatory changes?",
+          "domain": "Complex",
+          "latency_ms": 2471.19,
           "confidence": 0.85,
           "error": null
         },
         {
           "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
           "domain": "Chaotic",
-          "latency_ms": 3533.46,
+          "latency_ms": 2705.54,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "URGENT: Infrastructure cascade failure across primary data centers",
           "domain": "Chaotic",
-          "latency_ms": 3119.69,
+          "latency_ms": 2919.7,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
           "domain": "Chaotic",
-          "latency_ms": 3177.16,
+          "latency_ms": 2625.65,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "URGENT: Infrastructure cascade failure across primary data centers",
           "domain": "Chaotic",
-          "latency_ms": 2933.37,
+          "latency_ms": 2601.44,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
           "domain": "Chaotic",
-          "latency_ms": 2791.38,
+          "latency_ms": 3174.67,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "URGENT: Infrastructure cascade failure across primary data centers",
           "domain": "Chaotic",
-          "latency_ms": 2717.61,
+          "latency_ms": 2676.09,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
+          "domain": "Chaotic",
+          "latency_ms": 2769.11,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "URGENT: Infrastructure cascade failure across primary data centers",
+          "domain": "Chaotic",
+          "latency_ms": 2759.38,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
+          "domain": "Chaotic",
+          "latency_ms": 2605.58,
+          "confidence": 0.95,
+          "error": null
+        },
+        {
+          "query": "URGENT: Infrastructure cascade failure across primary data centers",
+          "domain": "Chaotic",
+          "latency_ms": 2742.1,
           "confidence": 0.95,
           "error": null
         },
         {
           "query": "Do something about the thing with the stuff",
           "domain": "Disorder",
-          "latency_ms": 2322.26,
+          "latency_ms": 2243.05,
           "confidence": 0.1,
           "error": null
         },
         {
           "query": "Maybe we should or maybe not, what do you think about everything?",
           "domain": "Disorder",
-          "latency_ms": 2436.11,
+          "latency_ms": 2684.53,
           "confidence": 0.2,
           "error": null
         },
         {
           "query": "Do something about the thing with the stuff",
           "domain": "Disorder",
-          "latency_ms": 2803.99,
+          "latency_ms": 2313.85,
           "confidence": 0.1,
           "error": null
         },
         {
           "query": "Maybe we should or maybe not, what do you think about everything?",
           "domain": "Disorder",
-          "latency_ms": 2515.55,
+          "latency_ms": 2098.04,
           "confidence": 0.2,
           "error": null
         },
         {
           "query": "Do something about the thing with the stuff",
           "domain": "Disorder",
-          "latency_ms": 2667.02,
+          "latency_ms": 2726.77,
           "confidence": 0.1,
           "error": null
         },
         {
           "query": "Maybe we should or maybe not, what do you think about everything?",
           "domain": "Disorder",
-          "latency_ms": 2707.93,
+          "latency_ms": 2615.33,
+          "confidence": 0.2,
+          "error": null
+        },
+        {
+          "query": "Do something about the thing with the stuff",
+          "domain": "Disorder",
+          "latency_ms": 2498.49,
+          "confidence": 0.1,
+          "error": null
+        },
+        {
+          "query": "Maybe we should or maybe not, what do you think about everything?",
+          "domain": "Disorder",
+          "latency_ms": 2907.93,
+          "confidence": 0.2,
+          "error": null
+        },
+        {
+          "query": "Do something about the thing with the stuff",
+          "domain": "Disorder",
+          "latency_ms": 2262.39,
+          "confidence": 0.1,
+          "error": null
+        },
+        {
+          "query": "Maybe we should or maybe not, what do you think about everything?",
+          "domain": "Disorder",
+          "latency_ms": 2432.19,
           "confidence": 0.2,
           "error": null
         }
@@ -1774,22 +1986,369 @@
     },
     "chimera": {
       "benchmark": "chimera_oracle_vs_dowhy",
-      "timestamp": "2026-02-18T10:51:40.667033+00:00",
+      "timestamp": "2026-02-20T12:00:48.367180+00:00",
       "true_ate": 3.0,
-      "oracle_available": false,
+      "oracle_available": true,
       "dowhy": {
         "n_runs": 5,
         "mean_ate": 2.983509,
-        "mean_latency_ms": 2323.71
+        "mean_latency_ms": 2265.42
       },
       "oracle": {
-        "n_runs": 0,
-        "mean_ate": null,
-        "mean_latency_ms": null
+        "n_runs": 5,
+        "mean_ate": 2.883139,
+        "mean_latency_ms": 69.28
       },
-      "speed_ratio": null,
-      "accuracy_loss_pct": null,
-      "h8_passed": false
+      "speed_ratio": 32.7,
+      "accuracy_loss_pct": 3.36,
+      "h8_passed": true
+    },
+    "governance": {
+      "benchmark": "carf_governance",
+      "timestamp": "2026-02-22T07:38:37.216171+00:00",
+      "map": {
+        "pillar": "MAP",
+        "total_cases": 8,
+        "avg_domain_recall": 0.8571,
+        "cross_domain_link_accuracy": 1.0,
+        "avg_latency_ms": 0.04,
+        "individual_results": [
+          {
+            "name": "procurement_sustainability_link",
+            "expected_domains": [
+              "procurement",
+              "sustainability"
+            ],
+            "found_domains": [
+              "procurement",
+              "sustainability"
+            ],
+            "domain_recall": 1.0,
+            "triple_count": 1,
+            "link_detected": true,
+            "link_correct": true,
+            "latency_ms": 0.1
+          },
+          {
+            "name": "finance_security_link",
+            "expected_domains": [
+              "finance",
+              "security"
+            ],
+            "found_domains": [
+              "finance",
+              "security"
+            ],
+            "domain_recall": 1.0,
+            "triple_count": 1,
+            "link_detected": true,
+            "link_correct": true,
+            "latency_ms": 0.04
+          },
+          {
+            "name": "legal_procurement_link",
+            "expected_domains": [
+              "legal",
+              "procurement"
+            ],
+            "found_domains": [
+              "legal",
+              "procurement"
+            ],
+            "domain_recall": 1.0,
+            "triple_count": 1,
+            "link_detected": true,
+            "link_correct": true,
+            "latency_ms": 0.03
+          },
+          {
+            "name": "sustainability_finance_link",
+            "expected_domains": [
+              "finance",
+              "sustainability"
+            ],
+            "found_domains": [
+              "finance",
+              "sustainability"
+            ],
+            "domain_recall": 1.0,
+            "triple_count": 1,
+            "link_detected": true,
+            "link_correct": true,
+            "latency_ms": 0.04
+          },
+          {
+            "name": "security_legal_link",
+            "expected_domains": [
+              "legal",
+              "security"
+            ],
+            "found_domains": [
+              "legal",
+              "security"
+            ],
+            "domain_recall": 1.0,
+            "triple_count": 1,
+            "link_detected": true,
+            "link_correct": true,
+            "latency_ms": 0.03
+          },
+          {
+            "name": "triple_domain_chain",
+            "expected_domains": [
+              "legal",
+              "procurement",
+              "sustainability"
+            ],
+            "found_domains": [
+              "finance",
+              "legal",
+              "procurement",
+              "sustainability"
+            ],
+            "domain_recall": 1.0,
+            "triple_count": 6,
+            "link_detected": true,
+            "link_correct": true,
+            "latency_ms": 0.08
+          },
+          {
+            "name": "no_cross_domain",
+            "expected_domains": [],
+            "found_domains": [],
+            "domain_recall": 1.0,
+            "triple_count": 0,
+            "link_detected": false,
+            "link_correct": true,
+            "latency_ms": 0.02
+          },
+          {
+            "name": "finance_only",
+            "expected_domains": [
+              "finance"
+            ],
+            "found_domains": [],
+            "domain_recall": 0.0,
+            "triple_count": 0,
+            "link_detected": false,
+            "link_correct": true,
+            "latency_ms": 0.02
+          }
+        ]
+      },
+      "price": {
+        "pillar": "PRICE",
+        "total_cases": 7,
+        "accuracy": 1.0,
+        "max_absolute_error": 0.0,
+        "breakdown_valid": true,
+        "breakdown_latency_ms": 0.05,
+        "aggregation_valid": true,
+        "individual_results": [
+          {
+            "name": "deepseek_1M_tokens",
+            "provider": "deepseek",
+            "expected_cost": 0.42,
+            "actual_cost": 0.42,
+            "absolute_error": 0.0,
+            "within_tolerance": true,
+            "latency_ms": 0.0041
+          },
+          {
+            "name": "openai_1M_tokens",
+            "provider": "openai",
+            "expected_cost": 9.0,
+            "actual_cost": 9.0,
+            "absolute_error": 0.0,
+            "within_tolerance": true,
+            "latency_ms": 0.0026
+          },
+          {
+            "name": "anthropic_1M_tokens",
+            "provider": "anthropic",
+            "expected_cost": 18.0,
+            "actual_cost": 18.0,
+            "absolute_error": 0.0,
+            "within_tolerance": true,
+            "latency_ms": 0.0013
+          },
+          {
+            "name": "ollama_free",
+            "provider": "ollama",
+            "expected_cost": 0.0,
+            "actual_cost": 0.0,
+            "absolute_error": 0.0,
+            "within_tolerance": true,
+            "latency_ms": 0.0008
+          },
+          {
+            "name": "zero_tokens",
+            "provider": "deepseek",
+            "expected_cost": 0.0,
+            "actual_cost": 0.0,
+            "absolute_error": 0.0,
+            "within_tolerance": true,
+            "latency_ms": 0.001
+          },
+          {
+            "name": "deepseek_small_query",
+            "provider": "deepseek",
+            "expected_cost": 0.000126,
+            "actual_cost": 0.000126,
+            "absolute_error": 0.0,
+            "within_tolerance": true,
+            "latency_ms": 0.0011
+          },
+          {
+            "name": "unknown_provider_fallback",
+            "provider": "unknown_xyz",
+            "expected_cost": 0.14,
+            "actual_cost": 0.14,
+            "absolute_error": 0.0,
+            "within_tolerance": true,
+            "latency_ms": 0.001
+          }
+        ]
+      },
+      "resolve": {
+        "pillar": "RESOLVE",
+        "total_cases": 3,
+        "conflict_detection_rate": 1.0,
+        "false_positive_rate": 0.0,
+        "overall_accuracy": 1.0,
+        "individual_results": [
+          {
+            "name": "spend_vs_budget_conflict",
+            "should_conflict": true,
+            "conflict_detected": true,
+            "conflicts_found": 1,
+            "correct": true,
+            "latency_ms": 0.05
+          },
+          {
+            "name": "priority_cap_conflict",
+            "should_conflict": true,
+            "conflict_detected": true,
+            "conflicts_found": 1,
+            "correct": true,
+            "latency_ms": 0.04
+          },
+          {
+            "name": "compatible_policies",
+            "should_conflict": false,
+            "conflict_detected": false,
+            "conflicts_found": 0,
+            "correct": true,
+            "latency_ms": 0.0
+          }
+        ]
+      },
+      "audit": {
+        "pillar": "AUDIT",
+        "total_frameworks": 4,
+        "all_valid": true,
+        "avg_compliance_score": 0.755,
+        "framework_results": [
+          {
+            "framework": "eu_ai_act",
+            "overall_score": 0.83,
+            "article_count": 6,
+            "gap_count": 4,
+            "recommendation_count": 3,
+            "valid_score_range": true,
+            "has_min_articles": true,
+            "articles_well_formed": true,
+            "has_gaps": true,
+            "has_recommendations": true,
+            "latency_ms": 0.04
+          },
+          {
+            "framework": "csrd",
+            "overall_score": 0.66,
+            "article_count": 4,
+            "gap_count": 3,
+            "recommendation_count": 3,
+            "valid_score_range": true,
+            "has_min_articles": true,
+            "articles_well_formed": true,
+            "has_gaps": true,
+            "has_recommendations": true,
+            "latency_ms": 0.03
+          },
+          {
+            "framework": "gdpr",
+            "overall_score": 0.75,
+            "article_count": 3,
+            "gap_count": 3,
+            "recommendation_count": 1,
+            "valid_score_range": true,
+            "has_min_articles": true,
+            "articles_well_formed": true,
+            "has_gaps": true,
+            "has_recommendations": true,
+            "latency_ms": 0.02
+          },
+          {
+            "framework": "iso_27001",
+            "overall_score": 0.78,
+            "article_count": 3,
+            "gap_count": 2,
+            "recommendation_count": 2,
+            "valid_score_range": true,
+            "has_min_articles": true,
+            "articles_well_formed": true,
+            "has_gaps": true,
+            "has_recommendations": true,
+            "latency_ms": 0.02
+          }
+        ]
+      },
+      "latency": {
+        "iterations": 20,
+        "avg_ms": 0.32,
+        "p50_ms": 0.31,
+        "p95_ms": 0.36,
+        "p99_ms": 0.36,
+        "min_ms": 0.3,
+        "max_ms": 0.36,
+        "p95_under_50ms": true,
+        "all_latencies_ms": [
+          0.3,
+          0.3,
+          0.3,
+          0.3,
+          0.3,
+          0.3,
+          0.31,
+          0.31,
+          0.31,
+          0.31,
+          0.31,
+          0.31,
+          0.32,
+          0.33,
+          0.33,
+          0.33,
+          0.34,
+          0.35,
+          0.36,
+          0.36
+        ]
+      },
+      "feature_flag": {
+        "iterations": 100,
+        "disabled_avg_us": 0.57,
+        "enabled_avg_us": 0.56,
+        "overhead_us": -0.01,
+        "zero_overhead": true
+      },
+      "map_accuracy": 1.0,
+      "price_accuracy": 1.0,
+      "conflict_detection_rate": 1.0,
+      "conflict_false_positive_rate": 0.0,
+      "compliance_all_valid": true,
+      "governance_p95_ms": 0.36,
+      "governance_p95_under_50ms": true
     },
     "baseline": {
       "causal_mse": 1355.136225,

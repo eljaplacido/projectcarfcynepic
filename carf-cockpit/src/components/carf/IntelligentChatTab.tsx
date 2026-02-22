@@ -8,6 +8,7 @@ import {
     type QuestioningStep,
     type HighlightTarget,
 } from '../../config/questioningFlow';
+import MarkdownRenderer from './MarkdownRenderer';
 
 // Slash command definitions
 const SLASH_COMMANDS: SlashCommandConfig[] = [
@@ -782,7 +783,11 @@ ${nextFlowStep.question}${hintText}`;
                                         : 'bg-gray-100 text-gray-900 rounded-bl-md'
                                     }`}
                             >
-                                <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                                <MarkdownRenderer
+                                    content={message.content}
+                                    className={`prose prose-sm max-w-none ${message.role === 'user' ? 'prose-invert' : ''}`}
+                                    onLinkClick={onLinkClick}
+                                />
                                 <div className="flex items-center gap-2 mt-1">
                                     <span className={`text-xs ${message.role === 'user' ? 'text-white/70' : 'text-gray-500'}`}>
                                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

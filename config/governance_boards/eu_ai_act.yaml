@@ -1,0 +1,13 @@
+template_id: eu_ai_act
+name: "EU AI Act Compliance"
+description: "Full EU AI Act compliance governance for high-risk AI systems."
+domain_ids:
+  - security
+  - legal
+frameworks:
+  - eu_ai_act
+  - gdpr
+tags:
+  - ai
+  - regulation
+  - eu

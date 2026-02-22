@@ -239,6 +239,16 @@ class EpistemicState(BaseModel):
         default=None, description="Human-provided override instructions"
     )
 
+    # --- Governance (Orchestration Governance — Phase 16) ---
+    session_triples: list[Any] = Field(
+        default_factory=list,
+        description="Semantic triples from governance MAP pillar (ContextTriple objects)",
+    )
+    cost_breakdown: Optional[Any] = Field(
+        default=None,
+        description="Cost intelligence from governance PRICE pillar (CostBreakdown object)",
+    )
+
     # --- Output ---
     final_response: Optional[str] = Field(
         default=None, description="Final response to user"

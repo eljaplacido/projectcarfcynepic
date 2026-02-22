@@ -169,11 +169,11 @@ const MethodologyModal: React.FC<MethodologyModalProps> = ({
                             <section className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                                 <h3 className="text-sm font-semibold text-gray-900 mb-2">Effect Estimate Summary</h3>
                                 <div className="text-2xl font-bold text-primary mb-1">
-                                    {causalResult.effect > 0 ? '+' : ''}{causalResult.effect.toFixed(3)} {causalResult.unit}
+                                    {causalResult.effect > 0 ? '+' : ''}{causalResult.effect?.toFixed(3) ?? 'N/A'} {causalResult.unit}
                                 </div>
                                 <div className="text-sm text-gray-600">
-                                    95% CI: [{causalResult.confidenceInterval[0].toFixed(3)}, {causalResult.confidenceInterval[1].toFixed(3)}]
-                                    {causalResult.pValue !== null && ` · p = ${causalResult.pValue.toFixed(4)}`}
+                                    95% CI: [{causalResult.confidenceInterval?.[0]?.toFixed(3) ?? '?'}, {causalResult.confidenceInterval?.[1]?.toFixed(3) ?? '?'}]
+                                    {causalResult.pValue != null && ` · p = ${causalResult.pValue.toFixed(4)}`}
                                 </div>
                             </section>
                         </div>

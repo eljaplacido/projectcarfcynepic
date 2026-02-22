@@ -526,13 +526,27 @@ class CSLPolicyService:
         self._load_policies()
 
     def _load_policies(self) -> None:
-        """Load built-in policy definitions."""
+        """Load built-in policy definitions and federated policies."""
         self._policies = [
             _build_budget_limits_policy(),
             _build_action_gates_policy(),
             _build_chimera_guards_policy(),
             _build_data_access_policy(),
         ]
+
+        # Load federated governance policies (Phase 16 — OG integration)
+        try:
+            if os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true":
+                from src.services.federated_policy_service import get_federated_service
+                federated = get_federated_service()
+                federated.load_policies()
+                federated_csl = federated.get_csl_policies()
+                if federated_csl:
+                    self._policies.extend(federated_csl)
+                    logger.info(f"Added {len(federated_csl)} federated policies to CSL evaluation")
+        except Exception as exc:
+            logger.warning(f"Federated policy loading failed (non-critical): {exc}")
+
         logger.info(
             f"Loaded {len(self._policies)} CSL policies with "
             f"{sum(len(p.rules) for p in self._policies)} rules total"

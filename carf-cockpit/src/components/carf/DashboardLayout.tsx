@@ -25,6 +25,7 @@ import SensitivityPlot from './SensitivityPlot';
 import PromptGuidancePanel from './PromptGuidancePanel';
 import EscalationModal from './EscalationModal';
 import TransparencyPanel from './TransparencyPanel';
+import GovernanceView from './GovernanceView';
 import { QuickThemeToggle } from '../ui/ThemeToggle';
 import type { Suggestion } from './PromptGuidancePanel';
 import { useQuery, useScenarios, useConfigStatus } from '../../hooks/useCarfApi';
@@ -153,6 +154,7 @@ const DashboardLayout: React.FC = () => {
     );
     const [showWalkthrough, setShowWalkthrough] = useState<boolean>(false);
     const [showDataWizard, setShowDataWizard] = useState<boolean>(false);
+    const [showDataModal, setShowDataModal] = useState<boolean>(false);
     const [showMethodologyModal, setShowMethodologyModal] = useState<boolean>(false);
     const [methodologyType, setMethodologyType] = useState<'causal' | 'bayesian' | 'guardian'>('causal');
     const [showFileAnalysisModal, setShowFileAnalysisModal] = useState<boolean>(false);
@@ -164,20 +166,27 @@ const DashboardLayout: React.FC = () => {
 
     // Fetch pending escalations count periodically
     useEffect(() => {
+        let controller = new AbortController();
         const fetchEscalationCount = async () => {
             try {
-                const response = await fetch('http://localhost:8000/escalations?pending_only=true');
+                controller = new AbortController();
+                const response = await fetch('http://localhost:8000/escalations?pending_only=true', {
+                    signal: controller.signal
+                });
                 if (response.ok) {
                     const data = await response.json();
-                    setPendingEscalationsCount(data.length);
+                    setPendingEscalationsCount(Array.isArray(data) ? data.length : 0);
                 }
             } catch {
-                // Silently fail - backend might not be running
+                // Silently fail - backend might not be running or request aborted
             }
         };
         fetchEscalationCount();
         const interval = setInterval(fetchEscalationCount, 30000); // Check every 30s
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            controller.abort();
+        };
     }, []);
 
     // API hooks
@@ -214,6 +223,7 @@ const DashboardLayout: React.FC = () => {
     }, [fileAnalysisResult, scenarioContext]);
 
     useEffect(() => {
+        const controller = new AbortController();
         const fetchSuggestions = async () => {
             try {
                 // Ensure we send a valid payload even for initial empty state
@@ -228,7 +238,8 @@ const DashboardLayout: React.FC = () => {
                 const response = await fetch('http://localhost:8000/agent/suggest-improvements', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(contextPayload)
+                    body: JSON.stringify(contextPayload),
+                    signal: controller.signal
                 });
 
                 if (response.ok) {
@@ -261,6 +272,7 @@ const DashboardLayout: React.FC = () => {
                     }
                 }
             } catch (e) {
+                if (controller.signal.aborted) return;
                 console.error("Failed to fetch suggestions:", e);
                 // Fallback for demo if network fails - with action_payload
                 if (!currentQuery) {
@@ -276,6 +288,7 @@ const DashboardLayout: React.FC = () => {
             }
         };
         fetchSuggestions();
+        return () => controller.abort();
     }, [queryResponse, selectedScenario, currentQuery, dataColumns]);
 
     const handleApplySuggestion = (suggestion: Suggestion) => {
@@ -690,6 +703,61 @@ const DashboardLayout: React.FC = () => {
                 onComplete={handleDataWizardComplete}
             />
 
+            {/* Data Modal - View data sources & schema */}
+            {showDataModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+                        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-gray-900">Data Schema & Sources</h3>
+                            <button onClick={() => setShowDataModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="p-4 space-y-4">
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Analysis Context</h4>
+                                <div className="bg-gray-50 rounded-lg p-3 text-xs font-mono">
+                                    <p><span className="text-gray-500">Domain:</span> {queryResponse?.domain || 'Not classified'}</p>
+                                    <p><span className="text-gray-500">Confidence:</span> {((queryResponse?.domainConfidence ?? 0) * 100).toFixed(1)}%</p>
+                                    {selectedScenario && <p><span className="text-gray-500">Dataset:</span> {selectedScenario}</p>}
+                                </div>
+                            </div>
+                            {queryResponse?.causalResult && (
+                                <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Causal Analysis Data</h4>
+                                    <div className="bg-gray-50 rounded-lg p-3 text-xs font-mono">
+                                        <p><span className="text-gray-500">Treatment:</span> {queryResponse.causalResult.treatment || 'N/A'}</p>
+                                        <p><span className="text-gray-500">Outcome:</span> {queryResponse.causalResult.outcome || 'N/A'}</p>
+                                        <p><span className="text-gray-500">Effect Size:</span> {queryResponse.causalResult.effect?.toFixed(4) ?? 'N/A'}</p>
+                                        <p><span className="text-gray-500">Refutation Tests:</span> {queryResponse.causalResult.refutationsPassed ?? 0}/{queryResponse.causalResult.refutationsTotal ?? 0} passed</p>
+                                    </div>
+                                </div>
+                            )}
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Data Lineage</h4>
+                                <div className="flex flex-col gap-2 text-xs">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-24 px-2 py-1.5 bg-blue-100 text-blue-800 rounded text-center font-medium">Input</div>
+                                        <div className="text-gray-400">&rarr;</div>
+                                        <div className="w-24 px-2 py-1.5 bg-purple-100 text-purple-800 rounded text-center font-medium">Router</div>
+                                        <div className="text-gray-400">&rarr;</div>
+                                        <div className="w-24 px-2 py-1.5 bg-indigo-100 text-indigo-800 rounded text-center font-medium">
+                                            {queryResponse?.domain === 'complicated' ? 'Causal' : queryResponse?.domain === 'complex' ? 'Bayesian' : 'Agent'}
+                                        </div>
+                                        <div className="text-gray-400">&rarr;</div>
+                                        <div className="w-24 px-2 py-1.5 bg-green-100 text-green-800 rounded text-center font-medium">Guardian</div>
+                                        <div className="text-gray-400">&rarr;</div>
+                                        <div className="w-24 px-2 py-1.5 bg-amber-100 text-amber-800 rounded text-center font-medium">Output</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Methodology Modal */}
             <MethodologyModal
                 isOpen={showMethodologyModal}
@@ -779,7 +847,7 @@ const DashboardLayout: React.FC = () => {
                         <div className="flex items-center gap-4" data-tour="scenario-selector">
                             {/* Phase 7: View Mode Tabs */}
                             <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                                {(['analyst', 'developer', 'executive'] as ViewMode[]).map((mode) => (
+                                {(['analyst', 'developer', 'executive', 'governance'] as ViewMode[]).map((mode) => (
                                     <button
                                         key={mode}
                                         onClick={() => setViewMode(mode)}
@@ -993,8 +1061,57 @@ const DashboardLayout: React.FC = () => {
                         </div>
                     </div>
                 ) : viewMode === 'executive' ? (
-                    /* EXECUTIVE VIEW - High-level KPI Dashboard and Decision Summary */
+                    /* EXECUTIVE VIEW - High-level KPI Dashboard and Decision Summary (Phase 6C) */
                     <div className="space-y-6">
+                        {/* Phase 6C: Export Report button row */}
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-bold text-gray-900">Executive Dashboard</h2>
+                            <button
+                                onClick={() => {
+                                    // Generate structured summary for export
+                                    const domain = queryResponse?.domain?.toUpperCase() || 'N/A';
+                                    const confidence = Math.round((queryResponse?.domainConfidence || 0) * 100);
+                                    const verdict = queryResponse?.guardianVerdict || 'pending';
+                                    const causal = queryResponse?.causalResult;
+                                    const bayesian = queryResponse?.bayesianResult;
+                                    const lines = [
+                                        '=== CARF Executive Report ===',
+                                        `Date: ${new Date().toISOString().split('T')[0]}`,
+                                        `Domain: ${domain} (${confidence}% confidence)`,
+                                        `Guardian Verdict: ${verdict}`,
+                                        '',
+                                        '--- Causal Analysis ---',
+                                        causal ? `Effect Size: ${causal.effect.toFixed(3)}` : 'No causal analysis available',
+                                        causal ? `Robustness: ${causal.refutationsPassed}/${causal.refutationsTotal} refutations passed` : '',
+                                        '',
+                                        '--- Uncertainty ---',
+                                        bayesian ? `Epistemic: ${Math.round((bayesian.epistemicUncertainty || 0) * 100)}%` : 'No Bayesian analysis available',
+                                        bayesian ? `Aleatoric: ${Math.round((bayesian.aleatoricUncertainty || 0) * 100)}%` : '',
+                                        '',
+                                        '--- Key Insights ---',
+                                        ...(queryResponse?.keyInsights || []).map((ins, i) => `${i + 1}. ${ins}`),
+                                        '',
+                                        '--- Recommended Next Steps ---',
+                                        ...(queryResponse?.nextSteps || []).map((step, i) => `${i + 1}. ${step}`),
+                                    ].filter(Boolean);
+                                    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `carf-executive-report-${Date.now()}.txt`;
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                }}
+                                className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
+                                data-testid="export-report-btn"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M8 1v10M4 7l4 4 4-4M2 13h12" />
+                                </svg>
+                                Export Report
+                            </button>
+                        </div>
+
                         <div className="grid grid-cols-12 gap-6">
                             {/* Left: Quick Query + Decision Status */}
                             <div className="col-span-3 space-y-4">
@@ -1010,7 +1127,7 @@ const DashboardLayout: React.FC = () => {
                                 {/* Guardian Decision - Prominent */}
                                 <div className="card">
                                     <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <span className="text-xl">🛡️</span> Policy Status
+                                        Policy Status
                                     </h2>
                                     <GuardianPanel decision={queryResponse?.guardianResult || null} />
                                 </div>
@@ -1018,15 +1135,57 @@ const DashboardLayout: React.FC = () => {
 
                             {/* Center: Key Insights and Recommendations */}
                             <div className="col-span-6 space-y-4">
+                                {/* Phase 6C: Recommended Next Steps - prominent with context */}
+                                <div className="card bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300" data-testid="recommended-next-steps">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                            Recommended Next Steps
+                                        </h2>
+                                        {queryResponse?.domain && (
+                                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-200 text-blue-800 uppercase">
+                                                {queryResponse.domain} domain
+                                            </span>
+                                        )}
+                                    </div>
+                                    {queryResponse?.nextSteps && queryResponse.nextSteps.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {/* Use-case-specific context message */}
+                                            <p className="text-sm text-blue-700 bg-blue-100 p-2 rounded-lg">
+                                                {queryResponse.domain === 'complicated'
+                                                    ? 'Based on causal analysis in the complicated domain, the following expert-driven steps are recommended:'
+                                                    : queryResponse.domain === 'complex'
+                                                    ? 'Given the complex domain classification, these probe-and-sense actions are suggested:'
+                                                    : queryResponse.domain === 'chaotic'
+                                                    ? 'Urgent: In this chaotic domain, act first to stabilize, then assess:'
+                                                    : queryResponse.domain === 'clear'
+                                                    ? 'This is a clear-domain scenario. Follow these standard best-practice steps:'
+                                                    : 'The following recommended actions are derived from the analysis results:'}
+                                            </p>
+                                            <ol className="space-y-2">
+                                                {queryResponse.nextSteps.map((step, idx) => (
+                                                    <li key={idx} className="flex items-start gap-3 p-3 bg-white border border-blue-100 rounded-lg shadow-sm">
+                                                        <span className="flex-shrink-0 w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                                            {idx + 1}
+                                                        </span>
+                                                        <span className="text-sm text-gray-700 leading-relaxed">{step}</span>
+                                                    </li>
+                                                ))}
+                                            </ol>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-gray-500 italic">Run an analysis to see recommended next steps</p>
+                                    )}
+                                </div>
+
                                 <div className="card">
                                     <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <span className="text-xl">💡</span> Key Insights
+                                        Key Insights
                                     </h2>
                                     {queryResponse?.keyInsights && queryResponse.keyInsights.length > 0 ? (
                                         <ul className="space-y-2">
                                             {queryResponse.keyInsights.map((insight, idx) => (
                                                 <li key={idx} className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg">
-                                                    <span className="text-green-500 mt-0.5">✓</span>
+                                                    <span className="text-green-500 mt-0.5 font-bold">&#10003;</span>
                                                     <span className="text-sm text-gray-700">{insight}</span>
                                                 </li>
                                             ))}
@@ -1039,7 +1198,7 @@ const DashboardLayout: React.FC = () => {
                                 {/* Executive KPI Panel with Dynamic Visualization */}
                                 <div className="card">
                                     <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <span className="text-xl">📊</span> Analysis Board
+                                        Analysis Board
                                     </h2>
                                     <ExecutiveKPIPanel
                                         queryResponse={queryResponse}
@@ -1049,26 +1208,6 @@ const DashboardLayout: React.FC = () => {
                                         context={queryResponse?.domain || 'general'}
                                         onDrillDown={() => setViewMode('analyst')}
                                     />
-                                </div>
-
-                                <div className="card">
-                                    <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <span className="text-xl">🎯</span> Recommended Actions
-                                    </h2>
-                                    {queryResponse?.nextSteps && queryResponse.nextSteps.length > 0 ? (
-                                        <ol className="space-y-2">
-                                            {queryResponse.nextSteps.map((step, idx) => (
-                                                <li key={idx} className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                                        {idx + 1}
-                                                    </span>
-                                                    <span className="text-sm text-gray-700">{step}</span>
-                                                </li>
-                                            ))}
-                                        </ol>
-                                    ) : (
-                                        <p className="text-sm text-gray-500 italic">Run an analysis to see recommended actions</p>
-                                    )}
                                 </div>
                             </div>
 
@@ -1080,11 +1219,19 @@ const DashboardLayout: React.FC = () => {
                                         response={queryResponse}
                                         onFollowUpQuestion={handleFollowUpQuestion}
                                         onViewMethodology={handleViewMethodology}
-                                        onViewData={() => setShowDataWizard(true)}
+                                        onViewData={() => setShowDataModal(true)}
                                     />
                                 </div>
                             </div>
                         </div>
+                    </div>
+                ) : viewMode === 'governance' ? (
+                    /* GOVERNANCE VIEW - Orchestration Governance (Phase 16) */
+                    <div className="space-y-4">
+                        <GovernanceView
+                            lastResult={queryResponse}
+                            sessionId={queryResponse?.sessionId}
+                        />
                     </div>
                 ) : (
                     /* ANALYST VIEW (default) - Full analysis dashboard */
@@ -1163,7 +1310,7 @@ const DashboardLayout: React.FC = () => {
                             </div>
 
                             <div className="card" id="bayesian-panel">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Bayesian Panel</h2>
+                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Uncertainty & Belief Update</h2>
                                 <BayesianPanel belief={queryResponse?.bayesianResult || null} />
                             </div>
                         </div>
@@ -1171,7 +1318,7 @@ const DashboardLayout: React.FC = () => {
                         {/* Center Column (6 columns) */}
                         <div className="col-span-6 space-y-4">
                             <div className="card min-h-[450px]" data-tour="results-area" id="dag-viewer">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Causal DAG</h2>
+                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Cause & Effect Map</h2>
                                 <CausalDAG
                                     nodes={generateDAGFromCausalResult(queryResponse?.causalResult).nodes}
                                     edges={generateDAGFromCausalResult(queryResponse?.causalResult).edges}
@@ -1180,8 +1327,8 @@ const DashboardLayout: React.FC = () => {
                             </div>
 
                             <div className="card" id="causal-results">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Causal Analysis Results</h2>
-                                <CausalAnalysisCard result={queryResponse?.causalResult || null} />
+                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Impact Analysis</h2>
+                                <CausalAnalysisCard result={queryResponse?.causalResult || null} onFollowUp={handleFollowUpQuestion} />
                             </div>
 
                             <div className="card" id="intervention-sim">
@@ -1192,12 +1339,21 @@ const DashboardLayout: React.FC = () => {
                                     baseOutcomeValue={50.0}
                                     effectSize={queryResponse?.causalResult?.effect || 0.5}
                                     unit={queryResponse?.causalResult?.unit}
+                                    confounders={queryResponse?.causalResult?.confoundersControlled?.map(c => ({
+                                        name: typeof c === 'string' ? c : c.name,
+                                        baseValue: 0,
+                                        effectOnOutcome: 0.1,
+                                        unit: queryResponse?.causalResult?.unit
+                                    }))}
                                 />
                             </div>
 
                             <div className="card" id="guardian-panel">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Guardian Panel</h2>
-                                <GuardianPanel decision={queryResponse?.guardianResult || null} />
+                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Safety & Compliance Check</h2>
+                                <GuardianPanel
+                                    decision={queryResponse?.guardianResult || null}
+                                    onViewAuditTrail={() => handleLinkClick('execution-trace')}
+                                />
                             </div>
 
                             {/* Conversational Response - Dialog-based results with confidence zones */}
@@ -1206,7 +1362,7 @@ const DashboardLayout: React.FC = () => {
                                     response={queryResponse}
                                     onFollowUpQuestion={handleFollowUpQuestion}
                                     onViewMethodology={handleViewMethodology}
-                                    onViewData={() => setShowDataWizard(true)}
+                                    onViewData={() => setShowDataModal(true)}
                                 />
                             </div>
                         </div>
@@ -1235,8 +1391,8 @@ const DashboardLayout: React.FC = () => {
                                     />
                                 </div>
                             )}
-                            <div className="card min-h-[400px]">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Execution Trace</h2>
+                            <div className="card min-h-[400px]" id="execution-trace">
+                                <h2 className="text-lg font-semibold text-gray-900 mb-3">Decision Audit Trail</h2>
                                 <ExecutionTrace
                                     steps={queryResponse?.reasoningChain || []}
                                     sessionId={queryResponse?.sessionId || sessionId}

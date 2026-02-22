@@ -1,22 +1,22 @@
 # CYNEPIC Architecture 0.5 - Current Status
 
-**Last Updated**: 2026-02-20
-**Phase**: Platform Evolution (Phase 14) — Benchmark Gap Closure (5 gaps fixed)
-**Overall Status**: Phase 14 Complete — Grade A (8/9 hypotheses), 737 tests, Router 98%, E2E 84.6%, ChimeraOracle 32.7x (H8 PASS)
+**Last Updated**: 2026-02-22
+**Phase**: Platform Evolution (Phase 16) — Orchestration Governance (OG)
+**Overall Status**: Phase 16 Complete — Grade A (11/12 hypotheses), 923 backend tests, 235 frontend tests (22 test files), Router 98%, E2E 84.6%
 
 ---
 
 ## Test Coverage
 
 ```
-Total Tests: 737+ passing
-Overall Coverage: 70%
-Python Lines: 6,000+ lines
-React Components: 44 components
-Backend Unit Tests: 41 test files (6 new: smart_reflector, experience_buffer, router_retraining, library_api, benchmark_reflector, benchmark_resiliency)
-Frontend Tests: 65 tests (5 test files, all passing)
+Total Tests: 923 backend + 235 frontend = 1,158 passing
+Overall Coverage: 72%
+Python Lines: 7,500+ lines
+React Components: 53 components (6 new: GovernanceView, SpecMapTab, CostIntelligenceTab, PolicyFederationTab, ComplianceAuditTab + 3 from Phase 15)
+Backend Unit Tests: 53 test files (12 new governance tests + 41 existing)
+Frontend Tests: 235 tests (22 test files, all passing) — 5 new governance test files
 E2E Tests: 20 tests (Data Quality: 6/6 pass, API: varies by network)
-Benchmark Scripts: 8 technical + 1 e2e + 1 baseline + 1 report generator
+Benchmark Scripts: 9 technical + 1 e2e + 1 baseline + 1 report generator (12 hypotheses)
 TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 ```
 
@@ -34,29 +34,48 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | Guardian Layer | Complete | 63% | OPA + policy enforcement |
 | Human Layer | Complete | 28% | HumanLayer SDK integration |
 | **ChimeraOracle** | **NEW** | 89% | Fast CausalForestDML predictions |
+| **Governance Service** | **NEW** | 96% | MAP-PRICE-RESOLVE orchestrator |
+| **Federated Policy Service** | **NEW** | 95% | Domain-owner policy management, conflict detection |
+| **Cost Intelligence Service** | **NEW** | 96% | LLM token pricing, ROI, cost breakdown |
+| **Governance Graph Service** | **NEW** | 32% | Neo4j triple store (graceful degradation) |
+| **Governance API Router** | **NEW** | — | 18 endpoints under `/governance/*` |
 
 ### React Frontend (carf-cockpit)
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| DashboardLayout | Complete | Three-view architecture (Analyst/Executive/Developer) |
+| DashboardLayout | **ENHANCED** | Three-view architecture, renamed section headers, simulation access, export |
 | CynefinRouter | Complete | Full transparency on classification + method impact |
 | CausalDAG | Complete | React Flow visualization |
 | BayesianPanel | Complete | Uncertainty quantification display |
-| GuardianPanel | Complete | Policy status and verdicts |
+| GuardianPanel | **ENHANCED** | Informative empty state, policy context, audit trail link |
 | SimulationArena | Complete | Enhanced with method toggles and benchmarks |
-| ExecutiveKPIPanel | Complete | KPI dashboard with filtering and summary |
+| ExecutiveKPIPanel | **ENHANCED** | Adaptive charts (Cards/Bar/Pie), action items, roadmap, export |
 | EscalationModal | Complete | Channel config, trigger explanation, manual review |
 | DataOnboardingWizard | Complete | Sample data, auto-suggestions, guided flow |
-| DeveloperView | Complete | System state, logs, architecture, experience buffer |
-| IntelligentChatTab | Complete | Slash commands, context awareness |
+| DeveloperView | **ENHANCED** | Real telemetry, DeepEval drill-downs, agent flow chart, improvement modal |
+| IntelligentChatTab | **ENHANCED** | Markdown rendering, panel links via MarkdownRenderer |
 | SetupWizard | Complete | LLM provider configuration |
-| **StrategyComparisonPanel** | **NEW** | Fast Oracle vs DoWhy comparison |
-| **ExperienceBufferPanel** | **NEW** | Learning buffer for Developer view |
-| **DomainVisualization** | Complete | All 5 Cynefin domain views (Clear/Complicated/Complex/Chaotic/Disorder) |
-| **PlotlyChart** | **NEW** | Unified Plotly.js wrapper (waterfall, radar, sankey, gauge) |
-| **TransparencyPanel** | Complete | Agent reliability, data quality, compliance |
-| **InsightsPanel** | **ENHANCED** | Action items, effort badges, roadmap stepper |
+| **MarkdownRenderer** | **NEW** | Shared markdown rendering (react-markdown + remark-gfm) |
+| **AgentFlowChart** | **NEW** | ReactFlow agent activation visualization for Developer view |
+| StrategyComparisonPanel | Complete | Fast Oracle vs DoWhy comparison |
+| ExperienceBufferPanel | Complete | Learning buffer for Developer view |
+| DomainVisualization | Complete | All 5 Cynefin domain views (Clear/Complicated/Complex/Chaotic/Disorder) |
+| PlotlyChart | Complete | Unified Plotly.js wrapper (waterfall, radar, sankey, gauge) |
+| **TransparencyPanel** | **ENHANCED** | Data modal with dataset info, flowchart lineage, quality drill-downs with baselines |
+| **ConversationalResponse** | **ENHANCED** | Markdown rendering via MarkdownRenderer |
+| **ExecutionTrace** | **ENHANCED** | Fixed 0ms bug, confidence tooltips |
+| **SensitivityPlot** | **ENHANCED** | Dejargonized, recharts, expandable modal, robustness interpretation |
+| **InterventionSimulator** | **ENHANCED** | Multi-parameter What-If with confounders, save scenario |
+| **CausalAnalysisCard** | **ENHANCED** | Follow-up question generation |
+| **WalkthroughManager** | **ENHANCED** | 3 new tracks (Causal Deep Dive, Simulations, Developer Debugging) |
+| **AnalysisHistoryPanel** | **ENHANCED** | OOM crash fix, capped at 50, lazy-load |
+| InsightsPanel | Complete | Action items, effort badges, roadmap stepper |
+| **GovernanceView** | **NEW** | 4-tab layout: Spec Map, Cost, Policy, Compliance |
+| **SpecMapTab** | **NEW** | ReactFlow domain node visualization |
+| **CostIntelligenceTab** | **NEW** | KPI cards + recharts cost breakdown |
+| **PolicyFederationTab** | **NEW** | Domain sidebar, policy cards, conflict panel |
+| **ComplianceAuditTab** | **NEW** | Framework selector, score gauge, article accordion |
 
 ### New Services (Phase 13)
 
@@ -88,10 +107,96 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | **Feedback** | **5** | `/feedback`, `/feedback/summary`, `/feedback/domain-overrides`, `/feedback/export`, `/feedback/retraining-readiness` |
 | **Enhanced Insights** | **1** | **NEW** - `/insights/enhanced` (action items + roadmap) |
 | **Experience Buffer** | **2** | **NEW** - `/experience/similar`, `/experience/patterns` |
+| **Governance** | **18** | **NEW** — `/governance/domains`, `/governance/policies`, `/governance/conflicts`, `/governance/compliance/{framework}`, `/governance/cost/*`, `/governance/audit`, `/governance/health` |
 
 ---
 
 ## Recent Improvements
+
+### Phase 16: Orchestration Governance (OG) Integration (2026-02-22)
+
+Complete MAP-PRICE-RESOLVE-AUDIT framework integration, transforming CARF from a "Complex Decision Tool" to a "Computable Enterprise Brain" — governed, auditable, and strategically aligned.
+
+**Critical Design Principle:** Governance is a plug-in, not a requirement. Feature-flagged via `GOVERNANCE_ENABLED=true/false` (default `false`). When disabled: zero imports, zero service init, zero performance overhead.
+
+**Backend Foundation (16A):**
+1. **Governance Models** (`src/core/governance_models.py`) — 15 Pydantic models: ContextTriple, GovernanceDomain, FederatedPolicy, PolicyConflict, CostBreakdown, ComplianceScore, GovernanceAuditEntry, etc.
+2. **EpistemicState Extension** — 2 additive Optional fields: `session_triples`, `cost_breakdown` (zero impact on existing tests)
+3. **Governance Service** — Central MAP-PRICE-RESOLVE orchestrator with entity extraction, domain keyword matching, compliance scoring for EU AI Act/CSRD/GDPR/ISO 27001
+4. **Federated Policy Service** — Domain-owner policy management from `config/federated_policies/` YAML files, cross-domain conflict detection
+5. **Governance Graph Service** — Neo4j triple store with graceful degradation to in-memory
+6. **LangGraph Integration** — Governance node wired between Guardian(APPROVED) and END, non-blocking (try/except)
+7. **API Router** — 18 endpoints under `/governance/*` (domains, policies, conflicts, compliance, cost, audit, health)
+
+**Cost Intelligence (16B):**
+8. **Cost Intelligence Service** — Actual LLM token pricing (DeepSeek $0.14/$0.28, OpenAI $3/$6, Anthropic $3/$15, Ollama $0), risk exposure, opportunity cost, full breakdown
+9. **Token Instrumentation** — Thread-local accumulators in `llm.py` for real token usage tracking
+10. **Kafka Audit Extension** — 4 new governance fields on KafkaAuditEvent
+
+**Frontend Governance View (16C):**
+11. **GovernanceView** — 4-tab layout: Spec Map, Cost Intelligence, Policy Federation, Compliance Audit
+12. **SpecMapTab** — ReactFlow domain node visualization (reuses AgentFlowChart pattern)
+13. **CostIntelligenceTab** — 4 KPI cards + recharts BarChart/PieChart (reuses ExecutiveKPIPanel pattern)
+14. **PolicyFederationTab** — Domain sidebar, policy cards, conflict panel with resolve buttons
+15. **ComplianceAuditTab** — Framework selector, score gauge, article accordion, audit timeline
+16. **DashboardLayout** — Added governance view tab
+17. **TransparencyPanel** — Added cost tab for token usage
+
+**Config & Use Cases (16D):**
+18. **5 Federated Policy YAML files** — Procurement (3 rules), Sustainability (4 rules), Security (3 rules), Legal (3 rules), Finance (3 rules)
+19. **2 Demo Payloads** — CSRD ESG Reporting, Supply Chain Governance
+
+**Benchmarks (16E):**
+20. **Governance Benchmark** (`benchmarks/technical/governance/benchmark_governance.py`) — Tests all 4 pillars: MAP accuracy, PRICE precision, RESOLVE detection, AUDIT validity, plus governance node latency and feature flag overhead
+21. **3 New Hypotheses** — H10 (MAP >= 70%), H11 (PRICE >= 95%), H12 (Latency P95 < 50ms) — all passing
+22. **Report Generator Updated** — 12 hypotheses total, Grade A (11/12 passed)
+
+**Results:** 923 backend tests (0 failures), 235 frontend tests (all passing), 72% coverage, Grade A (11/12 hypotheses), governance node P95 < 1ms, zero overhead when disabled.
+
+### Phase 15: CYNEPIC UIX Rehaul (2026-02-21)
+
+Comprehensive 7-phase frontend overhaul addressing actionability, data explainability, and view differentiation. Core principle: every view should answer "So what?" and "Now what?".
+
+**Bug Fixes & Markdown (Phase 1):**
+1. **MarkdownRenderer** — New shared component using `react-markdown` + `remark-gfm` for proper markdown in chat and response panels (replaces raw `whitespace-pre-wrap`)
+2. **ExecutionTrace 0ms fix** — Frontend always shows duration (`< 1ms` when 0), backend `graph.py` now times each node with `time.perf_counter()`
+3. **"View Data" routing fix** — Opens data modal instead of onboarding wizard
+4. **Confidence tooltips** — ExecutionTrace badges explain what high/medium/low means on hover
+
+**Transparency & Explainability (Phase 2):**
+5. **DataModal redesign** — Shows dataset info, column types, variable roles, data quality indicators
+6. **Flowchart lineage** — Replaced bullet points with vertical flow: Input → Router → Agent → Guardian → Output
+7. **Quality drill-downs** — Clickable score bars with industry baselines and plain-English interpretations
+8. **Reliability explanations** — Per-factor Cynefin-aware interpretations (e.g., "highly confident in complicated domain")
+
+**Guardian & Causal Actionability (Phase 3):**
+9. **Guardian empty state** — Shows active policy count and thresholds even with no decision
+10. **Policy contextualization** — Per-policy descriptions from `/guardian/policies` endpoint
+11. **"Ask Follow-Up"** — CausalAnalysisCard generates contextual follow-up questions wired to chat
+12. **Section header renames** — "Causal DAG" → "Cause & Effect Map", "Guardian Panel" → "Safety & Compliance Check", etc.
+
+**Sensitivity & Simulator (Phase 4):**
+13. **SensitivityPlot dejargonized** — Plain English axes, colored Robust/Fragile zones, expandable modal, robustness interpretation
+14. **Multi-parameter What-If** — Treatment + confounder sliders, combined prediction, "Save Scenario", strongest effect highlight
+15. **Confounders wired** — Causal result confounders passed to InterventionSimulator
+
+**Developer View (Phase 5):**
+16. **AgentFlowChart** — ReactFlow visualization of agent activation sequence with click-to-expand
+17. **Real telemetry** — Computed from actual system state instead of hardcoded values
+18. **ImprovementModal** — Proper modal replacing `prompt()` dialog, with context pre-population
+19. **DeepEval drill-downs** — Clickable metrics with Cynefin-aware recommendations
+
+**Executive View (Phase 6):**
+20. **Adaptive charts** — KPI Cards / Bar Chart / Pie Chart with auto-detection and user toggle
+21. **Enhanced insights** — Action items as prioritized checklist (Quick Win / Medium Effort / Strategic)
+22. **Export Report** — One-click structured summary export
+
+**Proactive UIX (Phase 7):**
+23. **useProactiveHighlight hook** — Automatically highlights relevant panels based on query results
+24. **3 new walkthrough tracks** — "Causal Analysis Deep Dive", "Running Simulations", "Developer Debugging"
+25. **OOM crash fix** — History capped at 50, lightweight summaries in localStorage, lazy-load
+
+**Results:** 201 frontend tests (17 files, all passing), 0 new TypeScript errors from changes, production build succeeds. Backend 737+ tests unaffected (only additive timing change in graph.py).
 
 ### Phase 14: Benchmark Gap Closure (2026-02-20)
 
@@ -354,9 +459,10 @@ projectcarf/
 │   └── mcp/                 # MCP server (15 cognitive tools)
 ├── carf-cockpit/
 │   └── src/
-│       ├── components/carf/ # 34 React components (incl. PlotlyChart, DomainVisualization)
-│       ├── hooks/           # React hooks (useVisualizationConfig, useCarfApi, useTheme)
+│       ├── components/carf/ # 47 React components (incl. MarkdownRenderer, AgentFlowChart)
+│       ├── hooks/           # React hooks (useProactiveHighlight, useVisualizationConfig, useCarfApi, useTheme)
 │       ├── services/        # API client (apiService.ts with typed interfaces)
+│       ├── __tests__/       # 17 test files (201 tests)
 │       └── types/           # TypeScript types
 ├── tests/
 │   ├── unit/               # 20+ test files

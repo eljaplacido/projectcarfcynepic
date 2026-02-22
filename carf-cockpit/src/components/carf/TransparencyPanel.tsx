@@ -7,21 +7,39 @@ import type {
     GuardianConfig
 } from '../../services/apiService';
 
+// Dataset info that can be passed in when a file/dataset is loaded
+export interface DatasetInfo {
+    fileName?: string;
+    columns?: string[];
+    rowCount?: number;
+    columnTypes?: Record<string, string>;
+    completeness?: number;   // 0-1 fraction of non-null cells
+    validity?: number;       // 0-1 fraction of valid values
+    variableRoles?: {
+        treatment?: string;
+        outcome?: string;
+        covariates?: string[];
+    };
+}
+
 interface TransparencyPanelProps {
     queryResponse?: {
         domain?: string;
         domainConfidence?: number;
+        method?: string;
+        guardianVerdict?: string | null;
         causalResult?: {
             effect?: number;
             refutationsPassed?: number;
             refutationsTotal?: number;
         } | null;
     } | null;
+    datasetInfo?: DatasetInfo | null;
     isExpanded?: boolean;
     onToggleExpand?: () => void;
 }
 
-type Tab = 'agents' | 'reliability' | 'compliance' | 'config' | 'quality';
+type Tab = 'agents' | 'reliability' | 'compliance' | 'config' | 'quality' | 'cost';
 
 // Policy interface for Guardian policies
 interface GuardianPolicy {
@@ -53,13 +71,44 @@ interface DeepEvalScores {
     evaluated_at?: string;
 }
 
+// Quality indicator bar for dataset metrics
+const QualityIndicator: React.FC<{ label: string; value: number }> = ({ label, value }) => {
+    const pct = Math.round(value * 100);
+    const color = pct >= 90 ? 'bg-green-500' : pct >= 70 ? 'bg-yellow-500' : 'bg-red-500';
+    return (
+        <div className="flex items-center gap-2 text-xs">
+            <span className="text-gray-500 w-24">{label}</span>
+            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+            </div>
+            <span className="text-gray-700 font-medium w-10 text-right">{pct}%</span>
+        </div>
+    );
+};
+
+// Lineage flowchart node
+const FlowNode: React.FC<{ label: string; value?: string; color: string; isLast?: boolean }> = ({ label, value, color, isLast = false }) => (
+    <div className="flex flex-col items-center">
+        <div className={`px-3 py-1.5 rounded border text-xs font-medium ${color}`} data-testid={`flow-node-${label.toLowerCase()}`}>
+            <div className="font-semibold">{label}</div>
+            {value && <div className="text-[10px] opacity-80 mt-0.5">{value}</div>}
+        </div>
+        {!isLast && (
+            <div className="w-px h-4 bg-gray-300" />
+        )}
+    </div>
+);
+
 // Modal component for Data View
 const DataModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
     queryResponse: TransparencyPanelProps['queryResponse'];
-}> = ({ isOpen, onClose, queryResponse }) => {
+    datasetInfo?: DatasetInfo | null;
+}> = ({ isOpen, onClose, queryResponse, datasetInfo }) => {
     if (!isOpen) return null;
+
+    const hasDataset = !!(datasetInfo?.fileName || datasetInfo?.columns);
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -73,6 +122,66 @@ const DataModal: React.FC<{
                     </button>
                 </div>
                 <div className="p-4 space-y-4">
+                    {/* Dataset Info Section -- shown when dataset is loaded */}
+                    {hasDataset && (
+                        <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Loaded Dataset</h4>
+                            <div className="bg-gray-50 rounded-lg p-3 text-xs font-mono space-y-1">
+                                {datasetInfo?.fileName && (
+                                    <p><span className="text-gray-500">File:</span> {datasetInfo.fileName}</p>
+                                )}
+                                {datasetInfo?.rowCount != null && (
+                                    <p><span className="text-gray-500">Rows:</span> {datasetInfo.rowCount.toLocaleString()}</p>
+                                )}
+                                {datasetInfo?.columns && datasetInfo.columns.length > 0 && (
+                                    <div>
+                                        <span className="text-gray-500">Columns ({datasetInfo.columns.length}):</span>
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                            {datasetInfo.columns.map((col) => (
+                                                <span key={col} className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px]">
+                                                    {col}
+                                                    {datasetInfo.columnTypes?.[col] && (
+                                                        <span className="ml-1 opacity-60">({datasetInfo.columnTypes[col]})</span>
+                                                    )}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Variable Roles */}
+                            {datasetInfo?.variableRoles && (
+                                <div className="mt-2 bg-indigo-50 rounded-lg p-3 text-xs">
+                                    <div className="font-semibold text-indigo-800 mb-1">Variable Roles</div>
+                                    {datasetInfo.variableRoles.treatment && (
+                                        <p><span className="text-indigo-500">Treatment:</span> {datasetInfo.variableRoles.treatment}</p>
+                                    )}
+                                    {datasetInfo.variableRoles.outcome && (
+                                        <p><span className="text-indigo-500">Outcome:</span> {datasetInfo.variableRoles.outcome}</p>
+                                    )}
+                                    {datasetInfo.variableRoles.covariates && datasetInfo.variableRoles.covariates.length > 0 && (
+                                        <p><span className="text-indigo-500">Covariates:</span> {datasetInfo.variableRoles.covariates.join(', ')}</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Data Quality Indicators */}
+                            {(datasetInfo?.completeness != null || datasetInfo?.validity != null) && (
+                                <div className="mt-2 space-y-2" data-testid="data-quality-indicators">
+                                    <div className="font-semibold text-gray-700 text-xs">Data Quality</div>
+                                    {datasetInfo.completeness != null && (
+                                        <QualityIndicator label="Completeness" value={datasetInfo.completeness} />
+                                    )}
+                                    {datasetInfo.validity != null && (
+                                        <QualityIndicator label="Validity" value={datasetInfo.validity} />
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Analysis Context -- always shown as fallback/supplement */}
                     <div>
                         <h4 className="text-sm font-semibold text-gray-700 mb-2">Analysis Context</h4>
                         <div className="bg-gray-50 rounded-lg p-3 text-xs font-mono">
@@ -80,6 +189,7 @@ const DataModal: React.FC<{
                             <p><span className="text-gray-500">Confidence:</span> {((queryResponse?.domainConfidence ?? 0) * 100).toFixed(1)}%</p>
                         </div>
                     </div>
+
                     {queryResponse?.causalResult && (
                         <div>
                             <h4 className="text-sm font-semibold text-gray-700 mb-2">Causal Analysis Data</h4>
@@ -89,22 +199,38 @@ const DataModal: React.FC<{
                             </div>
                         </div>
                     )}
+
+                    {/* Data Lineage Flowchart (replaces bullet list) */}
                     <div>
                         <h4 className="text-sm font-semibold text-gray-700 mb-2">Data Lineage</h4>
-                        <ul className="text-xs text-gray-600 space-y-1">
-                            <li className="flex items-center gap-2">
-                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                Input query processed through Cynefin Router
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                Domain-specific agent invoked for analysis
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                                Guardian policy checks applied
-                            </li>
-                        </ul>
+                        <div className="flex flex-col items-center py-2" data-testid="data-lineage-flow">
+                            <FlowNode
+                                label="Input"
+                                value={hasDataset ? datasetInfo?.fileName : 'User query'}
+                                color="bg-green-50 border-green-300 text-green-800"
+                            />
+                            <FlowNode
+                                label="Router"
+                                value={queryResponse?.domain ? `Cynefin: ${queryResponse.domain}` : 'Cynefin Router'}
+                                color="bg-purple-50 border-purple-300 text-purple-800"
+                            />
+                            <FlowNode
+                                label="Agent"
+                                value={queryResponse?.method || (queryResponse?.domain === 'complicated' ? 'Causal Inference' : queryResponse?.domain === 'complex' ? 'Bayesian Inference' : 'Domain Agent')}
+                                color="bg-blue-50 border-blue-300 text-blue-800"
+                            />
+                            <FlowNode
+                                label="Guardian"
+                                value={queryResponse?.guardianVerdict || 'Policy checks'}
+                                color="bg-amber-50 border-amber-300 text-amber-800"
+                            />
+                            <FlowNode
+                                label="Output"
+                                value="Verified result"
+                                color="bg-gray-50 border-gray-300 text-gray-800"
+                                isLast
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -213,10 +339,41 @@ const safePercentage = (value: number | undefined | null, decimals = 0): string 
     return (value * 100).toFixed(decimals);
 };
 
-// Score bar component for quality metrics
-const ScoreBar: React.FC<{ label: string; value: number; inverted?: boolean }> = ({ label, value, inverted = false }) => {
+// Metric explanations and baselines for quality drill-downs
+const metricMeta: Record<string, { baseline: number; baselineLabel: string; explanation: string; benchmarkSource: string }> = {
+    'Relevancy': {
+        baseline: 0.7,
+        baselineLabel: '>70% industry baseline',
+        explanation: 'Relevancy measures how well the response addresses the user query. A score above 70% is considered acceptable by industry standards for analytical AI systems.',
+        benchmarkSource: 'Industry standard (NIST AI 600-1)',
+    },
+    'Hallucination Risk': {
+        baseline: 0.15,
+        baselineLabel: '<15% acceptable threshold',
+        explanation: 'Hallucination risk indicates how likely the response contains fabricated or unsupported claims. Lower is better. Keeping this below 15% is critical for decision-support systems.',
+        benchmarkSource: 'EU AI Act Art. 15 accuracy requirement',
+    },
+    'Reasoning Depth': {
+        baseline: 0.6,
+        baselineLabel: '>60% analytical baseline',
+        explanation: 'Reasoning depth evaluates whether the response demonstrates logical chain-of-thought, considers multiple perspectives, and provides evidence-backed conclusions.',
+        benchmarkSource: 'CARF internal benchmark (Cynefin-aligned)',
+    },
+    'UIX Compliance': {
+        baseline: 0.75,
+        baselineLabel: '>75% UX transparency target',
+        explanation: 'UIX compliance checks whether the response follows the "Understandable Information eXchange" protocol: explains reasoning, quantifies uncertainty, cites sources, and uses accessible language.',
+        benchmarkSource: 'CARF UIX Standard v2',
+    },
+};
+
+// Score bar component for quality metrics -- clickable with baseline reference
+const ScoreBar: React.FC<{ label: string; value: number; inverted?: boolean; expanded?: boolean; onToggle?: () => void }> = ({ label, value, inverted = false, expanded = false, onToggle }) => {
     const safeValue = value ?? 0;
     const displayValue = inverted ? 1 - safeValue : safeValue;
+    const meta = metricMeta[label];
+    const baselinePct = meta ? meta.baseline * 100 : null;
+
     const getColor = () => {
         if (inverted) {
             if (safeValue <= 0.3) return 'bg-green-500';
@@ -229,18 +386,61 @@ const ScoreBar: React.FC<{ label: string; value: number; inverted?: boolean }> =
         return 'bg-red-500';
     };
 
+    // Determine if metric meets its baseline
+    const meetsBaseline = meta
+        ? inverted ? safeValue <= meta.baseline : safeValue >= meta.baseline
+        : true;
+
     return (
         <div className="space-y-1">
-            <div className="flex justify-between text-xs">
-                <span className="text-gray-600">{label}</span>
-                <span className="font-medium text-gray-900">{safePercentage(safeValue)}%</span>
-            </div>
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                    className={`h-full rounded-full transition-all duration-300 ${getColor()}`}
-                    style={{ width: `${safePercentage(safeValue)}%` }}
-                />
-            </div>
+            <button
+                type="button"
+                className="w-full text-left focus:outline-none focus:ring-1 focus:ring-blue-300 rounded"
+                onClick={onToggle}
+                aria-expanded={expanded}
+                data-testid={`score-bar-${label.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+                <div className="flex justify-between text-xs">
+                    <span className="text-gray-600 flex items-center gap-1">
+                        {label}
+                        {onToggle && (
+                            <svg className={`w-3 h-3 transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        )}
+                    </span>
+                    <span className="font-medium text-gray-900">{safePercentage(safeValue)}%</span>
+                </div>
+                <div className="relative h-2 bg-gray-200 rounded-full overflow-visible mt-1">
+                    <div
+                        className={`h-full rounded-full transition-all duration-300 ${getColor()}`}
+                        style={{ width: `${safePercentage(safeValue)}%` }}
+                    />
+                    {/* Baseline reference line */}
+                    {baselinePct != null && (
+                        <div
+                            className="absolute top-0 h-full w-0.5 bg-gray-800 opacity-40"
+                            style={{ left: `${baselinePct}%` }}
+                            title={meta?.baselineLabel}
+                            data-testid={`baseline-${label.toLowerCase().replace(/\s+/g, '-')}`}
+                        />
+                    )}
+                </div>
+            </button>
+
+            {/* Expanded drill-down */}
+            {expanded && meta && (
+                <div className="ml-1 mt-1 p-2 bg-gray-50 rounded border border-gray-200 text-xs text-gray-600 space-y-1" data-testid={`drilldown-${label.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <p>{meta.explanation}</p>
+                    <div className="flex items-center gap-1 mt-1">
+                        <span className={`w-2 h-2 rounded-full ${meetsBaseline ? 'bg-green-500' : 'bg-red-500'}`} />
+                        <span className={meetsBaseline ? 'text-green-700' : 'text-red-700'}>
+                            {meetsBaseline ? 'Meets' : 'Below'} baseline: {meta.baselineLabel}
+                        </span>
+                    </div>
+                    <p className="text-gray-400 text-[10px]">Benchmark: {meta.benchmarkSource}</p>
+                </div>
+            )}
         </div>
     );
 };
@@ -255,8 +455,10 @@ const StatusBadge: React.FC<{ label: string; status: boolean }> = ({ label, stat
     </div>
 );
 
-// Quality scores panel component
+// Quality scores panel component with clickable drill-downs and baselines
 const QualityScoresPanel: React.FC<{ scores: DeepEvalScores | null }> = ({ scores }) => {
+    const [expandedMetric, setExpandedMetric] = useState<string | null>(null);
+
     if (!scores) {
         return (
             <div className="text-center py-8 text-gray-500 text-sm">
@@ -272,6 +474,10 @@ const QualityScoresPanel: React.FC<{ scores: DeepEvalScores | null }> = ({ score
         (scores.uix_compliance ?? 0) +
         (1 - (scores.hallucination_risk ?? 0))
     ) / 4;
+
+    const toggleMetric = (label: string) => {
+        setExpandedMetric((prev) => (prev === label ? null : label));
+    };
 
     return (
         <div className="space-y-4">
@@ -291,13 +497,34 @@ const QualityScoresPanel: React.FC<{ scores: DeepEvalScores | null }> = ({ score
                 )}
             </div>
 
-            {/* Individual Metrics */}
+            {/* Individual Metrics with drill-downs and baselines */}
             <div className="space-y-3">
-                <div className="text-xs font-semibold text-gray-700 mb-2">Quality Metrics</div>
-                <ScoreBar label="Relevancy" value={scores.relevancy_score ?? 0} />
-                <ScoreBar label="Hallucination Risk" value={scores.hallucination_risk ?? 0} inverted />
-                <ScoreBar label="Reasoning Depth" value={scores.reasoning_depth ?? 0} />
-                <ScoreBar label="UIX Compliance" value={scores.uix_compliance ?? 0} />
+                <div className="text-xs font-semibold text-gray-700 mb-2">Quality Metrics (click to expand)</div>
+                <ScoreBar
+                    label="Relevancy"
+                    value={scores.relevancy_score ?? 0}
+                    expanded={expandedMetric === 'Relevancy'}
+                    onToggle={() => toggleMetric('Relevancy')}
+                />
+                <ScoreBar
+                    label="Hallucination Risk"
+                    value={scores.hallucination_risk ?? 0}
+                    inverted
+                    expanded={expandedMetric === 'Hallucination Risk'}
+                    onToggle={() => toggleMetric('Hallucination Risk')}
+                />
+                <ScoreBar
+                    label="Reasoning Depth"
+                    value={scores.reasoning_depth ?? 0}
+                    expanded={expandedMetric === 'Reasoning Depth'}
+                    onToggle={() => toggleMetric('Reasoning Depth')}
+                />
+                <ScoreBar
+                    label="UIX Compliance"
+                    value={scores.uix_compliance ?? 0}
+                    expanded={expandedMetric === 'UIX Compliance'}
+                    onToggle={() => toggleMetric('UIX Compliance')}
+                />
                 <StatusBadge label="Task Completion" status={scores.task_completion ?? false} />
             </div>
 
@@ -336,6 +563,7 @@ const QualityScoresPanel: React.FC<{ scores: DeepEvalScores | null }> = ({ score
 
 const TransparencyPanel: React.FC<TransparencyPanelProps> = ({
     queryResponse,
+    datasetInfo,
     isExpanded = false,
     onToggleExpand,
 }) => {
@@ -565,6 +793,40 @@ const TransparencyPanel: React.FC<TransparencyPanelProps> = ({
         </div>
     );
 
+    // Helper: generate plain-English interpretation for a reliability factor
+    const interpretFactor = (factorName: string, score: number, domain?: string): string => {
+        const domainLabel = domain ? `the ${domain} domain` : 'this analysis';
+        const pct = Math.round(score * 100);
+
+        const templates: Record<string, (s: number) => string> = {
+            'Confidence': (s) =>
+                s >= 0.85 ? `The system is highly confident in its classification for ${domainLabel}. This level of confidence is strong enough for automated decisions.`
+                : s >= 0.7 ? `Confidence is adequate for ${domainLabel}, though some manual review may be beneficial for critical decisions.`
+                : `Confidence is below the recommended threshold for ${domainLabel}. Consider gathering more data or escalating to a human expert.`,
+            'Data Quality': (s) =>
+                s >= 0.85 ? `Data quality is excellent -- the input data for ${domainLabel} is complete, consistent, and valid.`
+                : s >= 0.7 ? `Data quality is acceptable for ${domainLabel}, but there may be minor gaps or inconsistencies worth reviewing.`
+                : `Data quality is a concern for ${domainLabel}. Missing values or validity issues may affect the reliability of results.`,
+            'Refutation': (s) =>
+                s >= 0.85 ? `Robustness tests passed with a high rate, indicating the causal estimate for ${domainLabel} withstands standard challenges.`
+                : s >= 0.6 ? `Some refutation tests raised concerns. The causal estimate for ${domainLabel} should be interpreted with moderate caution.`
+                : `Refutation tests indicate potential issues with the causal claim for ${domainLabel}. The estimate may not be robust.`,
+            'Policy Compliance': (s) =>
+                s >= 0.85 ? `All guardian policies for ${domainLabel} are satisfied. The result meets organizational risk thresholds.`
+                : s >= 0.6 ? `Most policies for ${domainLabel} are met, but some guardrails triggered warnings.`
+                : `Policy compliance is low for ${domainLabel}. Key risk thresholds may be breached -- review recommended.`,
+        };
+
+        // Try exact match first, then partial match
+        const interpret = templates[factorName] || Object.entries(templates).find(([k]) => factorName.toLowerCase().includes(k.toLowerCase()))?.[1];
+
+        if (interpret) return interpret(score);
+        // Generic fallback
+        if (score >= 0.85) return `${factorName} scores ${pct}% for ${domainLabel}, which is considered strong.`;
+        if (score >= 0.7) return `${factorName} scores ${pct}% for ${domainLabel}, which is adequate but has room for improvement.`;
+        return `${factorName} scores ${pct}% for ${domainLabel}, which is below the recommended threshold. Investigation may be needed.`;
+    };
+
     const renderReliabilityTab = () => (
         <div className="space-y-4">
             {reliability ? (
@@ -591,31 +853,37 @@ const TransparencyPanel: React.FC<TransparencyPanelProps> = ({
                         )}
                     </div>
 
-                    {/* Factor Scores */}
+                    {/* Factor Scores with plain-English interpretations */}
                     {reliability.factors && reliability.factors.length > 0 && (
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                             <div className="text-xs font-semibold text-gray-700 mb-2">Reliability Factors</div>
                             {reliability.factors.map((factor: { name: string; score: number; weight: number; status: string; explanation: string }) => (
-                                <div key={factor.name} className="flex items-center gap-2">
-                                    <div className="flex-1">
-                                        <div className="flex justify-between text-xs mb-1">
-                                            <span className="text-gray-600">{factor.name}</span>
-                                            <span className="text-gray-900 font-medium">{safePercentage(factor.score)}%</span>
+                                <div key={factor.name} className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex-1">
+                                            <div className="flex justify-between text-xs mb-1">
+                                                <span className="text-gray-600">{factor.name}</span>
+                                                <span className="text-gray-900 font-medium">{safePercentage(factor.score)}%</span>
+                                            </div>
+                                            <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full rounded-full ${
+                                                        (factor.score ?? 0) >= 0.85 ? 'bg-green-500' :
+                                                        (factor.score ?? 0) >= 0.70 ? 'bg-blue-500' :
+                                                        (factor.score ?? 0) >= 0.55 ? 'bg-yellow-500' : 'bg-red-500'
+                                                    }`}
+                                                    style={{ width: `${safePercentage(factor.score)}%` }}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                            <div
-                                                className={`h-full rounded-full ${
-                                                    (factor.score ?? 0) >= 0.85 ? 'bg-green-500' :
-                                                    (factor.score ?? 0) >= 0.70 ? 'bg-blue-500' :
-                                                    (factor.score ?? 0) >= 0.55 ? 'bg-yellow-500' : 'bg-red-500'
-                                                }`}
-                                                style={{ width: `${safePercentage(factor.score)}%` }}
-                                            />
-                                        </div>
+                                        <span className="text-[10px] text-gray-400 w-8 text-right">
+                                            {safePercentage(factor.weight)}%
+                                        </span>
                                     </div>
-                                    <span className="text-[10px] text-gray-400 w-8 text-right">
-                                        {safePercentage(factor.weight)}%
-                                    </span>
+                                    {/* Plain-English interpretation */}
+                                    <p className="text-[11px] text-gray-500 italic pl-1" data-testid={`factor-interpretation-${factor.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                                        {interpretFactor(factor.name, factor.score, queryResponse?.domain)}
+                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -806,6 +1074,7 @@ const TransparencyPanel: React.FC<TransparencyPanelProps> = ({
                         { id: 'quality', label: 'Quality' },
                         { id: 'agents', label: 'Agents' },
                         { id: 'compliance', label: 'EU AI Act' },
+                        { id: 'cost', label: 'Cost' },
                         { id: 'config', label: 'Config' },
                     ] as { id: Tab; label: string }[]).map((tab) => (
                         <button
@@ -836,6 +1105,30 @@ const TransparencyPanel: React.FC<TransparencyPanelProps> = ({
                             {activeTab === 'reliability' && renderReliabilityTab()}
                             {activeTab === 'quality' && <QualityScoresPanel scores={qualityScores} />}
                             {activeTab === 'compliance' && renderComplianceTab()}
+                            {activeTab === 'cost' && (
+                                <div className="space-y-3">
+                                    <div className="text-sm text-gray-700 font-medium">Query Cost Summary</div>
+                                    {queryResponse?.context && (queryResponse.context as Record<string, unknown>)._llm_token_usage ? (
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-gray-500">Input Tokens</span>
+                                                <span className="font-mono">{((queryResponse.context as Record<string, unknown>)._llm_token_usage as Record<string, number>).input?.toLocaleString() || '0'}</span>
+                                            </div>
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-gray-500">Output Tokens</span>
+                                                <span className="font-mono">{((queryResponse.context as Record<string, unknown>)._llm_token_usage as Record<string, number>).output?.toLocaleString() || '0'}</span>
+                                            </div>
+                                            <div className="mt-2 text-xs text-blue-600 hover:underline cursor-pointer" onClick={() => {/* Navigate to governance view */}}>
+                                                View full cost breakdown in Governance View
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-gray-500 italic">
+                                            Enable GOVERNANCE_ENABLED=true for cost tracking. Token usage data will appear here after running queries.
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                             {activeTab === 'config' && renderConfigTab()}
                         </>
                     )}
@@ -847,6 +1140,7 @@ const TransparencyPanel: React.FC<TransparencyPanelProps> = ({
                 isOpen={showDataModal}
                 onClose={() => setShowDataModal(false)}
                 queryResponse={queryResponse}
+                datasetInfo={datasetInfo}
             />
             <MethodologyModal
                 isOpen={showMethodologyModal}

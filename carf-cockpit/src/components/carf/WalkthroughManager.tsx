@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-export type WalkthroughTrack = 'quick-demo' | 'analyst' | 'executive' | 'contributor' | 'production';
+export type WalkthroughTrack =
+    | 'quick-demo'
+    | 'analyst'
+    | 'executive'
+    | 'contributor'
+    | 'production'
+    | 'causal-deep-dive'
+    | 'running-simulations'
+    | 'developer-debugging';
 
 interface WalkthroughStep {
     id: string;
@@ -244,6 +252,150 @@ const WALKTHROUGH_TRACKS: WalkthroughTrackConfig[] = [
                 id: 'pd-7',
                 title: 'Scaling Considerations',
                 content: 'For scale, move from SQLite to PostgreSQL, add Redis caching, and deploy behind load balancer.',
+            },
+        ],
+    },
+    {
+        id: 'causal-deep-dive',
+        name: 'Causal Analysis Deep Dive',
+        description: 'Understand DAGs, effects, and refutations',
+        duration: '~8 minutes',
+        icon: '🔬',
+        steps: [
+            {
+                id: 'cd-1',
+                title: 'What is Causal Analysis?',
+                content: 'Causal analysis goes beyond correlation to determine whether X truly causes Y. CARF uses the DoWhy library and structural causal models to estimate treatment effects.',
+            },
+            {
+                id: 'cd-2',
+                title: 'Understanding the DAG',
+                content: 'The Directed Acyclic Graph (DAG) shows causal relationships between variables. Nodes represent variables; edges represent causal influence with estimated effect sizes.',
+                targetSelector: '[data-tour="causal-dag"]',
+                position: 'right',
+            },
+            {
+                id: 'cd-3',
+                title: 'Reading Effect Estimates',
+                content: 'The effect estimate tells you how much the outcome changes per unit change in the treatment. Check the confidence interval — narrow intervals indicate more precise estimates.',
+                targetSelector: '[data-tour="causal-effect"]',
+                position: 'bottom',
+            },
+            {
+                id: 'cd-4',
+                title: 'Refutation Tests',
+                content: 'Refutation tests challenge the causal estimate by adding random confounders, using placebo treatments, and removing subsets of data. More passed tests mean higher robustness.',
+                targetSelector: '[data-tour="refutation-tests"]',
+                position: 'left',
+            },
+            {
+                id: 'cd-5',
+                title: 'Sensitivity Analysis',
+                content: 'Sensitivity analysis checks how strong unmeasured confounders would need to be to invalidate the result. A high robustness value means the finding is unlikely to be an artefact.',
+                targetSelector: '[data-tour="sensitivity-analysis"]',
+                position: 'bottom',
+            },
+            {
+                id: 'cd-6',
+                title: 'Counterfactual What-If',
+                content: 'Click any node in the DAG to set a counterfactual value and see the propagated effect through the graph. This lets you simulate interventions before deploying them.',
+                targetSelector: '[data-tour="counterfactual"]',
+                action: 'Try clicking a node in the DAG to set a counterfactual value',
+                position: 'right',
+            },
+        ],
+    },
+    {
+        id: 'running-simulations',
+        name: 'Running Simulations',
+        description: 'Learn what-if analysis and comparisons',
+        duration: '~6 minutes',
+        icon: '🧪',
+        steps: [
+            {
+                id: 'rs-1',
+                title: 'What-If Simulations',
+                content: 'Simulations let you explore hypothetical scenarios before taking real-world action. CARF propagates changes through the causal graph to predict outcomes.',
+            },
+            {
+                id: 'rs-2',
+                title: 'Selecting Parameters',
+                content: 'Choose the treatment variable and set a new value. CARF will recalculate the expected outcome using the identified causal model.',
+                targetSelector: '[data-tour="simulation-params"]',
+                action: 'Select a treatment variable and adjust its value',
+                position: 'bottom',
+            },
+            {
+                id: 'rs-3',
+                title: 'Running the Simulation',
+                content: 'Click "Simulate" to propagate your intervention through the DAG. The system will show predicted outcomes and confidence intervals.',
+                targetSelector: '[data-tour="simulate-button"]',
+                action: 'Click Simulate to run the what-if analysis',
+                position: 'top',
+            },
+            {
+                id: 'rs-4',
+                title: 'Comparing Scenarios',
+                content: 'Use the comparison view to put two simulation results side-by-side. This is useful for evaluating trade-offs between different intervention strategies.',
+                targetSelector: '[data-tour="comparison-view"]',
+                position: 'right',
+            },
+            {
+                id: 'rs-5',
+                title: 'Saving & Exporting Results',
+                content: 'Save simulation results to your analysis history for later review. Export them as JSON for integration with other tools.',
+                targetSelector: '[data-tour="export-results"]',
+                position: 'bottom',
+            },
+        ],
+    },
+    {
+        id: 'developer-debugging',
+        name: 'Developer Debugging',
+        description: 'Inspect architecture, logs, and timelines',
+        duration: '~7 minutes',
+        icon: '🛠',
+        steps: [
+            {
+                id: 'dd-1',
+                title: 'Developer View Overview',
+                content: 'The Developer View exposes CARF internals: architecture layers, execution timelines, system logs, and evaluation metrics. Switch to Developer mode from the view selector.',
+                targetSelector: '[data-tour="view-selector"]',
+                action: 'Switch to Developer view',
+                position: 'bottom',
+            },
+            {
+                id: 'dd-2',
+                title: 'Architecture Layers',
+                content: 'The architecture panel shows the four-layer cognitive stack: Cynefin Router, Cognitive Mesh, Domain Solvers, and Guardian Policy Layer. Each layer shows its current status.',
+                targetSelector: '[data-tour="architecture-panel"]',
+                position: 'right',
+            },
+            {
+                id: 'dd-3',
+                title: 'Execution Timeline',
+                content: 'The timeline shows each processing step with its duration. Look for bottlenecks — steps that take disproportionately long may indicate performance issues.',
+                targetSelector: '[data-tour="execution-timeline"]',
+                position: 'bottom',
+            },
+            {
+                id: 'dd-4',
+                title: 'System Logs',
+                content: 'Real-time logs from all system components. Filter by severity (info, warning, error) and by layer to isolate issues quickly.',
+                targetSelector: '[data-tour="system-logs"]',
+                position: 'left',
+            },
+            {
+                id: 'dd-5',
+                title: 'Evaluation Metrics',
+                content: 'Review evaluation results from the benchmark suite: hypothesis pass rates, confidence calibration, refutation robustness, and overall system grade.',
+                targetSelector: '[data-tour="evaluation-metrics"]',
+                position: 'bottom',
+            },
+            {
+                id: 'dd-6',
+                title: 'Debugging Tips',
+                content: 'Common issues: (1) Low router confidence — check domain scores; (2) Failed refutations — inspect confounder list; (3) Guardian rejections — review policy thresholds in config.',
             },
         ],
     },

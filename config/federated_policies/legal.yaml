@@ -1,0 +1,34 @@
+domain:
+  id: legal
+  display_name: Legal
+  description: Legal domain governing contract lifecycle, regulatory disclosures, and intellectual property protection
+  owner_email: legal@enterprise.com
+  namespace: legal
+  tags: [contracts, regulatory, ip, compliance, disclosure]
+  color: "#8B5CF6"
+
+policies:
+  - name: contract_governance
+    namespace: legal.contract_governance
+    description: Contract governance policies covering review gates, regulatory disclosures, and IP protection requirements
+    priority: 1
+    is_active: true
+    version: "1.0"
+    rules:
+      - name: contract_review_gate
+        condition: { action.type: sign_contract }
+        constraint: { approval.legal_reviewed: true }
+        message: "Contracts must be reviewed by legal before signing"
+        severity: medium
+
+      - name: regulatory_disclosure
+        condition: { action.type: public_disclosure }
+        constraint: { approval.legal_approved: true }
+        message: "Public disclosures require explicit legal approval"
+        severity: medium
+
+      - name: ip_protection
+        condition: { data.type: proprietary }
+        constraint: { data.nda_signed: true }
+        message: "Access to proprietary data requires a signed NDA"
+        severity: medium

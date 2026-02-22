@@ -1,0 +1,347 @@
+{
+  "benchmark": "carf_governance",
+  "timestamp": "2026-02-22T07:38:37.216171+00:00",
+  "map": {
+    "pillar": "MAP",
+    "total_cases": 8,
+    "avg_domain_recall": 0.8571,
+    "cross_domain_link_accuracy": 1.0,
+    "avg_latency_ms": 0.04,
+    "individual_results": [
+      {
+        "name": "procurement_sustainability_link",
+        "expected_domains": [
+          "procurement",
+          "sustainability"
+        ],
+        "found_domains": [
+          "procurement",
+          "sustainability"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.1
+      },
+      {
+        "name": "finance_security_link",
+        "expected_domains": [
+          "finance",
+          "security"
+        ],
+        "found_domains": [
+          "finance",
+          "security"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.04
+      },
+      {
+        "name": "legal_procurement_link",
+        "expected_domains": [
+          "legal",
+          "procurement"
+        ],
+        "found_domains": [
+          "legal",
+          "procurement"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "sustainability_finance_link",
+        "expected_domains": [
+          "finance",
+          "sustainability"
+        ],
+        "found_domains": [
+          "finance",
+          "sustainability"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.04
+      },
+      {
+        "name": "security_legal_link",
+        "expected_domains": [
+          "legal",
+          "security"
+        ],
+        "found_domains": [
+          "legal",
+          "security"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "triple_domain_chain",
+        "expected_domains": [
+          "legal",
+          "procurement",
+          "sustainability"
+        ],
+        "found_domains": [
+          "finance",
+          "legal",
+          "procurement",
+          "sustainability"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 6,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.08
+      },
+      {
+        "name": "no_cross_domain",
+        "expected_domains": [],
+        "found_domains": [],
+        "domain_recall": 1.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "finance_only",
+        "expected_domains": [
+          "finance"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.02
+      }
+    ]
+  },
+  "price": {
+    "pillar": "PRICE",
+    "total_cases": 7,
+    "accuracy": 1.0,
+    "max_absolute_error": 0.0,
+    "breakdown_valid": true,
+    "breakdown_latency_ms": 0.05,
+    "aggregation_valid": true,
+    "individual_results": [
+      {
+        "name": "deepseek_1M_tokens",
+        "provider": "deepseek",
+        "expected_cost": 0.42,
+        "actual_cost": 0.42,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0041
+      },
+      {
+        "name": "openai_1M_tokens",
+        "provider": "openai",
+        "expected_cost": 9.0,
+        "actual_cost": 9.0,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0026
+      },
+      {
+        "name": "anthropic_1M_tokens",
+        "provider": "anthropic",
+        "expected_cost": 18.0,
+        "actual_cost": 18.0,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0013
+      },
+      {
+        "name": "ollama_free",
+        "provider": "ollama",
+        "expected_cost": 0.0,
+        "actual_cost": 0.0,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0008
+      },
+      {
+        "name": "zero_tokens",
+        "provider": "deepseek",
+        "expected_cost": 0.0,
+        "actual_cost": 0.0,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.001
+      },
+      {
+        "name": "deepseek_small_query",
+        "provider": "deepseek",
+        "expected_cost": 0.000126,
+        "actual_cost": 0.000126,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0011
+      },
+      {
+        "name": "unknown_provider_fallback",
+        "provider": "unknown_xyz",
+        "expected_cost": 0.14,
+        "actual_cost": 0.14,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.001
+      }
+    ]
+  },
+  "resolve": {
+    "pillar": "RESOLVE",
+    "total_cases": 3,
+    "conflict_detection_rate": 1.0,
+    "false_positive_rate": 0.0,
+    "overall_accuracy": 1.0,
+    "individual_results": [
+      {
+        "name": "spend_vs_budget_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.05
+      },
+      {
+        "name": "priority_cap_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.04
+      },
+      {
+        "name": "compatible_policies",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      }
+    ]
+  },
+  "audit": {
+    "pillar": "AUDIT",
+    "total_frameworks": 4,
+    "all_valid": true,
+    "avg_compliance_score": 0.755,
+    "framework_results": [
+      {
+        "framework": "eu_ai_act",
+        "overall_score": 0.83,
+        "article_count": 6,
+        "gap_count": 4,
+        "recommendation_count": 3,
+        "valid_score_range": true,
+        "has_min_articles": true,
+        "articles_well_formed": true,
+        "has_gaps": true,
+        "has_recommendations": true,
+        "latency_ms": 0.04
+      },
+      {
+        "framework": "csrd",
+        "overall_score": 0.66,
+        "article_count": 4,
+        "gap_count": 3,
+        "recommendation_count": 3,
+        "valid_score_range": true,
+        "has_min_articles": true,
+        "articles_well_formed": true,
+        "has_gaps": true,
+        "has_recommendations": true,
+        "latency_ms": 0.03
+      },
+      {
+        "framework": "gdpr",
+        "overall_score": 0.75,
+        "article_count": 3,
+        "gap_count": 3,
+        "recommendation_count": 1,
+        "valid_score_range": true,
+        "has_min_articles": true,
+        "articles_well_formed": true,
+        "has_gaps": true,
+        "has_recommendations": true,
+        "latency_ms": 0.02
+      },
+      {
+        "framework": "iso_27001",
+        "overall_score": 0.78,
+        "article_count": 3,
+        "gap_count": 2,
+        "recommendation_count": 2,
+        "valid_score_range": true,
+        "has_min_articles": true,
+        "articles_well_formed": true,
+        "has_gaps": true,
+        "has_recommendations": true,
+        "latency_ms": 0.02
+      }
+    ]
+  },
+  "latency": {
+    "iterations": 20,
+    "avg_ms": 0.32,
+    "p50_ms": 0.31,
+    "p95_ms": 0.36,
+    "p99_ms": 0.36,
+    "min_ms": 0.3,
+    "max_ms": 0.36,
+    "p95_under_50ms": true,
+    "all_latencies_ms": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.31,
+      0.31,
+      0.31,
+      0.31,
+      0.31,
+      0.31,
+      0.32,
+      0.33,
+      0.33,
+      0.33,
+      0.34,
+      0.35,
+      0.36,
+      0.36
+    ]
+  },
+  "feature_flag": {
+    "iterations": 100,
+    "disabled_avg_us": 0.57,
+    "enabled_avg_us": 0.56,
+    "overhead_us": -0.01,
+    "zero_overhead": true
+  },
+  "map_accuracy": 1.0,
+  "price_accuracy": 1.0,
+  "conflict_detection_rate": 1.0,
+  "conflict_false_positive_rate": 0.0,
+  "compliance_all_valid": true,
+  "governance_p95_ms": 0.36,
+  "governance_p95_under_50ms": true
+}

@@ -157,24 +157,29 @@ export function useQuery(options?: UseQueryOptions) {
             setError(null);
             setProgress(10);
 
+            let progressInterval: ReturnType<typeof setInterval> | null = null;
+            let resetTimeout: ReturnType<typeof setTimeout> | null = null;
             try {
                 // Simulate progress updates
-                const progressInterval = setInterval(() => {
+                progressInterval = setInterval(() => {
                     setProgress(prev => Math.min(prev + 10, 90));
                 }, 500);
 
                 const result = await api.submitQuery(request);
 
                 clearInterval(progressInterval);
+                progressInterval = null;
                 setProgress(100);
                 setResponse(result);
                 options?.onSuccess?.(result);
 
                 // Reset progress after animation
-                setTimeout(() => setProgress(0), 500);
+                resetTimeout = setTimeout(() => setProgress(0), 500);
 
                 return result;
             } catch (e) {
+                if (progressInterval) clearInterval(progressInterval);
+                if (resetTimeout) clearTimeout(resetTimeout);
                 const err = e instanceof Error ? e : new Error(String(e));
                 setError(err);
                 options?.onError?.(err);
@@ -238,7 +243,7 @@ export function useQueryStream(options?: UseQueryStreamOptions) {
                     setProgress(update.progress_percent);
                     setCurrentStep(update.step);
                     setStepMessage(update.message);
-                    setProgressHistory(prev => [...prev, update]);
+                    setProgressHistory(prev => [...prev.slice(-49), update]);
                     options?.onProgress?.(update);
                 },
                 // onComplete
@@ -420,22 +425,27 @@ export function useFileAnalysis() {
         setError(null);
         setUploadProgress(0);
 
+        let progressInterval: ReturnType<typeof setInterval> | null = null;
+        let resetTimeout: ReturnType<typeof setTimeout> | null = null;
         try {
             // Simulate upload progress
-            const progressInterval = setInterval(() => {
+            progressInterval = setInterval(() => {
                 setUploadProgress(prev => Math.min(prev + 20, 90));
             }, 200);
 
             const analysisResult = await api.analyzeFile(file);
 
             clearInterval(progressInterval);
+            progressInterval = null;
             setUploadProgress(100);
             setResult(analysisResult);
 
-            setTimeout(() => setUploadProgress(0), 500);
+            resetTimeout = setTimeout(() => setUploadProgress(0), 500);
 
             return analysisResult;
         } catch (e) {
+            if (progressInterval) clearInterval(progressInterval);
+            if (resetTimeout) clearTimeout(resetTimeout);
             const err = e instanceof Error ? e : new Error(String(e));
             setError(err);
             setUploadProgress(0);

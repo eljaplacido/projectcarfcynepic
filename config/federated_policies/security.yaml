@@ -1,0 +1,34 @@
+domain:
+  id: security
+  display_name: Security
+  description: Information security domain enforcing data classification, access controls, and encryption standards
+  owner_email: ciso@enterprise.com
+  namespace: security
+  tags: [infosec, data-protection, access-control, encryption]
+  color: "#EF4444"
+
+policies:
+  - name: data_protection
+    namespace: security.data_protection
+    description: Data protection policies covering classification, access control by clearance level, and encryption requirements
+    priority: 1
+    is_active: true
+    version: "1.0"
+    rules:
+      - name: data_classification_required
+        condition: { data.type: any }
+        constraint: { data.is_classified: true }
+        message: "All data must be classified before processing"
+        severity: medium
+
+      - name: access_control_check
+        condition: { data.sensitivity: high }
+        constraint: { user.clearance_level: { min: 2 } }
+        message: "Access to high-sensitivity data requires a minimum clearance level of 2"
+        severity: medium
+
+      - name: encryption_at_rest
+        condition: { action.type: store }
+        constraint: { data.is_encrypted: true }
+        message: "Data must be encrypted at rest before storage"
+        severity: medium

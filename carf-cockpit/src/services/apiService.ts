@@ -1123,4 +1123,266 @@ export async function getExecutiveSummary(
     );
 }
 
+// ============================================================================
+// Governance API (Phase 16 — Orchestration Governance)
+// ============================================================================
+
+import type {
+    GovernanceDomain,
+    ContextTriple,
+    FederatedPolicyInfo,
+    PolicyConflict,
+    CostBreakdown,
+    ComplianceScore,
+    GovernanceAuditEntry,
+    GovernanceHealth,
+    GovernanceBoard,
+    BoardTemplate,
+    PolicyExtractionResult,
+} from '../types/carf';
+
+export async function getGovernanceDomains(): Promise<GovernanceDomain[]> {
+    return withRetry(() => apiFetch('/governance/domains'));
+}
+
+export async function getTriples(sessionId?: string): Promise<ContextTriple[]> {
+    const params = sessionId ? `?session_id=${encodeURIComponent(sessionId)}` : '';
+    return withRetry(() => apiFetch(`/governance/triples${params}`));
+}
+
+export async function getImpactGraph(domainId: string): Promise<Record<string, unknown>> {
+    return withRetry(() => apiFetch(`/governance/triples/impact/${encodeURIComponent(domainId)}`));
+}
+
+export async function getFederatedPolicies(domainId?: string): Promise<FederatedPolicyInfo[]> {
+    const params = domainId ? `?domain_id=${encodeURIComponent(domainId)}` : '';
+    return withRetry(() => apiFetch(`/governance/policies${params}`));
+}
+
+export async function getConflicts(unresolvedOnly = true): Promise<PolicyConflict[]> {
+    return withRetry(() => apiFetch(`/governance/conflicts?unresolved_only=${unresolvedOnly}`));
+}
+
+export async function resolveConflict(
+    conflictId: string,
+    resolution: string,
+    resolvedBy = 'user'
+): Promise<PolicyConflict> {
+    return withRetry(() =>
+        apiFetch(`/governance/conflicts/${encodeURIComponent(conflictId)}/resolve`, {
+            method: 'POST',
+            body: JSON.stringify({ resolution, resolved_by: resolvedBy }),
+        })
+    );
+}
+
+export async function getCostBreakdown(sessionId: string): Promise<CostBreakdown> {
+    return withRetry(() => apiFetch(`/governance/cost/breakdown/${encodeURIComponent(sessionId)}`));
+}
+
+export async function getCostAggregate(): Promise<Record<string, unknown>> {
+    return withRetry(() => apiFetch('/governance/cost/aggregate'));
+}
+
+export async function getCostROI(): Promise<Record<string, unknown>> {
+    return withRetry(() => apiFetch('/governance/cost/roi'));
+}
+
+export async function getComplianceScore(framework: string): Promise<ComplianceScore> {
+    return withRetry(() => apiFetch(`/governance/compliance/${encodeURIComponent(framework)}`));
+}
+
+export async function getGovernanceAudit(
+    limit = 100,
+    domainId?: string,
+    eventType?: string
+): Promise<GovernanceAuditEntry[]> {
+    const params = new URLSearchParams({ limit: limit.toString() });
+    if (domainId) params.append('domain_id', domainId);
+    if (eventType) params.append('event_type', eventType);
+    return withRetry(() => apiFetch(`/governance/audit?${params.toString()}`));
+}
+
+export async function getGovernanceHealth(): Promise<GovernanceHealth> {
+    return withRetry(() => apiFetch('/governance/health'));
+}
+
+// ============================================================================
+// Governance Board API (Phase 17 — Board Configurator)
+// ============================================================================
+
+export async function getGovernanceBoards(): Promise<GovernanceBoard[]> {
+    return withRetry(() => apiFetch('/governance/boards'));
+}
+
+export async function createGovernanceBoard(board: {
+    name: string;
+    description?: string;
+    domain_ids?: string[];
+    policy_namespaces?: string[];
+    compliance_configs?: Array<{ framework: string; enabled?: boolean; target_score?: number }>;
+    members?: Array<{ name: string; email?: string; role?: string }>;
+    tags?: string[];
+    is_active?: boolean;
+}): Promise<GovernanceBoard> {
+    return withRetry(() =>
+        apiFetch('/governance/boards', {
+            method: 'POST',
+            body: JSON.stringify(board),
+        })
+    );
+}
+
+export async function getBoardTemplates(): Promise<BoardTemplate[]> {
+    return withRetry(() => apiFetch('/governance/boards/templates'));
+}
+
+export async function createBoardFromTemplate(
+    templateId: string,
+    name?: string
+): Promise<GovernanceBoard> {
+    return withRetry(() =>
+        apiFetch('/governance/boards/from-template', {
+            method: 'POST',
+            body: JSON.stringify({ template_id: templateId, name }),
+        })
+    );
+}
+
+export async function getGovernanceBoard(boardId: string): Promise<GovernanceBoard> {
+    return withRetry(() => apiFetch(`/governance/boards/${encodeURIComponent(boardId)}`));
+}
+
+export async function updateGovernanceBoard(
+    boardId: string,
+    updates: {
+        name?: string;
+        description?: string;
+        domain_ids?: string[];
+        policy_namespaces?: string[];
+        tags?: string[];
+        is_active?: boolean;
+    }
+): Promise<GovernanceBoard> {
+    return withRetry(() =>
+        apiFetch(`/governance/boards/${encodeURIComponent(boardId)}`, {
+            method: 'PUT',
+            body: JSON.stringify(updates),
+        })
+    );
+}
+
+export async function deleteGovernanceBoard(boardId: string): Promise<void> {
+    await withRetry(() =>
+        apiFetch(`/governance/boards/${encodeURIComponent(boardId)}`, {
+            method: 'DELETE',
+        }).catch(() => undefined) // 204 No Content
+    );
+}
+
+export async function getBoardCompliance(boardId: string): Promise<ComplianceScore[]> {
+    return withRetry(() =>
+        apiFetch(`/governance/boards/${encodeURIComponent(boardId)}/compliance`)
+    );
+}
+
+export async function exportGovernanceSpec(
+    boardId: string,
+    format: 'json_ld' | 'yaml' | 'csl'
+): Promise<Record<string, unknown>> {
+    return withRetry(() =>
+        apiFetch('/governance/export', {
+            method: 'POST',
+            body: JSON.stringify({ board_id: boardId, format }),
+        })
+    );
+}
+
+export async function extractPoliciesFromText(
+    text: string,
+    sourceName?: string,
+    targetDomain?: string
+): Promise<PolicyExtractionResult> {
+    return withRetry(() =>
+        apiFetch('/governance/policies/extract', {
+            method: 'POST',
+            body: JSON.stringify({
+                text,
+                source_name: sourceName || 'pasted_text',
+                target_domain: targetDomain,
+            }),
+        })
+    );
+}
+
+export async function createGovernanceDomain(domain: {
+    domain_id: string;
+    display_name: string;
+    description?: string;
+    owner_email?: string;
+    policy_namespace?: string;
+    tags?: string[];
+    color?: string;
+}): Promise<GovernanceDomain> {
+    return withRetry(() =>
+        apiFetch('/governance/domains', {
+            method: 'POST',
+            body: JSON.stringify(domain),
+        })
+    );
+}
+
+export async function createFederatedPolicy(policy: {
+    name: string;
+    domain_id: string;
+    namespace: string;
+    description?: string;
+    rules?: Array<Record<string, unknown>>;
+    priority?: number;
+    is_active?: boolean;
+    tags?: string[];
+}): Promise<FederatedPolicyInfo> {
+    return withRetry(() =>
+        apiFetch('/governance/policies', {
+            method: 'POST',
+            body: JSON.stringify(policy),
+        })
+    );
+}
+
+export async function updateFederatedPolicy(
+    namespace: string,
+    updates: {
+        description?: string;
+        priority?: number;
+        is_active?: boolean;
+        tags?: string[];
+    }
+): Promise<FederatedPolicyInfo> {
+    return withRetry(() =>
+        apiFetch(`/governance/policies/${namespace}`, {
+            method: 'PUT',
+            body: JSON.stringify(updates),
+        })
+    );
+}
+
+export async function deleteFederatedPolicy(namespace: string): Promise<void> {
+    await withRetry(() =>
+        apiFetch(`/governance/policies/${namespace}`, {
+            method: 'DELETE',
+        }).catch(() => undefined) // 204 No Content
+    );
+}
+
+export async function seedGovernanceDemoData(
+    templateId: string
+): Promise<{ status: string; board_id: string; board_name: string }> {
+    return withRetry(() =>
+        apiFetch(`/governance/seed/${encodeURIComponent(templateId)}`, {
+            method: 'POST',
+        })
+    );
+}
+
 export default api;

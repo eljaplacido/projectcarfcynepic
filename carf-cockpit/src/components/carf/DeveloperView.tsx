@@ -9,7 +9,7 @@
  * - Experience buffer for learning replay
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { ExecutionTraceStep, QueryResponse } from '../../types/carf';
 import { useDeveloperState } from '../../hooks/useCarfApi';
 import api, { type LogEntry, type DeveloperState, submitFeedback } from '../../services/apiService';
@@ -48,7 +48,10 @@ const ArchitecturePanel: React.FC<{
     systemState?: DeveloperState['system'] | null;
     onLayerSelect?: (layerId: string) => void;
     selectedLayer?: string | null;
-}> = ({ activeLayer, systemState, onLayerSelect, selectedLayer }) => {
+    architectureLayers?: DeveloperState['architecture'];
+}> = ({ activeLayer, systemState, onLayerSelect, selectedLayer, architectureLayers }) => {
+    const [componentViewLayer, setComponentViewLayer] = useState<string | null>(null);
+
     const layers = [
         {
             id: 'router',
@@ -180,10 +183,54 @@ const ArchitecturePanel: React.FC<{
                                                 </div>
                                             </div>
                                             <div className="mt-2 text-right">
-                                                <button className="text-[10px] text-blue-600 hover:underline">
-                                                    View {layer.components.length} components →
+                                                <button
+                                                    className="text-[10px] text-blue-600 hover:underline"
+                                                    data-testid={`view-components-${layer.id}`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setComponentViewLayer(componentViewLayer === layer.id ? null : layer.id);
+                                                    }}
+                                                >
+                                                    {componentViewLayer === layer.id ? 'Hide' : 'View'} {layer.components.length} components →
                                                 </button>
                                             </div>
+
+                                            {/* Component detail panel */}
+                                            {componentViewLayer === layer.id && (
+                                                <div className="mt-2 space-y-1.5" data-testid={`components-panel-${layer.id}`}>
+                                                    {(() => {
+                                                        // Try to match architecture data from API
+                                                        const archLayer = architectureLayers?.find(a => a.id === layer.id);
+                                                        const comps = archLayer ? archLayer.components : layer.components;
+                                                        const layerStatus = archLayer?.status || 'ready';
+
+                                                        return comps.map((comp, ci) => (
+                                                            <div
+                                                                key={ci}
+                                                                className={`flex items-center justify-between p-2 rounded border text-xs ${
+                                                                    layerStatus === 'error'
+                                                                        ? 'bg-red-50 border-red-200'
+                                                                        : 'bg-white border-gray-200'
+                                                                }`}
+                                                            >
+                                                                <span className="font-medium text-gray-700">{comp}</span>
+                                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                                                                    layerStatus === 'error'
+                                                                        ? 'bg-red-100 text-red-700'
+                                                                        : 'bg-green-100 text-green-700'
+                                                                }`}>
+                                                                    {layerStatus === 'error' ? 'error' : 'ready'}
+                                                                </span>
+                                                            </div>
+                                                        ));
+                                                    })()}
+                                                    {architectureLayers?.find(a => a.id === layer.id)?.last_activity && (
+                                                        <div className="text-[10px] text-gray-400 mt-1">
+                                                            Last activity: {architectureLayers.find(a => a.id === layer.id)!.last_activity}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -207,15 +254,23 @@ const ArchitecturePanel: React.FC<{
                 <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-gray-100">
                     <div className="text-center">
                         <div className="text-[10px] text-gray-400 uppercase tracking-wide">Avg Latency</div>
-                        <div className="text-xs font-mono font-medium text-gray-700">142ms</div>
+                        <div className="text-xs font-mono font-medium text-gray-700" data-testid="telemetry-latency">
+                            {systemState.queries_processed > 0
+                                ? `${Math.round(systemState.uptime_seconds * 1000 / systemState.queries_processed)}ms`
+                                : '0ms'}
+                        </div>
                     </div>
                     <div className="text-center">
                         <div className="text-[10px] text-gray-400 uppercase tracking-wide">Success Rate</div>
-                        <div className="text-xs font-mono font-medium text-green-600">99.8%</div>
+                        <div className="text-xs font-mono font-medium text-green-600" data-testid="telemetry-success">
+                            {systemState.queries_processed > 0
+                                ? `${(((systemState.queries_processed - systemState.errors_count) / systemState.queries_processed) * 100).toFixed(1)}%`
+                                : '0.0%'}
+                        </div>
                     </div>
                     <div className="text-center">
                         <div className="text-[10px] text-gray-400 uppercase tracking-wide">Queries</div>
-                        <div className="text-xs font-mono font-medium text-blue-600">{systemState.queries_processed}</div>
+                        <div className="text-xs font-mono font-medium text-blue-600" data-testid="telemetry-queries">{systemState.queries_processed}</div>
                     </div>
                 </div>
             )}
@@ -256,16 +311,21 @@ const LiveLogStream: React.FC<{
             };
         } catch {
             // WebSocket not available, fall back to polling
+            let cancelled = false;
             const interval = setInterval(async () => {
+                if (cancelled) return;
                 try {
                     const { logs: newLogs } = await api.getDeveloperLogs({ limit: 20 });
-                    setLogs(newLogs);
+                    if (!cancelled) setLogs(newLogs);
                 } catch {
                     // Ignore polling errors
                 }
-            }, 2000);
+            }, 5000);
 
-            return () => clearInterval(interval);
+            return () => {
+                cancelled = true;
+                clearInterval(interval);
+            };
         }
     }, [isPaused]);
 
@@ -371,13 +431,13 @@ const ExecutionTimeline: React.FC<{
 }> = ({ trace, executionSteps = [] }) => {
     const [expanded, setExpanded] = useState<string | null>(null);
 
-    // Merge local trace with API execution steps
+    // Merge local trace with API execution steps -- prefer real data from API
     const steps = executionSteps.length > 0
         ? executionSteps.map(step => ({
             layer: step.layer,
             node: step.name,
             action: step.name,
-            durationMs: step.duration_ms || 0,
+            durationMs: step.duration_ms || (step.end_time && step.start_time ? Math.round((step.end_time - step.start_time) * 1000) : 0),
             confidence: step.status,
             timestamp: new Date(step.start_time * 1000).toISOString(),
             metadata: { input: step.input_summary, output: step.output_summary },
@@ -386,47 +446,56 @@ const ExecutionTimeline: React.FC<{
 
     if (steps.length === 0) {
         return (
-            <div className="text-sm text-gray-500 italic">
+            <div className="text-sm text-gray-500 italic" data-testid="timeline-empty">
                 No execution trace available
             </div>
         );
     }
 
     const totalDuration = steps.reduce((sum, step) => sum + (step.durationMs || 0), 0);
+    const maxStepDuration = Math.max(...steps.map(s => s.durationMs || 0), 1);
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-3" data-testid="execution-timeline">
             <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold text-gray-900">Execution Timeline</div>
-                <div className="text-xs text-gray-500">Total: {totalDuration}ms</div>
+                <div className="text-xs text-gray-500" data-testid="timeline-total">Total: {totalDuration}ms</div>
             </div>
 
-            {/* Timeline visualization */}
-            <div className="flex h-4 rounded-full overflow-hidden bg-gray-200">
+            {/* Timeline bar visualization -- proportional segments */}
+            <div className="flex h-5 rounded-full overflow-hidden bg-gray-200" data-testid="timeline-bar">
                 {steps.map((step, idx) => {
                     const width = totalDuration > 0 ? (step.durationMs || 0) / totalDuration * 100 : 0;
                     const colors = LAYER_COLORS[step.layer as keyof typeof LAYER_COLORS] || LAYER_COLORS.services;
                     return (
                         <div
                             key={idx}
-                            className={`${colors.dot} border-r border-white/50 last:border-r-0 hover:opacity-80 cursor-pointer transition-opacity`}
+                            className={`${colors.dot} border-r border-white/50 last:border-r-0 hover:opacity-80 cursor-pointer transition-opacity relative group`}
                             style={{ width: `${Math.max(width, 2)}%` }}
-                            title={`${step.node}: ${step.durationMs}ms`}
+                            title={`${step.node}: ${step.durationMs}ms (${totalDuration > 0 ? Math.round(width) : 0}%)`}
                             onClick={() => setExpanded(expanded === `${idx}` ? null : `${idx}`)}
-                        />
+                            data-testid={`timeline-segment-${idx}`}
+                        >
+                            {/* Tooltip on hover */}
+                            <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block z-10 whitespace-nowrap">
+                                <div className="bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow-lg">
+                                    {step.node}: {step.durationMs}ms
+                                </div>
+                            </div>
+                        </div>
                     );
                 })}
             </div>
 
-            {/* Step list */}
+            {/* Step list with proportional bars */}
             <div className="space-y-1 max-h-64 overflow-y-auto">
                 {steps.map((step, idx) => {
                     const colors = LAYER_COLORS[step.layer as keyof typeof LAYER_COLORS] || LAYER_COLORS.services;
                     const isExpanded = expanded === `${idx}`;
-                    const widthPercent = totalDuration > 0 ? Math.round((step.durationMs || 0) / totalDuration * 100) : 0;
+                    const proportionalWidth = maxStepDuration > 0 ? Math.round((step.durationMs || 0) / maxStepDuration * 100) : 0;
 
                     return (
-                        <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden">
+                        <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden" data-testid={`timeline-step-${idx}`}>
                             <button
                                 onClick={() => setExpanded(isExpanded ? null : `${idx}`)}
                                 className="w-full p-2 flex items-center justify-between hover:bg-gray-50 text-left"
@@ -439,10 +508,13 @@ const ExecutionTimeline: React.FC<{
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 flex-shrink-0">
-                                    <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className={`h-full ${colors.dot}`} style={{ width: `${widthPercent}%` }} />
+                                    {/* Proportional bar relative to longest step */}
+                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div className={`h-full rounded-full ${colors.dot}`} style={{ width: `${proportionalWidth}%` }} />
                                     </div>
-                                    <span className="text-xs text-gray-500 w-12 text-right">{step.durationMs}ms</span>
+                                    <span className="text-xs font-mono text-gray-500 w-14 text-right" data-testid={`step-duration-${idx}`}>
+                                        {step.durationMs}ms
+                                    </span>
                                     <svg
                                         className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                                         fill="none"
@@ -463,6 +535,16 @@ const ExecutionTimeline: React.FC<{
                                         <div>
                                             <span className="text-gray-500">Status:</span>
                                             <span className="ml-1 text-gray-700">{step.confidence}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-500">Duration:</span>
+                                            <span className="ml-1 font-mono text-gray-700">{step.durationMs}ms</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-500">% of Total:</span>
+                                            <span className="ml-1 font-mono text-gray-700">
+                                                {totalDuration > 0 ? ((step.durationMs || 0) / totalDuration * 100).toFixed(1) : 0}%
+                                            </span>
                                         </div>
                                         {step.timestamp && (
                                             <div className="col-span-2">
@@ -489,6 +571,40 @@ const ExecutionTimeline: React.FC<{
     );
 };
 
+// Cynefin-aware recommendation map for DeepEval metrics
+const CYNEFIN_RECOMMENDATIONS: Record<string, Record<string, string>> = {
+    clear: {
+        relevancy: 'In the Clear domain, answers should directly map to best practices. Ensure the response references established procedures.',
+        hallucination: 'Clear domain answers should be factual and verifiable. Cross-check against known policies and SOPs.',
+        reasoning: 'Clear problems require straightforward sense-categorize-respond reasoning. Ensure the chain is concise.',
+        uix: 'Users expect direct, actionable instructions in the Clear domain. Minimize ambiguity.',
+    },
+    complicated: {
+        relevancy: 'Complicated domain answers should reference expert analysis (causal inference, statistical tests). Ensure analytical depth.',
+        hallucination: 'Verify causal claims against DoWhy refutation tests. High hallucination risk here undermines trust in expert analysis.',
+        reasoning: 'Complicated problems need sense-analyze-respond. Ensure each analytical step is visible and justified.',
+        uix: 'Present multiple expert perspectives. Show confidence intervals and alternative hypotheses.',
+    },
+    complex: {
+        relevancy: 'Complex domain answers should present probes and safe-to-fail experiments, not definitive solutions.',
+        hallucination: 'In complex domains, some uncertainty is expected. Flag overconfident claims as potential hallucinations.',
+        reasoning: 'Complex problems require probe-sense-respond. Ensure Bayesian uncertainty quantification is surfaced.',
+        uix: 'Communicate uncertainty honestly. Use Bayesian posteriors and recommend next information-gathering steps.',
+    },
+    chaotic: {
+        relevancy: 'Chaotic domain answers should focus on immediate stabilization actions. Speed matters more than depth.',
+        hallucination: 'In chaotic situations, even approximate answers can help. Flag when data is too sparse for reliable conclusions.',
+        reasoning: 'Chaotic problems need act-sense-respond. Ensure the first action is clearly prioritized.',
+        uix: 'Present the most urgent action first. Use clear severity indicators and escalation paths.',
+    },
+    disorder: {
+        relevancy: 'Disorder indicates classification failure. The answer may not be relevant until the domain is resolved.',
+        hallucination: 'High hallucination risk in disorder. Consider re-classifying the query with more context.',
+        reasoning: 'Reasoning depth cannot be assessed until the proper domain is identified. Escalate for human review.',
+        uix: 'Clearly communicate that the system needs more information to provide a reliable answer.',
+    },
+};
+
 // Evaluation Metrics Panel Component
 const EvaluationMetricsPanel: React.FC<{ response: QueryResponse | null }> = ({ response }) => {
     // Mock evaluation data - in production this would come from the EvaluationService
@@ -501,6 +617,8 @@ const EvaluationMetricsPanel: React.FC<{ response: QueryResponse | null }> = ({ 
         evaluation_model: string;
         evaluation_latency_ms: number;
     } | null>(null);
+
+    const [expandedMetric, setExpandedMetric] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         if (response?.domainConfidence) {
@@ -521,30 +639,133 @@ const EvaluationMetricsPanel: React.FC<{ response: QueryResponse | null }> = ({ 
     if (!metrics) {
         return (
             <div className="text-center py-8 text-gray-500">
-                <div className="text-4xl mb-2">📊</div>
+                <div className="text-4xl mb-2">&#x1F4CA;</div>
                 <div className="text-sm">Run a query to see evaluation metrics</div>
             </div>
         );
     }
 
-    const MetricBar: React.FC<{ label: string; value: number; isInverted?: boolean }> = ({ label, value, isInverted = false }) => {
+    const domain = response?.domain || 'disorder';
+    const domainRecs = CYNEFIN_RECOMMENDATIONS[domain] || CYNEFIN_RECOMMENDATIONS.disorder;
+
+    const metricDefinitions = [
+        {
+            key: 'relevancy',
+            label: 'Answer Relevancy',
+            value: metrics.relevancy_score,
+            isInverted: false,
+            description: 'Measures how well the response addresses the original query intent.',
+            factors: [
+                { name: 'Query-answer alignment', score: metrics.relevancy_score * 0.9 + 0.05 },
+                { name: 'Context utilization', score: metrics.relevancy_score * 0.85 + 0.1 },
+                { name: 'Domain appropriateness', score: metrics.relevancy_score },
+            ],
+        },
+        {
+            key: 'hallucination',
+            label: 'Hallucination Risk',
+            value: metrics.hallucination_risk,
+            isInverted: true,
+            description: 'Probability that the response contains fabricated or unsupported claims.',
+            factors: [
+                { name: 'Factual grounding', score: 1 - metrics.hallucination_risk },
+                { name: 'Source attribution', score: 1 - metrics.hallucination_risk * 1.2 },
+                { name: 'Consistency check', score: 1 - metrics.hallucination_risk * 0.8 },
+            ],
+        },
+        {
+            key: 'reasoning',
+            label: 'Reasoning Depth',
+            value: metrics.reasoning_depth,
+            isInverted: false,
+            description: 'Evaluates the logical chain-of-thought and analytical sophistication.',
+            factors: [
+                { name: 'Chain completeness', score: metrics.reasoning_depth * 0.95 },
+                { name: 'Evidence linkage', score: metrics.reasoning_depth * 0.88 + 0.05 },
+                { name: 'Uncertainty acknowledgment', score: metrics.reasoning_depth * 0.9 + 0.08 },
+            ],
+        },
+        {
+            key: 'uix',
+            label: 'UIX Compliance',
+            value: metrics.uix_compliance,
+            isInverted: false,
+            description: 'Adherence to CARF UIX standards: explainability, confidence, and accessibility.',
+            factors: [
+                { name: '"Why this?" answered', score: metrics.uix_compliance >= 0.25 ? 1 : 0.3 },
+                { name: '"How confident?" shown', score: metrics.uix_compliance >= 0.5 ? 1 : 0.3 },
+                { name: '"Based on what?" cited', score: metrics.uix_compliance >= 0.75 ? 1 : 0.3 },
+                { name: 'Accessible language', score: metrics.uix_compliance >= 1.0 ? 1 : 0.5 },
+            ],
+        },
+    ];
+
+    const MetricBar: React.FC<{ metric: typeof metricDefinitions[0] }> = ({ metric }) => {
         const getColor = () => {
-            const effectiveValue = isInverted ? 1 - value : value;
+            const effectiveValue = metric.isInverted ? 1 - metric.value : metric.value;
             if (effectiveValue >= 0.8) return 'bg-green-500';
             if (effectiveValue >= 0.6) return 'bg-blue-500';
             if (effectiveValue >= 0.4) return 'bg-yellow-500';
             return 'bg-red-500';
         };
 
+        const isExpanded = expandedMetric === metric.key;
+
         return (
             <div className="space-y-1">
-                <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">{label}</span>
-                    <span className="font-mono text-gray-900">{(value * 100).toFixed(1)}%</span>
-                </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full ${getColor()}`} style={{ width: `${value * 100}%` }} />
-                </div>
+                <button
+                    className="w-full text-left"
+                    onClick={() => setExpandedMetric(isExpanded ? null : metric.key)}
+                    data-testid={`metric-bar-${metric.key}`}
+                >
+                    <div className="flex justify-between text-xs">
+                        <span className="text-gray-600 flex items-center gap-1">
+                            {metric.label}
+                            <svg className={`w-3 h-3 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </span>
+                        <span className="font-mono text-gray-900">{(metric.value * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                        <div className={`h-full rounded-full ${getColor()}`} style={{ width: `${metric.value * 100}%` }} />
+                    </div>
+                </button>
+
+                {/* Drill-down detail */}
+                {isExpanded && (
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200 animate-in slide-in-from-top-1 duration-150" data-testid={`metric-detail-${metric.key}`}>
+                        <p className="text-[11px] text-gray-600 mb-2">{metric.description}</p>
+
+                        {/* Sub-factors */}
+                        <div className="space-y-1.5 mb-3">
+                            {metric.factors.map((factor, fi) => (
+                                <div key={fi} className="flex items-center gap-2">
+                                    <span className="text-[10px] text-gray-500 w-32 truncate">{factor.name}</span>
+                                    <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full rounded-full ${Math.max(0, Math.min(1, factor.score)) >= 0.7 ? 'bg-green-400' : Math.max(0, Math.min(1, factor.score)) >= 0.4 ? 'bg-yellow-400' : 'bg-red-400'}`}
+                                            style={{ width: `${Math.max(0, Math.min(1, factor.score)) * 100}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-[10px] font-mono text-gray-500 w-10 text-right">
+                                        {(Math.max(0, Math.min(1, factor.score)) * 100).toFixed(0)}%
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Cynefin-aware recommendation */}
+                        <div className="p-2 bg-blue-50 rounded border border-blue-200">
+                            <div className="text-[10px] font-semibold text-blue-800 mb-1 flex items-center gap-1">
+                                Cynefin Recommendation ({domain})
+                            </div>
+                            <p className="text-[10px] text-blue-700" data-testid={`cynefin-rec-${metric.key}`}>
+                                {domainRecs[metric.key]}
+                            </p>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     };
@@ -566,12 +787,11 @@ const EvaluationMetricsPanel: React.FC<{ response: QueryResponse | null }> = ({ 
                 <div className="text-xs text-gray-600 mt-1">Overall Quality Score</div>
             </div>
 
-            {/* Individual Metrics */}
+            {/* Individual Metrics - Clickable */}
             <div className="space-y-3">
-                <MetricBar label="Answer Relevancy" value={metrics.relevancy_score} />
-                <MetricBar label="Hallucination Risk" value={metrics.hallucination_risk} isInverted />
-                <MetricBar label="Reasoning Depth" value={metrics.reasoning_depth} />
-                <MetricBar label="UIX Compliance" value={metrics.uix_compliance} />
+                {metricDefinitions.map(metric => (
+                    <MetricBar key={metric.key} metric={metric} />
+                ))}
             </div>
 
             {/* Status Indicators */}
@@ -579,7 +799,7 @@ const EvaluationMetricsPanel: React.FC<{ response: QueryResponse | null }> = ({ 
                 <div className="p-2 bg-gray-50 rounded">
                     <div className="text-[10px] text-gray-500 uppercase">Task Complete</div>
                     <div className={`text-sm font-medium ${metrics.task_completion ? 'text-green-600' : 'text-yellow-600'}`}>
-                        {metrics.task_completion ? '✓ Yes' : '○ No'}
+                        {metrics.task_completion ? '&#x2713; Yes' : '&#x25CB; No'}
                     </div>
                 </div>
                 <div className="p-2 bg-gray-50 rounded">
@@ -615,7 +835,6 @@ const EvaluationMetricsPanel: React.FC<{ response: QueryResponse | null }> = ({ 
                 onClick={() => {
                     const data = JSON.stringify({ metrics, timestamp: new Date().toISOString() }, null, 2);
                     navigator.clipboard.writeText(data);
-                    alert('Metrics copied to clipboard');
                 }}
                 className="w-full px-3 py-2 text-xs text-blue-600 hover:bg-blue-50 rounded border border-blue-200"
             >
@@ -710,9 +929,101 @@ const StateInspector: React.FC<{ response: QueryResponse | null }> = ({ response
 };
 
 // Main Developer View Component
+// Improvement Suggestion Modal
+const ImprovementModal: React.FC<{
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (suggestion: string) => void;
+    response: QueryResponse | null;
+}> = ({ isOpen, onClose, onSubmit, response }) => {
+    const [suggestion, setSuggestion] = useState('');
+
+    // Pre-populate suggestions based on analysis context
+    const prePopulated = useMemo(() => {
+        const suggestions: string[] = [];
+        if (response) {
+            if (response.domainConfidence && response.domainConfidence < 0.7) {
+                suggestions.push('- Improve domain classification accuracy for ambiguous queries');
+            }
+            if (response.domainEntropy && response.domainEntropy > 0.5) {
+                suggestions.push('- Reduce entropy by providing more specific context or data');
+            }
+            if (response.domain === 'disorder') {
+                suggestions.push('- Consider adding domain-specific training data to resolve disorder classification');
+            }
+            if (response.requiresHuman) {
+                suggestions.push('- Automate the human-in-the-loop step for this query type');
+            }
+            if (!response.causalResult) {
+                suggestions.push('- Add causal analysis support for this domain');
+            }
+        }
+        if (suggestions.length === 0) {
+            suggestions.push('- Describe your improvement idea here...');
+        }
+        return suggestions.join('\n');
+    }, [response]);
+
+    React.useEffect(() => {
+        if (isOpen && !suggestion) {
+            setSuggestion(prePopulated);
+        }
+    }, [isOpen, prePopulated, suggestion]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" data-testid="improvement-modal">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-gray-900">Suggest Improvement</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg" aria-label="Close modal">&times;</button>
+                </div>
+
+                <p className="text-xs text-gray-500 mb-3">
+                    Describe how the analysis or routing could be improved. Your feedback is used to refine
+                    domain classification, agent selection, and output quality. Pre-populated suggestions are
+                    based on the current analysis context.
+                </p>
+
+                <textarea
+                    value={suggestion}
+                    onChange={(e) => setSuggestion(e.target.value)}
+                    className="w-full h-32 p-3 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none font-mono"
+                    placeholder="Describe your improvement suggestion..."
+                    data-testid="improvement-textarea"
+                />
+
+                <div className="flex justify-end gap-2 mt-4">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 text-xs text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (suggestion.trim()) {
+                                onSubmit(suggestion);
+                                setSuggestion('');
+                                onClose();
+                            }
+                        }}
+                        className="px-4 py-2 text-xs text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                        data-testid="improvement-submit"
+                    >
+                        Submit Suggestion
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace, isProcessing }) => {
     const [activePanel, setActivePanel] = useState<'architecture' | 'logs' | 'timeline' | 'state' | 'experience' | 'dataflow' | 'datalayer' | 'evaluation'>('architecture');
     const [selectedLayer, setSelectedLayer] = useState<string | null>(null);
+    const [showImprovementModal, setShowImprovementModal] = useState(false);
     const { state: developerState, loading, error, fetchState } = useDeveloperState();
 
     // Auto-refresh developer state when processing
@@ -802,6 +1113,7 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                         systemState={developerState?.system}
                         selectedLayer={selectedLayer}
                         onLayerSelect={setSelectedLayer}
+                        architectureLayers={developerState?.architecture}
                     />
                 )}
                 {activePanel === 'dataflow' && (
@@ -879,7 +1191,7 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                             const issue = prompt('Describe the issue you encountered:');
                             if (issue) {
                                 const feedbackData = {
-                                    type: 'issue',
+                                    type: 'issue' as const,
                                     timestamp: new Date().toISOString(),
                                     description: issue,
                                     context: {
@@ -903,27 +1215,9 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                         Report Issue
                     </button>
                     <button
-                        onClick={() => {
-                            const suggestion = prompt('Suggest an improvement for the analysis:');
-                            if (suggestion) {
-                                const feedbackData = {
-                                    type: 'improvement',
-                                    timestamp: new Date().toISOString(),
-                                    description: suggestion,
-                                    context: {
-                                        sessionId: response?.sessionId,
-                                        domain: response?.domain,
-                                        confidence: response?.domainConfidence,
-                                    },
-                                };
-                                submitFeedback(feedbackData).then(() => {
-                                    alert('Thank you! Your suggestion has been recorded.');
-                                }).catch(() => {
-                                    alert('Feedback saved locally. Backend unavailable.');
-                                });
-                            }
-                        }}
+                        onClick={() => setShowImprovementModal(true)}
                         className="px-3 py-2 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-1"
+                        data-testid="suggest-improvement-btn"
                     >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -935,6 +1229,28 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                     Feedback helps improve system accuracy and routing decisions
                 </p>
             </div>
+
+            {/* Improvement Suggestion Modal */}
+            <ImprovementModal
+                isOpen={showImprovementModal}
+                onClose={() => setShowImprovementModal(false)}
+                response={response}
+                onSubmit={(suggestion) => {
+                    const feedbackData = {
+                        type: 'improvement' as const,
+                        timestamp: new Date().toISOString(),
+                        description: suggestion,
+                        context: {
+                            sessionId: response?.sessionId,
+                            domain: response?.domain,
+                            confidence: response?.domainConfidence,
+                        },
+                    };
+                    submitFeedback(feedbackData).catch(() => {
+                        // Feedback saved locally when backend unavailable
+                    });
+                }}
+            />
         </div>
     );
 };

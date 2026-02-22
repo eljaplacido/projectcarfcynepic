@@ -200,8 +200,8 @@ export interface ExecutionTraceStep extends ReasoningStep {
     metadata?: Record<string, unknown>;
 }
 
-// Phase 7: View Modes
-export type ViewMode = 'analyst' | 'developer' | 'executive';
+// Phase 7: View Modes (+ Phase 16: Governance)
+export type ViewMode = 'analyst' | 'developer' | 'executive' | 'governance';
 
 // Phase 7: Cynefin Explanation
 export interface CynefinExplanation {
@@ -225,6 +225,180 @@ export interface ChatMessage {
     linkedPanel?: string;
     isSlashCommand?: boolean;
     commandType?: SlashCommand;
+}
+
+// Phase 16: Governance Types
+export interface ContextTriple {
+    triple_id: string;
+    subject: string;
+    predicate: string;
+    object: string;
+    domain_source: string;
+    domain_target: string;
+    confidence: number;
+    evidence_type: string;
+    session_id?: string;
+    created_at?: string;
+}
+
+export interface GovernanceDomain {
+    domain_id: string;
+    display_name: string;
+    description: string;
+    owner_email: string;
+    policy_namespace: string;
+    tags: string[];
+    color: string;
+}
+
+export interface FederatedPolicyRule {
+    rule_id: string;
+    name: string;
+    condition: Record<string, unknown>;
+    constraint: Record<string, unknown>;
+    message: string;
+    severity: string;
+}
+
+export interface FederatedPolicyInfo {
+    policy_id: string;
+    name: string;
+    domain_id: string;
+    namespace: string;
+    description: string;
+    rules: FederatedPolicyRule[];
+    priority: number;
+    is_active: boolean;
+    version: string;
+    tags: string[];
+}
+
+export interface PolicyConflict {
+    conflict_id: string;
+    policy_a_id: string;
+    policy_a_name: string;
+    policy_a_domain: string;
+    policy_b_id: string;
+    policy_b_name: string;
+    policy_b_domain: string;
+    conflict_type: string;
+    severity: string;
+    description: string;
+    resolution?: string | null;
+    resolved_at?: string | null;
+}
+
+export interface CostBreakdownItem {
+    category: string;
+    label: string;
+    amount: number;
+    unit: string;
+    details: Record<string, unknown>;
+}
+
+export interface CostBreakdown {
+    session_id?: string;
+    llm_token_cost: number;
+    llm_tokens_used: number;
+    llm_input_tokens: number;
+    llm_output_tokens: number;
+    llm_provider: string;
+    compute_time_ms: number;
+    risk_exposure_score: number;
+    opportunity_cost: number;
+    total_cost: number;
+    breakdown_items: CostBreakdownItem[];
+}
+
+export interface ComplianceArticle {
+    article_id: string;
+    title: string;
+    score: number;
+    status: string;
+    evidence: string[];
+    gaps: string[];
+}
+
+export interface ComplianceScore {
+    framework: string;
+    overall_score: number;
+    articles: ComplianceArticle[];
+    gaps: string[];
+    recommendations: string[];
+}
+
+export interface GovernanceAuditEntry {
+    entry_id: string;
+    event_type: string;
+    actor: string;
+    affected_domains: string[];
+    details: Record<string, unknown>;
+    session_id?: string;
+    timestamp: string;
+}
+
+export interface GovernanceHealth {
+    enabled: boolean;
+    neo4j_available: boolean;
+    domains_count: number;
+    policies_count: number;
+    active_conflicts: number;
+    triples_count: number;
+    status: string;
+}
+
+// Phase 17: Governance Board Types
+export interface BoardMember {
+    user_id: string;
+    name: string;
+    email: string;
+    role: 'owner' | 'approver' | 'member' | 'observer';
+}
+
+export interface ComplianceFrameworkConfig {
+    framework: string;
+    enabled: boolean;
+    target_score: number;
+    custom_articles: ComplianceArticle[];
+    custom_weights: Record<string, number>;
+}
+
+export interface GovernanceBoard {
+    board_id: string;
+    name: string;
+    description: string;
+    template_id?: string | null;
+    domain_ids: string[];
+    policy_namespaces: string[];
+    compliance_configs: ComplianceFrameworkConfig[];
+    members: BoardMember[];
+    tags: string[];
+    is_active: boolean;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface BoardTemplate {
+    template_id: string;
+    name: string;
+    description: string;
+    domain_ids: string[];
+    frameworks: string[];
+    tags: string[];
+}
+
+export interface PolicyExtractionResult {
+    source_name: string;
+    target_domain?: string | null;
+    rules_extracted: number;
+    rules: Array<{
+        name: string;
+        condition: Record<string, unknown>;
+        constraint: Record<string, unknown>;
+        message: string;
+        severity: string;
+    }>;
+    error?: string | null;
 }
 
 // Phase 7: Socratic Mode State

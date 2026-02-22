@@ -1,0 +1,13 @@
+{
+    "query": "Assess our CSRD double materiality impact: how does our procurement spending pattern affect Scope 3 emissions, and what is the financial materiality of climate transition risks on our supply chain costs?",
+    "context": {
+        "scenario_type": "csrd_esg",
+        "domains_involved": ["sustainability", "procurement", "finance"],
+        "data_type": "esg_report",
+        "materiality_assessed": true,
+        "scope3_traced": true,
+        "taxonomy_aligned": false,
+        "carbon_budget_exceeded": false,
+        "financial_exposure": 2500000
+    }
+}

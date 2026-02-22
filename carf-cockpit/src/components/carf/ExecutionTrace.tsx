@@ -63,16 +63,25 @@ const ExecutionTrace: React.FC<ExecutionTraceProps> = ({ steps, sessionId }) => 
                             <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
                                 <div className="flex items-center justify-between mb-1">
                                     <span className="text-sm font-semibold text-gray-900">{step.node}</span>
-                                    {step.durationMs > 0 && (
-                                        <span className="text-xs text-gray-500">{step.durationMs}ms</span>
-                                    )}
+                                    <span className="text-xs text-gray-500">
+                                        {step.durationMs > 0 ? `${step.durationMs}ms` : '< 1ms'}
+                                    </span>
                                 </div>
                                 <div className="text-sm text-gray-700">{step.action}</div>
                                 <div className="flex items-center gap-2 mt-2">
-                                    <span className={`badge text-xs ${step.confidence === 'high' ? 'bg-confidence-high text-white' :
-                                        step.confidence === 'medium' ? 'bg-confidence-medium text-white' :
-                                            'bg-confidence-low text-white'
-                                        }`}>
+                                    <span
+                                        className={`badge text-xs ${step.confidence === 'high' ? 'bg-confidence-high text-white' :
+                                            step.confidence === 'medium' ? 'bg-confidence-medium text-white' :
+                                                'bg-confidence-low text-white'
+                                            }`}
+                                        title={
+                                            step.confidence === 'high'
+                                                ? 'High confidence: Strong evidence supports this step. The result is well-validated and reliable.'
+                                                : step.confidence === 'medium'
+                                                    ? 'Medium confidence: Moderate evidence. The result is reasonable but may benefit from additional validation.'
+                                                    : 'Low confidence: Limited evidence. Treat this result with caution and consider gathering more data.'
+                                        }
+                                    >
                                         {step.confidence}
                                     </span>
                                 </div>

@@ -50,8 +50,9 @@ class TestRoutingFunctions:
         state = EpistemicState(cynefin_domain=CynefinDomain.DISORDER)
         assert route_by_domain(state) == "human_escalation"
 
-    def test_route_after_guardian_approved(self):
+    def test_route_after_guardian_approved(self, monkeypatch):
         """Test approved verdict routes to end."""
+        monkeypatch.delenv("GOVERNANCE_ENABLED", raising=False)
         state = EpistemicState(guardian_verdict=GuardianVerdict.APPROVED)
         assert route_after_guardian(state) == "end"
 

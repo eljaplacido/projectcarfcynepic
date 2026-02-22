@@ -94,6 +94,27 @@ All analytical outputs must support drill-down:
 | `MethodologyModal` | Drill-down for any analytical result |
 | `ConfidenceDecomposition` | Stacked bar showing confidence sources |
 | `DataProvenanceLink` | Inline link back to source data rows |
+| `MarkdownRenderer` | Shared markdown with GFM tables, internal panel links |
+| `TransparencyPanel` | Data modal, flowchart lineage, quality drill-downs with baselines |
+| `useProactiveHighlight` | Auto-highlights relevant panels based on query results |
+
+### 4.4 Drill-Down Patterns (UIX Rehaul)
+
+All quality metrics now support inline drill-downs:
+- **Quality Score Bars** — Click to expand with industry baselines and plain-English interpretation
+- **Reliability Factors** — Cynefin-domain-aware explanations (e.g., "In complex domains, expect wider uncertainty bands")
+- **Confidence Badges** — Hover for tooltip explaining high/medium/low in the ExecutionTrace
+- **Guardian Policies** — Each policy shows contextual description and what configuration controls it
+
+### 4.5 Section Header Naming Convention
+
+Headers should be function-centric (what the user gets) not method-centric (how it works):
+- "Cause & Effect Map" (not "Causal DAG")
+- "Impact Analysis" (not "Causal Analysis Results")
+- "Uncertainty & Belief Update" (not "Bayesian Panel")
+- "Safety & Compliance Check" (not "Guardian Panel")
+- "Decision Audit Trail" (not "Execution Trace")
+- "How Robust Is This Finding?" (not "Sensitivity Analysis")
 
 ### 4.4 Conversational Questioning
 

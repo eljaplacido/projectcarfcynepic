@@ -1,0 +1,40 @@
+domain:
+  id: sustainability
+  display_name: Sustainability
+  description: ESG and sustainability domain ensuring CSRD compliance, EU taxonomy alignment, and carbon accountability
+  owner_email: esg@enterprise.com
+  namespace: sustainability
+  tags: [esg, csrd, emissions, taxonomy, climate]
+  color: "#10B981"
+
+policies:
+  - name: csrd_compliance
+    namespace: sustainability.csrd_compliance
+    description: Corporate Sustainability Reporting Directive compliance rules covering materiality, taxonomy, emissions tracing, and carbon budgets
+    priority: 1
+    is_active: true
+    version: "1.0"
+    rules:
+      - name: double_materiality_required
+        condition: { data.type: esg_report }
+        constraint: { data.materiality_assessed: true }
+        message: "ESG reports must include a double materiality assessment"
+        severity: medium
+
+      - name: eu_taxonomy_alignment
+        condition: { action.type: investment }
+        constraint: { context.taxonomy_aligned: true }
+        message: "Investments must be aligned with the EU taxonomy framework"
+        severity: medium
+
+      - name: scope3_lineage
+        condition: { data.type: emissions }
+        constraint: { data.scope3_traced: true }
+        message: "Emissions data must include full Scope 3 supply-chain lineage"
+        severity: medium
+
+      - name: carbon_budget_check
+        condition: { action.type: procurement }
+        constraint: { context.carbon_budget_exceeded: false }
+        message: "Procurement action would exceed the allocated carbon budget"
+        severity: medium

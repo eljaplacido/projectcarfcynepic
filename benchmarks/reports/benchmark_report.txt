@@ -1,15 +1,15 @@
 CARF UNIFIED BENCHMARK REPORT
 ============================================================
-Generated: 2026-02-19T20:01:24.315643
-Data sources: router, causal, bayesian, guardian, performance, chimera, e2e, baseline
+Generated: 2026-02-22T09:39:49.954180
+Data sources: router, causal, bayesian, guardian, performance, chimera, governance, e2e, baseline
 Grade: A
 
 SUMMARY
 ------------------------------------------------------------
-  Hypotheses evaluated: 8/9
-  Hypotheses passed:    7/8
-  Pass rate:            87.5%
-  Data coverage:        8/8 benchmark categories
+  Hypotheses evaluated: 12/12
+  Hypotheses passed:    11/12
+  Pass rate:            91.7%
+  Data coverage:        9/9 benchmark categories
 
 HYPOTHESIS RESULTS
 ------------------------------------------------------------
@@ -26,8 +26,8 @@ HYPOTHESIS RESULTS
          decomposition_rate: 1.0
          total_scenarios: None
 
-  [PASS] H3: Guardian achieves 100% violation detection vs LLM missing > 20%
-         Measured: 1.0000  |  Threshold: 1.0
+  [FAIL] H3: Guardian achieves 100% violation detection vs LLM missing > 20%
+         Measured: 0.6667  |  Threshold: 1.0
 
   [PASS] H4: Guardian 100% deterministic vs LLM variation
          Measured: 1.0000  |  Threshold: 1.0
@@ -36,8 +36,8 @@ HYPOTHESIS RESULTS
          Measured: 1.0000  |  Threshold: 0.9
 
   [PASS] H6: CARF latency overhead acceptable (< 5x raw LLM)
-         Measured: 3.4470  |  Threshold: 5.0
-         carf_ms: 9136.05
+         Measured: 3.4940  |  Threshold: 5.0
+         carf_ms: 9259.59
          baseline_ms: 2650.25
 
   [PASS] H7: CARF reduces hallucination by >= 40%
@@ -46,12 +46,33 @@ HYPOTHESIS RESULTS
          llm_hallucination_rate: 0.0667
          reduction_pct: 100.0
 
-  [ N/A] H8: ChimeraOracle >= 10x faster with < 20% accuracy loss
-         Measured: —  |  Threshold: 10.0
+  [PASS] H8: ChimeraOracle >= 10x faster with < 20% accuracy loss
+         Measured: 32.7000  |  Threshold: 10.0
 
-  [FAIL] H9: CARF memory stable over 500+ queries (< 10% RSS growth)
-         Measured: 1589.4600  |  Threshold: 10.0
-         tracemalloc_peak_mb: 377.44
+  [PASS] H9: CARF memory stable over 500+ queries (< 10% RSS growth)
+         Measured: 0.2100  |  Threshold: 10.0
+         tracemalloc_peak_mb: 12.62
+
+  [PASS] H10: Governance MAP accuracy >= 70% cross-domain link detection
+         Measured: 1.0000  |  Threshold: 0.7
+         domain_recall: 0.8571
+         cross_domain_accuracy: 1.0
+         total_cases: 8
+
+  [PASS] H11: Governance PRICE accuracy >= 95% cost computation precision
+         Measured: 1.0000  |  Threshold: 0.95
+         max_absolute_error: 0.0
+         breakdown_valid: True
+         aggregation_valid: True
+
+  [PASS] H12: Governance node latency P95 < 50ms (non-blocking)
+         Measured: 0.3600  |  Threshold: 50.0
+         avg_ms: 0.32
+         p50_ms: 0.31
+         p95_ms: 0.36
+         p99_ms: 0.36
+         iterations: 20
+         feature_flag_zero_overhead: True
 
 METHODOLOGY
 ------------------------------------------------------------
@@ -63,6 +84,8 @@ METHODOLOGY
     balanced domain sampling, weighted F1 + ECE.
   - Guardian: Deterministic policy enforcement, 5x repetitions.
   - Performance: Latency + tracemalloc memory profiling.
+  - Governance: MAP triple extraction, PRICE cost precision,
+    RESOLVE conflict detection, AUDIT compliance scoring.
   - Baselines: Raw LLM (same model, no pipeline) for comparison.
 
 EU AI ACT ALIGNMENT

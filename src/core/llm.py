@@ -16,6 +16,7 @@ use langchain-openai. Anthropic and Google use their dedicated langchain integra
 import os
 import logging
 import json
+import threading
 from enum import Enum
 from functools import lru_cache
 
@@ -24,6 +25,35 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger("carf.llm")
+
+
+# ---------------------------------------------------------------------------
+# Token Usage Tracking (Phase 16 — Governance PRICE pillar)
+# ---------------------------------------------------------------------------
+
+_token_usage_local = threading.local()
+
+
+def reset_token_usage() -> None:
+    """Reset accumulated token usage for the current thread."""
+    _token_usage_local.input_tokens = 0
+    _token_usage_local.output_tokens = 0
+
+
+def accumulate_token_usage(input_tokens: int, output_tokens: int) -> None:
+    """Add token usage from an LLM call to the thread-local accumulator."""
+    if not hasattr(_token_usage_local, "input_tokens"):
+        reset_token_usage()
+    _token_usage_local.input_tokens += input_tokens
+    _token_usage_local.output_tokens += output_tokens
+
+
+def get_accumulated_token_usage() -> dict[str, int]:
+    """Get accumulated token usage for the current thread."""
+    return {
+        "input": getattr(_token_usage_local, "input_tokens", 0),
+        "output": getattr(_token_usage_local, "output_tokens", 0),
+    }
 
 
 class _FakeLLMResponse:

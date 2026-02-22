@@ -1,0 +1,14 @@
+template_id: csrd_esrs
+name: "CSRD/ESRS Reporting"
+description: "Corporate Sustainability Reporting Directive with ESRS standards coverage."
+domain_ids:
+  - sustainability
+  - finance
+  - legal
+frameworks:
+  - csrd
+  - gdpr
+tags:
+  - csrd
+  - esrs
+  - reporting

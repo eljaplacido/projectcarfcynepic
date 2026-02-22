@@ -1,0 +1,13 @@
+template_id: scope_emissions
+name: "GHG Scope 1/2/3 Emissions Tracking"
+description: "Track and govern greenhouse gas emissions across direct operations, energy, and supply chain."
+domain_ids:
+  - sustainability
+  - procurement
+  - finance
+frameworks:
+  - csrd
+tags:
+  - ghg
+  - emissions
+  - climate

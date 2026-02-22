@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { QueryResponse } from '../../types/carf';
 import SuggestedQuestions, { generateSuggestedQuestions } from './SuggestedQuestions';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface ConversationalResponseProps {
     response: QueryResponse | null;
@@ -220,9 +221,10 @@ const ConversationalResponse: React.FC<ConversationalResponseProps> = ({
 
             {/* Main Response */}
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                <div className="text-sm text-gray-900 leading-relaxed whitespace-pre-wrap">
-                    {response.response}
-                </div>
+                <MarkdownRenderer
+                    content={response.response}
+                    className="prose prose-sm max-w-none text-gray-900 leading-relaxed"
+                />
                 <div className="mt-3 flex gap-2">
                     {onViewData && (
                         <button

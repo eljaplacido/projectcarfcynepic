@@ -1,7 +1,7 @@
 # CARF Development Reference
 
-> Last Updated: 2026-02-17
-> Current Phase: Phase 12 - CHIMEPIC Integration + Platform Hardening
+> Last Updated: 2026-02-21
+> Current Phase: Phase 15 - CYNEPIC UIX Rehaul Complete
 
 ## Quick Start
 
@@ -39,10 +39,10 @@ projectcarf/
 
   carf-cockpit/               # React Platform Cockpit (Vite + TypeScript + Tailwind)
     src/
-      components/carf/        # 44 React components
-      __tests__/              # Frontend test suite (5 test files)
+      components/carf/        # 47 React components (incl. MarkdownRenderer, AgentFlowChart)
+      __tests__/              # Frontend test suite (17 test files, 201 tests)
       services/               # API client layer (apiService.ts)
-      hooks/                  # Custom React hooks
+      hooks/                  # Custom React hooks (useProactiveHighlight, useVisualizationConfig, etc.)
       types/                  # TypeScript type definitions
 
   demo/

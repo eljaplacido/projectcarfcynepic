@@ -72,7 +72,33 @@ async def lifespan(app: FastAPI):
             ) from exc
         logger.warning(f"Neo4j unavailable (non-production): {exc}")
 
+    # Initialise Governance subsystem (Phase 16 — optional)
+    if os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true":
+        try:
+            from src.services.federated_policy_service import get_federated_service
+            from src.services.governance_graph_service import get_governance_graph_service
+
+            fed_service = get_federated_service()
+            fed_service.load_policies()
+            logger.info(f"Governance: Loaded {len(fed_service.list_domains())} domains, "
+                        f"{len(fed_service.list_policies())} policies")
+
+            gov_graph = get_governance_graph_service()
+            await gov_graph.connect()
+        except Exception as exc:
+            logger.warning(f"Governance init failed (non-critical): {exc}")
+    else:
+        logger.info("Governance subsystem disabled (GOVERNANCE_ENABLED != true)")
+
     yield
+
+    # Shutdown Governance graph cleanly
+    if os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true":
+        try:
+            from src.services.governance_graph_service import shutdown_governance_graph
+            await shutdown_governance_graph()
+        except Exception:
+            pass
 
     # Shutdown Neo4j cleanly
     if neo4j_service is not None:
@@ -133,6 +159,12 @@ app.include_router(transparency.router)
 app.include_router(feedback.router)
 app.include_router(csl.router)
 app.include_router(query.router)
+
+# Governance router (Phase 16 — conditionally registered)
+if os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true":
+    from src.api.routers import governance  # noqa: E402
+    app.include_router(governance.router)
+    logger.info("Governance API router registered (/governance/*)")
 
 
 def main():

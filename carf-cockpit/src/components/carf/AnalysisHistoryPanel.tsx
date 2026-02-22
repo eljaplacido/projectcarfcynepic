@@ -1,66 +1,261 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import type { AnalysisSession, CynefinDomain } from '../../types/carf';
+import type { AnalysisSession, CynefinDomain, QueryResponse } from '../../types/carf';
 
-// localStorage key
+// localStorage keys
 const HISTORY_STORAGE_KEY = 'carf-analysis-history';
-const MAX_HISTORY_ITEMS = 100;
+const FULL_RESULT_STORAGE_KEY = 'carf-analysis-full-results';
 
-// Helper to load history from localStorage
-const loadHistoryFromStorage = (): AnalysisSession[] => {
+// Phase 7E: Cap at 50 to prevent OOM crashes
+const MAX_HISTORY_ITEMS = 50;
+
+/**
+ * Lightweight summary stored in localStorage instead of the full session.
+ * Full results are stored separately and lazy-loaded on demand.
+ */
+export interface HistorySummary {
+    id: string;
+    query: string;
+    domain: CynefinDomain;
+    confidence: number;
+    sessionId: string;
+    timestamp: string;
+    duration: number;
+    tags?: string[];
+    /** Inline causal summary for the list view (avoids needing to load full result). */
+    causalEffect?: number | null;
+    refutationsPassed?: number | null;
+    refutationsTotal?: number | null;
+}
+
+/** Extract a small summary from a full AnalysisSession. */
+function toSummary(session: AnalysisSession): HistorySummary {
+    return {
+        id: session.id,
+        query: session.query,
+        domain: session.domain,
+        confidence: session.confidence,
+        sessionId: session.result?.sessionId ?? session.id,
+        timestamp: session.timestamp,
+        duration: session.duration,
+        tags: session.tags,
+        causalEffect: session.result?.causalResult?.effect ?? null,
+        refutationsPassed: session.result?.causalResult?.refutationsPassed ?? null,
+        refutationsTotal: session.result?.causalResult?.refutationsTotal ?? null,
+    };
+}
+
+// ---------------------------------------------------------------------------
+// Safe localStorage helpers with try/catch for quota errors
+// ---------------------------------------------------------------------------
+
+function safeGetItem(key: string): string | null {
     try {
-        const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
-        if (stored) {
-            return JSON.parse(stored) as AnalysisSession[];
-        }
+        return localStorage.getItem(key);
     } catch (error) {
-        console.error('Failed to load analysis history:', error);
+        console.error(`[AnalysisHistory] Failed to read "${key}" from localStorage:`, error);
+        return null;
     }
-    return [];
+}
+
+function safeSetItem(key: string, value: string): boolean {
+    try {
+        localStorage.setItem(key, value);
+        return true;
+    } catch (error) {
+        console.error(`[AnalysisHistory] Failed to write "${key}" to localStorage (quota exceeded?):`, error);
+        return false;
+    }
+}
+
+function safeRemoveItem(key: string): void {
+    try {
+        localStorage.removeItem(key);
+    } catch (error) {
+        console.error(`[AnalysisHistory] Failed to remove "${key}" from localStorage:`, error);
+    }
+}
+
+function safeParse<T>(raw: string | null, fallback: T): T {
+    if (!raw) return fallback;
+    try {
+        return JSON.parse(raw) as T;
+    } catch (error) {
+        console.error('[AnalysisHistory] JSON.parse failed:', error);
+        return fallback;
+    }
+}
+
+function safeStringify(value: unknown): string | null {
+    try {
+        return JSON.stringify(value);
+    } catch (error) {
+        console.error('[AnalysisHistory] JSON.stringify failed:', error);
+        return null;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Load summaries (lightweight) from localStorage
+// ---------------------------------------------------------------------------
+
+const loadSummariesFromStorage = (): HistorySummary[] => {
+    const raw = safeGetItem(HISTORY_STORAGE_KEY);
+    return safeParse<HistorySummary[]>(raw, []);
 };
 
-// Hook for managing analysis history
-export const useAnalysisHistory = () => {
-    // Initialize state lazily from localStorage
-    const [history, setHistory] = useState<AnalysisSession[]>(loadHistoryFromStorage);
+// ---------------------------------------------------------------------------
+// Load / store full results separately, keyed by session id
+// ---------------------------------------------------------------------------
 
-    // Save analysis session
-    const saveAnalysis = useCallback((session: AnalysisSession) => {
-        setHistory(prev => {
-            const updated = [session, ...prev].slice(0, MAX_HISTORY_ITEMS);
-            try {
-                localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updated));
-            } catch (error) {
-                console.error('Failed to save analysis history:', error);
+const loadFullResultsMap = (): Record<string, QueryResponse> => {
+    const raw = safeGetItem(FULL_RESULT_STORAGE_KEY);
+    return safeParse<Record<string, QueryResponse>>(raw, {});
+};
+
+const persistFullResultsMap = (map: Record<string, QueryResponse>): void => {
+    const json = safeStringify(map);
+    if (json) {
+        if (!safeSetItem(FULL_RESULT_STORAGE_KEY, json)) {
+            // Quota exceeded — try to evict oldest entries and retry once
+            const keys = Object.keys(map);
+            if (keys.length > MAX_HISTORY_ITEMS) {
+                const trimmed: Record<string, QueryResponse> = {};
+                keys.slice(0, MAX_HISTORY_ITEMS).forEach(k => { trimmed[k] = map[k]; });
+                const retryJson = safeStringify(trimmed);
+                if (retryJson) safeSetItem(FULL_RESULT_STORAGE_KEY, retryJson);
             }
+        }
+    }
+};
+
+// ---------------------------------------------------------------------------
+// Reconstruct a full AnalysisSession from summary + lazy-loaded result
+// ---------------------------------------------------------------------------
+
+function reconstructSession(summary: HistorySummary, result: QueryResponse | null): AnalysisSession {
+    return {
+        id: summary.id,
+        timestamp: summary.timestamp,
+        query: summary.query,
+        domain: summary.domain,
+        confidence: summary.confidence,
+        duration: summary.duration,
+        tags: summary.tags,
+        result: result ?? ({
+            sessionId: summary.sessionId,
+            domain: summary.domain,
+            domainConfidence: summary.confidence,
+            domainEntropy: 0,
+            guardianVerdict: null,
+            response: null,
+            requiresHuman: false,
+            reasoningChain: [],
+            causalResult: null,
+            bayesianResult: null,
+            guardianResult: null,
+            error: null,
+        } as QueryResponse),
+    };
+}
+
+// ---------------------------------------------------------------------------
+// Hook: useAnalysisHistory (Phase 7E — OOM-safe)
+// ---------------------------------------------------------------------------
+
+export const useAnalysisHistory = () => {
+    const [summaries, setSummaries] = useState<HistorySummary[]>(loadSummariesFromStorage);
+    const [fullResultsCache, setFullResultsCache] = useState<Record<string, QueryResponse>>({});
+
+    // Derive AnalysisSession[] from summaries + any cached full results
+    const history: AnalysisSession[] = useMemo(
+        () => summaries.map(s => reconstructSession(s, fullResultsCache[s.id] ?? null)),
+        [summaries, fullResultsCache],
+    );
+
+    // Save analysis session — stores summary in main key, full result in separate key
+    const saveAnalysis = useCallback((session: AnalysisSession) => {
+        const summary = toSummary(session);
+
+        setSummaries(prev => {
+            const updated = [summary, ...prev.filter(s => s.id !== summary.id)].slice(0, MAX_HISTORY_ITEMS);
+            const json = safeStringify(updated);
+            if (json) safeSetItem(HISTORY_STORAGE_KEY, json);
+            return updated;
+        });
+
+        // Store the full result separately
+        setFullResultsCache(prev => {
+            const updated = { ...prev, [session.id]: session.result };
+            // Also persist
+            const allResults = loadFullResultsMap();
+            allResults[session.id] = session.result;
+            // Trim to MAX_HISTORY_ITEMS entries
+            const ids = Object.keys(allResults);
+            if (ids.length > MAX_HISTORY_ITEMS) {
+                ids.slice(MAX_HISTORY_ITEMS).forEach(id => delete allResults[id]);
+            }
+            persistFullResultsMap(allResults);
             return updated;
         });
     }, []);
 
     // Delete analysis session
     const deleteAnalysis = useCallback((sessionId: string) => {
-        setHistory(prev => {
+        setSummaries(prev => {
             const updated = prev.filter(s => s.id !== sessionId);
-            try {
-                localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updated));
-            } catch (error) {
-                console.error('Failed to update analysis history:', error);
-            }
+            const json = safeStringify(updated);
+            if (json) safeSetItem(HISTORY_STORAGE_KEY, json);
             return updated;
         });
+
+        setFullResultsCache(prev => {
+            const updated = { ...prev };
+            delete updated[sessionId];
+            return updated;
+        });
+
+        // Remove from persisted full results
+        const allResults = loadFullResultsMap();
+        delete allResults[sessionId];
+        persistFullResultsMap(allResults);
     }, []);
 
     // Clear all history
     const clearHistory = useCallback(() => {
-        setHistory([]);
-        try {
-            localStorage.removeItem(HISTORY_STORAGE_KEY);
-        } catch (error) {
-            console.error('Failed to clear analysis history:', error);
-        }
+        setSummaries([]);
+        setFullResultsCache({});
+        safeRemoveItem(HISTORY_STORAGE_KEY);
+        safeRemoveItem(FULL_RESULT_STORAGE_KEY);
     }, []);
 
-    return { history, saveAnalysis, deleteAnalysis, clearHistory };
+    /**
+     * Lazy-load full result for a specific session.
+     * Call this before viewing detailed results to avoid loading everything at once.
+     */
+    const loadFullResult = useCallback((sessionId: string): AnalysisSession | null => {
+        const summary = summaries.find(s => s.id === sessionId);
+        if (!summary) return null;
+
+        // Check in-memory cache first
+        if (fullResultsCache[sessionId]) {
+            return reconstructSession(summary, fullResultsCache[sessionId]);
+        }
+
+        // Load from localStorage on demand
+        const allResults = loadFullResultsMap();
+        const result = allResults[sessionId] ?? null;
+        if (result) {
+            setFullResultsCache(prev => ({ ...prev, [sessionId]: result }));
+        }
+        return reconstructSession(summary, result);
+    }, [summaries, fullResultsCache]);
+
+    return { history, saveAnalysis, deleteAnalysis, clearHistory, loadFullResult };
 };
+
+// ---------------------------------------------------------------------------
+// Component: AnalysisHistoryPanel
+// ---------------------------------------------------------------------------
 
 interface AnalysisHistoryPanelProps {
     isOpen: boolean;
@@ -144,18 +339,24 @@ const AnalysisHistoryPanel: React.FC<AnalysisHistoryPanelProps> = ({
     };
 
     const exportHistory = () => {
-        const data = {
-            exportedAt: new Date().toISOString(),
-            totalSessions: history.length,
-            sessions: history,
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `carf-history-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
+        try {
+            const data = {
+                exportedAt: new Date().toISOString(),
+                totalSessions: history.length,
+                sessions: history,
+            };
+            const json = safeStringify(data);
+            if (!json) return;
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `carf-history-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('[AnalysisHistory] Export failed:', error);
+        }
     };
 
     const formatRelativeTime = (timestamp: string) => {
@@ -329,7 +530,7 @@ const AnalysisHistoryPanel: React.FC<AnalysisHistoryPanelProps> = ({
 
                                     {/* Query Text */}
                                     <p className="text-sm text-gray-900 font-medium mb-2 line-clamp-2">
-                                        "{session.query}"
+                                        &quot;{session.query}&quot;
                                     </p>
 
                                     {/* Results Summary */}

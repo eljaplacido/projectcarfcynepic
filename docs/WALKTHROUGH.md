@@ -1222,6 +1222,35 @@ The script validates training data (minimum samples per domain, contradiction de
 
 ---
 
+## UIX Rehaul Changes (Phase 15)
+
+The following UI improvements affect the walkthrough experience:
+
+### Renamed Sections
+Panel headers have been renamed from method-centric to function-centric:
+- "Causal DAG" is now "Cause & Effect Map"
+- "Causal Analysis Results" is now "Impact Analysis"
+- "Bayesian Panel" is now "Uncertainty & Belief Update"
+- "Guardian Panel" is now "Safety & Compliance Check"
+- "Execution Trace" is now "Decision Audit Trail"
+
+### New Walkthrough Tracks
+Three new guided tours are available in the walkthrough manager:
+1. **Causal Analysis Deep Dive** — DAG exploration, effect interpretation, refutations, sensitivity
+2. **Running Simulations** — What-if parameters, multi-variable simulator, scenario comparison
+3. **Developer Debugging** — Architecture overview, agent flow, timeline, evaluation metrics
+
+### Key Interaction Changes
+- **Chat responses** now render proper markdown (bold, tables, code blocks, links)
+- **Confidence badges** in the execution trace have hover tooltips explaining what high/medium/low means
+- **Quality metrics** are clickable — expand to show industry baselines and plain-English interpretation
+- **"Ask Follow-Up"** button on causal results generates a contextual question and sends it to chat
+- **What-If Simulator** supports multiple parameters (treatment + confounders) instead of single slider
+- **Sensitivity Plot** shows colored Robust/Fragile zones with plain English interpretation
+- **Executive view** has adaptive chart types (Cards/Bar/Pie) and structured action items
+
+---
+
 ## Additional Resources
 
 - **API Documentation**: http://localhost:8000/docs

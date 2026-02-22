@@ -1,0 +1,34 @@
+domain:
+  id: procurement
+  display_name: Procurement
+  description: Enterprise procurement domain governing purchasing, vendor management, and supply chain spend controls
+  owner_email: procurement@enterprise.com
+  namespace: procurement
+  tags: [spend, vendors, supply-chain, purchasing]
+  color: "#3B82F6"
+
+policies:
+  - name: spend_controls
+    namespace: procurement.spend_controls
+    description: Controls and limits on procurement spending, vendor onboarding, and emergency purchases
+    priority: 1
+    is_active: true
+    version: "1.0"
+    rules:
+      - name: supplier_spend_limit
+        condition: { action.type: purchase }
+        constraint: { action.amount: { max: 500000 } }
+        message: "Supplier spend exceeds the maximum allowed limit of 500,000"
+        severity: medium
+
+      - name: vendor_verification
+        condition: { action.type: new_vendor }
+        constraint: { approval.status: approved }
+        message: "New vendor onboarding requires prior approval verification"
+        severity: medium
+
+      - name: emergency_procurement_cap
+        condition: { context.emergency: true }
+        constraint: { action.amount: { max: 100000 } }
+        message: "Emergency procurement spend exceeds the cap of 100,000"
+        severity: medium

@@ -199,8 +199,9 @@ class TestRouteByDomain:
 class TestRouteAfterGuardian:
     """Tests for route_after_guardian function."""
 
-    def test_approved_routes_to_end(self):
+    def test_approved_routes_to_end(self, monkeypatch):
         """Test approved verdict routes to end."""
+        monkeypatch.delenv("GOVERNANCE_ENABLED", raising=False)
         state = EpistemicState(
             user_input="Test",
             guardian_verdict=GuardianVerdict.APPROVED,
@@ -235,8 +236,18 @@ class TestRouteAfterGuardian:
         )
         assert route_after_guardian(state) == "human_escalation"
 
-    def test_dict_input_approved(self):
+    def test_approved_routes_to_governance_when_enabled(self, monkeypatch):
+        """Test approved verdict routes to governance when enabled."""
+        monkeypatch.setenv("GOVERNANCE_ENABLED", "true")
+        state = EpistemicState(
+            user_input="Test",
+            guardian_verdict=GuardianVerdict.APPROVED,
+        )
+        assert route_after_guardian(state) == "governance"
+
+    def test_dict_input_approved(self, monkeypatch):
         """Test routing with dict input for approved verdict."""
+        monkeypatch.delenv("GOVERNANCE_ENABLED", raising=False)
         state_dict = {
             "guardian_verdict": GuardianVerdict.APPROVED,
             "reflection_count": 0,

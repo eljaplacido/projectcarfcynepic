@@ -1,0 +1,15 @@
+template_id: supply_chain
+name: "Cross-Domain Supply Chain Governance"
+description: "End-to-end supply chain governance spanning procurement, ESG, security, and finance."
+domain_ids:
+  - procurement
+  - sustainability
+  - security
+  - finance
+frameworks:
+  - csrd
+  - iso_27001
+tags:
+  - supply-chain
+  - procurement
+  - esg

@@ -66,6 +66,10 @@ class KafkaAuditEvent(BaseModel):
     csl_engine: str = ""
     csl_latency_ms: float = 0.0
     csl_violations: list[str] = Field(default_factory=list)
+    governance_triples_count: int = 0
+    governance_conflicts_count: int = 0
+    cost_total: float = 0.0
+    cost_breakdown: dict[str, float] = Field(default_factory=dict)
 
     @classmethod
     def from_state(cls, state: EpistemicState) -> "KafkaAuditEvent":
@@ -86,6 +90,21 @@ class KafkaAuditEvent(BaseModel):
             else None
         )
 
+        # Extract governance data
+        governance_triples_count = len(state.session_triples) if hasattr(state, "session_triples") else 0
+        cost_total = 0.0
+        cost_breakdown_dict: dict[str, float] = {}
+        if hasattr(state, "cost_breakdown") and state.cost_breakdown is not None:
+            cb = state.cost_breakdown
+            cost_total = getattr(cb, "total_cost", 0.0)
+            for item in getattr(cb, "breakdown_items", []):
+                cost_breakdown_dict[getattr(item, "category", "unknown")] = getattr(item, "amount", 0.0)
+
+        governance_conflicts_count = 0
+        ctx = state.context if hasattr(state, "context") else {}
+        if isinstance(ctx, dict):
+            governance_conflicts_count = len(ctx.get("governance_conflicts", []))
+
         return cls(
             session_id=str(state.session_id),
             cynefin_domain=state.cynefin_domain.value,
@@ -98,6 +117,10 @@ class KafkaAuditEvent(BaseModel):
             human_verification=human_verification,
             final_action=state.final_action,
             final_response=state.final_response,
+            governance_triples_count=governance_triples_count,
+            governance_conflicts_count=governance_conflicts_count,
+            cost_total=cost_total,
+            cost_breakdown=cost_breakdown_dict,
         )
 
 

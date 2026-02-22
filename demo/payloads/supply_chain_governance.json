@@ -1,0 +1,14 @@
+{
+    "query": "Our primary chip supplier is facing sanctions. Evaluate emergency procurement alternatives considering security clearance requirements, budget constraints, and carbon impact of switching to air freight logistics.",
+    "context": {
+        "scenario_type": "supply_chain_disruption",
+        "domains_involved": ["procurement", "security", "sustainability", "finance"],
+        "emergency": true,
+        "action_type": "purchase",
+        "amount": 750000,
+        "carbon_budget_exceeded": true,
+        "data_sensitivity": "high",
+        "fx_exposure": 500000,
+        "financial_exposure": 750000
+    }
+}
