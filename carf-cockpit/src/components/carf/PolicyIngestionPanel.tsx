@@ -4,12 +4,13 @@
  * Textarea for pasting policy text, extraction via LLM, preview and accept extracted rules.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { GovernanceDomain } from '../../types/carf';
 import {
     extractPoliciesFromText,
     createFederatedPolicy,
     getGovernanceDomains,
+    uploadGovernanceDocument,
 } from '../../services/apiService';
 
 interface ExtractedRule {
@@ -18,6 +19,9 @@ interface ExtractedRule {
     constraint: Record<string, unknown>;
     message: string;
     severity: string;
+    confidence: number;
+    rationale: string;
+    evidence: string[];
     accepted: boolean;
 }
 
@@ -42,6 +46,56 @@ const PolicyIngestionPanel: React.FC<PolicyIngestionPanelProps> = ({ onRulesAdde
     const [adding, setAdding] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [domainsLoaded, setDomainsLoaded] = useState(false);
+    const [extractionExplainability, setExtractionExplainability] = useState<{
+        whyThis?: string;
+        howConfident?: number;
+        basedOn?: string[];
+    } | null>(null);
+    const [dragOver, setDragOver] = useState(false);
+    const [uploadingFile, setUploadingFile] = useState(false);
+    const [uploadResult, setUploadResult] = useState<{
+        status: string;
+        filename: string;
+        chunks?: number;
+        error?: string;
+    } | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const SUPPORTED_EXTENSIONS = ['pdf', 'docx', 'doc', 'csv', 'json', 'txt', 'md', 'yaml', 'yml'];
+
+    const handleFileDrop = async (files: FileList | null) => {
+        if (!files || files.length === 0) return;
+        const file = files[0];
+        const ext = file.name.split('.').pop()?.toLowerCase() || '';
+        if (!SUPPORTED_EXTENSIONS.includes(ext)) {
+            setError(`Unsupported file type: .${ext}. Supported: ${SUPPORTED_EXTENSIONS.join(', ')}`);
+            return;
+        }
+        setUploadingFile(true);
+        setError(null);
+        setUploadResult(null);
+        try {
+            const result = await uploadGovernanceDocument(
+                file,
+                targetDomain || undefined,
+                sourceName || file.name
+            );
+            setUploadResult({
+                status: result.status,
+                filename: result.filename,
+                chunks: result.chunks_ingested,
+                error: result.error,
+            });
+            if (result.status === 'success') {
+                onRulesAdded?.();
+            }
+        } catch (err) {
+            setError(`File upload failed: ${err}`);
+        } finally {
+            setUploadingFile(false);
+            setDragOver(false);
+        }
+    };
 
     const loadDomains = async () => {
         if (domainsLoaded) return;
@@ -59,6 +113,7 @@ const PolicyIngestionPanel: React.FC<PolicyIngestionPanelProps> = ({ onRulesAdde
         setExtracting(true);
         setError(null);
         setExtractedRules([]);
+        setExtractionExplainability(null);
         await loadDomains();
 
         try {
@@ -70,8 +125,19 @@ const PolicyIngestionPanel: React.FC<PolicyIngestionPanelProps> = ({ onRulesAdde
             if (result.error) {
                 setError(result.error);
             }
+            setExtractionExplainability({
+                whyThis: result.explainability?.why_this,
+                howConfident: result.explainability?.how_confident ?? result.extraction_confidence_avg,
+                basedOn: result.explainability?.based_on,
+            });
             setExtractedRules(
-                result.rules.map(r => ({ ...r, accepted: true }))
+                result.rules.map(r => ({
+                    ...r,
+                    confidence: typeof r.confidence === 'number' ? r.confidence : 0.6,
+                    rationale: r.rationale || '',
+                    evidence: Array.isArray(r.evidence) ? r.evidence : [],
+                    accepted: true,
+                }))
             );
         } catch (err) {
             setError(String(err));
@@ -114,6 +180,7 @@ const PolicyIngestionPanel: React.FC<PolicyIngestionPanelProps> = ({ onRulesAdde
 
             setExtractedRules([]);
             setText('');
+            setExtractionExplainability(null);
             onRulesAdded?.();
         } catch (err) {
             setError(String(err));
@@ -132,6 +199,54 @@ const PolicyIngestionPanel: React.FC<PolicyIngestionPanelProps> = ({ onRulesAdde
             <div style={{ fontSize: '14px', fontWeight: 600, color: '#D1D5DB', marginBottom: '12px' }}>
                 Policy Text Extraction
             </div>
+
+            {/* File Drop Zone */}
+            <div
+                onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={e => { e.preventDefault(); handleFileDrop(e.dataTransfer.files); }}
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                    marginBottom: '12px', padding: '16px', borderRadius: '8px',
+                    border: `2px dashed ${dragOver ? '#3B82F6' : '#374151'}`,
+                    backgroundColor: dragOver ? '#3B82F622' : '#111827',
+                    textAlign: 'center', cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                }}
+            >
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={SUPPORTED_EXTENSIONS.map(e => `.${e}`).join(',')}
+                    style={{ display: 'none' }}
+                    onChange={e => handleFileDrop(e.target.files)}
+                />
+                {uploadingFile ? (
+                    <div style={{ color: '#3B82F6', fontSize: '13px' }}>Uploading and processing...</div>
+                ) : (
+                    <>
+                        <div style={{ color: '#9CA3AF', fontSize: '13px', marginBottom: '4px' }}>
+                            Drag &amp; drop a document here, or click to browse
+                        </div>
+                        <div style={{ color: '#6B7280', fontSize: '11px' }}>
+                            Supported: PDF, DOCX, CSV, JSON, TXT, MD, YAML
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {uploadResult && (
+                <div style={{
+                    padding: '8px 12px', marginBottom: '12px', borderRadius: '6px',
+                    backgroundColor: uploadResult.status === 'success' ? '#10B98122' : '#EF444422',
+                    color: uploadResult.status === 'success' ? '#10B981' : '#EF4444',
+                    fontSize: '12px',
+                }}>
+                    {uploadResult.status === 'success'
+                        ? `Ingested "${uploadResult.filename}" — ${uploadResult.chunks ?? 0} chunks indexed`
+                        : `Failed: ${uploadResult.error || 'Unknown error'}`}
+                </div>
+            )}
 
             {/* Input Area */}
             <div style={{ marginBottom: '12px' }}>
@@ -209,6 +324,35 @@ const PolicyIngestionPanel: React.FC<PolicyIngestionPanelProps> = ({ onRulesAdde
                 </div>
             )}
 
+            {extractionExplainability && (
+                <div style={{
+                    padding: '10px',
+                    marginBottom: '12px',
+                    borderRadius: '6px',
+                    backgroundColor: '#0F172A',
+                    border: '1px solid #1E293B',
+                }}>
+                    <div style={{ fontSize: '11px', color: '#93C5FD', fontWeight: 600, marginBottom: '4px' }}>
+                        Extraction Explainability
+                    </div>
+                    {extractionExplainability.whyThis && (
+                        <div style={{ fontSize: '11px', color: '#CBD5E1', marginBottom: '2px' }}>
+                            Why this: {extractionExplainability.whyThis}
+                        </div>
+                    )}
+                    {typeof extractionExplainability.howConfident === 'number' && (
+                        <div style={{ fontSize: '11px', color: '#CBD5E1', marginBottom: '2px' }}>
+                            How confident: {(extractionExplainability.howConfident * 100).toFixed(1)}%
+                        </div>
+                    )}
+                    {extractionExplainability.basedOn && extractionExplainability.basedOn.length > 0 && (
+                        <div style={{ fontSize: '11px', color: '#94A3B8' }}>
+                            Based on: {extractionExplainability.basedOn.join(', ')}
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* Extracted Rules Preview */}
             {extractedRules.length > 0 && (
                 <div>
@@ -255,6 +399,19 @@ const PolicyIngestionPanel: React.FC<PolicyIngestionPanelProps> = ({ onRulesAdde
                                 <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '4px' }}>
                                     {rule.message}
                                 </div>
+                                <div style={{ fontSize: '10px', color: '#93C5FD', marginTop: '4px' }}>
+                                    Confidence: {(rule.confidence * 100).toFixed(0)}%
+                                </div>
+                                {rule.rationale && (
+                                    <div style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '4px' }}>
+                                        Why this: {rule.rationale}
+                                    </div>
+                                )}
+                                {rule.evidence.length > 0 && (
+                                    <div style={{ fontSize: '10px', color: '#6B7280', marginTop: '4px' }}>
+                                        Based on: {rule.evidence.join(' | ')}
+                                    </div>
+                                )}
                                 {Object.keys(rule.condition).length > 0 && (
                                     <div style={{ fontSize: '10px', color: '#6B7280', marginTop: '4px' }}>
                                         Conditions: {JSON.stringify(rule.condition)}

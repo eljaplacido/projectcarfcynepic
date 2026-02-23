@@ -1,0 +1,465 @@
+{
+  "benchmark": "carf_xai",
+  "timestamp": "2026-02-22T16:14:47.494575+00:00",
+  "metrics": {
+    "fidelity": 0.5,
+    "fidelity_passed": false,
+    "stability": 1.0,
+    "stability_passed": true,
+    "avg_steps": 1.0,
+    "avg_steps_passed": true
+  },
+  "individual_results": [
+    {
+      "dimension": "fidelity",
+      "score": 0.5,
+      "passed": false,
+      "total": 10,
+      "faithful_count": 5,
+      "results": [
+        {
+          "name": "procurement_causal",
+          "query": "How does switching suppliers affect our production costs?",
+          "expected_domain": "Complicated",
+          "actual_domain": "Complicated",
+          "factors_found": [
+            "supplier",
+            "production"
+          ],
+          "factors_missing": [
+            "cost"
+          ],
+          "factor_coverage": 0.6667,
+          "is_faithful": true,
+          "latency_ms": 0.88,
+          "error": null
+        },
+        {
+          "name": "finance_budget",
+          "query": "What is the impact of a 10% budget cut on Q4 revenue projections?",
+          "expected_domain": "Complicated",
+          "actual_domain": "Complicated",
+          "factors_found": [
+            "budget"
+          ],
+          "factors_missing": [
+            "revenue",
+            "projection"
+          ],
+          "factor_coverage": 0.3333,
+          "is_faithful": false,
+          "latency_ms": 0.35,
+          "error": null
+        },
+        {
+          "name": "sustainability_emissions",
+          "query": "How will transitioning to renewable energy reduce our Scope 2 emissions?",
+          "expected_domain": "Complicated",
+          "actual_domain": "Complex",
+          "factors_found": [
+            "renewable",
+            "energy"
+          ],
+          "factors_missing": [
+            "emission"
+          ],
+          "factor_coverage": 0.6667,
+          "is_faithful": true,
+          "latency_ms": 0.34,
+          "error": null
+        },
+        {
+          "name": "security_breach",
+          "query": "What are the risks if we delay patching the critical CVE for two weeks?",
+          "expected_domain": "Complex",
+          "actual_domain": "Chaotic",
+          "factors_found": [
+            "risk",
+            "patch"
+          ],
+          "factors_missing": [
+            "security"
+          ],
+          "factor_coverage": 0.6667,
+          "is_faithful": true,
+          "latency_ms": 0.27,
+          "error": null
+        },
+        {
+          "name": "hr_retention",
+          "query": "How does our remote work policy affect employee retention rates?",
+          "expected_domain": "Complex",
+          "actual_domain": "Complicated",
+          "factors_found": [
+            "remote",
+            "employee"
+          ],
+          "factors_missing": [
+            "retention"
+          ],
+          "factor_coverage": 0.6667,
+          "is_faithful": true,
+          "latency_ms": 0.25,
+          "error": null
+        },
+        {
+          "name": "legal_compliance",
+          "query": "What GDPR compliance gaps exist in our current data processing workflow?",
+          "expected_domain": "Complicated",
+          "actual_domain": "Clear",
+          "factors_found": [
+            "gdpr",
+            "compliance"
+          ],
+          "factors_missing": [
+            "data"
+          ],
+          "factor_coverage": 0.6667,
+          "is_faithful": true,
+          "latency_ms": 0.26,
+          "error": null
+        },
+        {
+          "name": "marketing_roi",
+          "query": "What is the expected ROI of increasing our digital ad spend by 25%?",
+          "expected_domain": "Complicated",
+          "actual_domain": "Clear",
+          "factors_found": [
+            "roi"
+          ],
+          "factors_missing": [
+            "ad",
+            "spend"
+          ],
+          "factor_coverage": 0.3333,
+          "is_faithful": false,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "name": "operations_efficiency",
+          "query": "How will automating the assembly line affect throughput and defect rates?",
+          "expected_domain": "Complicated",
+          "actual_domain": "Complicated",
+          "factors_found": [
+            "automat"
+          ],
+          "factors_missing": [
+            "throughput",
+            "defect"
+          ],
+          "factor_coverage": 0.3333,
+          "is_faithful": false,
+          "latency_ms": 0.25,
+          "error": null
+        },
+        {
+          "name": "crisis_response",
+          "query": "How should we respond to the sudden 40% increase in raw material prices?",
+          "expected_domain": "Chaotic",
+          "actual_domain": "Complicated",
+          "factors_found": [
+            "increase"
+          ],
+          "factors_missing": [
+            "price",
+            "material"
+          ],
+          "factor_coverage": 0.3333,
+          "is_faithful": false,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "name": "strategy_expansion",
+          "query": "Should we expand into the Southeast Asian market given current geopolitical tensions?",
+          "expected_domain": "Complex",
+          "actual_domain": "Complex",
+          "factors_found": [
+            "market"
+          ],
+          "factors_missing": [
+            "expansion",
+            "geopolitical"
+          ],
+          "factor_coverage": 0.3333,
+          "is_faithful": false,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "dimension": "stability",
+      "score": 1.0,
+      "passed": true,
+      "total": 10,
+      "stable_count": 10,
+      "results": [
+        {
+          "name": "stable_exchange_rate",
+          "query": "What is the current USD to EUR exchange rate and its impact on imports?",
+          "run1_domain": "Complicated",
+          "run2_domain": "Complicated",
+          "domain_match": true,
+          "run1_confidence": 0.88,
+          "run2_confidence": 0.88,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8974,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_supply_chain",
+          "query": "Analyse our supply chain resilience for semiconductor components.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8824,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_carbon_footprint",
+          "query": "Calculate our corporate carbon footprint for the current fiscal year.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8857,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_vendor_risk",
+          "query": "Assess the risk profile of our top five vendors based on financial stability.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8919,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_cost_reduction",
+          "query": "Identify the top three cost reduction opportunities in our operations.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8824,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_data_governance",
+          "query": "Review our data governance framework for ISO 27001 compliance.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8857,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_workforce_planning",
+          "query": "Project our hiring needs for the engineering team over the next two quarters.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8889,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_inventory",
+          "query": "Optimise our just-in-time inventory levels for the holiday season.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8824,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_contract_review",
+          "query": "Review the terms of the SaaS vendor contract expiring next month.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8857,
+          "is_stable": true,
+          "error": null
+        },
+        {
+          "name": "stable_performance",
+          "query": "Benchmark our customer service response times against industry standards.",
+          "run1_domain": "Clear",
+          "run2_domain": "Clear",
+          "domain_match": true,
+          "run1_confidence": 0.95,
+          "run2_confidence": 0.95,
+          "confidence_diff": 0.0,
+          "confidence_stable": true,
+          "text_overlap": 0.8824,
+          "is_stable": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "dimension": "simplicity",
+      "score": 1.0,
+      "avg_steps": 1.0,
+      "passed": true,
+      "total": 10,
+      "simple_count": 10,
+      "results": [
+        {
+          "name": "simple_lookup",
+          "query": "What is the standard corporate tax rate in Ireland?",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "name": "simple_conversion",
+          "query": "Convert 500 metric tons of CO2 to carbon credits at current market rates.",
+          "domain": "Complex",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "name": "simple_definition",
+          "query": "Define the key differences between Scope 1, 2, and 3 emissions.",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "name": "simple_comparison",
+          "query": "Compare the total cost of ownership between on-premise and cloud hosting.",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "name": "simple_threshold",
+          "query": "Is our current debt-to-equity ratio within the acceptable range for our industry?",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "name": "simple_checklist",
+          "query": "List the mandatory steps for onboarding a new vendor in our procurement system.",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "name": "simple_calculation",
+          "query": "Calculate the break-even point for our new product line at current margins.",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "name": "simple_status",
+          "query": "What is the current status of our SOC 2 Type II certification?",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "name": "simple_policy",
+          "query": "Summarise our company travel and expense reimbursement policy.",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "name": "simple_timeline",
+          "query": "When is the deadline for submitting our annual sustainability report?",
+          "domain": "Clear",
+          "reasoning_steps": 1,
+          "is_simple": true,
+          "latency_ms": 0.22,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-02-22T16:14:47.568743+00:00",
+  "benchmark_id": "xai",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\compliance\\benchmark_xai.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:xai",
+  "provenance": {
+    "source_reference": "benchmark:xai",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

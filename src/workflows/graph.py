@@ -497,6 +497,13 @@ async def governance_node(state: EpistemicState) -> EpistemicState:
         except Exception:
             pass  # Graph persistence is best-effort
 
+        # Feed triples into RAG index (non-blocking)
+        try:
+            from src.services.rag_service import get_rag_service
+            get_rag_service().ingest_triples(triples)
+        except Exception:
+            pass  # RAG triple ingestion is best-effort
+
         _duration = int((time.perf_counter() - _t0) * 1000)
         state.add_reasoning_step(
             node_name="governance",
@@ -559,8 +566,17 @@ def route_by_domain(state: EpistemicState | dict) -> str:
 
 
 def _governance_enabled() -> bool:
-    """Check if the governance subsystem is enabled."""
-    return os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true"
+    """Check if the governance subsystem is enabled.
+
+    Uses the deployment profile when available, but always re-checks the
+    env var to respect test-time monkey-patching.
+    """
+    try:
+        from src.core.deployment_profile import resolve_profile, _infer_mode
+        profile = resolve_profile(_infer_mode())
+        return profile.governance_enabled
+    except Exception:
+        return os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true"
 
 
 def route_after_guardian(
@@ -614,6 +630,56 @@ def route_after_human(state: EpistemicState | dict) -> Literal["router", "end"]:
 
 
 # =============================================================================
+# RAG CONTEXT NODE
+# =============================================================================
+
+
+# Domain-specific top_k for RAG retrieval
+_RAG_TOP_K = {
+    CynefinDomain.CLEAR: 2,
+    CynefinDomain.COMPLICATED: 3,
+    CynefinDomain.COMPLEX: 5,
+    CynefinDomain.CHAOTIC: 2,
+    CynefinDomain.DISORDER: 2,
+}
+
+
+@traced(name="carf.node.rag_context", attributes={"layer": "retrieval"})
+async def rag_context_node(state: EpistemicState) -> EpistemicState:
+    """Inject RAG context between router and domain agents.
+
+    Retrieves relevant documents from the RAG index and injects them
+    into the state context for downstream agents.  Pure pass-through
+    when the RAG index is empty.
+    """
+    try:
+        from src.services.rag_service import get_rag_service
+
+        rag = get_rag_service()
+        if rag.document_count == 0:
+            return state
+
+        top_k = _RAG_TOP_K.get(state.cynefin_domain, 3)
+        domain_id = state.cynefin_domain.value if state.cynefin_domain else None
+
+        rag_text = rag.retrieve_for_pipeline(
+            query=state.user_input,
+            domain_id=domain_id,
+            top_k=top_k,
+        )
+        if rag_text:
+            state.context["_rag_context"] = rag_text
+            logger.debug(
+                "RAG context injected (%d chars, domain=%s, top_k=%d)",
+                len(rag_text), domain_id, top_k,
+            )
+    except Exception as exc:
+        logger.debug("RAG context injection skipped: %s", exc)
+
+    return state
+
+
+# =============================================================================
 # GRAPH CONSTRUCTION
 # =============================================================================
 
@@ -629,6 +695,7 @@ def build_carf_graph() -> StateGraph:
 
     # --- Add Nodes ---
     workflow.add_node("router", cynefin_router_node)
+    workflow.add_node("rag_context", rag_context_node)
     workflow.add_node("deterministic_runner", deterministic_runner_node)
     workflow.add_node("causal_analyst", causal_analyst_node)
     workflow.add_node("bayesian_explorer", bayesian_explorer_node)
@@ -642,9 +709,12 @@ def build_carf_graph() -> StateGraph:
 
     # --- Add Edges ---
 
-    # Router → Domain Agents (conditional)
+    # Router → RAG Context → Domain Agents
+    workflow.add_edge("router", "rag_context")
+
+    # RAG Context → Domain Agents (conditional on domain)
     workflow.add_conditional_edges(
-        "router",
+        "rag_context",
         route_by_domain,
         {
             "deterministic_runner": "deterministic_runner",
@@ -758,6 +828,16 @@ async def run_carf(
         context=context or {},
     )
 
+    # Inject memory augmentation (non-critical)
+    try:
+        from src.services.agent_memory import get_agent_memory
+        memory = get_agent_memory()
+        if memory.size > 0:
+            augmentation = memory.get_context_augmentation(user_input)
+            initial_state.context["_memory_augmentation"] = augmentation
+    except Exception:
+        pass  # Memory augmentation is non-critical
+
     # Run the graph
     logger.info(f"Starting CARF pipeline for: {user_input[:50]}...")
     result = await graph.ainvoke(initial_state)
@@ -809,6 +889,13 @@ async def run_carf(
         ))
     except Exception:
         pass  # Experience buffer is non-critical
+
+    # Store to persistent agent memory (non-critical)
+    try:
+        from src.services.agent_memory import get_agent_memory
+        get_agent_memory().store_from_state(final_state)
+    except Exception:
+        pass  # Persistent memory is non-critical
 
     logger.info(
         f"CARF pipeline complete. Domain: {final_state.cynefin_domain.value}, "

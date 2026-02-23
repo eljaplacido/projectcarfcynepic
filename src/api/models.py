@@ -193,6 +193,9 @@ class QueryResponse(BaseModel):
     bayesian_result: BayesianResult | None = Field(None, alias="bayesianResult", serialization_alias="bayesianResult")
     guardian_result: GuardianResult | None = Field(None, alias="guardianResult", serialization_alias="guardianResult")
     error: str | None = None
+    # Key insights and next steps for the frontend panels
+    key_insights: list[str] = Field(default_factory=list, alias="keyInsights", serialization_alias="keyInsights")
+    next_steps: list[str] = Field(default_factory=list, alias="nextSteps", serialization_alias="nextSteps")
     # Router transparency fields
     router_reasoning: str | None = Field(None, alias="routerReasoning", serialization_alias="routerReasoning")
     router_key_indicators: list[str] = Field(default_factory=list, alias="routerKeyIndicators", serialization_alias="routerKeyIndicators")

@@ -34,6 +34,7 @@ from src.core.state import (
 )
 from src.services.csl_policy_service import get_csl_service
 from src.services.opa_service import get_opa_service
+from src.utils.currency import get_currency_config_hint, normalize_currency_amount
 
 logger = logging.getLogger("carf.guardian")
 
@@ -253,26 +254,43 @@ class PolicyEngine:
         limit = policy.get("value", float("inf"))
         policy_currency = policy.get("currency", "USD")
 
-        if currency != policy_currency:
+        normalized = normalize_currency_amount(
+            amount=amount,
+            source_currency=currency,
+            target_currency=policy_currency,
+        )
+        effective_amount = amount
+        if normalized.success and normalized.normalized_amount is not None:
+            effective_amount = normalized.normalized_amount
+        else:
+            hint = get_currency_config_hint()
             violations.append(PolicyViolation(
-                policy_name="currency_mismatch",
+                policy_name="currency_conversion_unavailable",
                 policy_category="financial",
                 description=(
-                    f"Currency mismatch: action uses {currency} "
-                    f"but policy limit is in {policy_currency}"
+                    f"Cannot convert {currency} to policy currency {policy_currency}. "
+                    f"Reason: {normalized.reason or 'unknown'}."
                 ),
-                severity="medium",
+                severity="high",
                 suggested_fix=(
-                    f"Convert amount to {policy_currency} or "
-                    f"specify the amount in {policy_currency}"
+                    "Configure CARF_FX_RATES_JSON with required currencies. "
+                    f"Current configured currencies: {', '.join(hint.get('configured_currencies', []))}"
                 ),
             ))
 
-        if amount > limit:
+        if effective_amount > limit:
+            amount_description = (
+                f"{effective_amount:,.2f} {policy_currency}"
+                if policy_currency != currency
+                else f"{amount:,.2f} {currency}"
+            )
             violations.append(PolicyViolation(
                 policy_name="auto_approval_limit",
                 policy_category="financial",
-                description=f"Amount {amount:,.2f} {currency} exceeds auto-approval limit of {limit:,.2f} {policy_currency}",
+                description=(
+                    f"Amount {amount_description} exceeds auto-approval limit of "
+                    f"{limit:,.2f} {policy_currency}"
+                ),
                 severity="high",
                 suggested_fix=f"Reduce amount to {limit:,.2f} {policy_currency} or request human approval",
             ))
@@ -355,14 +373,45 @@ class PolicyEngine:
         else:
             policy = self.get_policy("financial", "auto_approval_limit")
             limit = policy.get("value", float("inf")) if policy else float("inf")
+        policy_currency = (
+            self.get_policy("financial", "auto_approval_limit") or {}
+        ).get("currency", "USD")
 
-        if amount > limit:
+        normalized = normalize_currency_amount(
+            amount=amount,
+            source_currency=currency,
+            target_currency=policy_currency,
+        )
+        effective_amount = amount
+        if normalized.success and normalized.normalized_amount is not None:
+            effective_amount = normalized.normalized_amount
+        else:
+            hint = get_currency_config_hint()
+            violations.append(PolicyViolation(
+                policy_name="currency_conversion_unavailable",
+                policy_category="financial",
+                description=(
+                    f"Cannot convert {currency} to policy currency {policy_currency}. "
+                    f"Reason: {normalized.reason or 'unknown'}."
+                ),
+                severity="high",
+                suggested_fix=(
+                    "Configure CARF_FX_RATES_JSON with required currencies. "
+                    f"Current configured currencies: {', '.join(hint.get('configured_currencies', []))}"
+                ),
+                user_overridable=False,
+            ))
+
+        if effective_amount > limit:
             violations.append(PolicyViolation(
                 policy_name="auto_approval_limit",
                 policy_category="financial",
-                description=f"Amount {amount:,.2f} {currency} exceeds limit of {limit:,.2f} for domain {domain.value if domain else 'default'}",
+                description=(
+                    f"Amount {effective_amount:,.2f} {policy_currency} exceeds limit of "
+                    f"{limit:,.2f} {policy_currency} for domain {domain.value if domain else 'default'}"
+                ),
                 severity="high",
-                suggested_fix=f"Reduce amount to {limit:,.2f} {currency} or request human approval",
+                suggested_fix=f"Reduce amount to {limit:,.2f} {policy_currency} or request human approval",
                 user_overridable=True,
                 override_requirements=["Manager approval", "Business justification"],
             ))

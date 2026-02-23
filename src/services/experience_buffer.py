@@ -20,26 +20,22 @@ from pydantic import BaseModel, Field
 
 logger = logging.getLogger("carf.experience_buffer")
 
-# ── Lazy sentence-transformer loader ────────────────────────────────────
-
-_sentence_model = None
-_sentence_model_loaded = False
-
+# ── Lazy sentence-transformer loader (delegates to shared EmbeddingEngine) ──
 
 def _load_sentence_model():
-    """Lazy-load SentenceTransformer model; cache globally."""
-    global _sentence_model, _sentence_model_loaded
-    if _sentence_model_loaded:
-        return _sentence_model
-    _sentence_model_loaded = True
+    """Check if dense embeddings are available via the shared EmbeddingEngine.
+
+    Returns the EmbeddingEngine if dense is available, else None.
+    This avoids loading a second copy of the model.
+    """
     try:
-        from sentence_transformers import SentenceTransformer
-        _sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
-        logger.info("Loaded sentence-transformers model (all-MiniLM-L6-v2)")
+        from src.services.embedding_engine import get_embedding_engine
+        engine = get_embedding_engine()
+        if engine.dense_available:
+            return engine
     except Exception:
-        _sentence_model = None
-        logger.debug("sentence-transformers not available; will use TF-IDF fallback")
-    return _sentence_model
+        pass
+    return None
 
 
 class ExperienceEntry(BaseModel):
@@ -100,10 +96,10 @@ class ExperienceBuffer:
         queries = [e.query for e in self._entries]
 
         if self._use_embeddings:
-            model = _load_sentence_model()
-            if model is not None:
+            engine = _load_sentence_model()
+            if engine is not None:
                 try:
-                    self._embeddings = model.encode(queries, convert_to_numpy=True)
+                    self._embeddings = engine.encode(queries)
                     self._dirty = False
                     return
                 except Exception as e:
@@ -158,11 +154,12 @@ class ExperienceBuffer:
     ) -> list[tuple[ExperienceEntry, float]]:
         """Find similar using sentence embeddings + cosine similarity."""
         try:
-            from sklearn.metrics.pairwise import cosine_similarity
-
-            model = _load_sentence_model()
-            query_vec = model.encode([query], convert_to_numpy=True)
-            similarities = cosine_similarity(query_vec, self._embeddings).flatten()
+            engine = _load_sentence_model()
+            if engine is None:
+                return []
+            query_vec = engine.encode([query])
+            from src.services.embedding_engine import EmbeddingEngine
+            similarities = EmbeddingEngine.cosine_similarity(query_vec, self._embeddings).flatten()
             return self._rank_results(similarities, top_k, min_similarity)
         except Exception as e:
             logger.warning(f"Embedding similarity failed: {e}")

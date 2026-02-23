@@ -630,7 +630,7 @@ const EvaluationMetricsPanel: React.FC<{ response: QueryResponse | null }> = ({ 
                 reasoning_depth: Math.min(1, baseScore * 0.9 + Math.random() * 0.15),
                 uix_compliance: Math.min(1, baseScore * 0.85 + Math.random() * 0.2),
                 task_completion: baseScore > 0.6,
-                evaluation_model: 'deepseek-chat',
+                evaluation_model: 'deepseek-reasoner',
                 evaluation_latency_ms: Math.floor(150 + Math.random() * 200)
             });
         }

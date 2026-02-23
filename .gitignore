@@ -80,5 +80,11 @@ backend.log
 # Pytest temp
 .pytest_tmp/
 
+# Temp / scratch files
+tmp_*.txt
+
+# Runtime data
+data/
+
 # Sensitive IP Documentation
 carf_benchmarking_strategy.md

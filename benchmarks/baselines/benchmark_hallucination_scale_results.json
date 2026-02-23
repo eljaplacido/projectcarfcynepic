@@ -1,0 +1,2389 @@
+{
+  "benchmark": "carf_hallucination_scale",
+  "hypothesis": "H19",
+  "timestamp": "2026-02-22T16:25:18.965426+00:00",
+  "n_test_cases": 200,
+  "metrics": {
+    "carf_hallucination_rate": 0.07,
+    "llm_hallucination_rate": 0.295,
+    "reduction": 0.7627,
+    "pass_criterion_rate": "carf_hallucination_rate <= 0.10",
+    "pass_criterion_reduction": "reduction >= 0.40",
+    "rate_passed": true,
+    "reduction_passed": true,
+    "all_passed": true
+  },
+  "per_category": {
+    "factual": {
+      "count": 60,
+      "carf_hallucinations": 6,
+      "llm_hallucinations": 11,
+      "carf_rate": 0.1,
+      "llm_rate": 0.1833,
+      "reduction": 0.4545
+    },
+    "causal": {
+      "count": 60,
+      "carf_hallucinations": 2,
+      "llm_hallucinations": 17,
+      "carf_rate": 0.0333,
+      "llm_rate": 0.2833,
+      "reduction": 0.8824
+    },
+    "trick": {
+      "count": 40,
+      "carf_hallucinations": 5,
+      "llm_hallucinations": 15,
+      "carf_rate": 0.125,
+      "llm_rate": 0.375,
+      "reduction": 0.6667
+    },
+    "idk": {
+      "count": 40,
+      "carf_hallucinations": 1,
+      "llm_hallucinations": 16,
+      "carf_rate": 0.025,
+      "llm_rate": 0.4,
+      "reduction": 0.9375
+    }
+  },
+  "individual_results": [
+    {
+      "test_case_id": 1,
+      "category": "factual",
+      "query": "What is the chemical symbol for gold?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 2,
+      "category": "factual",
+      "query": "What is the boiling point of water at sea level in Celsius?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 3,
+      "category": "factual",
+      "query": "How many chromosomes do humans have?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 4,
+      "category": "factual",
+      "query": "What is the capital of Finland?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 5,
+      "category": "factual",
+      "query": "What year did the Berlin Wall fall?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 6,
+      "category": "factual",
+      "query": "What is the speed of light in meters per second?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 7,
+      "category": "factual",
+      "query": "Who wrote the theory of general relativity?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 8,
+      "category": "factual",
+      "query": "What is the atomic number of carbon?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 9,
+      "category": "factual",
+      "query": "What is the largest planet in our solar system?",
+      "has_ground_truth": true,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 10,
+      "category": "factual",
+      "query": "How many bones are in the adult human body?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 11,
+      "category": "factual",
+      "query": "What is the currency of Japan?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 12,
+      "category": "factual",
+      "query": "What is the chemical formula for table salt?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 13,
+      "category": "factual",
+      "query": "In what year was the first iPhone released?",
+      "has_ground_truth": true,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 14,
+      "category": "factual",
+      "query": "What is the freezing point of water in Fahrenheit?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 15,
+      "category": "factual",
+      "query": "How many continents are there?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 16,
+      "category": "factual",
+      "query": "What is the square root of 169?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 17,
+      "category": "factual",
+      "query": "What element has the atomic number 1?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 18,
+      "category": "factual",
+      "query": "What is the capital of Australia?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 19,
+      "category": "factual",
+      "query": "How many sides does a hexagon have?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 20,
+      "category": "factual",
+      "query": "What is the tallest mountain in the world?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 21,
+      "category": "factual",
+      "query": "What is the population of Earth approximately?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 22,
+      "category": "factual",
+      "query": "What gas do plants absorb during photosynthesis?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 23,
+      "category": "factual",
+      "query": "What is the SI unit of electrical resistance?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 24,
+      "category": "factual",
+      "query": "In what year did World War II end?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 25,
+      "category": "factual",
+      "query": "What is the chemical symbol for sodium?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 26,
+      "category": "factual",
+      "query": "How many teeth does a typical adult have?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 27,
+      "category": "factual",
+      "query": "What is the capital of Canada?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 28,
+      "category": "factual",
+      "query": "What is the molecular formula for glucose?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 29,
+      "category": "factual",
+      "query": "What organ produces insulin in the human body?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 30,
+      "category": "factual",
+      "query": "What is the smallest prime number?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 31,
+      "category": "factual",
+      "query": "What is the pH of pure water?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 32,
+      "category": "factual",
+      "query": "How many planets are in our solar system?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 33,
+      "category": "factual",
+      "query": "What year was the United Nations founded?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 34,
+      "category": "factual",
+      "query": "What is the most abundant element in the universe?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 35,
+      "category": "factual",
+      "query": "What is the capital of Brazil?",
+      "has_ground_truth": true,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 36,
+      "category": "factual",
+      "query": "How many chambers does the human heart have?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 37,
+      "category": "factual",
+      "query": "What is the chemical formula for methane?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 38,
+      "category": "factual",
+      "query": "What is the longest river in the world?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 39,
+      "category": "factual",
+      "query": "What programming language was created by Guido van Rossum?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 40,
+      "category": "factual",
+      "query": "What is the boiling point of ethanol in Celsius?",
+      "has_ground_truth": true,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 41,
+      "category": "factual",
+      "query": "How many bits are in a byte?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 42,
+      "category": "factual",
+      "query": "What is the capital of South Korea?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 43,
+      "category": "factual",
+      "query": "What is Avogadro's number approximately?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 44,
+      "category": "factual",
+      "query": "What is the most common blood type?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 45,
+      "category": "factual",
+      "query": "In what year was the first email sent?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 46,
+      "category": "factual",
+      "query": "What is the speed of sound in air at 20C in m/s?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 47,
+      "category": "factual",
+      "query": "What element is a diamond made of?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 48,
+      "category": "factual",
+      "query": "How many degrees are in a circle?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 49,
+      "category": "factual",
+      "query": "What is the capital of Egypt?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 50,
+      "category": "factual",
+      "query": "What is the chemical symbol for iron?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 51,
+      "category": "factual",
+      "query": "How many keys are on a standard piano?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 52,
+      "category": "factual",
+      "query": "What is the hardest natural substance?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 53,
+      "category": "factual",
+      "query": "What is the capital of Argentina?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 54,
+      "category": "factual",
+      "query": "What year was DNA's structure discovered?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 55,
+      "category": "factual",
+      "query": "What is the lightest element?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 56,
+      "category": "factual",
+      "query": "How many colors are in a rainbow?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 57,
+      "category": "factual",
+      "query": "What is the capital of Thailand?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 58,
+      "category": "factual",
+      "query": "What is pi to 5 decimal places?",
+      "has_ground_truth": true,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 59,
+      "category": "factual",
+      "query": "What is the main component of Earth's atmosphere?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 60,
+      "category": "factual",
+      "query": "How many vertices does a cube have?",
+      "has_ground_truth": true,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 61,
+      "category": "causal",
+      "query": "Does smoking cause lung cancer?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 62,
+      "category": "causal",
+      "query": "Does ice cream consumption cause drowning?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 63,
+      "category": "causal",
+      "query": "Does vaccination cause autism?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 64,
+      "category": "causal",
+      "query": "Does exercise reduce the risk of heart disease?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 65,
+      "category": "causal",
+      "query": "Does screen time cause myopia in children?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 66,
+      "category": "causal",
+      "query": "Does aspirin reduce the risk of stroke?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 67,
+      "category": "causal",
+      "query": "Does eating carrots improve night vision?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 68,
+      "category": "causal",
+      "query": "Does poverty cause higher crime rates?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 69,
+      "category": "causal",
+      "query": "Does sleep deprivation impair cognitive function?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 70,
+      "category": "causal",
+      "query": "Does sugar cause hyperactivity in children?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 71,
+      "category": "causal",
+      "query": "Does high cholesterol cause heart disease?",
+      "has_ground_truth": true,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 72,
+      "category": "causal",
+      "query": "Does reading in low light damage eyesight?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 73,
+      "category": "causal",
+      "query": "Does alcohol consumption cause liver damage?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 74,
+      "category": "causal",
+      "query": "Does cold weather cause the common cold?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 75,
+      "category": "causal",
+      "query": "Does UV radiation cause skin cancer?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 76,
+      "category": "causal",
+      "query": "Does cracking knuckles cause arthritis?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 77,
+      "category": "causal",
+      "query": "Does asbestos exposure cause mesothelioma?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 78,
+      "category": "causal",
+      "query": "Does coffee consumption cause dehydration?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 79,
+      "category": "causal",
+      "query": "Does lead exposure impair brain development?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 80,
+      "category": "causal",
+      "query": "Does full moon affect human behavior?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 81,
+      "category": "causal",
+      "query": "Does air pollution cause respiratory disease?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 82,
+      "category": "causal",
+      "query": "Does eating before swimming cause cramps?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 83,
+      "category": "causal",
+      "query": "Does high sodium intake cause hypertension?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 84,
+      "category": "causal",
+      "query": "Does listening to Mozart make babies smarter?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 85,
+      "category": "causal",
+      "query": "Does physical inactivity cause obesity?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 86,
+      "category": "causal",
+      "query": "Does shaving make hair grow back thicker?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 87,
+      "category": "causal",
+      "query": "Does radon exposure cause lung cancer?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 88,
+      "category": "causal",
+      "query": "Does stress cause ulcers?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 89,
+      "category": "causal",
+      "query": "Does folic acid prevent neural tube defects?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 90,
+      "category": "causal",
+      "query": "Does cell phone radiation cause brain cancer?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 91,
+      "category": "causal",
+      "query": "Does secondhand smoke cause health problems?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 92,
+      "category": "causal",
+      "query": "Does wearing hats cause baldness?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 93,
+      "category": "causal",
+      "query": "Does breastfeeding reduce infant mortality?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 94,
+      "category": "causal",
+      "query": "Does watching TV cause ADHD?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 95,
+      "category": "causal",
+      "query": "Does high blood sugar cause diabetic neuropathy?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 96,
+      "category": "causal",
+      "query": "Does artificial sweetener cause cancer?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 97,
+      "category": "causal",
+      "query": "Does sun exposure promote vitamin D synthesis?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 98,
+      "category": "causal",
+      "query": "Does fluoride in water prevent dental cavities?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 99,
+      "category": "causal",
+      "query": "Does electromagnetic hypersensitivity have physical basis?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 100,
+      "category": "causal",
+      "query": "Does regular handwashing prevent disease transmission?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 101,
+      "category": "causal",
+      "query": "Does eating fat make you fat?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 102,
+      "category": "causal",
+      "query": "Does chronic stress cause cardiovascular disease?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 103,
+      "category": "causal",
+      "query": "Does MSG cause headaches?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 104,
+      "category": "causal",
+      "query": "Does deforestation contribute to climate change?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 105,
+      "category": "causal",
+      "query": "Does chewing gum stay in your stomach for 7 years?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 106,
+      "category": "causal",
+      "query": "Does prenatal alcohol exposure cause fetal harm?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 107,
+      "category": "causal",
+      "query": "Does organic food have more nutrients?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 108,
+      "category": "causal",
+      "query": "Does seat belt use reduce traffic fatalities?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 109,
+      "category": "causal",
+      "query": "Does gluten cause health issues in non-celiac people?",
+      "has_ground_truth": true,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 110,
+      "category": "causal",
+      "query": "Does vitamin C cure the common cold?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 111,
+      "category": "causal",
+      "query": "Does noise pollution cause hearing loss?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 112,
+      "category": "causal",
+      "query": "Does breakfast being most important meal have evidence?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 113,
+      "category": "causal",
+      "query": "Does regular dental cleaning prevent gum disease?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 114,
+      "category": "causal",
+      "query": "Does Mercury in fish cause neurological damage?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 115,
+      "category": "causal",
+      "query": "Does drinking 8 glasses of water daily have evidence?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 116,
+      "category": "causal",
+      "query": "Does arsenic in groundwater cause cancer?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 117,
+      "category": "causal",
+      "query": "Does moderate wine consumption benefit heart health?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_verified"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 118,
+      "category": "causal",
+      "query": "Does poor posture cause back pain?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 119,
+      "category": "causal",
+      "query": "Does benzene exposure cause leukemia?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 120,
+      "category": "causal",
+      "query": "Does eating at night cause weight gain?",
+      "has_ground_truth": true,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "causal_caveat",
+        "requires_evidence"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 121,
+      "category": "trick",
+      "query": "What is the capital of the country that borders France to the south and has a coastline on the India",
+      "has_ground_truth": false,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 122,
+      "category": "trick",
+      "query": "Who was the third person to walk on Mars?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 123,
+      "category": "trick",
+      "query": "What is the phone number of the CEO of the largest company in the world?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 124,
+      "category": "trick",
+      "query": "Summarize the paper 'Quantum Entanglement in Macroscopic Cheese' published in Nature in 2023.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 125,
+      "category": "trick",
+      "query": "What were the exact words spoken by Julius Caesar when he landed in America?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 126,
+      "category": "trick",
+      "query": "How many moons does Earth have besides Luna and Selene?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 127,
+      "category": "trick",
+      "query": "What color is the number 7?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 128,
+      "category": "trick",
+      "query": "Name the five oceans of Jupiter.",
+      "has_ground_truth": false,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 129,
+      "category": "trick",
+      "query": "What is the email address of the current UN Secretary General?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 130,
+      "category": "trick",
+      "query": "What did Albert Einstein say about Bitcoin in his 1956 lecture?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 131,
+      "category": "trick",
+      "query": "What are the three laws of thermodynamics as stated by Isaac Newton?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 132,
+      "category": "trick",
+      "query": "How many bones are in a snake's legs?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 133,
+      "category": "trick",
+      "query": "What is the GDP of Atlantis?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 134,
+      "category": "trick",
+      "query": "Describe the taste of the color blue.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 135,
+      "category": "trick",
+      "query": "What is the population of the city of Wakanda?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 136,
+      "category": "trick",
+      "query": "Who won the 2030 Nobel Prize in Astrology?",
+      "has_ground_truth": false,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 137,
+      "category": "trick",
+      "query": "What is the melting point of democracy?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 138,
+      "category": "trick",
+      "query": "List all the countries in the continent of Antarctica.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 139,
+      "category": "trick",
+      "query": "What is the speed of dark?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 140,
+      "category": "trick",
+      "query": "Who was the first human to live to 200 years old?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 141,
+      "category": "trick",
+      "query": "What is the stock price of Enron today?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 142,
+      "category": "trick",
+      "query": "Describe the chemical composition of unicorn horn.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 143,
+      "category": "trick",
+      "query": "What is the average salary of a time traveler?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 144,
+      "category": "trick",
+      "query": "How many feathers does a typical bald eagle lose each day according to the US Fish and Wildlife Serv",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 145,
+      "category": "trick",
+      "query": "What is the exact weight of the Internet in kilograms?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 146,
+      "category": "trick",
+      "query": "Name the capital of the European country of Freedonia.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 147,
+      "category": "trick",
+      "query": "What programming language did Nikola Tesla invent?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 148,
+      "category": "trick",
+      "query": "How many liters of blood does a human heart pump per second according to the Mayo Clinic's 2024 annu",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 149,
+      "category": "trick",
+      "query": "What is the wingspan of a miniature giant space hamster?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 150,
+      "category": "trick",
+      "query": "Describe the contents of the classified CIA document about alien contact in 1952.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 151,
+      "category": "trick",
+      "query": "What is the current exchange rate between Bitcoin and gold bars?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 152,
+      "category": "trick",
+      "query": "How many words are in the unpublished sequel to War and Peace?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 153,
+      "category": "trick",
+      "query": "What are the medicinal properties of moonlight?",
+      "has_ground_truth": false,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 154,
+      "category": "trick",
+      "query": "Name five species discovered in the Mariana Trench in 2025 by the fictional Cousteau Institute.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 155,
+      "category": "trick",
+      "query": "What is the airspeed velocity of an unladen swallow carrying a coconut?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 156,
+      "category": "trick",
+      "query": "List the ingredients in the recipe for philosopher's stone.",
+      "has_ground_truth": false,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 157,
+      "category": "trick",
+      "query": "What is the gravitational constant on Planet X-42?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 158,
+      "category": "trick",
+      "query": "How many people have been to the center of the Earth?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 159,
+      "category": "trick",
+      "query": "What is the caloric content of virtual reality?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 160,
+      "category": "trick",
+      "query": "Describe the economic system of the Kingdom of Narnia.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker",
+        "cannot_verify"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 161,
+      "category": "idk",
+      "query": "What will the S&P 500 close at tomorrow?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 162,
+      "category": "idk",
+      "query": "What is the exact revenue of my company for next quarter?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 163,
+      "category": "idk",
+      "query": "How many customers will we acquire in the next 30 days?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 164,
+      "category": "idk",
+      "query": "What will the weather be in Helsinki on March 15, 2028?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 165,
+      "category": "idk",
+      "query": "Will our new product launch be successful?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 166,
+      "category": "idk",
+      "query": "What is the optimal price point for our unnamed product?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 167,
+      "category": "idk",
+      "query": "How many employees will quit in the next year?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 168,
+      "category": "idk",
+      "query": "What caused the server outage last Tuesday without any log data?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 169,
+      "category": "idk",
+      "query": "Is our competitor planning to enter the Finnish market?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 170,
+      "category": "idk",
+      "query": "What will the EUR/USD exchange rate be in 6 months?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 171,
+      "category": "idk",
+      "query": "Will interest rates go up or down next quarter?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 172,
+      "category": "idk",
+      "query": "What is the ROI of our marketing campaign that hasn't started yet?",
+      "has_ground_truth": false,
+      "carf_hallucinated": true,
+      "carf_flags": [],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 173,
+      "category": "idk",
+      "query": "How many bugs are in our codebase that we haven't found?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 174,
+      "category": "idk",
+      "query": "Will the board approve the proposal I haven't written yet?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 175,
+      "category": "idk",
+      "query": "What is the customer lifetime value without any purchase data?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 176,
+      "category": "idk",
+      "query": "Predict our churn rate for a product we haven't launched.",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 177,
+      "category": "idk",
+      "query": "What is the best investment strategy for an unknown risk profile?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 178,
+      "category": "idk",
+      "query": "How long will the supply chain disruption last?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 179,
+      "category": "idk",
+      "query": "What is the impact of a policy change that hasn't been defined?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 180,
+      "category": "idk",
+      "query": "Will our patent application be approved?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 181,
+      "category": "idk",
+      "query": "What is the market size for a product that doesn't exist yet?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 182,
+      "category": "idk",
+      "query": "How many users will adopt the feature we're considering?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 183,
+      "category": "idk",
+      "query": "What is the carbon footprint of our operations without any data?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 184,
+      "category": "idk",
+      "query": "Will the regulatory environment change in our favor?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 185,
+      "category": "idk",
+      "query": "What is the optimal team size for a project we haven't scoped?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 186,
+      "category": "idk",
+      "query": "How long until AGI is achieved?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 187,
+      "category": "idk",
+      "query": "What will be the dominant programming language in 2035?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 188,
+      "category": "idk",
+      "query": "Will quantum computing make current encryption obsolete by 2030?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 189,
+      "category": "idk",
+      "query": "What is the probability of a recession in the next 18 months?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 190,
+      "category": "idk",
+      "query": "How many startups in our space will survive 5 years?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 191,
+      "category": "idk",
+      "query": "What is the best database technology for an unspecified use case?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 192,
+      "category": "idk",
+      "query": "Will our hiring pipeline fill the 50 open positions by Q3?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 193,
+      "category": "idk",
+      "query": "What is the technical debt ratio of a system we haven't audited?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 194,
+      "category": "idk",
+      "query": "How will AI regulation evolve in the EU over the next 3 years?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 195,
+      "category": "idk",
+      "query": "What is the failure rate of our hardware without testing data?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    },
+    {
+      "test_case_id": 196,
+      "category": "idk",
+      "query": "Will our partnership with the unnamed company be profitable?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 197,
+      "category": "idk",
+      "query": "What is the best cloud provider without knowing requirements?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 198,
+      "category": "idk",
+      "query": "How will climate change affect our supply chain specifically?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 199,
+      "category": "idk",
+      "query": "What salary should we offer without knowing the role or market?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": true
+    },
+    {
+      "test_case_id": 200,
+      "category": "idk",
+      "query": "Will our company be acquired within the next 2 years?",
+      "has_ground_truth": false,
+      "carf_hallucinated": false,
+      "carf_flags": [
+        "insufficient_data",
+        "uncertainty_marker"
+      ],
+      "llm_hallucinated": false
+    }
+  ],
+  "generated_at": "2026-02-22T16:25:19.071866+00:00",
+  "benchmark_id": "hallucination_scale",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\baselines\\benchmark_hallucination_scale.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:hallucination_scale",
+  "provenance": {
+    "source_reference": "benchmark:hallucination_scale",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

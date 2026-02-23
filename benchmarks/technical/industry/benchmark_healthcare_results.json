@@ -1,0 +1,5275 @@
+{
+  "benchmark": "carf_healthcare_ihdp",
+  "hypothesis": "H35",
+  "timestamp": "2026-02-22T16:31:55.889504+00:00",
+  "n_subjects": 747,
+  "n_continuous_features": 6,
+  "n_binary_features": 19,
+  "elapsed_seconds": 32.8004,
+  "metrics": {
+    "cate_accuracy_vs_rct": 0.8809,
+    "cate_accuracy_target": 0.9,
+    "cate_accuracy_passed": false,
+    "true_ate": 10.5248,
+    "estimated_ate": 9.8896,
+    "ate_bias": -0.6352,
+    "ate_relative_error": 0.0604,
+    "cate_rmse": 2.2469,
+    "cate_mae": 1.6925,
+    "n_accurate": 658
+  },
+  "individual_results": [
+    {
+      "subject_id": 1,
+      "true_ite": 9.134,
+      "estimated_cate": 9.8896,
+      "bias": 0.7556,
+      "accurate": true
+    },
+    {
+      "subject_id": 2,
+      "true_ite": 14.0862,
+      "estimated_cate": 9.8896,
+      "bias": -4.1966,
+      "accurate": true
+    },
+    {
+      "subject_id": 3,
+      "true_ite": 9.4035,
+      "estimated_cate": 9.8896,
+      "bias": 0.4861,
+      "accurate": true
+    },
+    {
+      "subject_id": 4,
+      "true_ite": 12.0504,
+      "estimated_cate": 9.8896,
+      "bias": -2.1608,
+      "accurate": true
+    },
+    {
+      "subject_id": 5,
+      "true_ite": 12.8492,
+      "estimated_cate": 9.8896,
+      "bias": -2.9596,
+      "accurate": true
+    },
+    {
+      "subject_id": 6,
+      "true_ite": 14.2408,
+      "estimated_cate": 9.8896,
+      "bias": -4.3512,
+      "accurate": false
+    },
+    {
+      "subject_id": 7,
+      "true_ite": 14.2889,
+      "estimated_cate": 9.8896,
+      "bias": -4.3993,
+      "accurate": false
+    },
+    {
+      "subject_id": 8,
+      "true_ite": 9.5087,
+      "estimated_cate": 9.8896,
+      "bias": 0.3809,
+      "accurate": true
+    },
+    {
+      "subject_id": 9,
+      "true_ite": 9.8819,
+      "estimated_cate": 9.8896,
+      "bias": 0.0077,
+      "accurate": true
+    },
+    {
+      "subject_id": 10,
+      "true_ite": 11.1453,
+      "estimated_cate": 9.8896,
+      "bias": -1.2557,
+      "accurate": true
+    },
+    {
+      "subject_id": 11,
+      "true_ite": 8.9043,
+      "estimated_cate": 9.8896,
+      "bias": 0.9853,
+      "accurate": true
+    },
+    {
+      "subject_id": 12,
+      "true_ite": 8.3958,
+      "estimated_cate": 9.8896,
+      "bias": 1.4939,
+      "accurate": true
+    },
+    {
+      "subject_id": 13,
+      "true_ite": 10.7468,
+      "estimated_cate": 9.8896,
+      "bias": -0.8572,
+      "accurate": true
+    },
+    {
+      "subject_id": 14,
+      "true_ite": 10.0422,
+      "estimated_cate": 9.8896,
+      "bias": -0.1526,
+      "accurate": true
+    },
+    {
+      "subject_id": 15,
+      "true_ite": 11.2948,
+      "estimated_cate": 9.8896,
+      "bias": -1.4052,
+      "accurate": true
+    },
+    {
+      "subject_id": 16,
+      "true_ite": 9.4547,
+      "estimated_cate": 9.8896,
+      "bias": 0.4349,
+      "accurate": true
+    },
+    {
+      "subject_id": 17,
+      "true_ite": 8.2996,
+      "estimated_cate": 9.8896,
+      "bias": 1.59,
+      "accurate": true
+    },
+    {
+      "subject_id": 18,
+      "true_ite": 8.5485,
+      "estimated_cate": 9.8896,
+      "bias": 1.3411,
+      "accurate": true
+    },
+    {
+      "subject_id": 19,
+      "true_ite": 7.7618,
+      "estimated_cate": 9.8896,
+      "bias": 2.1278,
+      "accurate": true
+    },
+    {
+      "subject_id": 20,
+      "true_ite": 9.1069,
+      "estimated_cate": 9.8896,
+      "bias": 0.7827,
+      "accurate": true
+    },
+    {
+      "subject_id": 21,
+      "true_ite": 8.3957,
+      "estimated_cate": 9.8896,
+      "bias": 1.4939,
+      "accurate": true
+    },
+    {
+      "subject_id": 22,
+      "true_ite": 12.4914,
+      "estimated_cate": 9.8896,
+      "bias": -2.6018,
+      "accurate": true
+    },
+    {
+      "subject_id": 23,
+      "true_ite": 8.6544,
+      "estimated_cate": 9.8896,
+      "bias": 1.2352,
+      "accurate": true
+    },
+    {
+      "subject_id": 24,
+      "true_ite": 10.2883,
+      "estimated_cate": 9.8896,
+      "bias": -0.3987,
+      "accurate": true
+    },
+    {
+      "subject_id": 25,
+      "true_ite": 9.0547,
+      "estimated_cate": 9.8896,
+      "bias": 0.8349,
+      "accurate": true
+    },
+    {
+      "subject_id": 26,
+      "true_ite": 12.5532,
+      "estimated_cate": 9.8896,
+      "bias": -2.6636,
+      "accurate": true
+    },
+    {
+      "subject_id": 27,
+      "true_ite": 14.1748,
+      "estimated_cate": 9.8896,
+      "bias": -4.2852,
+      "accurate": false
+    },
+    {
+      "subject_id": 28,
+      "true_ite": 13.8486,
+      "estimated_cate": 9.8896,
+      "bias": -3.959,
+      "accurate": true
+    },
+    {
+      "subject_id": 29,
+      "true_ite": 9.65,
+      "estimated_cate": 9.8896,
+      "bias": 0.2396,
+      "accurate": true
+    },
+    {
+      "subject_id": 30,
+      "true_ite": 8.2021,
+      "estimated_cate": 9.8896,
+      "bias": 1.6875,
+      "accurate": true
+    },
+    {
+      "subject_id": 31,
+      "true_ite": 6.8953,
+      "estimated_cate": 9.8896,
+      "bias": 2.9943,
+      "accurate": false
+    },
+    {
+      "subject_id": 32,
+      "true_ite": 9.3947,
+      "estimated_cate": 9.8896,
+      "bias": 0.4949,
+      "accurate": true
+    },
+    {
+      "subject_id": 33,
+      "true_ite": 11.8679,
+      "estimated_cate": 9.8896,
+      "bias": -1.9783,
+      "accurate": true
+    },
+    {
+      "subject_id": 34,
+      "true_ite": 10.8018,
+      "estimated_cate": 9.8896,
+      "bias": -0.9122,
+      "accurate": true
+    },
+    {
+      "subject_id": 35,
+      "true_ite": 10.2104,
+      "estimated_cate": 9.8896,
+      "bias": -0.3208,
+      "accurate": true
+    },
+    {
+      "subject_id": 36,
+      "true_ite": 11.2,
+      "estimated_cate": 9.8896,
+      "bias": -1.3104,
+      "accurate": true
+    },
+    {
+      "subject_id": 37,
+      "true_ite": 14.0357,
+      "estimated_cate": 9.8896,
+      "bias": -4.1461,
+      "accurate": true
+    },
+    {
+      "subject_id": 38,
+      "true_ite": 14.8109,
+      "estimated_cate": 9.8896,
+      "bias": -4.9213,
+      "accurate": false
+    },
+    {
+      "subject_id": 39,
+      "true_ite": 8.583,
+      "estimated_cate": 9.8896,
+      "bias": 1.3066,
+      "accurate": true
+    },
+    {
+      "subject_id": 40,
+      "true_ite": 8.337,
+      "estimated_cate": 9.8896,
+      "bias": 1.5526,
+      "accurate": true
+    },
+    {
+      "subject_id": 41,
+      "true_ite": 9.727,
+      "estimated_cate": 9.8896,
+      "bias": 0.1626,
+      "accurate": true
+    },
+    {
+      "subject_id": 42,
+      "true_ite": 13.9542,
+      "estimated_cate": 9.8896,
+      "bias": -4.0646,
+      "accurate": true
+    },
+    {
+      "subject_id": 43,
+      "true_ite": 12.4851,
+      "estimated_cate": 9.8896,
+      "bias": -2.5955,
+      "accurate": true
+    },
+    {
+      "subject_id": 44,
+      "true_ite": 11.2948,
+      "estimated_cate": 9.8896,
+      "bias": -1.4052,
+      "accurate": true
+    },
+    {
+      "subject_id": 45,
+      "true_ite": 13.0833,
+      "estimated_cate": 9.8896,
+      "bias": -3.1937,
+      "accurate": true
+    },
+    {
+      "subject_id": 46,
+      "true_ite": 9.75,
+      "estimated_cate": 9.8896,
+      "bias": 0.1396,
+      "accurate": true
+    },
+    {
+      "subject_id": 47,
+      "true_ite": 7.5799,
+      "estimated_cate": 9.8896,
+      "bias": 2.3097,
+      "accurate": false
+    },
+    {
+      "subject_id": 48,
+      "true_ite": 12.1507,
+      "estimated_cate": 9.8896,
+      "bias": -2.2611,
+      "accurate": true
+    },
+    {
+      "subject_id": 49,
+      "true_ite": 8.0699,
+      "estimated_cate": 9.8896,
+      "bias": 1.8197,
+      "accurate": true
+    },
+    {
+      "subject_id": 50,
+      "true_ite": 12.4859,
+      "estimated_cate": 9.8896,
+      "bias": -2.5963,
+      "accurate": true
+    },
+    {
+      "subject_id": 51,
+      "true_ite": 9.2487,
+      "estimated_cate": 9.8896,
+      "bias": 0.6409,
+      "accurate": true
+    },
+    {
+      "subject_id": 52,
+      "true_ite": 7.4487,
+      "estimated_cate": 9.8896,
+      "bias": 2.4409,
+      "accurate": false
+    },
+    {
+      "subject_id": 53,
+      "true_ite": 10.214,
+      "estimated_cate": 9.8896,
+      "bias": -0.3244,
+      "accurate": true
+    },
+    {
+      "subject_id": 54,
+      "true_ite": 9.0677,
+      "estimated_cate": 9.8896,
+      "bias": 0.8219,
+      "accurate": true
+    },
+    {
+      "subject_id": 55,
+      "true_ite": 15.3586,
+      "estimated_cate": 9.8896,
+      "bias": -5.469,
+      "accurate": false
+    },
+    {
+      "subject_id": 56,
+      "true_ite": 10.3616,
+      "estimated_cate": 9.8896,
+      "bias": -0.472,
+      "accurate": true
+    },
+    {
+      "subject_id": 57,
+      "true_ite": 10.3719,
+      "estimated_cate": 9.8896,
+      "bias": -0.4823,
+      "accurate": true
+    },
+    {
+      "subject_id": 58,
+      "true_ite": 8.1848,
+      "estimated_cate": 9.8896,
+      "bias": 1.7048,
+      "accurate": true
+    },
+    {
+      "subject_id": 59,
+      "true_ite": 10.186,
+      "estimated_cate": 9.8896,
+      "bias": -0.2964,
+      "accurate": true
+    },
+    {
+      "subject_id": 60,
+      "true_ite": 10.4932,
+      "estimated_cate": 9.8896,
+      "bias": -0.6036,
+      "accurate": true
+    },
+    {
+      "subject_id": 61,
+      "true_ite": 10.1317,
+      "estimated_cate": 9.8896,
+      "bias": -0.2421,
+      "accurate": true
+    },
+    {
+      "subject_id": 62,
+      "true_ite": 8.4573,
+      "estimated_cate": 9.8896,
+      "bias": 1.4323,
+      "accurate": true
+    },
+    {
+      "subject_id": 63,
+      "true_ite": 10.4708,
+      "estimated_cate": 9.8896,
+      "bias": -0.5812,
+      "accurate": true
+    },
+    {
+      "subject_id": 64,
+      "true_ite": 8.3696,
+      "estimated_cate": 9.8896,
+      "bias": 1.52,
+      "accurate": true
+    },
+    {
+      "subject_id": 65,
+      "true_ite": 10.6023,
+      "estimated_cate": 9.8896,
+      "bias": -0.7127,
+      "accurate": true
+    },
+    {
+      "subject_id": 66,
+      "true_ite": 9.6026,
+      "estimated_cate": 9.8896,
+      "bias": 0.287,
+      "accurate": true
+    },
+    {
+      "subject_id": 67,
+      "true_ite": 10.7154,
+      "estimated_cate": 9.8896,
+      "bias": -0.8258,
+      "accurate": true
+    },
+    {
+      "subject_id": 68,
+      "true_ite": 11.3913,
+      "estimated_cate": 9.8896,
+      "bias": -1.5017,
+      "accurate": true
+    },
+    {
+      "subject_id": 69,
+      "true_ite": 11.3062,
+      "estimated_cate": 9.8896,
+      "bias": -1.4166,
+      "accurate": true
+    },
+    {
+      "subject_id": 70,
+      "true_ite": 10.4135,
+      "estimated_cate": 9.8896,
+      "bias": -0.5239,
+      "accurate": true
+    },
+    {
+      "subject_id": 71,
+      "true_ite": 12.4774,
+      "estimated_cate": 9.8896,
+      "bias": -2.5878,
+      "accurate": true
+    },
+    {
+      "subject_id": 72,
+      "true_ite": 15.8554,
+      "estimated_cate": 9.8896,
+      "bias": -5.9658,
+      "accurate": false
+    },
+    {
+      "subject_id": 73,
+      "true_ite": 10.2754,
+      "estimated_cate": 9.8896,
+      "bias": -0.3858,
+      "accurate": true
+    },
+    {
+      "subject_id": 74,
+      "true_ite": 8.3117,
+      "estimated_cate": 9.8896,
+      "bias": 1.5779,
+      "accurate": true
+    },
+    {
+      "subject_id": 75,
+      "true_ite": 12.496,
+      "estimated_cate": 9.8896,
+      "bias": -2.6064,
+      "accurate": true
+    },
+    {
+      "subject_id": 76,
+      "true_ite": 10.6696,
+      "estimated_cate": 9.8896,
+      "bias": -0.78,
+      "accurate": true
+    },
+    {
+      "subject_id": 77,
+      "true_ite": 8.1207,
+      "estimated_cate": 9.8896,
+      "bias": 1.7689,
+      "accurate": true
+    },
+    {
+      "subject_id": 78,
+      "true_ite": 10.504,
+      "estimated_cate": 9.8896,
+      "bias": -0.6144,
+      "accurate": true
+    },
+    {
+      "subject_id": 79,
+      "true_ite": 8.9531,
+      "estimated_cate": 9.8896,
+      "bias": 0.9365,
+      "accurate": true
+    },
+    {
+      "subject_id": 80,
+      "true_ite": 9.541,
+      "estimated_cate": 9.8896,
+      "bias": 0.3486,
+      "accurate": true
+    },
+    {
+      "subject_id": 81,
+      "true_ite": 8.3198,
+      "estimated_cate": 9.8896,
+      "bias": 1.5698,
+      "accurate": true
+    },
+    {
+      "subject_id": 82,
+      "true_ite": 10.6736,
+      "estimated_cate": 9.8896,
+      "bias": -0.7839,
+      "accurate": true
+    },
+    {
+      "subject_id": 83,
+      "true_ite": 9.999,
+      "estimated_cate": 9.8896,
+      "bias": -0.1094,
+      "accurate": true
+    },
+    {
+      "subject_id": 84,
+      "true_ite": 9.5748,
+      "estimated_cate": 9.8896,
+      "bias": 0.3148,
+      "accurate": true
+    },
+    {
+      "subject_id": 85,
+      "true_ite": 10.2054,
+      "estimated_cate": 9.8896,
+      "bias": -0.3158,
+      "accurate": true
+    },
+    {
+      "subject_id": 86,
+      "true_ite": 10.0492,
+      "estimated_cate": 9.8896,
+      "bias": -0.1596,
+      "accurate": true
+    },
+    {
+      "subject_id": 87,
+      "true_ite": 10.589,
+      "estimated_cate": 9.8896,
+      "bias": -0.6993,
+      "accurate": true
+    },
+    {
+      "subject_id": 88,
+      "true_ite": 11.7934,
+      "estimated_cate": 9.8896,
+      "bias": -1.9038,
+      "accurate": true
+    },
+    {
+      "subject_id": 89,
+      "true_ite": 9.3906,
+      "estimated_cate": 9.8896,
+      "bias": 0.499,
+      "accurate": true
+    },
+    {
+      "subject_id": 90,
+      "true_ite": 10.3797,
+      "estimated_cate": 9.8896,
+      "bias": -0.4901,
+      "accurate": true
+    },
+    {
+      "subject_id": 91,
+      "true_ite": 10.4276,
+      "estimated_cate": 9.8896,
+      "bias": -0.538,
+      "accurate": true
+    },
+    {
+      "subject_id": 92,
+      "true_ite": 10.5747,
+      "estimated_cate": 9.8896,
+      "bias": -0.6851,
+      "accurate": true
+    },
+    {
+      "subject_id": 93,
+      "true_ite": 10.2704,
+      "estimated_cate": 9.8896,
+      "bias": -0.3808,
+      "accurate": true
+    },
+    {
+      "subject_id": 94,
+      "true_ite": 12.7334,
+      "estimated_cate": 9.8896,
+      "bias": -2.8438,
+      "accurate": true
+    },
+    {
+      "subject_id": 95,
+      "true_ite": 12.44,
+      "estimated_cate": 9.8896,
+      "bias": -2.5503,
+      "accurate": true
+    },
+    {
+      "subject_id": 96,
+      "true_ite": 14.3781,
+      "estimated_cate": 9.8896,
+      "bias": -4.4885,
+      "accurate": false
+    },
+    {
+      "subject_id": 97,
+      "true_ite": 12.4176,
+      "estimated_cate": 9.8896,
+      "bias": -2.5279,
+      "accurate": true
+    },
+    {
+      "subject_id": 98,
+      "true_ite": 10.5498,
+      "estimated_cate": 9.8896,
+      "bias": -0.6602,
+      "accurate": true
+    },
+    {
+      "subject_id": 99,
+      "true_ite": 8.3461,
+      "estimated_cate": 9.8896,
+      "bias": 1.5435,
+      "accurate": true
+    },
+    {
+      "subject_id": 100,
+      "true_ite": 11.7555,
+      "estimated_cate": 9.8896,
+      "bias": -1.8659,
+      "accurate": true
+    },
+    {
+      "subject_id": 101,
+      "true_ite": 10.9204,
+      "estimated_cate": 9.8896,
+      "bias": -1.0308,
+      "accurate": true
+    },
+    {
+      "subject_id": 102,
+      "true_ite": 10.4308,
+      "estimated_cate": 9.8896,
+      "bias": -0.5412,
+      "accurate": true
+    },
+    {
+      "subject_id": 103,
+      "true_ite": 8.8847,
+      "estimated_cate": 9.8896,
+      "bias": 1.0049,
+      "accurate": true
+    },
+    {
+      "subject_id": 104,
+      "true_ite": 6.9365,
+      "estimated_cate": 9.8896,
+      "bias": 2.9531,
+      "accurate": false
+    },
+    {
+      "subject_id": 105,
+      "true_ite": 11.1522,
+      "estimated_cate": 9.8896,
+      "bias": -1.2626,
+      "accurate": true
+    },
+    {
+      "subject_id": 106,
+      "true_ite": 8.7773,
+      "estimated_cate": 9.8896,
+      "bias": 1.1123,
+      "accurate": true
+    },
+    {
+      "subject_id": 107,
+      "true_ite": 11.8674,
+      "estimated_cate": 9.8896,
+      "bias": -1.9778,
+      "accurate": true
+    },
+    {
+      "subject_id": 108,
+      "true_ite": 13.6155,
+      "estimated_cate": 9.8896,
+      "bias": -3.7259,
+      "accurate": true
+    },
+    {
+      "subject_id": 109,
+      "true_ite": 11.3208,
+      "estimated_cate": 9.8896,
+      "bias": -1.4312,
+      "accurate": true
+    },
+    {
+      "subject_id": 110,
+      "true_ite": 11.4721,
+      "estimated_cate": 9.8896,
+      "bias": -1.5825,
+      "accurate": true
+    },
+    {
+      "subject_id": 111,
+      "true_ite": 10.9979,
+      "estimated_cate": 9.8896,
+      "bias": -1.1083,
+      "accurate": true
+    },
+    {
+      "subject_id": 112,
+      "true_ite": 10.6877,
+      "estimated_cate": 9.8896,
+      "bias": -0.7981,
+      "accurate": true
+    },
+    {
+      "subject_id": 113,
+      "true_ite": 8.6751,
+      "estimated_cate": 9.8896,
+      "bias": 1.2145,
+      "accurate": true
+    },
+    {
+      "subject_id": 114,
+      "true_ite": 13.262,
+      "estimated_cate": 9.8896,
+      "bias": -3.3724,
+      "accurate": true
+    },
+    {
+      "subject_id": 115,
+      "true_ite": 6.9862,
+      "estimated_cate": 9.8896,
+      "bias": 2.9034,
+      "accurate": false
+    },
+    {
+      "subject_id": 116,
+      "true_ite": 8.4554,
+      "estimated_cate": 9.8896,
+      "bias": 1.4342,
+      "accurate": true
+    },
+    {
+      "subject_id": 117,
+      "true_ite": 14.2217,
+      "estimated_cate": 9.8896,
+      "bias": -4.3321,
+      "accurate": false
+    },
+    {
+      "subject_id": 118,
+      "true_ite": 7.577,
+      "estimated_cate": 9.8896,
+      "bias": 2.3126,
+      "accurate": false
+    },
+    {
+      "subject_id": 119,
+      "true_ite": 8.5344,
+      "estimated_cate": 9.8896,
+      "bias": 1.3553,
+      "accurate": true
+    },
+    {
+      "subject_id": 120,
+      "true_ite": 8.8551,
+      "estimated_cate": 9.8896,
+      "bias": 1.0346,
+      "accurate": true
+    },
+    {
+      "subject_id": 121,
+      "true_ite": 9.6126,
+      "estimated_cate": 9.8896,
+      "bias": 0.277,
+      "accurate": true
+    },
+    {
+      "subject_id": 122,
+      "true_ite": 10.3893,
+      "estimated_cate": 9.8896,
+      "bias": -0.4997,
+      "accurate": true
+    },
+    {
+      "subject_id": 123,
+      "true_ite": 10.7338,
+      "estimated_cate": 9.8896,
+      "bias": -0.8442,
+      "accurate": true
+    },
+    {
+      "subject_id": 124,
+      "true_ite": 10.5228,
+      "estimated_cate": 9.8896,
+      "bias": -0.6332,
+      "accurate": true
+    },
+    {
+      "subject_id": 125,
+      "true_ite": 9.2843,
+      "estimated_cate": 9.8896,
+      "bias": 0.6053,
+      "accurate": true
+    },
+    {
+      "subject_id": 126,
+      "true_ite": 8.473,
+      "estimated_cate": 9.8896,
+      "bias": 1.4166,
+      "accurate": true
+    },
+    {
+      "subject_id": 127,
+      "true_ite": 11.1952,
+      "estimated_cate": 9.8896,
+      "bias": -1.3055,
+      "accurate": true
+    },
+    {
+      "subject_id": 128,
+      "true_ite": 14.2506,
+      "estimated_cate": 9.8896,
+      "bias": -4.361,
+      "accurate": false
+    },
+    {
+      "subject_id": 129,
+      "true_ite": 10.8451,
+      "estimated_cate": 9.8896,
+      "bias": -0.9554,
+      "accurate": true
+    },
+    {
+      "subject_id": 130,
+      "true_ite": 14.174,
+      "estimated_cate": 9.8896,
+      "bias": -4.2844,
+      "accurate": false
+    },
+    {
+      "subject_id": 131,
+      "true_ite": 8.7183,
+      "estimated_cate": 9.8896,
+      "bias": 1.1713,
+      "accurate": true
+    },
+    {
+      "subject_id": 132,
+      "true_ite": 11.3241,
+      "estimated_cate": 9.8896,
+      "bias": -1.4345,
+      "accurate": true
+    },
+    {
+      "subject_id": 133,
+      "true_ite": 11.0156,
+      "estimated_cate": 9.8896,
+      "bias": -1.126,
+      "accurate": true
+    },
+    {
+      "subject_id": 134,
+      "true_ite": 13.988,
+      "estimated_cate": 9.8896,
+      "bias": -4.0984,
+      "accurate": true
+    },
+    {
+      "subject_id": 135,
+      "true_ite": 12.7654,
+      "estimated_cate": 9.8896,
+      "bias": -2.8757,
+      "accurate": true
+    },
+    {
+      "subject_id": 136,
+      "true_ite": 10.8381,
+      "estimated_cate": 9.8896,
+      "bias": -0.9485,
+      "accurate": true
+    },
+    {
+      "subject_id": 137,
+      "true_ite": 9.8148,
+      "estimated_cate": 9.8896,
+      "bias": 0.0748,
+      "accurate": true
+    },
+    {
+      "subject_id": 138,
+      "true_ite": 10.3208,
+      "estimated_cate": 9.8896,
+      "bias": -0.4312,
+      "accurate": true
+    },
+    {
+      "subject_id": 139,
+      "true_ite": 4.9586,
+      "estimated_cate": 9.8896,
+      "bias": 4.931,
+      "accurate": false
+    },
+    {
+      "subject_id": 140,
+      "true_ite": 8.4702,
+      "estimated_cate": 9.8896,
+      "bias": 1.4194,
+      "accurate": true
+    },
+    {
+      "subject_id": 141,
+      "true_ite": 8.3426,
+      "estimated_cate": 9.8896,
+      "bias": 1.547,
+      "accurate": true
+    },
+    {
+      "subject_id": 142,
+      "true_ite": 10.137,
+      "estimated_cate": 9.8896,
+      "bias": -0.2474,
+      "accurate": true
+    },
+    {
+      "subject_id": 143,
+      "true_ite": 11.4003,
+      "estimated_cate": 9.8896,
+      "bias": -1.5107,
+      "accurate": true
+    },
+    {
+      "subject_id": 144,
+      "true_ite": 10.9313,
+      "estimated_cate": 9.8896,
+      "bias": -1.0417,
+      "accurate": true
+    },
+    {
+      "subject_id": 145,
+      "true_ite": 15.175,
+      "estimated_cate": 9.8896,
+      "bias": -5.2854,
+      "accurate": false
+    },
+    {
+      "subject_id": 146,
+      "true_ite": 11.6374,
+      "estimated_cate": 9.8896,
+      "bias": -1.7478,
+      "accurate": true
+    },
+    {
+      "subject_id": 147,
+      "true_ite": 11.4235,
+      "estimated_cate": 9.8896,
+      "bias": -1.5339,
+      "accurate": true
+    },
+    {
+      "subject_id": 148,
+      "true_ite": 15.0197,
+      "estimated_cate": 9.8896,
+      "bias": -5.1301,
+      "accurate": false
+    },
+    {
+      "subject_id": 149,
+      "true_ite": 9.3713,
+      "estimated_cate": 9.8896,
+      "bias": 0.5183,
+      "accurate": true
+    },
+    {
+      "subject_id": 150,
+      "true_ite": 9.1304,
+      "estimated_cate": 9.8896,
+      "bias": 0.7592,
+      "accurate": true
+    },
+    {
+      "subject_id": 151,
+      "true_ite": 10.6429,
+      "estimated_cate": 9.8896,
+      "bias": -0.7533,
+      "accurate": true
+    },
+    {
+      "subject_id": 152,
+      "true_ite": 12.0611,
+      "estimated_cate": 9.8896,
+      "bias": -2.1715,
+      "accurate": true
+    },
+    {
+      "subject_id": 153,
+      "true_ite": 12.2672,
+      "estimated_cate": 9.8896,
+      "bias": -2.3776,
+      "accurate": true
+    },
+    {
+      "subject_id": 154,
+      "true_ite": 7.9622,
+      "estimated_cate": 9.8896,
+      "bias": 1.9274,
+      "accurate": true
+    },
+    {
+      "subject_id": 155,
+      "true_ite": 11.7347,
+      "estimated_cate": 9.8896,
+      "bias": -1.8451,
+      "accurate": true
+    },
+    {
+      "subject_id": 156,
+      "true_ite": 14.8962,
+      "estimated_cate": 9.8896,
+      "bias": -5.0066,
+      "accurate": false
+    },
+    {
+      "subject_id": 157,
+      "true_ite": 11.489,
+      "estimated_cate": 9.8896,
+      "bias": -1.5994,
+      "accurate": true
+    },
+    {
+      "subject_id": 158,
+      "true_ite": 10.5972,
+      "estimated_cate": 9.8896,
+      "bias": -0.7076,
+      "accurate": true
+    },
+    {
+      "subject_id": 159,
+      "true_ite": 12.4964,
+      "estimated_cate": 9.8896,
+      "bias": -2.6068,
+      "accurate": true
+    },
+    {
+      "subject_id": 160,
+      "true_ite": 8.829,
+      "estimated_cate": 9.8896,
+      "bias": 1.0606,
+      "accurate": true
+    },
+    {
+      "subject_id": 161,
+      "true_ite": 10.275,
+      "estimated_cate": 9.8896,
+      "bias": -0.3854,
+      "accurate": true
+    },
+    {
+      "subject_id": 162,
+      "true_ite": 15.3001,
+      "estimated_cate": 9.8896,
+      "bias": -5.4105,
+      "accurate": false
+    },
+    {
+      "subject_id": 163,
+      "true_ite": 6.7318,
+      "estimated_cate": 9.8896,
+      "bias": 3.1579,
+      "accurate": false
+    },
+    {
+      "subject_id": 164,
+      "true_ite": 9.7334,
+      "estimated_cate": 9.8896,
+      "bias": 0.1562,
+      "accurate": true
+    },
+    {
+      "subject_id": 165,
+      "true_ite": 19.5076,
+      "estimated_cate": 9.8896,
+      "bias": -9.618,
+      "accurate": false
+    },
+    {
+      "subject_id": 166,
+      "true_ite": 10.9752,
+      "estimated_cate": 9.8896,
+      "bias": -1.0856,
+      "accurate": true
+    },
+    {
+      "subject_id": 167,
+      "true_ite": 14.9117,
+      "estimated_cate": 9.8896,
+      "bias": -5.0221,
+      "accurate": false
+    },
+    {
+      "subject_id": 168,
+      "true_ite": 9.7384,
+      "estimated_cate": 9.8896,
+      "bias": 0.1512,
+      "accurate": true
+    },
+    {
+      "subject_id": 169,
+      "true_ite": 8.7098,
+      "estimated_cate": 9.8896,
+      "bias": 1.1798,
+      "accurate": true
+    },
+    {
+      "subject_id": 170,
+      "true_ite": 10.1243,
+      "estimated_cate": 9.8896,
+      "bias": -0.2347,
+      "accurate": true
+    },
+    {
+      "subject_id": 171,
+      "true_ite": 10.3949,
+      "estimated_cate": 9.8896,
+      "bias": -0.5053,
+      "accurate": true
+    },
+    {
+      "subject_id": 172,
+      "true_ite": 13.3699,
+      "estimated_cate": 9.8896,
+      "bias": -3.4803,
+      "accurate": true
+    },
+    {
+      "subject_id": 173,
+      "true_ite": 8.3569,
+      "estimated_cate": 9.8896,
+      "bias": 1.5327,
+      "accurate": true
+    },
+    {
+      "subject_id": 174,
+      "true_ite": 9.6944,
+      "estimated_cate": 9.8896,
+      "bias": 0.1952,
+      "accurate": true
+    },
+    {
+      "subject_id": 175,
+      "true_ite": 14.6495,
+      "estimated_cate": 9.8896,
+      "bias": -4.7599,
+      "accurate": false
+    },
+    {
+      "subject_id": 176,
+      "true_ite": 11.2952,
+      "estimated_cate": 9.8896,
+      "bias": -1.4056,
+      "accurate": true
+    },
+    {
+      "subject_id": 177,
+      "true_ite": 7.6903,
+      "estimated_cate": 9.8896,
+      "bias": 2.1993,
+      "accurate": true
+    },
+    {
+      "subject_id": 178,
+      "true_ite": 10.1763,
+      "estimated_cate": 9.8896,
+      "bias": -0.2867,
+      "accurate": true
+    },
+    {
+      "subject_id": 179,
+      "true_ite": 12.2104,
+      "estimated_cate": 9.8896,
+      "bias": -2.3208,
+      "accurate": true
+    },
+    {
+      "subject_id": 180,
+      "true_ite": 8.3808,
+      "estimated_cate": 9.8896,
+      "bias": 1.5088,
+      "accurate": true
+    },
+    {
+      "subject_id": 181,
+      "true_ite": 8.2955,
+      "estimated_cate": 9.8896,
+      "bias": 1.5941,
+      "accurate": true
+    },
+    {
+      "subject_id": 182,
+      "true_ite": 7.9564,
+      "estimated_cate": 9.8896,
+      "bias": 1.9332,
+      "accurate": true
+    },
+    {
+      "subject_id": 183,
+      "true_ite": 10.4894,
+      "estimated_cate": 9.8896,
+      "bias": -0.5998,
+      "accurate": true
+    },
+    {
+      "subject_id": 184,
+      "true_ite": 8.4447,
+      "estimated_cate": 9.8896,
+      "bias": 1.4449,
+      "accurate": true
+    },
+    {
+      "subject_id": 185,
+      "true_ite": 9.2367,
+      "estimated_cate": 9.8896,
+      "bias": 0.6529,
+      "accurate": true
+    },
+    {
+      "subject_id": 186,
+      "true_ite": 9.2624,
+      "estimated_cate": 9.8896,
+      "bias": 0.6272,
+      "accurate": true
+    },
+    {
+      "subject_id": 187,
+      "true_ite": 14.877,
+      "estimated_cate": 9.8896,
+      "bias": -4.9874,
+      "accurate": false
+    },
+    {
+      "subject_id": 188,
+      "true_ite": 7.3315,
+      "estimated_cate": 9.8896,
+      "bias": 2.5581,
+      "accurate": false
+    },
+    {
+      "subject_id": 189,
+      "true_ite": 12.7797,
+      "estimated_cate": 9.8896,
+      "bias": -2.8901,
+      "accurate": true
+    },
+    {
+      "subject_id": 190,
+      "true_ite": 6.7296,
+      "estimated_cate": 9.8896,
+      "bias": 3.16,
+      "accurate": false
+    },
+    {
+      "subject_id": 191,
+      "true_ite": 7.2447,
+      "estimated_cate": 9.8896,
+      "bias": 2.6449,
+      "accurate": false
+    },
+    {
+      "subject_id": 192,
+      "true_ite": 11.3413,
+      "estimated_cate": 9.8896,
+      "bias": -1.4517,
+      "accurate": true
+    },
+    {
+      "subject_id": 193,
+      "true_ite": 12.068,
+      "estimated_cate": 9.8896,
+      "bias": -2.1784,
+      "accurate": true
+    },
+    {
+      "subject_id": 194,
+      "true_ite": 8.6886,
+      "estimated_cate": 9.8896,
+      "bias": 1.201,
+      "accurate": true
+    },
+    {
+      "subject_id": 195,
+      "true_ite": 10.7087,
+      "estimated_cate": 9.8896,
+      "bias": -0.8191,
+      "accurate": true
+    },
+    {
+      "subject_id": 196,
+      "true_ite": 15.0654,
+      "estimated_cate": 9.8896,
+      "bias": -5.1758,
+      "accurate": false
+    },
+    {
+      "subject_id": 197,
+      "true_ite": 8.9825,
+      "estimated_cate": 9.8896,
+      "bias": 0.9071,
+      "accurate": true
+    },
+    {
+      "subject_id": 198,
+      "true_ite": 9.5972,
+      "estimated_cate": 9.8896,
+      "bias": 0.2924,
+      "accurate": true
+    },
+    {
+      "subject_id": 199,
+      "true_ite": 7.974,
+      "estimated_cate": 9.8896,
+      "bias": 1.9156,
+      "accurate": true
+    },
+    {
+      "subject_id": 200,
+      "true_ite": 13.3906,
+      "estimated_cate": 9.8896,
+      "bias": -3.501,
+      "accurate": true
+    },
+    {
+      "subject_id": 201,
+      "true_ite": 11.4537,
+      "estimated_cate": 9.8896,
+      "bias": -1.5641,
+      "accurate": true
+    },
+    {
+      "subject_id": 202,
+      "true_ite": 9.6069,
+      "estimated_cate": 9.8896,
+      "bias": 0.2827,
+      "accurate": true
+    },
+    {
+      "subject_id": 203,
+      "true_ite": 12.4039,
+      "estimated_cate": 9.8896,
+      "bias": -2.5143,
+      "accurate": true
+    },
+    {
+      "subject_id": 204,
+      "true_ite": 7.4346,
+      "estimated_cate": 9.8896,
+      "bias": 2.455,
+      "accurate": false
+    },
+    {
+      "subject_id": 205,
+      "true_ite": 10.0917,
+      "estimated_cate": 9.8896,
+      "bias": -0.2021,
+      "accurate": true
+    },
+    {
+      "subject_id": 206,
+      "true_ite": 12.2655,
+      "estimated_cate": 9.8896,
+      "bias": -2.3759,
+      "accurate": true
+    },
+    {
+      "subject_id": 207,
+      "true_ite": 12.4802,
+      "estimated_cate": 9.8896,
+      "bias": -2.5906,
+      "accurate": true
+    },
+    {
+      "subject_id": 208,
+      "true_ite": 10.7719,
+      "estimated_cate": 9.8896,
+      "bias": -0.8823,
+      "accurate": true
+    },
+    {
+      "subject_id": 209,
+      "true_ite": 10.779,
+      "estimated_cate": 9.8896,
+      "bias": -0.8894,
+      "accurate": true
+    },
+    {
+      "subject_id": 210,
+      "true_ite": 15.1634,
+      "estimated_cate": 9.8896,
+      "bias": -5.2738,
+      "accurate": false
+    },
+    {
+      "subject_id": 211,
+      "true_ite": 11.8844,
+      "estimated_cate": 9.8896,
+      "bias": -1.9948,
+      "accurate": true
+    },
+    {
+      "subject_id": 212,
+      "true_ite": 10.8012,
+      "estimated_cate": 9.8896,
+      "bias": -0.9116,
+      "accurate": true
+    },
+    {
+      "subject_id": 213,
+      "true_ite": 7.9211,
+      "estimated_cate": 9.8896,
+      "bias": 1.9685,
+      "accurate": true
+    },
+    {
+      "subject_id": 214,
+      "true_ite": 15.1162,
+      "estimated_cate": 9.8896,
+      "bias": -5.2266,
+      "accurate": false
+    },
+    {
+      "subject_id": 215,
+      "true_ite": 11.3995,
+      "estimated_cate": 9.8896,
+      "bias": -1.5099,
+      "accurate": true
+    },
+    {
+      "subject_id": 216,
+      "true_ite": 9.5623,
+      "estimated_cate": 9.8896,
+      "bias": 0.3273,
+      "accurate": true
+    },
+    {
+      "subject_id": 217,
+      "true_ite": 9.048,
+      "estimated_cate": 9.8896,
+      "bias": 0.8416,
+      "accurate": true
+    },
+    {
+      "subject_id": 218,
+      "true_ite": 6.4624,
+      "estimated_cate": 9.8896,
+      "bias": 3.4272,
+      "accurate": false
+    },
+    {
+      "subject_id": 219,
+      "true_ite": 9.9187,
+      "estimated_cate": 9.8896,
+      "bias": -0.0291,
+      "accurate": true
+    },
+    {
+      "subject_id": 220,
+      "true_ite": 10.8523,
+      "estimated_cate": 9.8896,
+      "bias": -0.9627,
+      "accurate": true
+    },
+    {
+      "subject_id": 221,
+      "true_ite": 8.5746,
+      "estimated_cate": 9.8896,
+      "bias": 1.315,
+      "accurate": true
+    },
+    {
+      "subject_id": 222,
+      "true_ite": 9.8299,
+      "estimated_cate": 9.8896,
+      "bias": 0.0597,
+      "accurate": true
+    },
+    {
+      "subject_id": 223,
+      "true_ite": 11.3131,
+      "estimated_cate": 9.8896,
+      "bias": -1.4235,
+      "accurate": true
+    },
+    {
+      "subject_id": 224,
+      "true_ite": 9.6182,
+      "estimated_cate": 9.8896,
+      "bias": 0.2714,
+      "accurate": true
+    },
+    {
+      "subject_id": 225,
+      "true_ite": 11.4044,
+      "estimated_cate": 9.8896,
+      "bias": -1.5148,
+      "accurate": true
+    },
+    {
+      "subject_id": 226,
+      "true_ite": 10.6912,
+      "estimated_cate": 9.8896,
+      "bias": -0.8016,
+      "accurate": true
+    },
+    {
+      "subject_id": 227,
+      "true_ite": 6.874,
+      "estimated_cate": 9.8896,
+      "bias": 3.0156,
+      "accurate": false
+    },
+    {
+      "subject_id": 228,
+      "true_ite": 11.6026,
+      "estimated_cate": 9.8896,
+      "bias": -1.713,
+      "accurate": true
+    },
+    {
+      "subject_id": 229,
+      "true_ite": 11.3465,
+      "estimated_cate": 9.8896,
+      "bias": -1.4569,
+      "accurate": true
+    },
+    {
+      "subject_id": 230,
+      "true_ite": 11.6338,
+      "estimated_cate": 9.8896,
+      "bias": -1.7442,
+      "accurate": true
+    },
+    {
+      "subject_id": 231,
+      "true_ite": 13.4921,
+      "estimated_cate": 9.8896,
+      "bias": -3.6025,
+      "accurate": true
+    },
+    {
+      "subject_id": 232,
+      "true_ite": 10.6272,
+      "estimated_cate": 9.8896,
+      "bias": -0.7376,
+      "accurate": true
+    },
+    {
+      "subject_id": 233,
+      "true_ite": 13.2764,
+      "estimated_cate": 9.8896,
+      "bias": -3.3868,
+      "accurate": true
+    },
+    {
+      "subject_id": 234,
+      "true_ite": 7.3316,
+      "estimated_cate": 9.8896,
+      "bias": 2.558,
+      "accurate": false
+    },
+    {
+      "subject_id": 235,
+      "true_ite": 9.8801,
+      "estimated_cate": 9.8896,
+      "bias": 0.0095,
+      "accurate": true
+    },
+    {
+      "subject_id": 236,
+      "true_ite": 10.3985,
+      "estimated_cate": 9.8896,
+      "bias": -0.5089,
+      "accurate": true
+    },
+    {
+      "subject_id": 237,
+      "true_ite": 11.4969,
+      "estimated_cate": 9.8896,
+      "bias": -1.6073,
+      "accurate": true
+    },
+    {
+      "subject_id": 238,
+      "true_ite": 14.0196,
+      "estimated_cate": 9.8896,
+      "bias": -4.13,
+      "accurate": true
+    },
+    {
+      "subject_id": 239,
+      "true_ite": 9.6546,
+      "estimated_cate": 9.8896,
+      "bias": 0.235,
+      "accurate": true
+    },
+    {
+      "subject_id": 240,
+      "true_ite": 11.6972,
+      "estimated_cate": 9.8896,
+      "bias": -1.8075,
+      "accurate": true
+    },
+    {
+      "subject_id": 241,
+      "true_ite": 11.5815,
+      "estimated_cate": 9.8896,
+      "bias": -1.6919,
+      "accurate": true
+    },
+    {
+      "subject_id": 242,
+      "true_ite": 10.8522,
+      "estimated_cate": 9.8896,
+      "bias": -0.9626,
+      "accurate": true
+    },
+    {
+      "subject_id": 243,
+      "true_ite": 10.4239,
+      "estimated_cate": 9.8896,
+      "bias": -0.5343,
+      "accurate": true
+    },
+    {
+      "subject_id": 244,
+      "true_ite": 11.8597,
+      "estimated_cate": 9.8896,
+      "bias": -1.9701,
+      "accurate": true
+    },
+    {
+      "subject_id": 245,
+      "true_ite": 9.5469,
+      "estimated_cate": 9.8896,
+      "bias": 0.3427,
+      "accurate": true
+    },
+    {
+      "subject_id": 246,
+      "true_ite": 11.049,
+      "estimated_cate": 9.8896,
+      "bias": -1.1594,
+      "accurate": true
+    },
+    {
+      "subject_id": 247,
+      "true_ite": 9.9584,
+      "estimated_cate": 9.8896,
+      "bias": -0.0688,
+      "accurate": true
+    },
+    {
+      "subject_id": 248,
+      "true_ite": 9.7822,
+      "estimated_cate": 9.8896,
+      "bias": 0.1074,
+      "accurate": true
+    },
+    {
+      "subject_id": 249,
+      "true_ite": 5.7197,
+      "estimated_cate": 9.8896,
+      "bias": 4.1699,
+      "accurate": false
+    },
+    {
+      "subject_id": 250,
+      "true_ite": 14.7535,
+      "estimated_cate": 9.8896,
+      "bias": -4.8639,
+      "accurate": false
+    },
+    {
+      "subject_id": 251,
+      "true_ite": 13.562,
+      "estimated_cate": 9.8896,
+      "bias": -3.6724,
+      "accurate": true
+    },
+    {
+      "subject_id": 252,
+      "true_ite": 11.1535,
+      "estimated_cate": 9.8896,
+      "bias": -1.2639,
+      "accurate": true
+    },
+    {
+      "subject_id": 253,
+      "true_ite": 10.1699,
+      "estimated_cate": 9.8896,
+      "bias": -0.2803,
+      "accurate": true
+    },
+    {
+      "subject_id": 254,
+      "true_ite": 10.6103,
+      "estimated_cate": 9.8896,
+      "bias": -0.7207,
+      "accurate": true
+    },
+    {
+      "subject_id": 255,
+      "true_ite": 10.5785,
+      "estimated_cate": 9.8896,
+      "bias": -0.6889,
+      "accurate": true
+    },
+    {
+      "subject_id": 256,
+      "true_ite": 9.9929,
+      "estimated_cate": 9.8896,
+      "bias": -0.1033,
+      "accurate": true
+    },
+    {
+      "subject_id": 257,
+      "true_ite": 9.953,
+      "estimated_cate": 9.8896,
+      "bias": -0.0634,
+      "accurate": true
+    },
+    {
+      "subject_id": 258,
+      "true_ite": 9.4371,
+      "estimated_cate": 9.8896,
+      "bias": 0.4526,
+      "accurate": true
+    },
+    {
+      "subject_id": 259,
+      "true_ite": 10.5634,
+      "estimated_cate": 9.8896,
+      "bias": -0.6738,
+      "accurate": true
+    },
+    {
+      "subject_id": 260,
+      "true_ite": 13.8403,
+      "estimated_cate": 9.8896,
+      "bias": -3.9507,
+      "accurate": true
+    },
+    {
+      "subject_id": 261,
+      "true_ite": 14.4391,
+      "estimated_cate": 9.8896,
+      "bias": -4.5495,
+      "accurate": false
+    },
+    {
+      "subject_id": 262,
+      "true_ite": 14.5848,
+      "estimated_cate": 9.8896,
+      "bias": -4.6952,
+      "accurate": false
+    },
+    {
+      "subject_id": 263,
+      "true_ite": 8.1454,
+      "estimated_cate": 9.8896,
+      "bias": 1.7442,
+      "accurate": true
+    },
+    {
+      "subject_id": 264,
+      "true_ite": 12.8117,
+      "estimated_cate": 9.8896,
+      "bias": -2.9221,
+      "accurate": true
+    },
+    {
+      "subject_id": 265,
+      "true_ite": 8.4089,
+      "estimated_cate": 9.8896,
+      "bias": 1.4807,
+      "accurate": true
+    },
+    {
+      "subject_id": 266,
+      "true_ite": 8.4717,
+      "estimated_cate": 9.8896,
+      "bias": 1.4179,
+      "accurate": true
+    },
+    {
+      "subject_id": 267,
+      "true_ite": 7.8818,
+      "estimated_cate": 9.8896,
+      "bias": 2.0078,
+      "accurate": true
+    },
+    {
+      "subject_id": 268,
+      "true_ite": 10.2618,
+      "estimated_cate": 9.8896,
+      "bias": -0.3722,
+      "accurate": true
+    },
+    {
+      "subject_id": 269,
+      "true_ite": 13.7965,
+      "estimated_cate": 9.8896,
+      "bias": -3.9069,
+      "accurate": true
+    },
+    {
+      "subject_id": 270,
+      "true_ite": 10.3633,
+      "estimated_cate": 9.8896,
+      "bias": -0.4737,
+      "accurate": true
+    },
+    {
+      "subject_id": 271,
+      "true_ite": 15.1262,
+      "estimated_cate": 9.8896,
+      "bias": -5.2366,
+      "accurate": false
+    },
+    {
+      "subject_id": 272,
+      "true_ite": 10.9796,
+      "estimated_cate": 9.8896,
+      "bias": -1.09,
+      "accurate": true
+    },
+    {
+      "subject_id": 273,
+      "true_ite": 9.242,
+      "estimated_cate": 9.8896,
+      "bias": 0.6476,
+      "accurate": true
+    },
+    {
+      "subject_id": 274,
+      "true_ite": 9.9103,
+      "estimated_cate": 9.8896,
+      "bias": -0.0207,
+      "accurate": true
+    },
+    {
+      "subject_id": 275,
+      "true_ite": 8.7758,
+      "estimated_cate": 9.8896,
+      "bias": 1.1138,
+      "accurate": true
+    },
+    {
+      "subject_id": 276,
+      "true_ite": 12.2392,
+      "estimated_cate": 9.8896,
+      "bias": -2.3496,
+      "accurate": true
+    },
+    {
+      "subject_id": 277,
+      "true_ite": 8.4086,
+      "estimated_cate": 9.8896,
+      "bias": 1.481,
+      "accurate": true
+    },
+    {
+      "subject_id": 278,
+      "true_ite": 10.4754,
+      "estimated_cate": 9.8896,
+      "bias": -0.5858,
+      "accurate": true
+    },
+    {
+      "subject_id": 279,
+      "true_ite": 9.2686,
+      "estimated_cate": 9.8896,
+      "bias": 0.621,
+      "accurate": true
+    },
+    {
+      "subject_id": 280,
+      "true_ite": 11.0465,
+      "estimated_cate": 9.8896,
+      "bias": -1.1569,
+      "accurate": true
+    },
+    {
+      "subject_id": 281,
+      "true_ite": 6.9806,
+      "estimated_cate": 9.8896,
+      "bias": 2.909,
+      "accurate": false
+    },
+    {
+      "subject_id": 282,
+      "true_ite": 8.1401,
+      "estimated_cate": 9.8896,
+      "bias": 1.7495,
+      "accurate": true
+    },
+    {
+      "subject_id": 283,
+      "true_ite": 8.5962,
+      "estimated_cate": 9.8896,
+      "bias": 1.2934,
+      "accurate": true
+    },
+    {
+      "subject_id": 284,
+      "true_ite": 8.7882,
+      "estimated_cate": 9.8896,
+      "bias": 1.1014,
+      "accurate": true
+    },
+    {
+      "subject_id": 285,
+      "true_ite": 19.9634,
+      "estimated_cate": 9.8896,
+      "bias": -10.0738,
+      "accurate": false
+    },
+    {
+      "subject_id": 286,
+      "true_ite": 9.3209,
+      "estimated_cate": 9.8896,
+      "bias": 0.5687,
+      "accurate": true
+    },
+    {
+      "subject_id": 287,
+      "true_ite": 10.8684,
+      "estimated_cate": 9.8896,
+      "bias": -0.9788,
+      "accurate": true
+    },
+    {
+      "subject_id": 288,
+      "true_ite": 11.0722,
+      "estimated_cate": 9.8896,
+      "bias": -1.1826,
+      "accurate": true
+    },
+    {
+      "subject_id": 289,
+      "true_ite": 12.3599,
+      "estimated_cate": 9.8896,
+      "bias": -2.4703,
+      "accurate": true
+    },
+    {
+      "subject_id": 290,
+      "true_ite": 9.8013,
+      "estimated_cate": 9.8896,
+      "bias": 0.0883,
+      "accurate": true
+    },
+    {
+      "subject_id": 291,
+      "true_ite": 8.9722,
+      "estimated_cate": 9.8896,
+      "bias": 0.9175,
+      "accurate": true
+    },
+    {
+      "subject_id": 292,
+      "true_ite": 8.9199,
+      "estimated_cate": 9.8896,
+      "bias": 0.9697,
+      "accurate": true
+    },
+    {
+      "subject_id": 293,
+      "true_ite": 7.2662,
+      "estimated_cate": 9.8896,
+      "bias": 2.6234,
+      "accurate": false
+    },
+    {
+      "subject_id": 294,
+      "true_ite": 12.9186,
+      "estimated_cate": 9.8896,
+      "bias": -3.029,
+      "accurate": true
+    },
+    {
+      "subject_id": 295,
+      "true_ite": 14.1592,
+      "estimated_cate": 9.8896,
+      "bias": -4.2696,
+      "accurate": false
+    },
+    {
+      "subject_id": 296,
+      "true_ite": 9.9916,
+      "estimated_cate": 9.8896,
+      "bias": -0.102,
+      "accurate": true
+    },
+    {
+      "subject_id": 297,
+      "true_ite": 10.2121,
+      "estimated_cate": 9.8896,
+      "bias": -0.3225,
+      "accurate": true
+    },
+    {
+      "subject_id": 298,
+      "true_ite": 9.7497,
+      "estimated_cate": 9.8896,
+      "bias": 0.1399,
+      "accurate": true
+    },
+    {
+      "subject_id": 299,
+      "true_ite": 11.0803,
+      "estimated_cate": 9.8896,
+      "bias": -1.1907,
+      "accurate": true
+    },
+    {
+      "subject_id": 300,
+      "true_ite": 12.5506,
+      "estimated_cate": 9.8896,
+      "bias": -2.661,
+      "accurate": true
+    },
+    {
+      "subject_id": 301,
+      "true_ite": 6.4501,
+      "estimated_cate": 9.8896,
+      "bias": 3.4395,
+      "accurate": false
+    },
+    {
+      "subject_id": 302,
+      "true_ite": 13.672,
+      "estimated_cate": 9.8896,
+      "bias": -3.7823,
+      "accurate": true
+    },
+    {
+      "subject_id": 303,
+      "true_ite": 10.0735,
+      "estimated_cate": 9.8896,
+      "bias": -0.1839,
+      "accurate": true
+    },
+    {
+      "subject_id": 304,
+      "true_ite": 10.1185,
+      "estimated_cate": 9.8896,
+      "bias": -0.2288,
+      "accurate": true
+    },
+    {
+      "subject_id": 305,
+      "true_ite": 10.4592,
+      "estimated_cate": 9.8896,
+      "bias": -0.5696,
+      "accurate": true
+    },
+    {
+      "subject_id": 306,
+      "true_ite": 12.7108,
+      "estimated_cate": 9.8896,
+      "bias": -2.8211,
+      "accurate": true
+    },
+    {
+      "subject_id": 307,
+      "true_ite": 10.5353,
+      "estimated_cate": 9.8896,
+      "bias": -0.6457,
+      "accurate": true
+    },
+    {
+      "subject_id": 308,
+      "true_ite": 8.3743,
+      "estimated_cate": 9.8896,
+      "bias": 1.5153,
+      "accurate": true
+    },
+    {
+      "subject_id": 309,
+      "true_ite": 9.0195,
+      "estimated_cate": 9.8896,
+      "bias": 0.8701,
+      "accurate": true
+    },
+    {
+      "subject_id": 310,
+      "true_ite": 8.6994,
+      "estimated_cate": 9.8896,
+      "bias": 1.1902,
+      "accurate": true
+    },
+    {
+      "subject_id": 311,
+      "true_ite": 7.4644,
+      "estimated_cate": 9.8896,
+      "bias": 2.4252,
+      "accurate": false
+    },
+    {
+      "subject_id": 312,
+      "true_ite": 9.4992,
+      "estimated_cate": 9.8896,
+      "bias": 0.3904,
+      "accurate": true
+    },
+    {
+      "subject_id": 313,
+      "true_ite": 7.1893,
+      "estimated_cate": 9.8896,
+      "bias": 2.7004,
+      "accurate": false
+    },
+    {
+      "subject_id": 314,
+      "true_ite": 9.1531,
+      "estimated_cate": 9.8896,
+      "bias": 0.7365,
+      "accurate": true
+    },
+    {
+      "subject_id": 315,
+      "true_ite": 9.9522,
+      "estimated_cate": 9.8896,
+      "bias": -0.0626,
+      "accurate": true
+    },
+    {
+      "subject_id": 316,
+      "true_ite": 10.5756,
+      "estimated_cate": 9.8896,
+      "bias": -0.686,
+      "accurate": true
+    },
+    {
+      "subject_id": 317,
+      "true_ite": 11.5677,
+      "estimated_cate": 9.8896,
+      "bias": -1.6781,
+      "accurate": true
+    },
+    {
+      "subject_id": 318,
+      "true_ite": 10.3374,
+      "estimated_cate": 9.8896,
+      "bias": -0.4478,
+      "accurate": true
+    },
+    {
+      "subject_id": 319,
+      "true_ite": 10.9836,
+      "estimated_cate": 9.8896,
+      "bias": -1.094,
+      "accurate": true
+    },
+    {
+      "subject_id": 320,
+      "true_ite": 10.5166,
+      "estimated_cate": 9.8896,
+      "bias": -0.627,
+      "accurate": true
+    },
+    {
+      "subject_id": 321,
+      "true_ite": 10.6137,
+      "estimated_cate": 9.8896,
+      "bias": -0.7241,
+      "accurate": true
+    },
+    {
+      "subject_id": 322,
+      "true_ite": 13.4358,
+      "estimated_cate": 9.8896,
+      "bias": -3.5462,
+      "accurate": true
+    },
+    {
+      "subject_id": 323,
+      "true_ite": 7.6727,
+      "estimated_cate": 9.8896,
+      "bias": 2.2169,
+      "accurate": true
+    },
+    {
+      "subject_id": 324,
+      "true_ite": 9.0508,
+      "estimated_cate": 9.8896,
+      "bias": 0.8388,
+      "accurate": true
+    },
+    {
+      "subject_id": 325,
+      "true_ite": 12.8119,
+      "estimated_cate": 9.8896,
+      "bias": -2.9223,
+      "accurate": true
+    },
+    {
+      "subject_id": 326,
+      "true_ite": 12.9698,
+      "estimated_cate": 9.8896,
+      "bias": -3.0802,
+      "accurate": true
+    },
+    {
+      "subject_id": 327,
+      "true_ite": 11.9629,
+      "estimated_cate": 9.8896,
+      "bias": -2.0733,
+      "accurate": true
+    },
+    {
+      "subject_id": 328,
+      "true_ite": 8.9038,
+      "estimated_cate": 9.8896,
+      "bias": 0.9858,
+      "accurate": true
+    },
+    {
+      "subject_id": 329,
+      "true_ite": 13.599,
+      "estimated_cate": 9.8896,
+      "bias": -3.7094,
+      "accurate": true
+    },
+    {
+      "subject_id": 330,
+      "true_ite": 10.3067,
+      "estimated_cate": 9.8896,
+      "bias": -0.4171,
+      "accurate": true
+    },
+    {
+      "subject_id": 331,
+      "true_ite": 6.7153,
+      "estimated_cate": 9.8896,
+      "bias": 3.1743,
+      "accurate": false
+    },
+    {
+      "subject_id": 332,
+      "true_ite": 9.7556,
+      "estimated_cate": 9.8896,
+      "bias": 0.134,
+      "accurate": true
+    },
+    {
+      "subject_id": 333,
+      "true_ite": 8.3533,
+      "estimated_cate": 9.8896,
+      "bias": 1.5363,
+      "accurate": true
+    },
+    {
+      "subject_id": 334,
+      "true_ite": 11.7724,
+      "estimated_cate": 9.8896,
+      "bias": -1.8828,
+      "accurate": true
+    },
+    {
+      "subject_id": 335,
+      "true_ite": 8.4204,
+      "estimated_cate": 9.8896,
+      "bias": 1.4692,
+      "accurate": true
+    },
+    {
+      "subject_id": 336,
+      "true_ite": 11.7433,
+      "estimated_cate": 9.8896,
+      "bias": -1.8537,
+      "accurate": true
+    },
+    {
+      "subject_id": 337,
+      "true_ite": 10.6661,
+      "estimated_cate": 9.8896,
+      "bias": -0.7765,
+      "accurate": true
+    },
+    {
+      "subject_id": 338,
+      "true_ite": 8.0928,
+      "estimated_cate": 9.8896,
+      "bias": 1.7968,
+      "accurate": true
+    },
+    {
+      "subject_id": 339,
+      "true_ite": 10.1162,
+      "estimated_cate": 9.8896,
+      "bias": -0.2266,
+      "accurate": true
+    },
+    {
+      "subject_id": 340,
+      "true_ite": 10.1727,
+      "estimated_cate": 9.8896,
+      "bias": -0.2831,
+      "accurate": true
+    },
+    {
+      "subject_id": 341,
+      "true_ite": 12.7641,
+      "estimated_cate": 9.8896,
+      "bias": -2.8745,
+      "accurate": true
+    },
+    {
+      "subject_id": 342,
+      "true_ite": 18.2298,
+      "estimated_cate": 9.8896,
+      "bias": -8.3402,
+      "accurate": false
+    },
+    {
+      "subject_id": 343,
+      "true_ite": 9.6948,
+      "estimated_cate": 9.8896,
+      "bias": 0.1948,
+      "accurate": true
+    },
+    {
+      "subject_id": 344,
+      "true_ite": 11.1599,
+      "estimated_cate": 9.8896,
+      "bias": -1.2703,
+      "accurate": true
+    },
+    {
+      "subject_id": 345,
+      "true_ite": 8.8893,
+      "estimated_cate": 9.8896,
+      "bias": 1.0003,
+      "accurate": true
+    },
+    {
+      "subject_id": 346,
+      "true_ite": 12.0793,
+      "estimated_cate": 9.8896,
+      "bias": -2.1897,
+      "accurate": true
+    },
+    {
+      "subject_id": 347,
+      "true_ite": 9.7797,
+      "estimated_cate": 9.8896,
+      "bias": 0.1099,
+      "accurate": true
+    },
+    {
+      "subject_id": 348,
+      "true_ite": 8.4995,
+      "estimated_cate": 9.8896,
+      "bias": 1.3901,
+      "accurate": true
+    },
+    {
+      "subject_id": 349,
+      "true_ite": 12.4255,
+      "estimated_cate": 9.8896,
+      "bias": -2.5359,
+      "accurate": true
+    },
+    {
+      "subject_id": 350,
+      "true_ite": 8.571,
+      "estimated_cate": 9.8896,
+      "bias": 1.3186,
+      "accurate": true
+    },
+    {
+      "subject_id": 351,
+      "true_ite": 11.6731,
+      "estimated_cate": 9.8896,
+      "bias": -1.7835,
+      "accurate": true
+    },
+    {
+      "subject_id": 352,
+      "true_ite": 8.8115,
+      "estimated_cate": 9.8896,
+      "bias": 1.0781,
+      "accurate": true
+    },
+    {
+      "subject_id": 353,
+      "true_ite": 11.3123,
+      "estimated_cate": 9.8896,
+      "bias": -1.4227,
+      "accurate": true
+    },
+    {
+      "subject_id": 354,
+      "true_ite": 8.3482,
+      "estimated_cate": 9.8896,
+      "bias": 1.5414,
+      "accurate": true
+    },
+    {
+      "subject_id": 355,
+      "true_ite": 9.599,
+      "estimated_cate": 9.8896,
+      "bias": 0.2906,
+      "accurate": true
+    },
+    {
+      "subject_id": 356,
+      "true_ite": 11.4398,
+      "estimated_cate": 9.8896,
+      "bias": -1.5501,
+      "accurate": true
+    },
+    {
+      "subject_id": 357,
+      "true_ite": 11.6776,
+      "estimated_cate": 9.8896,
+      "bias": -1.788,
+      "accurate": true
+    },
+    {
+      "subject_id": 358,
+      "true_ite": 8.4766,
+      "estimated_cate": 9.8896,
+      "bias": 1.413,
+      "accurate": true
+    },
+    {
+      "subject_id": 359,
+      "true_ite": 9.1277,
+      "estimated_cate": 9.8896,
+      "bias": 0.7619,
+      "accurate": true
+    },
+    {
+      "subject_id": 360,
+      "true_ite": 8.9463,
+      "estimated_cate": 9.8896,
+      "bias": 0.9433,
+      "accurate": true
+    },
+    {
+      "subject_id": 361,
+      "true_ite": 10.0247,
+      "estimated_cate": 9.8896,
+      "bias": -0.1351,
+      "accurate": true
+    },
+    {
+      "subject_id": 362,
+      "true_ite": 6.9867,
+      "estimated_cate": 9.8896,
+      "bias": 2.9029,
+      "accurate": false
+    },
+    {
+      "subject_id": 363,
+      "true_ite": 8.2406,
+      "estimated_cate": 9.8896,
+      "bias": 1.649,
+      "accurate": true
+    },
+    {
+      "subject_id": 364,
+      "true_ite": 14.506,
+      "estimated_cate": 9.8896,
+      "bias": -4.6164,
+      "accurate": false
+    },
+    {
+      "subject_id": 365,
+      "true_ite": 8.7367,
+      "estimated_cate": 9.8896,
+      "bias": 1.1529,
+      "accurate": true
+    },
+    {
+      "subject_id": 366,
+      "true_ite": 6.7005,
+      "estimated_cate": 9.8896,
+      "bias": 3.1891,
+      "accurate": false
+    },
+    {
+      "subject_id": 367,
+      "true_ite": 15.1297,
+      "estimated_cate": 9.8896,
+      "bias": -5.2401,
+      "accurate": false
+    },
+    {
+      "subject_id": 368,
+      "true_ite": 10.6515,
+      "estimated_cate": 9.8896,
+      "bias": -0.7619,
+      "accurate": true
+    },
+    {
+      "subject_id": 369,
+      "true_ite": 9.6723,
+      "estimated_cate": 9.8896,
+      "bias": 0.2173,
+      "accurate": true
+    },
+    {
+      "subject_id": 370,
+      "true_ite": 10.1594,
+      "estimated_cate": 9.8896,
+      "bias": -0.2698,
+      "accurate": true
+    },
+    {
+      "subject_id": 371,
+      "true_ite": 10.6256,
+      "estimated_cate": 9.8896,
+      "bias": -0.736,
+      "accurate": true
+    },
+    {
+      "subject_id": 372,
+      "true_ite": 8.9805,
+      "estimated_cate": 9.8896,
+      "bias": 0.9091,
+      "accurate": true
+    },
+    {
+      "subject_id": 373,
+      "true_ite": 8.9783,
+      "estimated_cate": 9.8896,
+      "bias": 0.9113,
+      "accurate": true
+    },
+    {
+      "subject_id": 374,
+      "true_ite": 9.3175,
+      "estimated_cate": 9.8896,
+      "bias": 0.5721,
+      "accurate": true
+    },
+    {
+      "subject_id": 375,
+      "true_ite": 10.6687,
+      "estimated_cate": 9.8896,
+      "bias": -0.7791,
+      "accurate": true
+    },
+    {
+      "subject_id": 376,
+      "true_ite": 6.178,
+      "estimated_cate": 9.8896,
+      "bias": 3.7116,
+      "accurate": false
+    },
+    {
+      "subject_id": 377,
+      "true_ite": 8.3754,
+      "estimated_cate": 9.8896,
+      "bias": 1.5142,
+      "accurate": true
+    },
+    {
+      "subject_id": 378,
+      "true_ite": 10.1833,
+      "estimated_cate": 9.8896,
+      "bias": -0.2937,
+      "accurate": true
+    },
+    {
+      "subject_id": 379,
+      "true_ite": 8.1901,
+      "estimated_cate": 9.8896,
+      "bias": 1.6995,
+      "accurate": true
+    },
+    {
+      "subject_id": 380,
+      "true_ite": 8.8218,
+      "estimated_cate": 9.8896,
+      "bias": 1.0678,
+      "accurate": true
+    },
+    {
+      "subject_id": 381,
+      "true_ite": 10.1464,
+      "estimated_cate": 9.8896,
+      "bias": -0.2568,
+      "accurate": true
+    },
+    {
+      "subject_id": 382,
+      "true_ite": 6.9014,
+      "estimated_cate": 9.8896,
+      "bias": 2.9882,
+      "accurate": false
+    },
+    {
+      "subject_id": 383,
+      "true_ite": 9.9482,
+      "estimated_cate": 9.8896,
+      "bias": -0.0586,
+      "accurate": true
+    },
+    {
+      "subject_id": 384,
+      "true_ite": 18.8849,
+      "estimated_cate": 9.8896,
+      "bias": -8.9953,
+      "accurate": false
+    },
+    {
+      "subject_id": 385,
+      "true_ite": 12.9031,
+      "estimated_cate": 9.8896,
+      "bias": -3.0135,
+      "accurate": true
+    },
+    {
+      "subject_id": 386,
+      "true_ite": 13.0872,
+      "estimated_cate": 9.8896,
+      "bias": -3.1976,
+      "accurate": true
+    },
+    {
+      "subject_id": 387,
+      "true_ite": 11.6138,
+      "estimated_cate": 9.8896,
+      "bias": -1.7242,
+      "accurate": true
+    },
+    {
+      "subject_id": 388,
+      "true_ite": 14.1166,
+      "estimated_cate": 9.8896,
+      "bias": -4.227,
+      "accurate": true
+    },
+    {
+      "subject_id": 389,
+      "true_ite": 11.1939,
+      "estimated_cate": 9.8896,
+      "bias": -1.3043,
+      "accurate": true
+    },
+    {
+      "subject_id": 390,
+      "true_ite": 11.3396,
+      "estimated_cate": 9.8896,
+      "bias": -1.45,
+      "accurate": true
+    },
+    {
+      "subject_id": 391,
+      "true_ite": 12.6325,
+      "estimated_cate": 9.8896,
+      "bias": -2.7429,
+      "accurate": true
+    },
+    {
+      "subject_id": 392,
+      "true_ite": 12.1634,
+      "estimated_cate": 9.8896,
+      "bias": -2.2738,
+      "accurate": true
+    },
+    {
+      "subject_id": 393,
+      "true_ite": 10.9215,
+      "estimated_cate": 9.8896,
+      "bias": -1.0318,
+      "accurate": true
+    },
+    {
+      "subject_id": 394,
+      "true_ite": 8.8072,
+      "estimated_cate": 9.8896,
+      "bias": 1.0824,
+      "accurate": true
+    },
+    {
+      "subject_id": 395,
+      "true_ite": 11.0165,
+      "estimated_cate": 9.8896,
+      "bias": -1.1269,
+      "accurate": true
+    },
+    {
+      "subject_id": 396,
+      "true_ite": 11.9415,
+      "estimated_cate": 9.8896,
+      "bias": -2.0519,
+      "accurate": true
+    },
+    {
+      "subject_id": 397,
+      "true_ite": 8.9979,
+      "estimated_cate": 9.8896,
+      "bias": 0.8918,
+      "accurate": true
+    },
+    {
+      "subject_id": 398,
+      "true_ite": 9.7252,
+      "estimated_cate": 9.8896,
+      "bias": 0.1644,
+      "accurate": true
+    },
+    {
+      "subject_id": 399,
+      "true_ite": 9.422,
+      "estimated_cate": 9.8896,
+      "bias": 0.4676,
+      "accurate": true
+    },
+    {
+      "subject_id": 400,
+      "true_ite": 14.4821,
+      "estimated_cate": 9.8896,
+      "bias": -4.5925,
+      "accurate": false
+    },
+    {
+      "subject_id": 401,
+      "true_ite": 15.6734,
+      "estimated_cate": 9.8896,
+      "bias": -5.7838,
+      "accurate": false
+    },
+    {
+      "subject_id": 402,
+      "true_ite": 9.9955,
+      "estimated_cate": 9.8896,
+      "bias": -0.1058,
+      "accurate": true
+    },
+    {
+      "subject_id": 403,
+      "true_ite": 11.8239,
+      "estimated_cate": 9.8896,
+      "bias": -1.9343,
+      "accurate": true
+    },
+    {
+      "subject_id": 404,
+      "true_ite": 11.0076,
+      "estimated_cate": 9.8896,
+      "bias": -1.118,
+      "accurate": true
+    },
+    {
+      "subject_id": 405,
+      "true_ite": 11.5374,
+      "estimated_cate": 9.8896,
+      "bias": -1.6477,
+      "accurate": true
+    },
+    {
+      "subject_id": 406,
+      "true_ite": 15.792,
+      "estimated_cate": 9.8896,
+      "bias": -5.9024,
+      "accurate": false
+    },
+    {
+      "subject_id": 407,
+      "true_ite": 11.8786,
+      "estimated_cate": 9.8896,
+      "bias": -1.989,
+      "accurate": true
+    },
+    {
+      "subject_id": 408,
+      "true_ite": 7.2246,
+      "estimated_cate": 9.8896,
+      "bias": 2.665,
+      "accurate": false
+    },
+    {
+      "subject_id": 409,
+      "true_ite": 14.2299,
+      "estimated_cate": 9.8896,
+      "bias": -4.3403,
+      "accurate": false
+    },
+    {
+      "subject_id": 410,
+      "true_ite": 8.5075,
+      "estimated_cate": 9.8896,
+      "bias": 1.3821,
+      "accurate": true
+    },
+    {
+      "subject_id": 411,
+      "true_ite": 17.5154,
+      "estimated_cate": 9.8896,
+      "bias": -7.6258,
+      "accurate": false
+    },
+    {
+      "subject_id": 412,
+      "true_ite": 11.5093,
+      "estimated_cate": 9.8896,
+      "bias": -1.6197,
+      "accurate": true
+    },
+    {
+      "subject_id": 413,
+      "true_ite": 7.6537,
+      "estimated_cate": 9.8896,
+      "bias": 2.2359,
+      "accurate": true
+    },
+    {
+      "subject_id": 414,
+      "true_ite": 8.1559,
+      "estimated_cate": 9.8896,
+      "bias": 1.7337,
+      "accurate": true
+    },
+    {
+      "subject_id": 415,
+      "true_ite": 12.7226,
+      "estimated_cate": 9.8896,
+      "bias": -2.833,
+      "accurate": true
+    },
+    {
+      "subject_id": 416,
+      "true_ite": 6.826,
+      "estimated_cate": 9.8896,
+      "bias": 3.0636,
+      "accurate": false
+    },
+    {
+      "subject_id": 417,
+      "true_ite": 10.4535,
+      "estimated_cate": 9.8896,
+      "bias": -0.5639,
+      "accurate": true
+    },
+    {
+      "subject_id": 418,
+      "true_ite": 10.1407,
+      "estimated_cate": 9.8896,
+      "bias": -0.251,
+      "accurate": true
+    },
+    {
+      "subject_id": 419,
+      "true_ite": 9.967,
+      "estimated_cate": 9.8896,
+      "bias": -0.0774,
+      "accurate": true
+    },
+    {
+      "subject_id": 420,
+      "true_ite": 9.7932,
+      "estimated_cate": 9.8896,
+      "bias": 0.0964,
+      "accurate": true
+    },
+    {
+      "subject_id": 421,
+      "true_ite": 8.1567,
+      "estimated_cate": 9.8896,
+      "bias": 1.7329,
+      "accurate": true
+    },
+    {
+      "subject_id": 422,
+      "true_ite": 10.6476,
+      "estimated_cate": 9.8896,
+      "bias": -0.758,
+      "accurate": true
+    },
+    {
+      "subject_id": 423,
+      "true_ite": 11.2724,
+      "estimated_cate": 9.8896,
+      "bias": -1.3828,
+      "accurate": true
+    },
+    {
+      "subject_id": 424,
+      "true_ite": 8.8741,
+      "estimated_cate": 9.8896,
+      "bias": 1.0155,
+      "accurate": true
+    },
+    {
+      "subject_id": 425,
+      "true_ite": 11.3223,
+      "estimated_cate": 9.8896,
+      "bias": -1.4327,
+      "accurate": true
+    },
+    {
+      "subject_id": 426,
+      "true_ite": 10.0466,
+      "estimated_cate": 9.8896,
+      "bias": -0.157,
+      "accurate": true
+    },
+    {
+      "subject_id": 427,
+      "true_ite": 7.6683,
+      "estimated_cate": 9.8896,
+      "bias": 2.2213,
+      "accurate": true
+    },
+    {
+      "subject_id": 428,
+      "true_ite": 9.0442,
+      "estimated_cate": 9.8896,
+      "bias": 0.8454,
+      "accurate": true
+    },
+    {
+      "subject_id": 429,
+      "true_ite": 11.9783,
+      "estimated_cate": 9.8896,
+      "bias": -2.0887,
+      "accurate": true
+    },
+    {
+      "subject_id": 430,
+      "true_ite": 8.766,
+      "estimated_cate": 9.8896,
+      "bias": 1.1236,
+      "accurate": true
+    },
+    {
+      "subject_id": 431,
+      "true_ite": 9.3198,
+      "estimated_cate": 9.8896,
+      "bias": 0.5698,
+      "accurate": true
+    },
+    {
+      "subject_id": 432,
+      "true_ite": 12.573,
+      "estimated_cate": 9.8896,
+      "bias": -2.6834,
+      "accurate": true
+    },
+    {
+      "subject_id": 433,
+      "true_ite": 11.2513,
+      "estimated_cate": 9.8896,
+      "bias": -1.3617,
+      "accurate": true
+    },
+    {
+      "subject_id": 434,
+      "true_ite": 10.8314,
+      "estimated_cate": 9.8896,
+      "bias": -0.9418,
+      "accurate": true
+    },
+    {
+      "subject_id": 435,
+      "true_ite": 10.5925,
+      "estimated_cate": 9.8896,
+      "bias": -0.7029,
+      "accurate": true
+    },
+    {
+      "subject_id": 436,
+      "true_ite": 12.188,
+      "estimated_cate": 9.8896,
+      "bias": -2.2984,
+      "accurate": true
+    },
+    {
+      "subject_id": 437,
+      "true_ite": 10.071,
+      "estimated_cate": 9.8896,
+      "bias": -0.1814,
+      "accurate": true
+    },
+    {
+      "subject_id": 438,
+      "true_ite": 9.7175,
+      "estimated_cate": 9.8896,
+      "bias": 0.1721,
+      "accurate": true
+    },
+    {
+      "subject_id": 439,
+      "true_ite": 10.3979,
+      "estimated_cate": 9.8896,
+      "bias": -0.5083,
+      "accurate": true
+    },
+    {
+      "subject_id": 440,
+      "true_ite": 10.6599,
+      "estimated_cate": 9.8896,
+      "bias": -0.7703,
+      "accurate": true
+    },
+    {
+      "subject_id": 441,
+      "true_ite": 10.0179,
+      "estimated_cate": 9.8896,
+      "bias": -0.1283,
+      "accurate": true
+    },
+    {
+      "subject_id": 442,
+      "true_ite": 10.2474,
+      "estimated_cate": 9.8896,
+      "bias": -0.3578,
+      "accurate": true
+    },
+    {
+      "subject_id": 443,
+      "true_ite": 8.2364,
+      "estimated_cate": 9.8896,
+      "bias": 1.6532,
+      "accurate": true
+    },
+    {
+      "subject_id": 444,
+      "true_ite": 8.4106,
+      "estimated_cate": 9.8896,
+      "bias": 1.479,
+      "accurate": true
+    },
+    {
+      "subject_id": 445,
+      "true_ite": 9.8783,
+      "estimated_cate": 9.8896,
+      "bias": 0.0113,
+      "accurate": true
+    },
+    {
+      "subject_id": 446,
+      "true_ite": 12.0786,
+      "estimated_cate": 9.8896,
+      "bias": -2.189,
+      "accurate": true
+    },
+    {
+      "subject_id": 447,
+      "true_ite": 8.9903,
+      "estimated_cate": 9.8896,
+      "bias": 0.8993,
+      "accurate": true
+    },
+    {
+      "subject_id": 448,
+      "true_ite": 9.6717,
+      "estimated_cate": 9.8896,
+      "bias": 0.218,
+      "accurate": true
+    },
+    {
+      "subject_id": 449,
+      "true_ite": 12.3278,
+      "estimated_cate": 9.8896,
+      "bias": -2.4382,
+      "accurate": true
+    },
+    {
+      "subject_id": 450,
+      "true_ite": 8.4018,
+      "estimated_cate": 9.8896,
+      "bias": 1.4878,
+      "accurate": true
+    },
+    {
+      "subject_id": 451,
+      "true_ite": 13.2459,
+      "estimated_cate": 9.8896,
+      "bias": -3.3563,
+      "accurate": true
+    },
+    {
+      "subject_id": 452,
+      "true_ite": 10.776,
+      "estimated_cate": 9.8896,
+      "bias": -0.8864,
+      "accurate": true
+    },
+    {
+      "subject_id": 453,
+      "true_ite": 11.0072,
+      "estimated_cate": 9.8896,
+      "bias": -1.1176,
+      "accurate": true
+    },
+    {
+      "subject_id": 454,
+      "true_ite": 11.6158,
+      "estimated_cate": 9.8896,
+      "bias": -1.7262,
+      "accurate": true
+    },
+    {
+      "subject_id": 455,
+      "true_ite": 12.2137,
+      "estimated_cate": 9.8896,
+      "bias": -2.3241,
+      "accurate": true
+    },
+    {
+      "subject_id": 456,
+      "true_ite": 12.1529,
+      "estimated_cate": 9.8896,
+      "bias": -2.2633,
+      "accurate": true
+    },
+    {
+      "subject_id": 457,
+      "true_ite": 8.2267,
+      "estimated_cate": 9.8896,
+      "bias": 1.6629,
+      "accurate": true
+    },
+    {
+      "subject_id": 458,
+      "true_ite": 10.4226,
+      "estimated_cate": 9.8896,
+      "bias": -0.533,
+      "accurate": true
+    },
+    {
+      "subject_id": 459,
+      "true_ite": 7.7255,
+      "estimated_cate": 9.8896,
+      "bias": 2.1641,
+      "accurate": true
+    },
+    {
+      "subject_id": 460,
+      "true_ite": 10.0971,
+      "estimated_cate": 9.8896,
+      "bias": -0.2075,
+      "accurate": true
+    },
+    {
+      "subject_id": 461,
+      "true_ite": 7.667,
+      "estimated_cate": 9.8896,
+      "bias": 2.2227,
+      "accurate": true
+    },
+    {
+      "subject_id": 462,
+      "true_ite": 10.5918,
+      "estimated_cate": 9.8896,
+      "bias": -0.7022,
+      "accurate": true
+    },
+    {
+      "subject_id": 463,
+      "true_ite": 12.8732,
+      "estimated_cate": 9.8896,
+      "bias": -2.9836,
+      "accurate": true
+    },
+    {
+      "subject_id": 464,
+      "true_ite": 12.8483,
+      "estimated_cate": 9.8896,
+      "bias": -2.9587,
+      "accurate": true
+    },
+    {
+      "subject_id": 465,
+      "true_ite": 9.1612,
+      "estimated_cate": 9.8896,
+      "bias": 0.7284,
+      "accurate": true
+    },
+    {
+      "subject_id": 466,
+      "true_ite": 10.1455,
+      "estimated_cate": 9.8896,
+      "bias": -0.2559,
+      "accurate": true
+    },
+    {
+      "subject_id": 467,
+      "true_ite": 6.8896,
+      "estimated_cate": 9.8896,
+      "bias": 3.0,
+      "accurate": false
+    },
+    {
+      "subject_id": 468,
+      "true_ite": 8.0581,
+      "estimated_cate": 9.8896,
+      "bias": 1.8316,
+      "accurate": true
+    },
+    {
+      "subject_id": 469,
+      "true_ite": 10.6039,
+      "estimated_cate": 9.8896,
+      "bias": -0.7142,
+      "accurate": true
+    },
+    {
+      "subject_id": 470,
+      "true_ite": 10.9305,
+      "estimated_cate": 9.8896,
+      "bias": -1.0409,
+      "accurate": true
+    },
+    {
+      "subject_id": 471,
+      "true_ite": 10.1453,
+      "estimated_cate": 9.8896,
+      "bias": -0.2557,
+      "accurate": true
+    },
+    {
+      "subject_id": 472,
+      "true_ite": 9.9834,
+      "estimated_cate": 9.8896,
+      "bias": -0.0938,
+      "accurate": true
+    },
+    {
+      "subject_id": 473,
+      "true_ite": 10.5122,
+      "estimated_cate": 9.8896,
+      "bias": -0.6226,
+      "accurate": true
+    },
+    {
+      "subject_id": 474,
+      "true_ite": 9.9358,
+      "estimated_cate": 9.8896,
+      "bias": -0.0462,
+      "accurate": true
+    },
+    {
+      "subject_id": 475,
+      "true_ite": 11.6873,
+      "estimated_cate": 9.8896,
+      "bias": -1.7977,
+      "accurate": true
+    },
+    {
+      "subject_id": 476,
+      "true_ite": 9.3845,
+      "estimated_cate": 9.8896,
+      "bias": 0.5051,
+      "accurate": true
+    },
+    {
+      "subject_id": 477,
+      "true_ite": 9.9573,
+      "estimated_cate": 9.8896,
+      "bias": -0.0677,
+      "accurate": true
+    },
+    {
+      "subject_id": 478,
+      "true_ite": 10.2783,
+      "estimated_cate": 9.8896,
+      "bias": -0.3887,
+      "accurate": true
+    },
+    {
+      "subject_id": 479,
+      "true_ite": 12.1072,
+      "estimated_cate": 9.8896,
+      "bias": -2.2176,
+      "accurate": true
+    },
+    {
+      "subject_id": 480,
+      "true_ite": 7.565,
+      "estimated_cate": 9.8896,
+      "bias": 2.3246,
+      "accurate": false
+    },
+    {
+      "subject_id": 481,
+      "true_ite": 11.0794,
+      "estimated_cate": 9.8896,
+      "bias": -1.1898,
+      "accurate": true
+    },
+    {
+      "subject_id": 482,
+      "true_ite": 9.253,
+      "estimated_cate": 9.8896,
+      "bias": 0.6366,
+      "accurate": true
+    },
+    {
+      "subject_id": 483,
+      "true_ite": 12.0866,
+      "estimated_cate": 9.8896,
+      "bias": -2.1969,
+      "accurate": true
+    },
+    {
+      "subject_id": 484,
+      "true_ite": 10.7035,
+      "estimated_cate": 9.8896,
+      "bias": -0.8139,
+      "accurate": true
+    },
+    {
+      "subject_id": 485,
+      "true_ite": 10.508,
+      "estimated_cate": 9.8896,
+      "bias": -0.6184,
+      "accurate": true
+    },
+    {
+      "subject_id": 486,
+      "true_ite": 7.3701,
+      "estimated_cate": 9.8896,
+      "bias": 2.5195,
+      "accurate": false
+    },
+    {
+      "subject_id": 487,
+      "true_ite": 13.019,
+      "estimated_cate": 9.8896,
+      "bias": -3.1294,
+      "accurate": true
+    },
+    {
+      "subject_id": 488,
+      "true_ite": 7.0793,
+      "estimated_cate": 9.8896,
+      "bias": 2.8103,
+      "accurate": false
+    },
+    {
+      "subject_id": 489,
+      "true_ite": 13.1356,
+      "estimated_cate": 9.8896,
+      "bias": -3.246,
+      "accurate": true
+    },
+    {
+      "subject_id": 490,
+      "true_ite": 9.3398,
+      "estimated_cate": 9.8896,
+      "bias": 0.5498,
+      "accurate": true
+    },
+    {
+      "subject_id": 491,
+      "true_ite": 7.0747,
+      "estimated_cate": 9.8896,
+      "bias": 2.8149,
+      "accurate": false
+    },
+    {
+      "subject_id": 492,
+      "true_ite": 10.517,
+      "estimated_cate": 9.8896,
+      "bias": -0.6274,
+      "accurate": true
+    },
+    {
+      "subject_id": 493,
+      "true_ite": 11.0592,
+      "estimated_cate": 9.8896,
+      "bias": -1.1696,
+      "accurate": true
+    },
+    {
+      "subject_id": 494,
+      "true_ite": 8.3479,
+      "estimated_cate": 9.8896,
+      "bias": 1.5417,
+      "accurate": true
+    },
+    {
+      "subject_id": 495,
+      "true_ite": 8.2021,
+      "estimated_cate": 9.8896,
+      "bias": 1.6875,
+      "accurate": true
+    },
+    {
+      "subject_id": 496,
+      "true_ite": 9.6217,
+      "estimated_cate": 9.8896,
+      "bias": 0.2679,
+      "accurate": true
+    },
+    {
+      "subject_id": 497,
+      "true_ite": 13.5877,
+      "estimated_cate": 9.8896,
+      "bias": -3.6981,
+      "accurate": true
+    },
+    {
+      "subject_id": 498,
+      "true_ite": 8.5037,
+      "estimated_cate": 9.8896,
+      "bias": 1.3859,
+      "accurate": true
+    },
+    {
+      "subject_id": 499,
+      "true_ite": 13.6822,
+      "estimated_cate": 9.8896,
+      "bias": -3.7925,
+      "accurate": true
+    },
+    {
+      "subject_id": 500,
+      "true_ite": 13.0041,
+      "estimated_cate": 9.8896,
+      "bias": -3.1145,
+      "accurate": true
+    },
+    {
+      "subject_id": 501,
+      "true_ite": 5.366,
+      "estimated_cate": 9.8896,
+      "bias": 4.5236,
+      "accurate": false
+    },
+    {
+      "subject_id": 502,
+      "true_ite": 8.9139,
+      "estimated_cate": 9.8896,
+      "bias": 0.9757,
+      "accurate": true
+    },
+    {
+      "subject_id": 503,
+      "true_ite": 10.4246,
+      "estimated_cate": 9.8896,
+      "bias": -0.535,
+      "accurate": true
+    },
+    {
+      "subject_id": 504,
+      "true_ite": 10.4797,
+      "estimated_cate": 9.8896,
+      "bias": -0.5901,
+      "accurate": true
+    },
+    {
+      "subject_id": 505,
+      "true_ite": 14.8478,
+      "estimated_cate": 9.8896,
+      "bias": -4.9582,
+      "accurate": false
+    },
+    {
+      "subject_id": 506,
+      "true_ite": 11.7353,
+      "estimated_cate": 9.8896,
+      "bias": -1.8457,
+      "accurate": true
+    },
+    {
+      "subject_id": 507,
+      "true_ite": 7.166,
+      "estimated_cate": 9.8896,
+      "bias": 2.7236,
+      "accurate": false
+    },
+    {
+      "subject_id": 508,
+      "true_ite": 9.0301,
+      "estimated_cate": 9.8896,
+      "bias": 0.8595,
+      "accurate": true
+    },
+    {
+      "subject_id": 509,
+      "true_ite": 9.5244,
+      "estimated_cate": 9.8896,
+      "bias": 0.3652,
+      "accurate": true
+    },
+    {
+      "subject_id": 510,
+      "true_ite": 8.0089,
+      "estimated_cate": 9.8896,
+      "bias": 1.8807,
+      "accurate": true
+    },
+    {
+      "subject_id": 511,
+      "true_ite": 10.658,
+      "estimated_cate": 9.8896,
+      "bias": -0.7684,
+      "accurate": true
+    },
+    {
+      "subject_id": 512,
+      "true_ite": 11.7997,
+      "estimated_cate": 9.8896,
+      "bias": -1.9101,
+      "accurate": true
+    },
+    {
+      "subject_id": 513,
+      "true_ite": 10.2335,
+      "estimated_cate": 9.8896,
+      "bias": -0.3439,
+      "accurate": true
+    },
+    {
+      "subject_id": 514,
+      "true_ite": 10.2689,
+      "estimated_cate": 9.8896,
+      "bias": -0.3792,
+      "accurate": true
+    },
+    {
+      "subject_id": 515,
+      "true_ite": 12.4492,
+      "estimated_cate": 9.8896,
+      "bias": -2.5596,
+      "accurate": true
+    },
+    {
+      "subject_id": 516,
+      "true_ite": 8.7759,
+      "estimated_cate": 9.8896,
+      "bias": 1.1137,
+      "accurate": true
+    },
+    {
+      "subject_id": 517,
+      "true_ite": 8.0718,
+      "estimated_cate": 9.8896,
+      "bias": 1.8178,
+      "accurate": true
+    },
+    {
+      "subject_id": 518,
+      "true_ite": 12.3883,
+      "estimated_cate": 9.8896,
+      "bias": -2.4987,
+      "accurate": true
+    },
+    {
+      "subject_id": 519,
+      "true_ite": 8.3861,
+      "estimated_cate": 9.8896,
+      "bias": 1.5035,
+      "accurate": true
+    },
+    {
+      "subject_id": 520,
+      "true_ite": 8.0441,
+      "estimated_cate": 9.8896,
+      "bias": 1.8455,
+      "accurate": true
+    },
+    {
+      "subject_id": 521,
+      "true_ite": 10.5126,
+      "estimated_cate": 9.8896,
+      "bias": -0.623,
+      "accurate": true
+    },
+    {
+      "subject_id": 522,
+      "true_ite": 8.8947,
+      "estimated_cate": 9.8896,
+      "bias": 0.9949,
+      "accurate": true
+    },
+    {
+      "subject_id": 523,
+      "true_ite": 8.9669,
+      "estimated_cate": 9.8896,
+      "bias": 0.9227,
+      "accurate": true
+    },
+    {
+      "subject_id": 524,
+      "true_ite": 9.7773,
+      "estimated_cate": 9.8896,
+      "bias": 0.1123,
+      "accurate": true
+    },
+    {
+      "subject_id": 525,
+      "true_ite": 12.4095,
+      "estimated_cate": 9.8896,
+      "bias": -2.5199,
+      "accurate": true
+    },
+    {
+      "subject_id": 526,
+      "true_ite": 12.6679,
+      "estimated_cate": 9.8896,
+      "bias": -2.7783,
+      "accurate": true
+    },
+    {
+      "subject_id": 527,
+      "true_ite": 9.7785,
+      "estimated_cate": 9.8896,
+      "bias": 0.1111,
+      "accurate": true
+    },
+    {
+      "subject_id": 528,
+      "true_ite": 10.29,
+      "estimated_cate": 9.8896,
+      "bias": -0.4004,
+      "accurate": true
+    },
+    {
+      "subject_id": 529,
+      "true_ite": 10.3829,
+      "estimated_cate": 9.8896,
+      "bias": -0.4933,
+      "accurate": true
+    },
+    {
+      "subject_id": 530,
+      "true_ite": 8.5949,
+      "estimated_cate": 9.8896,
+      "bias": 1.2947,
+      "accurate": true
+    },
+    {
+      "subject_id": 531,
+      "true_ite": 8.594,
+      "estimated_cate": 9.8896,
+      "bias": 1.2956,
+      "accurate": true
+    },
+    {
+      "subject_id": 532,
+      "true_ite": 11.3539,
+      "estimated_cate": 9.8896,
+      "bias": -1.4643,
+      "accurate": true
+    },
+    {
+      "subject_id": 533,
+      "true_ite": 11.592,
+      "estimated_cate": 9.8896,
+      "bias": -1.7024,
+      "accurate": true
+    },
+    {
+      "subject_id": 534,
+      "true_ite": 13.7529,
+      "estimated_cate": 9.8896,
+      "bias": -3.8633,
+      "accurate": true
+    },
+    {
+      "subject_id": 535,
+      "true_ite": 10.8342,
+      "estimated_cate": 9.8896,
+      "bias": -0.9446,
+      "accurate": true
+    },
+    {
+      "subject_id": 536,
+      "true_ite": 8.2107,
+      "estimated_cate": 9.8896,
+      "bias": 1.6789,
+      "accurate": true
+    },
+    {
+      "subject_id": 537,
+      "true_ite": 10.0562,
+      "estimated_cate": 9.8896,
+      "bias": -0.1666,
+      "accurate": true
+    },
+    {
+      "subject_id": 538,
+      "true_ite": 9.8128,
+      "estimated_cate": 9.8896,
+      "bias": 0.0768,
+      "accurate": true
+    },
+    {
+      "subject_id": 539,
+      "true_ite": 12.747,
+      "estimated_cate": 9.8896,
+      "bias": -2.8574,
+      "accurate": true
+    },
+    {
+      "subject_id": 540,
+      "true_ite": 10.4026,
+      "estimated_cate": 9.8896,
+      "bias": -0.513,
+      "accurate": true
+    },
+    {
+      "subject_id": 541,
+      "true_ite": 13.3186,
+      "estimated_cate": 9.8896,
+      "bias": -3.429,
+      "accurate": true
+    },
+    {
+      "subject_id": 542,
+      "true_ite": 13.8353,
+      "estimated_cate": 9.8896,
+      "bias": -3.9457,
+      "accurate": true
+    },
+    {
+      "subject_id": 543,
+      "true_ite": 9.4914,
+      "estimated_cate": 9.8896,
+      "bias": 0.3982,
+      "accurate": true
+    },
+    {
+      "subject_id": 544,
+      "true_ite": 11.5076,
+      "estimated_cate": 9.8896,
+      "bias": -1.618,
+      "accurate": true
+    },
+    {
+      "subject_id": 545,
+      "true_ite": 10.7058,
+      "estimated_cate": 9.8896,
+      "bias": -0.8162,
+      "accurate": true
+    },
+    {
+      "subject_id": 546,
+      "true_ite": 8.5401,
+      "estimated_cate": 9.8896,
+      "bias": 1.3495,
+      "accurate": true
+    },
+    {
+      "subject_id": 547,
+      "true_ite": 8.6929,
+      "estimated_cate": 9.8896,
+      "bias": 1.1967,
+      "accurate": true
+    },
+    {
+      "subject_id": 548,
+      "true_ite": 12.4827,
+      "estimated_cate": 9.8896,
+      "bias": -2.5931,
+      "accurate": true
+    },
+    {
+      "subject_id": 549,
+      "true_ite": 6.0277,
+      "estimated_cate": 9.8896,
+      "bias": 3.8619,
+      "accurate": false
+    },
+    {
+      "subject_id": 550,
+      "true_ite": 8.2207,
+      "estimated_cate": 9.8896,
+      "bias": 1.6689,
+      "accurate": true
+    },
+    {
+      "subject_id": 551,
+      "true_ite": 8.6356,
+      "estimated_cate": 9.8896,
+      "bias": 1.254,
+      "accurate": true
+    },
+    {
+      "subject_id": 552,
+      "true_ite": 12.7272,
+      "estimated_cate": 9.8896,
+      "bias": -2.8376,
+      "accurate": true
+    },
+    {
+      "subject_id": 553,
+      "true_ite": 11.8594,
+      "estimated_cate": 9.8896,
+      "bias": -1.9698,
+      "accurate": true
+    },
+    {
+      "subject_id": 554,
+      "true_ite": 8.7669,
+      "estimated_cate": 9.8896,
+      "bias": 1.1227,
+      "accurate": true
+    },
+    {
+      "subject_id": 555,
+      "true_ite": 11.1946,
+      "estimated_cate": 9.8896,
+      "bias": -1.305,
+      "accurate": true
+    },
+    {
+      "subject_id": 556,
+      "true_ite": 8.6076,
+      "estimated_cate": 9.8896,
+      "bias": 1.282,
+      "accurate": true
+    },
+    {
+      "subject_id": 557,
+      "true_ite": 11.415,
+      "estimated_cate": 9.8896,
+      "bias": -1.5254,
+      "accurate": true
+    },
+    {
+      "subject_id": 558,
+      "true_ite": 11.1392,
+      "estimated_cate": 9.8896,
+      "bias": -1.2495,
+      "accurate": true
+    },
+    {
+      "subject_id": 559,
+      "true_ite": 13.2075,
+      "estimated_cate": 9.8896,
+      "bias": -3.3179,
+      "accurate": true
+    },
+    {
+      "subject_id": 560,
+      "true_ite": 13.8786,
+      "estimated_cate": 9.8896,
+      "bias": -3.989,
+      "accurate": true
+    },
+    {
+      "subject_id": 561,
+      "true_ite": 10.5702,
+      "estimated_cate": 9.8896,
+      "bias": -0.6806,
+      "accurate": true
+    },
+    {
+      "subject_id": 562,
+      "true_ite": 9.3863,
+      "estimated_cate": 9.8896,
+      "bias": 0.5033,
+      "accurate": true
+    },
+    {
+      "subject_id": 563,
+      "true_ite": 10.3702,
+      "estimated_cate": 9.8896,
+      "bias": -0.4806,
+      "accurate": true
+    },
+    {
+      "subject_id": 564,
+      "true_ite": 8.425,
+      "estimated_cate": 9.8896,
+      "bias": 1.4646,
+      "accurate": true
+    },
+    {
+      "subject_id": 565,
+      "true_ite": 10.0469,
+      "estimated_cate": 9.8896,
+      "bias": -0.1573,
+      "accurate": true
+    },
+    {
+      "subject_id": 566,
+      "true_ite": 8.623,
+      "estimated_cate": 9.8896,
+      "bias": 1.2666,
+      "accurate": true
+    },
+    {
+      "subject_id": 567,
+      "true_ite": 8.7836,
+      "estimated_cate": 9.8896,
+      "bias": 1.106,
+      "accurate": true
+    },
+    {
+      "subject_id": 568,
+      "true_ite": 9.7276,
+      "estimated_cate": 9.8896,
+      "bias": 0.162,
+      "accurate": true
+    },
+    {
+      "subject_id": 569,
+      "true_ite": 10.9956,
+      "estimated_cate": 9.8896,
+      "bias": -1.106,
+      "accurate": true
+    },
+    {
+      "subject_id": 570,
+      "true_ite": 9.1836,
+      "estimated_cate": 9.8896,
+      "bias": 0.706,
+      "accurate": true
+    },
+    {
+      "subject_id": 571,
+      "true_ite": 12.6593,
+      "estimated_cate": 9.8896,
+      "bias": -2.7697,
+      "accurate": true
+    },
+    {
+      "subject_id": 572,
+      "true_ite": 7.8848,
+      "estimated_cate": 9.8896,
+      "bias": 2.0048,
+      "accurate": true
+    },
+    {
+      "subject_id": 573,
+      "true_ite": 8.4239,
+      "estimated_cate": 9.8896,
+      "bias": 1.4657,
+      "accurate": true
+    },
+    {
+      "subject_id": 574,
+      "true_ite": 9.8782,
+      "estimated_cate": 9.8896,
+      "bias": 0.0114,
+      "accurate": true
+    },
+    {
+      "subject_id": 575,
+      "true_ite": 7.5877,
+      "estimated_cate": 9.8896,
+      "bias": 2.3019,
+      "accurate": false
+    },
+    {
+      "subject_id": 576,
+      "true_ite": 10.16,
+      "estimated_cate": 9.8896,
+      "bias": -0.2704,
+      "accurate": true
+    },
+    {
+      "subject_id": 577,
+      "true_ite": 8.6793,
+      "estimated_cate": 9.8896,
+      "bias": 1.2103,
+      "accurate": true
+    },
+    {
+      "subject_id": 578,
+      "true_ite": 10.2277,
+      "estimated_cate": 9.8896,
+      "bias": -0.3381,
+      "accurate": true
+    },
+    {
+      "subject_id": 579,
+      "true_ite": 14.618,
+      "estimated_cate": 9.8896,
+      "bias": -4.7284,
+      "accurate": false
+    },
+    {
+      "subject_id": 580,
+      "true_ite": 9.9201,
+      "estimated_cate": 9.8896,
+      "bias": -0.0304,
+      "accurate": true
+    },
+    {
+      "subject_id": 581,
+      "true_ite": 10.6658,
+      "estimated_cate": 9.8896,
+      "bias": -0.7762,
+      "accurate": true
+    },
+    {
+      "subject_id": 582,
+      "true_ite": 14.4472,
+      "estimated_cate": 9.8896,
+      "bias": -4.5576,
+      "accurate": false
+    },
+    {
+      "subject_id": 583,
+      "true_ite": 12.7151,
+      "estimated_cate": 9.8896,
+      "bias": -2.8255,
+      "accurate": true
+    },
+    {
+      "subject_id": 584,
+      "true_ite": 10.9387,
+      "estimated_cate": 9.8896,
+      "bias": -1.0491,
+      "accurate": true
+    },
+    {
+      "subject_id": 585,
+      "true_ite": 13.3213,
+      "estimated_cate": 9.8896,
+      "bias": -3.4317,
+      "accurate": true
+    },
+    {
+      "subject_id": 586,
+      "true_ite": 11.4717,
+      "estimated_cate": 9.8896,
+      "bias": -1.5821,
+      "accurate": true
+    },
+    {
+      "subject_id": 587,
+      "true_ite": 12.7408,
+      "estimated_cate": 9.8896,
+      "bias": -2.8512,
+      "accurate": true
+    },
+    {
+      "subject_id": 588,
+      "true_ite": 12.4094,
+      "estimated_cate": 9.8896,
+      "bias": -2.5198,
+      "accurate": true
+    },
+    {
+      "subject_id": 589,
+      "true_ite": 10.1383,
+      "estimated_cate": 9.8896,
+      "bias": -0.2487,
+      "accurate": true
+    },
+    {
+      "subject_id": 590,
+      "true_ite": 11.203,
+      "estimated_cate": 9.8896,
+      "bias": -1.3134,
+      "accurate": true
+    },
+    {
+      "subject_id": 591,
+      "true_ite": 11.0258,
+      "estimated_cate": 9.8896,
+      "bias": -1.1362,
+      "accurate": true
+    },
+    {
+      "subject_id": 592,
+      "true_ite": 7.2194,
+      "estimated_cate": 9.8896,
+      "bias": 2.6702,
+      "accurate": false
+    },
+    {
+      "subject_id": 593,
+      "true_ite": 8.4116,
+      "estimated_cate": 9.8896,
+      "bias": 1.478,
+      "accurate": true
+    },
+    {
+      "subject_id": 594,
+      "true_ite": 11.4017,
+      "estimated_cate": 9.8896,
+      "bias": -1.5121,
+      "accurate": true
+    },
+    {
+      "subject_id": 595,
+      "true_ite": 8.9504,
+      "estimated_cate": 9.8896,
+      "bias": 0.9392,
+      "accurate": true
+    },
+    {
+      "subject_id": 596,
+      "true_ite": 12.0063,
+      "estimated_cate": 9.8896,
+      "bias": -2.1167,
+      "accurate": true
+    },
+    {
+      "subject_id": 597,
+      "true_ite": 12.2046,
+      "estimated_cate": 9.8896,
+      "bias": -2.315,
+      "accurate": true
+    },
+    {
+      "subject_id": 598,
+      "true_ite": 12.5635,
+      "estimated_cate": 9.8896,
+      "bias": -2.6739,
+      "accurate": true
+    },
+    {
+      "subject_id": 599,
+      "true_ite": 9.9382,
+      "estimated_cate": 9.8896,
+      "bias": -0.0486,
+      "accurate": true
+    },
+    {
+      "subject_id": 600,
+      "true_ite": 11.2029,
+      "estimated_cate": 9.8896,
+      "bias": -1.3133,
+      "accurate": true
+    },
+    {
+      "subject_id": 601,
+      "true_ite": 9.1088,
+      "estimated_cate": 9.8896,
+      "bias": 0.7808,
+      "accurate": true
+    },
+    {
+      "subject_id": 602,
+      "true_ite": 9.2596,
+      "estimated_cate": 9.8896,
+      "bias": 0.63,
+      "accurate": true
+    },
+    {
+      "subject_id": 603,
+      "true_ite": 8.0119,
+      "estimated_cate": 9.8896,
+      "bias": 1.8777,
+      "accurate": true
+    },
+    {
+      "subject_id": 604,
+      "true_ite": 9.297,
+      "estimated_cate": 9.8896,
+      "bias": 0.5926,
+      "accurate": true
+    },
+    {
+      "subject_id": 605,
+      "true_ite": 11.0969,
+      "estimated_cate": 9.8896,
+      "bias": -1.2073,
+      "accurate": true
+    },
+    {
+      "subject_id": 606,
+      "true_ite": 8.6772,
+      "estimated_cate": 9.8896,
+      "bias": 1.2124,
+      "accurate": true
+    },
+    {
+      "subject_id": 607,
+      "true_ite": 12.9956,
+      "estimated_cate": 9.8896,
+      "bias": -3.106,
+      "accurate": true
+    },
+    {
+      "subject_id": 608,
+      "true_ite": 8.3427,
+      "estimated_cate": 9.8896,
+      "bias": 1.5469,
+      "accurate": true
+    },
+    {
+      "subject_id": 609,
+      "true_ite": 12.0264,
+      "estimated_cate": 9.8896,
+      "bias": -2.1368,
+      "accurate": true
+    },
+    {
+      "subject_id": 610,
+      "true_ite": 9.4568,
+      "estimated_cate": 9.8896,
+      "bias": 0.4328,
+      "accurate": true
+    },
+    {
+      "subject_id": 611,
+      "true_ite": 11.477,
+      "estimated_cate": 9.8896,
+      "bias": -1.5874,
+      "accurate": true
+    },
+    {
+      "subject_id": 612,
+      "true_ite": 10.3951,
+      "estimated_cate": 9.8896,
+      "bias": -0.5055,
+      "accurate": true
+    },
+    {
+      "subject_id": 613,
+      "true_ite": 11.0131,
+      "estimated_cate": 9.8896,
+      "bias": -1.1235,
+      "accurate": true
+    },
+    {
+      "subject_id": 614,
+      "true_ite": 7.949,
+      "estimated_cate": 9.8896,
+      "bias": 1.9406,
+      "accurate": true
+    },
+    {
+      "subject_id": 615,
+      "true_ite": 10.5986,
+      "estimated_cate": 9.8896,
+      "bias": -0.709,
+      "accurate": true
+    },
+    {
+      "subject_id": 616,
+      "true_ite": 7.9469,
+      "estimated_cate": 9.8896,
+      "bias": 1.9427,
+      "accurate": true
+    },
+    {
+      "subject_id": 617,
+      "true_ite": 8.6976,
+      "estimated_cate": 9.8896,
+      "bias": 1.192,
+      "accurate": true
+    },
+    {
+      "subject_id": 618,
+      "true_ite": 11.7763,
+      "estimated_cate": 9.8896,
+      "bias": -1.8867,
+      "accurate": true
+    },
+    {
+      "subject_id": 619,
+      "true_ite": 8.7978,
+      "estimated_cate": 9.8896,
+      "bias": 1.0918,
+      "accurate": true
+    },
+    {
+      "subject_id": 620,
+      "true_ite": 6.6669,
+      "estimated_cate": 9.8896,
+      "bias": 3.2227,
+      "accurate": false
+    },
+    {
+      "subject_id": 621,
+      "true_ite": 9.9708,
+      "estimated_cate": 9.8896,
+      "bias": -0.0812,
+      "accurate": true
+    },
+    {
+      "subject_id": 622,
+      "true_ite": 9.4074,
+      "estimated_cate": 9.8896,
+      "bias": 0.4822,
+      "accurate": true
+    },
+    {
+      "subject_id": 623,
+      "true_ite": 11.828,
+      "estimated_cate": 9.8896,
+      "bias": -1.9384,
+      "accurate": true
+    },
+    {
+      "subject_id": 624,
+      "true_ite": 21.6182,
+      "estimated_cate": 9.8896,
+      "bias": -11.7286,
+      "accurate": false
+    },
+    {
+      "subject_id": 625,
+      "true_ite": 7.8372,
+      "estimated_cate": 9.8896,
+      "bias": 2.0524,
+      "accurate": true
+    },
+    {
+      "subject_id": 626,
+      "true_ite": 10.6669,
+      "estimated_cate": 9.8896,
+      "bias": -0.7773,
+      "accurate": true
+    },
+    {
+      "subject_id": 627,
+      "true_ite": 10.2355,
+      "estimated_cate": 9.8896,
+      "bias": -0.3459,
+      "accurate": true
+    },
+    {
+      "subject_id": 628,
+      "true_ite": 8.6895,
+      "estimated_cate": 9.8896,
+      "bias": 1.2001,
+      "accurate": true
+    },
+    {
+      "subject_id": 629,
+      "true_ite": 11.2185,
+      "estimated_cate": 9.8896,
+      "bias": -1.3288,
+      "accurate": true
+    },
+    {
+      "subject_id": 630,
+      "true_ite": 10.986,
+      "estimated_cate": 9.8896,
+      "bias": -1.0964,
+      "accurate": true
+    },
+    {
+      "subject_id": 631,
+      "true_ite": 8.1881,
+      "estimated_cate": 9.8896,
+      "bias": 1.7015,
+      "accurate": true
+    },
+    {
+      "subject_id": 632,
+      "true_ite": 9.6851,
+      "estimated_cate": 9.8896,
+      "bias": 0.2045,
+      "accurate": true
+    },
+    {
+      "subject_id": 633,
+      "true_ite": 9.8196,
+      "estimated_cate": 9.8896,
+      "bias": 0.07,
+      "accurate": true
+    },
+    {
+      "subject_id": 634,
+      "true_ite": 10.9872,
+      "estimated_cate": 9.8896,
+      "bias": -1.0976,
+      "accurate": true
+    },
+    {
+      "subject_id": 635,
+      "true_ite": 9.247,
+      "estimated_cate": 9.8896,
+      "bias": 0.6426,
+      "accurate": true
+    },
+    {
+      "subject_id": 636,
+      "true_ite": 12.1548,
+      "estimated_cate": 9.8896,
+      "bias": -2.2652,
+      "accurate": true
+    },
+    {
+      "subject_id": 637,
+      "true_ite": 10.3378,
+      "estimated_cate": 9.8896,
+      "bias": -0.4482,
+      "accurate": true
+    },
+    {
+      "subject_id": 638,
+      "true_ite": 9.6883,
+      "estimated_cate": 9.8896,
+      "bias": 0.2014,
+      "accurate": true
+    },
+    {
+      "subject_id": 639,
+      "true_ite": 8.8716,
+      "estimated_cate": 9.8896,
+      "bias": 1.018,
+      "accurate": true
+    },
+    {
+      "subject_id": 640,
+      "true_ite": 7.8611,
+      "estimated_cate": 9.8896,
+      "bias": 2.0285,
+      "accurate": true
+    },
+    {
+      "subject_id": 641,
+      "true_ite": 13.8754,
+      "estimated_cate": 9.8896,
+      "bias": -3.9858,
+      "accurate": true
+    },
+    {
+      "subject_id": 642,
+      "true_ite": 7.9383,
+      "estimated_cate": 9.8896,
+      "bias": 1.9513,
+      "accurate": true
+    },
+    {
+      "subject_id": 643,
+      "true_ite": 13.6134,
+      "estimated_cate": 9.8896,
+      "bias": -3.7238,
+      "accurate": true
+    },
+    {
+      "subject_id": 644,
+      "true_ite": 9.2144,
+      "estimated_cate": 9.8896,
+      "bias": 0.6752,
+      "accurate": true
+    },
+    {
+      "subject_id": 645,
+      "true_ite": 8.8284,
+      "estimated_cate": 9.8896,
+      "bias": 1.0612,
+      "accurate": true
+    },
+    {
+      "subject_id": 646,
+      "true_ite": 11.7399,
+      "estimated_cate": 9.8896,
+      "bias": -1.8502,
+      "accurate": true
+    },
+    {
+      "subject_id": 647,
+      "true_ite": 10.4791,
+      "estimated_cate": 9.8896,
+      "bias": -0.5895,
+      "accurate": true
+    },
+    {
+      "subject_id": 648,
+      "true_ite": 12.4135,
+      "estimated_cate": 9.8896,
+      "bias": -2.5239,
+      "accurate": true
+    },
+    {
+      "subject_id": 649,
+      "true_ite": 10.7364,
+      "estimated_cate": 9.8896,
+      "bias": -0.8468,
+      "accurate": true
+    },
+    {
+      "subject_id": 650,
+      "true_ite": 8.1689,
+      "estimated_cate": 9.8896,
+      "bias": 1.7207,
+      "accurate": true
+    },
+    {
+      "subject_id": 651,
+      "true_ite": 8.5267,
+      "estimated_cate": 9.8896,
+      "bias": 1.3629,
+      "accurate": true
+    },
+    {
+      "subject_id": 652,
+      "true_ite": 10.7832,
+      "estimated_cate": 9.8896,
+      "bias": -0.8936,
+      "accurate": true
+    },
+    {
+      "subject_id": 653,
+      "true_ite": 7.2987,
+      "estimated_cate": 9.8896,
+      "bias": 2.5909,
+      "accurate": false
+    },
+    {
+      "subject_id": 654,
+      "true_ite": 10.4804,
+      "estimated_cate": 9.8896,
+      "bias": -0.5908,
+      "accurate": true
+    },
+    {
+      "subject_id": 655,
+      "true_ite": 8.2605,
+      "estimated_cate": 9.8896,
+      "bias": 1.6291,
+      "accurate": true
+    },
+    {
+      "subject_id": 656,
+      "true_ite": 9.7293,
+      "estimated_cate": 9.8896,
+      "bias": 0.1603,
+      "accurate": true
+    },
+    {
+      "subject_id": 657,
+      "true_ite": 11.6138,
+      "estimated_cate": 9.8896,
+      "bias": -1.7242,
+      "accurate": true
+    },
+    {
+      "subject_id": 658,
+      "true_ite": 9.3975,
+      "estimated_cate": 9.8896,
+      "bias": 0.4921,
+      "accurate": true
+    },
+    {
+      "subject_id": 659,
+      "true_ite": 8.894,
+      "estimated_cate": 9.8896,
+      "bias": 0.9956,
+      "accurate": true
+    },
+    {
+      "subject_id": 660,
+      "true_ite": 11.5726,
+      "estimated_cate": 9.8896,
+      "bias": -1.683,
+      "accurate": true
+    },
+    {
+      "subject_id": 661,
+      "true_ite": 13.284,
+      "estimated_cate": 9.8896,
+      "bias": -3.3944,
+      "accurate": true
+    },
+    {
+      "subject_id": 662,
+      "true_ite": 12.5721,
+      "estimated_cate": 9.8896,
+      "bias": -2.6825,
+      "accurate": true
+    },
+    {
+      "subject_id": 663,
+      "true_ite": 9.7703,
+      "estimated_cate": 9.8896,
+      "bias": 0.1193,
+      "accurate": true
+    },
+    {
+      "subject_id": 664,
+      "true_ite": 12.5427,
+      "estimated_cate": 9.8896,
+      "bias": -2.6531,
+      "accurate": true
+    },
+    {
+      "subject_id": 665,
+      "true_ite": 8.0418,
+      "estimated_cate": 9.8896,
+      "bias": 1.8478,
+      "accurate": true
+    },
+    {
+      "subject_id": 666,
+      "true_ite": 12.7376,
+      "estimated_cate": 9.8896,
+      "bias": -2.848,
+      "accurate": true
+    },
+    {
+      "subject_id": 667,
+      "true_ite": 11.2542,
+      "estimated_cate": 9.8896,
+      "bias": -1.3646,
+      "accurate": true
+    },
+    {
+      "subject_id": 668,
+      "true_ite": 9.7907,
+      "estimated_cate": 9.8896,
+      "bias": 0.0989,
+      "accurate": true
+    },
+    {
+      "subject_id": 669,
+      "true_ite": 10.6645,
+      "estimated_cate": 9.8896,
+      "bias": -0.7749,
+      "accurate": true
+    },
+    {
+      "subject_id": 670,
+      "true_ite": 11.413,
+      "estimated_cate": 9.8896,
+      "bias": -1.5234,
+      "accurate": true
+    },
+    {
+      "subject_id": 671,
+      "true_ite": 9.7635,
+      "estimated_cate": 9.8896,
+      "bias": 0.1262,
+      "accurate": true
+    },
+    {
+      "subject_id": 672,
+      "true_ite": 10.7272,
+      "estimated_cate": 9.8896,
+      "bias": -0.8376,
+      "accurate": true
+    },
+    {
+      "subject_id": 673,
+      "true_ite": 13.052,
+      "estimated_cate": 9.8896,
+      "bias": -3.1623,
+      "accurate": true
+    },
+    {
+      "subject_id": 674,
+      "true_ite": 13.8253,
+      "estimated_cate": 9.8896,
+      "bias": -3.9357,
+      "accurate": true
+    },
+    {
+      "subject_id": 675,
+      "true_ite": 12.4804,
+      "estimated_cate": 9.8896,
+      "bias": -2.5908,
+      "accurate": true
+    },
+    {
+      "subject_id": 676,
+      "true_ite": 8.5539,
+      "estimated_cate": 9.8896,
+      "bias": 1.3357,
+      "accurate": true
+    },
+    {
+      "subject_id": 677,
+      "true_ite": 8.2659,
+      "estimated_cate": 9.8896,
+      "bias": 1.6237,
+      "accurate": true
+    },
+    {
+      "subject_id": 678,
+      "true_ite": 8.6625,
+      "estimated_cate": 9.8896,
+      "bias": 1.2271,
+      "accurate": true
+    },
+    {
+      "subject_id": 679,
+      "true_ite": 9.3492,
+      "estimated_cate": 9.8896,
+      "bias": 0.5404,
+      "accurate": true
+    },
+    {
+      "subject_id": 680,
+      "true_ite": 9.1106,
+      "estimated_cate": 9.8896,
+      "bias": 0.779,
+      "accurate": true
+    },
+    {
+      "subject_id": 681,
+      "true_ite": 9.6785,
+      "estimated_cate": 9.8896,
+      "bias": 0.2111,
+      "accurate": true
+    },
+    {
+      "subject_id": 682,
+      "true_ite": 9.7519,
+      "estimated_cate": 9.8896,
+      "bias": 0.1377,
+      "accurate": true
+    },
+    {
+      "subject_id": 683,
+      "true_ite": 8.4341,
+      "estimated_cate": 9.8896,
+      "bias": 1.4555,
+      "accurate": true
+    },
+    {
+      "subject_id": 684,
+      "true_ite": 11.7935,
+      "estimated_cate": 9.8896,
+      "bias": -1.9039,
+      "accurate": true
+    },
+    {
+      "subject_id": 685,
+      "true_ite": 9.4132,
+      "estimated_cate": 9.8896,
+      "bias": 0.4764,
+      "accurate": true
+    },
+    {
+      "subject_id": 686,
+      "true_ite": 10.8028,
+      "estimated_cate": 9.8896,
+      "bias": -0.9132,
+      "accurate": true
+    },
+    {
+      "subject_id": 687,
+      "true_ite": 10.6157,
+      "estimated_cate": 9.8896,
+      "bias": -0.7261,
+      "accurate": true
+    },
+    {
+      "subject_id": 688,
+      "true_ite": 10.9194,
+      "estimated_cate": 9.8896,
+      "bias": -1.0298,
+      "accurate": true
+    },
+    {
+      "subject_id": 689,
+      "true_ite": 11.3582,
+      "estimated_cate": 9.8896,
+      "bias": -1.4686,
+      "accurate": true
+    },
+    {
+      "subject_id": 690,
+      "true_ite": 13.3433,
+      "estimated_cate": 9.8896,
+      "bias": -3.4537,
+      "accurate": true
+    },
+    {
+      "subject_id": 691,
+      "true_ite": 14.1856,
+      "estimated_cate": 9.8896,
+      "bias": -4.296,
+      "accurate": false
+    },
+    {
+      "subject_id": 692,
+      "true_ite": 8.312,
+      "estimated_cate": 9.8896,
+      "bias": 1.5776,
+      "accurate": true
+    },
+    {
+      "subject_id": 693,
+      "true_ite": 8.0346,
+      "estimated_cate": 9.8896,
+      "bias": 1.855,
+      "accurate": true
+    },
+    {
+      "subject_id": 694,
+      "true_ite": 14.3644,
+      "estimated_cate": 9.8896,
+      "bias": -4.4748,
+      "accurate": false
+    },
+    {
+      "subject_id": 695,
+      "true_ite": 13.8352,
+      "estimated_cate": 9.8896,
+      "bias": -3.9456,
+      "accurate": true
+    },
+    {
+      "subject_id": 696,
+      "true_ite": 16.1603,
+      "estimated_cate": 9.8896,
+      "bias": -6.2706,
+      "accurate": false
+    },
+    {
+      "subject_id": 697,
+      "true_ite": 12.9184,
+      "estimated_cate": 9.8896,
+      "bias": -3.0288,
+      "accurate": true
+    },
+    {
+      "subject_id": 698,
+      "true_ite": 11.1287,
+      "estimated_cate": 9.8896,
+      "bias": -1.2391,
+      "accurate": true
+    },
+    {
+      "subject_id": 699,
+      "true_ite": 11.0095,
+      "estimated_cate": 9.8896,
+      "bias": -1.1198,
+      "accurate": true
+    },
+    {
+      "subject_id": 700,
+      "true_ite": 9.1691,
+      "estimated_cate": 9.8896,
+      "bias": 0.7206,
+      "accurate": true
+    },
+    {
+      "subject_id": 701,
+      "true_ite": 11.38,
+      "estimated_cate": 9.8896,
+      "bias": -1.4904,
+      "accurate": true
+    },
+    {
+      "subject_id": 702,
+      "true_ite": 10.2551,
+      "estimated_cate": 9.8896,
+      "bias": -0.3655,
+      "accurate": true
+    },
+    {
+      "subject_id": 703,
+      "true_ite": 9.2787,
+      "estimated_cate": 9.8896,
+      "bias": 0.6109,
+      "accurate": true
+    },
+    {
+      "subject_id": 704,
+      "true_ite": 11.9299,
+      "estimated_cate": 9.8896,
+      "bias": -2.0403,
+      "accurate": true
+    },
+    {
+      "subject_id": 705,
+      "true_ite": 6.4209,
+      "estimated_cate": 9.8896,
+      "bias": 3.4687,
+      "accurate": false
+    },
+    {
+      "subject_id": 706,
+      "true_ite": 9.0636,
+      "estimated_cate": 9.8896,
+      "bias": 0.826,
+      "accurate": true
+    },
+    {
+      "subject_id": 707,
+      "true_ite": 13.3626,
+      "estimated_cate": 9.8896,
+      "bias": -3.473,
+      "accurate": true
+    },
+    {
+      "subject_id": 708,
+      "true_ite": 12.3497,
+      "estimated_cate": 9.8896,
+      "bias": -2.4601,
+      "accurate": true
+    },
+    {
+      "subject_id": 709,
+      "true_ite": 12.3186,
+      "estimated_cate": 9.8896,
+      "bias": -2.429,
+      "accurate": true
+    },
+    {
+      "subject_id": 710,
+      "true_ite": 11.6393,
+      "estimated_cate": 9.8896,
+      "bias": -1.7497,
+      "accurate": true
+    },
+    {
+      "subject_id": 711,
+      "true_ite": 9.6968,
+      "estimated_cate": 9.8896,
+      "bias": 0.1928,
+      "accurate": true
+    },
+    {
+      "subject_id": 712,
+      "true_ite": 8.5981,
+      "estimated_cate": 9.8896,
+      "bias": 1.2915,
+      "accurate": true
+    },
+    {
+      "subject_id": 713,
+      "true_ite": 15.0703,
+      "estimated_cate": 9.8896,
+      "bias": -5.1806,
+      "accurate": false
+    },
+    {
+      "subject_id": 714,
+      "true_ite": 14.0167,
+      "estimated_cate": 9.8896,
+      "bias": -4.1271,
+      "accurate": true
+    },
+    {
+      "subject_id": 715,
+      "true_ite": 7.7881,
+      "estimated_cate": 9.8896,
+      "bias": 2.1015,
+      "accurate": true
+    },
+    {
+      "subject_id": 716,
+      "true_ite": 18.2063,
+      "estimated_cate": 9.8896,
+      "bias": -8.3167,
+      "accurate": false
+    },
+    {
+      "subject_id": 717,
+      "true_ite": 9.0763,
+      "estimated_cate": 9.8896,
+      "bias": 0.8133,
+      "accurate": true
+    },
+    {
+      "subject_id": 718,
+      "true_ite": 13.0218,
+      "estimated_cate": 9.8896,
+      "bias": -3.1322,
+      "accurate": true
+    },
+    {
+      "subject_id": 719,
+      "true_ite": 9.7791,
+      "estimated_cate": 9.8896,
+      "bias": 0.1105,
+      "accurate": true
+    },
+    {
+      "subject_id": 720,
+      "true_ite": 9.1727,
+      "estimated_cate": 9.8896,
+      "bias": 0.7169,
+      "accurate": true
+    },
+    {
+      "subject_id": 721,
+      "true_ite": 10.1851,
+      "estimated_cate": 9.8896,
+      "bias": -0.2955,
+      "accurate": true
+    },
+    {
+      "subject_id": 722,
+      "true_ite": 7.2681,
+      "estimated_cate": 9.8896,
+      "bias": 2.6215,
+      "accurate": false
+    },
+    {
+      "subject_id": 723,
+      "true_ite": 14.5843,
+      "estimated_cate": 9.8896,
+      "bias": -4.6947,
+      "accurate": false
+    },
+    {
+      "subject_id": 724,
+      "true_ite": 9.2515,
+      "estimated_cate": 9.8896,
+      "bias": 0.6381,
+      "accurate": true
+    },
+    {
+      "subject_id": 725,
+      "true_ite": 10.9371,
+      "estimated_cate": 9.8896,
+      "bias": -1.0475,
+      "accurate": true
+    },
+    {
+      "subject_id": 726,
+      "true_ite": 12.1867,
+      "estimated_cate": 9.8896,
+      "bias": -2.2971,
+      "accurate": true
+    },
+    {
+      "subject_id": 727,
+      "true_ite": 11.2447,
+      "estimated_cate": 9.8896,
+      "bias": -1.3551,
+      "accurate": true
+    },
+    {
+      "subject_id": 728,
+      "true_ite": 8.5256,
+      "estimated_cate": 9.8896,
+      "bias": 1.364,
+      "accurate": true
+    },
+    {
+      "subject_id": 729,
+      "true_ite": 12.1101,
+      "estimated_cate": 9.8896,
+      "bias": -2.2205,
+      "accurate": true
+    },
+    {
+      "subject_id": 730,
+      "true_ite": 12.7881,
+      "estimated_cate": 9.8896,
+      "bias": -2.8985,
+      "accurate": true
+    },
+    {
+      "subject_id": 731,
+      "true_ite": 9.8773,
+      "estimated_cate": 9.8896,
+      "bias": 0.0123,
+      "accurate": true
+    },
+    {
+      "subject_id": 732,
+      "true_ite": 10.1295,
+      "estimated_cate": 9.8896,
+      "bias": -0.2399,
+      "accurate": true
+    },
+    {
+      "subject_id": 733,
+      "true_ite": 8.9024,
+      "estimated_cate": 9.8896,
+      "bias": 0.9872,
+      "accurate": true
+    },
+    {
+      "subject_id": 734,
+      "true_ite": 10.306,
+      "estimated_cate": 9.8896,
+      "bias": -0.4164,
+      "accurate": true
+    },
+    {
+      "subject_id": 735,
+      "true_ite": 8.522,
+      "estimated_cate": 9.8896,
+      "bias": 1.3676,
+      "accurate": true
+    },
+    {
+      "subject_id": 736,
+      "true_ite": 10.151,
+      "estimated_cate": 9.8896,
+      "bias": -0.2614,
+      "accurate": true
+    },
+    {
+      "subject_id": 737,
+      "true_ite": 8.0458,
+      "estimated_cate": 9.8896,
+      "bias": 1.8438,
+      "accurate": true
+    },
+    {
+      "subject_id": 738,
+      "true_ite": 9.0981,
+      "estimated_cate": 9.8896,
+      "bias": 0.7915,
+      "accurate": true
+    },
+    {
+      "subject_id": 739,
+      "true_ite": 13.2407,
+      "estimated_cate": 9.8896,
+      "bias": -3.3511,
+      "accurate": true
+    },
+    {
+      "subject_id": 740,
+      "true_ite": 15.4885,
+      "estimated_cate": 9.8896,
+      "bias": -5.5989,
+      "accurate": false
+    },
+    {
+      "subject_id": 741,
+      "true_ite": 7.8858,
+      "estimated_cate": 9.8896,
+      "bias": 2.0038,
+      "accurate": true
+    },
+    {
+      "subject_id": 742,
+      "true_ite": 9.0688,
+      "estimated_cate": 9.8896,
+      "bias": 0.8208,
+      "accurate": true
+    },
+    {
+      "subject_id": 743,
+      "true_ite": 11.279,
+      "estimated_cate": 9.8896,
+      "bias": -1.3894,
+      "accurate": true
+    },
+    {
+      "subject_id": 744,
+      "true_ite": 10.0539,
+      "estimated_cate": 9.8896,
+      "bias": -0.1643,
+      "accurate": true
+    },
+    {
+      "subject_id": 745,
+      "true_ite": 10.3956,
+      "estimated_cate": 9.8896,
+      "bias": -0.506,
+      "accurate": true
+    },
+    {
+      "subject_id": 746,
+      "true_ite": 8.7448,
+      "estimated_cate": 9.8896,
+      "bias": 1.1448,
+      "accurate": true
+    },
+    {
+      "subject_id": 747,
+      "true_ite": 7.7079,
+      "estimated_cate": 9.8896,
+      "bias": 2.1817,
+      "accurate": true
+    }
+  ],
+  "generated_at": "2026-02-22T16:31:55.998819+00:00",
+  "benchmark_id": "healthcare",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\industry\\benchmark_healthcare.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:healthcare",
+  "provenance": {
+    "source_reference": "benchmark:healthcare",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

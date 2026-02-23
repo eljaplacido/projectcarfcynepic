@@ -520,6 +520,30 @@ Respond with a JSON object only, no other text:
         )
         state.domain_entropy = entropy
 
+        # Step 1b: Check memory augmentation for domain pattern hints (soft signal)
+        memory_hint_domain = None
+        memory_aug = state.context.get("_memory_augmentation")
+        if memory_aug:
+            domain_patterns = memory_aug.get("domain_patterns", {})
+            similar_queries = memory_aug.get("memory_similar_queries", [])
+            # If recent similar queries consistently map to a single domain,
+            # use it as a soft hint (low weight, never overrides)
+            if similar_queries:
+                domain_votes: dict[str, float] = {}
+                for sq in similar_queries:
+                    d = sq.get("domain", "")
+                    sim = sq.get("similarity", 0.0)
+                    if d and sim > 0.3:
+                        domain_votes[d] = domain_votes.get(d, 0) + sim
+                if domain_votes:
+                    top_domain = max(domain_votes, key=domain_votes.get)  # type: ignore[arg-type]
+                    if domain_votes[top_domain] > 0.5:
+                        memory_hint_domain = top_domain
+                        logger.debug(
+                            "Memory hint domain: %s (score=%.2f)",
+                            top_domain, domain_votes[top_domain],
+                        )
+
         # Step 2: Check for domain_hint from scenario context (explicit user override)
         domain_hint = state.context.get("domain_hint")
         if domain_hint:
@@ -605,6 +629,15 @@ Respond with a JSON object only, no other text:
             d.value: (final_confidence if d == final_domain else per_domain)
             for d in CynefinDomain
         }
+
+        # Step 6b: Apply memory hint as soft signal (never overrides, small weight)
+        if memory_hint_domain and state.domain_scores:
+            _MEMORY_HINT_WEIGHT = 0.03
+            if memory_hint_domain in state.domain_scores:
+                state.domain_scores[memory_hint_domain] = min(
+                    1.0,
+                    state.domain_scores[memory_hint_domain] + _MEMORY_HINT_WEIGHT,
+                )
 
         # Step 7: Record reasoning step
         state.add_reasoning_step(

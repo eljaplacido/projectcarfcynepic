@@ -51,7 +51,7 @@ class DeepEvalScores(BaseModel):
         description="Timestamp of evaluation"
     )
     evaluation_model: str = Field(
-        "deepseek-chat",
+        "deepseek-reasoner",
         description="Model used for evaluation"
     )
     evaluation_latency_ms: int = Field(
@@ -65,7 +65,7 @@ class EvaluationConfig(BaseModel):
     enabled: bool = Field(True, description="Whether evaluation is enabled")
     relevancy_threshold: float = Field(0.7, ge=0.0, le=1.0)
     hallucination_threshold: float = Field(0.3, ge=0.0, le=1.0)
-    model_name: str = Field("deepseek-chat")
+    model_name: str = Field("deepseek-reasoner")
     api_base_url: str = Field("https://api.deepseek.com")
     timeout_seconds: int = Field(30, ge=1)
     async_evaluation: bool = Field(

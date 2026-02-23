@@ -360,6 +360,9 @@ async def run_causal_baseline(output_path: Path | None = None) -> dict[str, Any]
 
     avg_mse = float(np.mean(mse_values))
     summary = {"causal_mse": round(avg_mse, 6), "causal_details": results}
+    from benchmarks import finalize_benchmark_report
+    summary = finalize_benchmark_report(summary, benchmark_id="baseline", source_reference="benchmark:baseline", benchmark_config={"script": __file__})
+
 
     if output_path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -659,6 +662,13 @@ async def run_all_baselines(output_dir: Path) -> dict[str, Any]:
         "router_accuracy": router.get("router_accuracy", 0.0),
         "avg_duration_ms": router.get("avg_duration_ms", 0.0),
     }
+    from benchmarks import finalize_benchmark_report
+    summary = finalize_benchmark_report(
+        summary,
+        benchmark_id="baseline",
+        source_reference="benchmark:baseline",
+        benchmark_config={"script": __file__, "mode": "run_all_baselines"},
+    )
     summary_path = output_dir / "baseline_results.summary.json"
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2)

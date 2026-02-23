@@ -450,6 +450,9 @@ async def run_all_scenarios(
         "experience_buffer": buffer_status,
         "results": results,
     }
+    from benchmarks import finalize_benchmark_report
+    summary = finalize_benchmark_report(summary, benchmark_id="e2e", source_reference="benchmark:e2e", benchmark_config={"script": __file__})
+
 
     if output_path:
         output_path.parent.mkdir(parents=True, exist_ok=True)

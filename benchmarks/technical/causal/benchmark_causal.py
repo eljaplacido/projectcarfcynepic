@@ -351,6 +351,9 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
     for label, agg in report["aggregate_metrics"].items():
         if agg:
             logger.info(f"  {label}: {json.dumps(agg)}")
+    from benchmarks import finalize_benchmark_report
+    report = finalize_benchmark_report(report, benchmark_id="causal", source_reference="benchmark:causal", benchmark_config={"script": __file__})
+
 
     if output_path:
         out = Path(output_path)

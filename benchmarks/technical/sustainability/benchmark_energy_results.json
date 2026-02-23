@@ -1,0 +1,258 @@
+{
+  "benchmark": "carf_energy_profiling",
+  "hypothesis": "H29",
+  "timestamp": "2026-02-22T16:29:09.690719+00:00",
+  "tdp_watts": 150.0,
+  "metrics": {
+    "energy_proportional": true,
+    "clear_avg_seconds": 0.008559,
+    "complicated_avg_seconds": 2.22445,
+    "complex_avg_seconds": 19.499928,
+    "clear_avg_kwh": 3.566e-07,
+    "complicated_avg_kwh": 9.26854e-05,
+    "complex_avg_kwh": 0.000812497
+  },
+  "domain_stats": {
+    "Clear": {
+      "n_queries": 10,
+      "n_successful": 10,
+      "avg_seconds": 0.008559,
+      "min_seconds": 0.003401,
+      "max_seconds": 0.051616,
+      "std_seconds": 0.014356,
+      "avg_estimated_kwh": 3.566e-07,
+      "total_estimated_kwh": 3.5664e-06
+    },
+    "Complicated": {
+      "n_queries": 10,
+      "n_successful": 10,
+      "avg_seconds": 2.22445,
+      "min_seconds": 1.903346,
+      "max_seconds": 4.084701,
+      "std_seconds": 0.625182,
+      "avg_estimated_kwh": 9.26854e-05,
+      "total_estimated_kwh": 0.0009268542
+    },
+    "Complex": {
+      "n_queries": 10,
+      "n_successful": 10,
+      "avg_seconds": 19.499928,
+      "min_seconds": 13.633704,
+      "max_seconds": 30.252413,
+      "std_seconds": 4.798139,
+      "avg_estimated_kwh": 0.000812497,
+      "total_estimated_kwh": 0.0081249699
+    }
+  },
+  "individual_results": {
+    "Clear": [
+      {
+        "query": "What is the current USD to EUR exchange rate?",
+        "elapsed_seconds": 0.051616,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "How many kilowatt-hours are in a megawatt-hour?",
+        "elapsed_seconds": 0.004526,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "What is the standard VAT rate in Germany?",
+        "elapsed_seconds": 0.003789,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "Convert 100 miles to kilometers.",
+        "elapsed_seconds": 0.003636,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "What is the boiling point of water in Celsius?",
+        "elapsed_seconds": 0.00427,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "How many days are in a leap year?",
+        "elapsed_seconds": 0.003764,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "What is the ISO code for the United States dollar?",
+        "elapsed_seconds": 0.003569,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "Define GDP in one sentence.",
+        "elapsed_seconds": 0.003401,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "What is the chemical formula for carbon dioxide?",
+        "elapsed_seconds": 0.003463,
+        "domain": "Clear",
+        "error": null
+      },
+      {
+        "query": "How many bytes are in a kilobyte?",
+        "elapsed_seconds": 0.00356,
+        "domain": "Clear",
+        "error": null
+      }
+    ],
+    "Complicated": [
+      {
+        "query": "How does marketing spend affect quarterly revenue?",
+        "elapsed_seconds": 4.084701,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "What is the causal effect of training hours on productivity?",
+        "elapsed_seconds": 1.903346,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "Does supplier diversification reduce disruptions?",
+        "elapsed_seconds": 1.974439,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "Effect of remote work on employee retention?",
+        "elapsed_seconds": 1.960067,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "Impact of pricing strategy on conversion rate?",
+        "elapsed_seconds": 2.08335,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "Does inventory buffer reduce stockout frequency?",
+        "elapsed_seconds": 1.933908,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "Effect of renewable energy adoption on operational cost?",
+        "elapsed_seconds": 1.970009,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "Impact of safety training on workplace incidents?",
+        "elapsed_seconds": 2.112193,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "Does customer segmentation improve marketing ROI?",
+        "elapsed_seconds": 2.162159,
+        "domain": "Complicated",
+        "error": null
+      },
+      {
+        "query": "Effect of warehouse automation on order fulfillment time?",
+        "elapsed_seconds": 2.060329,
+        "domain": "Complicated",
+        "error": null
+      }
+    ],
+    "Complex": [
+      {
+        "query": "Should we enter the Asian market given uncertain regulatory changes?",
+        "elapsed_seconds": 22.741079,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "What strategy for climate adaptation in agriculture?",
+        "elapsed_seconds": 16.142112,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "How to allocate R&D budget under technological uncertainty?",
+        "elapsed_seconds": 17.194127,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "Optimal pricing under demand uncertainty?",
+        "elapsed_seconds": 18.19296,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "Investment portfolio rebalancing under macro uncertainty?",
+        "elapsed_seconds": 18.527215,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "Should we expand manufacturing capacity amid supply shocks?",
+        "elapsed_seconds": 30.252413,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "Optimal staffing levels under seasonal demand uncertainty?",
+        "elapsed_seconds": 19.999039,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "How to position products in an emerging market with limited data?",
+        "elapsed_seconds": 13.633704,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "Risk assessment for a new pharmaceutical compound?",
+        "elapsed_seconds": 14.160351,
+        "domain": "Complex",
+        "error": null
+      },
+      {
+        "query": "Should we adopt a new AI model given uncertain performance gains?",
+        "elapsed_seconds": 24.156277,
+        "domain": "Complex",
+        "error": null
+      }
+    ]
+  },
+  "generated_at": "2026-02-22T16:29:09.737869+00:00",
+  "benchmark_id": "energy",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\sustainability\\benchmark_energy.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:energy",
+  "provenance": {
+    "source_reference": "benchmark:energy",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

@@ -14,7 +14,7 @@ and epistemic awareness.
 
 Modern AI systems often act as black boxes, producing confident-sounding outputs without clarifying their reasoning, certainty level, or the nature of the problem they're addressing. This creates a **"trust gap"**: users cannot easily distinguish whether an AI answer is based on solid causal evidence, a probabilistic inference, or a simple guess.
 
-**CYNEPIC (CYNefin-EPIstemic Cockpit)** solves this by enforcing **epistemic awareness**. The system explicitly classifies every query by its inherent complexity using the [Cynefin Framework](https://en.wikipedia.org/wiki/Cynefin_framework), then routes it to the appropriate analytical engine—ensuring the right tool is used for the right problem.
+**CYNEPIC (CYNefin-EPIstemic Cockpit)** solves this by enforcing **epistemic awareness**. The system explicitly classifies every query by its inherent complexity using the [Cynefin Framework](https://en.wikipedia.org/wiki/Cynefin_framework), then routes it to the appropriate analytical engine -- ensuring the right tool is used for the right problem.
 
 | Problem Type | Analysis Method | Example |
 |--------------|-----------------|----------|
@@ -32,11 +32,12 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 - **Causal Inference Engine**: Discover DAGs, estimate effects, and run refutation tests via DoWhy/EconML.
 - **Bayesian Exploration**: Quantify uncertainty and update beliefs with new evidence via PyMC.
 - **Guardian Policy Layer**: Multi-layer enforcement (YAML + CSL-Core + OPA), human-in-the-loop, and audit trails.
+- **Currency-Aware Financial Guardrails**: Guardian + CSL enforce monetary thresholds with FX normalization (`CARF_FX_RATES_JSON`) and fail-safe blocking when conversion evidence is unavailable.
 - **ChimeraOracle Fast Predictions**: Pre-trained CausalForestDML models for <100ms causal effect scoring.
 - **What-If Simulation Framework**: Multi-scenario comparison with 6 built-in realistic data generators.
 - **CSL-Core Policy Verification**: Formal, deterministic policy rules with fail-closed safety.
 - **Policy Scaffolding & Refinement**: Auto-generate domain-specific policies with adaptive refinement agents.
-- **Three-View Dashboard**: Tailored views for Analysts, Developers, and Executives.
+- **Four-View Dashboard**: Tailored views for Analysts, Developers, Executives, and Governance.
 - **Dark/Light Theme**: Full dark mode support with system preference detection.
 - **Actionable Insights**: Persona-specific recommendations, action items with effort badges, and analysis roadmaps.
 - **Smart Reflector**: Hybrid heuristic + LLM self-correction for policy violations with observability.
@@ -49,64 +50,52 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 - **Data Lineage Tracking**: Full provenance chain for audit and reproducibility.
 - **Router Retraining Pipeline**: Extract domain override feedback for DistilBERT fine-tuning.
 - **MCP Server**: 18 cognitive tools exposed via Model Context Protocol for agentic AI integration.
+- **Agentic Chat Actions**: Natural-language UI actions (e.g., onboarding launch, latest-analysis simulation compare, governance tab routing).
+- **Governance Semantic Graph**: Purpose-built policy/domain/conflict topology view with explainability (`Why this?`, `How confident?`, `Based on what?`).
+- **RAG-Augmented Policy Search**: In-memory retrieval-augmented generation for governance policy queries with auto-ingestion at startup.
+- **Agent Memory**: Persistent agent memory with compaction and recall for cross-session knowledge retention.
+- **Document Processor**: Upload and ingest PDF/text documents for RAG indexing and policy extraction.
+- **Embedding Engine**: Sentence-transformer embeddings (all-MiniLM-L6-v2) with TF-IDF fallback for semantic search.
+- **Deployment Profiles**: Environment-aware presets (research/staging/production) controlling CORS, auth, rate limiting, and governance defaults.
+- **Security Middleware**: Profile-aware API key auth, per-IP rate limiting, and request size enforcement.
 
 ### Data & Analytical Flows in CARF architecture 
 
 <img width="2752" height="1536" alt="Dataflow blueprint" src="https://github.com/user-attachments/assets/e0eecb39-5813-4b83-9a42-0e735ba0dee8" />
 
-### User Interface — React Cockpit (CARF Cockpit)
+### User Interface -- React Cockpit (CARF Cockpit)
 
 ---
 
 ## Benchmark Results
 
-CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark categories, using synthetic data with known ground truth and a raw LLM baseline (same model, no pipeline) for comparison. All benchmarks use fixed random seeds for full reproducibility.
+CARF is benchmarked with **39 falsifiable hypotheses (H0-H39)** across core, governance, causal, competitive, security, compliance, sustainability, UX, industry, and performance/resilience categories.
 
-### Overall Grade: A — 8/9 Hypotheses Passed
+Benchmark reports include two gates:
 
-| # | Hypothesis | Measured | Threshold | Result |
-|---|-----------|----------|-----------|--------|
-| H1 | **Causal Accuracy** — DoWhy ATE vs raw LLM | MSE ratio **0.0009** (1,138x more accurate) | ≤ 0.5 | **PASS** |
-| H2 | **Bayesian Calibration** — posterior coverage | **100%** (8/8 scenarios well-calibrated) | ≥ 90% | **PASS** |
-| H3 | **Violation Detection** — Guardian catches all violations | **67%** detection (1 CSL rule gap), 0% false positives | 100% | FAIL |
-| H4 | **Determinism** — same input → same Guardian decision | **100%** (5x repetitions) | ≥ 100% | **PASS** |
-| H5 | **EU AI Act Compliance** — Art. 9, 12, 13, 14 | **100%** | ≥ 90% | **PASS** |
-| H6 | **Latency Overhead** — CARF vs raw LLM | **3.5x** (9.3s avg vs 2.65s baseline) | ≤ 5x | **PASS** |
-| H7 | **Hallucination Reduction** — grounded data queries | **100% reduction** (0% vs 6.7% baseline) | ≥ 40% | **PASS** |
-| H8 | **ChimeraOracle Speedup** — Oracle vs full DoWhy | **32.7x faster, 3.4% accuracy loss** | ≥ 10x speed, <20% loss | **PASS** |
-| H9 | Memory stability over 500+ queries | **0.2% RSS growth** | ≤ 10% | **PASS** |
-| H10 | **Reflector Self-Correction** — repair rate for known violations | **80%** (4/5 scenarios) | ≥ 80% | **PASS** |
-| H11 | **Resiliency** — circuit breaker accuracy & failure isolation | **100%** (6/6 tests) | ≥ 95% | **PASS** |
+1. **Performance gate**: hypothesis pass/fail and grade (`A+` to `D`)
+2. **Realism gate**: realism, reliability, feasibility, and provenance coverage scoring from `benchmarks/reports/realism_manifest.json`
 
-> Full machine-readable results: [`benchmarks/reports/unified_report.json`](benchmarks/reports/unified_report.json) | E2E: 11/13 scenarios (84.6%) | Text summary: [`benchmarks/reports/unified_report.txt`](benchmarks/reports/unified_report.txt)
+Absolute readiness signals in report summary:
 
-### Indicated Use Cases
+- `pass_rate_lower_95ci`: conservative pass-rate lower bound
+- `absolute_readiness_index`: combined readiness score (0-100)
+- `evidence_score_avg`: completeness of per-result provenance evidence
 
-Based on the benchmark evidence, CARF is particularly suited for:
+This prevents optimistic benchmark claims from low-fidelity datasets.
 
-| Use Case | Why CARF Helps | Supporting Evidence |
-|----------|---------------|---------------------|
-| **Causal Decision Support** — supply chain, marketing attribution, policy evaluation | Separates cause from correlation with statistical rigor | H1: 1,138x more accurate causal estimates than raw LLM |
-| **Risk Quantification Under Uncertainty** — investment, insurance, clinical trials, grid capacity | Calibrated posteriors with epistemic/aleatoric decomposition | H2: 100% calibrated across 8 Bayesian scenarios |
-| **Regulated AI Systems** — EU AI Act, financial audit, healthcare decision support | Deterministic, compliant, and fully auditable | H4–H5: 100% determinism and compliance; H3: 67% violation detection (CSL rule gap) |
-| **Strategic Analysis** — market entry, R&D allocation, scenario planning | Cynefin routing ensures the right analytical method per problem type | Router: 98% accuracy, F1 = 0.98 across 5 domains |
+Run:
 
-### Benchmark Data Sources & Methodology
+```bash
+python benchmarks/reports/generate_report.py
+python benchmarks/reports/check_result_evidence.py
+```
 
-All evaluation data is **synthetic with known ground truth**, enabling objective measurement. No proprietary or third-party datasets are required to reproduce results.
+Primary references:
 
-| Category | Description | Details |
-|----------|-------------|---------|
-| Causal (Synthetic) | 3 DGPs with known ATEs (linear, nonlinear, null) | n=500 each, confounded via logistic propensity scores. True ATEs: 3.0, 2.5, 0.0 |
-| Causal (Industry) | 5 sector-specific DGPs with realistic confounding | Supply chain (n=500, ATE=−8.5 days), Healthcare (n=800), Marketing (n=600), Sustainability (n=400), Education (n=700) |
-| Causal (Heterogeneous) | 1 DGP with age-dependent treatment effects | n=800, subgroup ATEs: young=4.0, middle=8.0, senior=12.0 |
-| Bayesian (Normal) | 4 continuous-observation scenarios | Market returns (n=50), Crop yields (n=40), Supply chain lead times (n=60), Energy demand (n=80) |
-| Bayesian (Binomial) | 4 success/trial count scenarios | Tech migration (45 trials), Drug trial (120 trials), Insurance (200 policies), Conversion (500 visitors) |
-| Router | 456-query labeled test set across 5 Cynefin domains | Clear (101), Complicated (102), Complex (101), Chaotic (50), Disorder (102). Causal language boost for 100% Complicated accuracy |
-| E2E Use Cases | 13 end-to-end scenarios with 420 data rows | Numpy-generated industry data across 7 sectors, causal_estimation auto-wiring |
-| Baselines | Raw LLM (same model, no pipeline) on identical data | Router (50 balanced), causal ATE (8 DGPs), hallucination (5 test cases) |
-
-**Methodology:** DoWhy for causal estimation with refutation tests, PyMC for Bayesian posterior inference, balanced Cynefin domain sampling for router evaluation. Baselines use the same LLM model (DeepSeek) without the CARF pipeline. All benchmark scripts and data generators are in [`benchmarks/`](benchmarks/).
+- `benchmarks/README.md`
+- `benchmarks/reports/benchmark_report.json` (or custom output path)
+- `benchmarks/reports/benchmark_report.txt`
 
 ---
 
@@ -116,7 +105,7 @@ All evaluation data is **synthetic with known ground truth**, enabling objective
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/projectcarf.git
+git clone https://github.com/eljaplacido/projectcarfcynepic.git
 cd projectcarf
 
 # Create virtual environment
@@ -198,6 +187,9 @@ OPA_ENABLED=false
 CSL_ENABLED=false              # Enable formal policy verification
 CSL_POLICY_DIR=config/policies # Directory for CSL policy files
 CSL_FAIL_CLOSED=true           # Fail-closed on CSL errors (recommended)
+
+# Optional: Currency normalization for financial policies
+CARF_FX_RATES_JSON={"USD":1.0,"EUR":1.08,"JPY":0.0067}
 ```
 
 ## Library Usage (Notebooks & Data Pipelines)
@@ -352,6 +344,42 @@ All results -> Experience Buffer (sentence-transformer semantic memory for simil
 | `/transparency/guardian` | POST | Guardian decision transparency |
 | `/sessions/{id}/lineage` | GET | Data lineage and provenance tracking |
 
+### Governance & Policy Endpoints (18 endpoints)
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/governance/domains` | GET/POST | List or create governance domains |
+| `/governance/policies` | GET/POST | List or create federated policies |
+| `/governance/policies/{ns}` | PUT/DELETE | Update or remove a policy by namespace |
+| `/governance/policies/extract` | POST | Extract governance rules from unstructured policy text (LLM-powered) |
+| `/governance/conflicts` | GET | List policy conflicts (optionally unresolved only) |
+| `/governance/conflicts/{id}/resolve` | POST | Resolve a detected policy conflict |
+| `/governance/triples` | GET | Query MAP context triples |
+| `/governance/triples/impact/{domain}` | GET | Triple impact analysis for a domain |
+| `/governance/compliance/{framework}` | GET | Compliance score for EU AI Act, CSRD, GDPR, ISO 27001 |
+| `/governance/cost/breakdown/{session}` | GET | Token-level cost breakdown per session |
+| `/governance/cost/aggregate` | GET | Aggregated cost intelligence across sessions |
+| `/governance/cost/roi` | GET | ROI analysis for LLM spend |
+| `/governance/audit` | GET | Governance audit log (filterable) |
+| `/governance/health` | GET | Governance subsystem health check |
+| `/governance/semantic-graph` | GET | Semantic governance topology (domains, policies, conflicts, MAP triples) |
+| `/governance/boards` | GET/POST | Governance board lifecycle management |
+| `/governance/boards/templates` | GET | List governance board templates |
+| `/governance/boards/from-template` | POST | Create board from template |
+| `/governance/boards/{id}` | GET/PUT/DELETE | Board CRUD operations |
+| `/governance/boards/{id}/compliance` | GET | Board-level compliance check |
+| `/governance/export` | POST | Export governance spec (JSON/YAML) |
+| `/governance/seed/{template}` | POST | Seed domain from template |
+| `/governance/rag/status` | GET | RAG index status |
+| `/governance/rag/query` | POST | RAG-augmented policy search |
+| `/governance/rag/ingest-policies` | POST | Re-ingest policies into RAG index |
+| `/governance/rag/ingest-text` | POST | Ingest arbitrary text into RAG |
+| `/governance/documents/upload-file` | POST | Upload document for RAG ingestion |
+| `/governance/documents/status` | GET | Document processing status |
+| `/governance/memory/status` | GET | Agent memory status |
+| `/governance/memory/compact` | POST | Compact agent memory |
+| `/governance/memory/recall` | POST | Recall from agent memory |
+
 ### Developer & Diagnostics Endpoints
 
 | Endpoint | Method | Description |
@@ -409,10 +437,10 @@ curl -X POST http://localhost:8000/query \
 
 ---
 
-## 🚀 Get Started: Test the Platform
+## Get Started: Test the Platform
 
 > [!TIP]
-> The platform is **ready to test** with built-in demo scenarios or your own data. No complex setup needed—just start the servers and explore.
+> The platform is **ready to test** with built-in demo scenarios or your own data. No complex setup needed -- just start the servers and explore.
 
 ### Option A: Run a Pre-Built Demo Scenario
 
@@ -451,29 +479,31 @@ See [docs/END_USER_TESTING_GUIDE.md](docs/END_USER_TESTING_GUIDE.md) for detaile
 ```
 projectcarf/
 ├── src/
-│   ├── core/           # State schemas (EpistemicState), LLM config
-│   ├── services/       # Causal, Bayesian, Simulation, Transparency, ChimeraOracle,
-│   │                   # CSL Policy, Policy Scaffolding, Chat, Insights, Explanations
+│   ├── core/           # State schemas (EpistemicState), LLM config, deployment profiles
+│   ├── services/       # 20+ services: Causal, Bayesian, Simulation, Transparency,
+│   │                   # ChimeraOracle, CSL Policy, Governance, Cost Intelligence,
+│   │                   # RAG, Agent Memory, Embedding Engine, Document Processor
 │   ├── workflows/      # LangGraph graph, Guardian, Cynefin Router
-│   ├── utils/          # Telemetry, caching, circuit breaker, resiliency
-│   └── main.py         # FastAPI entry point (60+ endpoints)
-│   ├── api/            # FastAPI routers (modularized endpoints)
-├── carf-cockpit/       # React (Vite + TypeScript) dashboard
+│   ├── utils/          # Telemetry, caching, circuit breaker, currency normalization
+│   ├── api/            # FastAPI routers (14 routers, 80+ endpoints)
+│   └── main.py         # FastAPI entry point
+├── carf-cockpit/       # React (Vite + TypeScript) dashboard — 53 components
 ├── config/
 │   ├── agents.yaml     # Agent configurations
 │   ├── policies.yaml   # Guardian YAML policies
 │   ├── policies/       # CSL-Core formal policy definitions
+│   ├── federated_policies/ # Domain-owner governance policies (5 YAML files)
 │   └── policy_scaffolds/ # Domain-specific policy templates
-├── demo/               # Demo scenarios and sample data
+├── demo/               # 10 demo scenarios + 8 sample datasets
 ├── tests/
-│   ├── unit/           # 35 unit test files
+│   ├── unit/           # 53 unit test files
 │   ├── deepeval/       # LLM quality evaluation tests
 │   ├── e2e/            # End-to-end gold standard tests
 │   └── integration/    # API flow integration tests
-├── benchmarks/         # Technical & use-case benchmarks (H1-H9 hypotheses)
+├── benchmarks/         # Technical & use-case benchmarks (39 hypotheses + realism validation)
 ├── tla_specs/          # TLA+ formal verification specs
 ├── scripts/            # Training, data generation, evaluation scripts
-├── docs/               # 27 documentation files
+├── docs/               # 30+ documentation files
 └── docker-compose.yml  # Full stack deployment
 ```
 
@@ -555,6 +585,14 @@ See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for detai
 - **Actionable Insights** for decision-makers
 - Export and share functionality
 
+### Governance View
+- **Spec Map**: ReactFlow visualization of governance domains and policy nodes
+- **Cost Intelligence**: KPI cards with recharts cost breakdown (token pricing, ROI, risk exposure)
+- **Policy Federation**: Domain sidebar, policy cards with conflict detection and resolution
+- **Compliance Audit**: Framework selector (EU AI Act, CSRD, GDPR, ISO 27001), score gauge, article accordion
+- **Semantic Graph**: Interactive policy/conflict topology with explainability annotations
+- **Policy Ingestion**: Upload documents for RAG indexing and automated rule extraction
+
 ### Data Visualization
 - **PlotlyChart** unified wrapper supporting waterfall, radar, sankey, and gauge charts
 - **CynefinVizConfig** backend-driven domain-specific visualization strategy
@@ -621,3 +659,6 @@ For production use, see [COMMERCIAL_LICENSE](COMMERCIAL_LICENSE.md).
 - [DoWhy](https://github.com/py-why/dowhy) - Causal inference
 - [PyMC](https://github.com/pymc-devs/pymc) - Bayesian modeling
 - [HumanLayer](https://humanlayer.dev/) - Human-in-the-loop SDK
+
+
+

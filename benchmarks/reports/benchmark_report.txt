@@ -1,22 +1,35 @@
 CARF UNIFIED BENCHMARK REPORT
 ============================================================
-Generated: 2026-02-22T09:39:49.954180
-Data sources: router, causal, bayesian, guardian, performance, chimera, governance, e2e, baseline
-Grade: A
+Generated: 2026-02-22T21:27:30.725672
+Data sources: router, causal, bayesian, guardian, performance, chimera, governance, e2e, baseline, board_lifecycle, policy_roundtrip, owasp, red_team, counterbench, adversarial_causal, tau_bench, hallucination_scale, cross_llm, clear, fairness, xai, audit_trail, energy, scope3, sus, task_completion, wcag, supply_chain, healthcare, finance, load, chaos_cascade, soak
+Grade: A+
 
 SUMMARY
 ------------------------------------------------------------
-  Hypotheses evaluated: 12/12
-  Hypotheses passed:    11/12
-  Pass rate:            91.7%
-  Data coverage:        9/9 benchmark categories
+  Hypotheses evaluated: 38/39
+  Hypotheses passed:    31/38
+  Pass rate:            81.6%
+  Pass rate (95% LCB):  66.6%
+  Data coverage:        33 benchmark categories loaded
+  Realism gate:         FAIL
+  Realism score:        55.15/100
+  Reliability score:    81.18/100
+  Feasibility score:    88.70/100
+  Evidence score:       100.00/100
+  Strong evidence:      100.0%
+  Readiness index:      75.46/100
 
 HYPOTHESIS RESULTS
 ------------------------------------------------------------
+  [PASS] H0: Router accuracy >= 85% on 200+ queries
+         Measured: 0.8947  |  Threshold: 0.85
+         total_queries: 456
+         weighted_f1: 0.895
+
   [PASS] H1: CARF DoWhy achieves >= 50% lower ATE MSE than raw LLM
          Measured: 1.1940  |  Threshold: 0.5
          carf_mse: 1.193987
-         baseline_mse: 1355.136225
+         baseline_mse: 1355.263126
          mse_ratio: 0.0009
 
   [PASS] H2: CARF Bayesian achieves >= 90% posterior coverage vs LLM ~60-70%
@@ -26,8 +39,8 @@ HYPOTHESIS RESULTS
          decomposition_rate: 1.0
          total_scenarios: None
 
-  [FAIL] H3: Guardian achieves 100% violation detection vs LLM missing > 20%
-         Measured: 0.6667  |  Threshold: 1.0
+  [PASS] H3: Guardian achieves 100% violation detection vs LLM missing > 20%
+         Measured: 1.0000  |  Threshold: 1.0
 
   [PASS] H4: Guardian 100% deterministic vs LLM variation
          Measured: 1.0000  |  Threshold: 1.0
@@ -36,57 +49,198 @@ HYPOTHESIS RESULTS
          Measured: 1.0000  |  Threshold: 0.9
 
   [PASS] H6: CARF latency overhead acceptable (< 5x raw LLM)
-         Measured: 3.4940  |  Threshold: 5.0
-         carf_ms: 9259.59
-         baseline_ms: 2650.25
+         Measured: 1.9040  |  Threshold: 5.0
+         carf_ms: 28431.82
+         baseline_ms: 14934.56
 
-  [PASS] H7: CARF reduces hallucination by >= 40%
-         Measured: 1.0000  |  Threshold: 0.4
-         carf_hallucination_rate: 0.0
-         llm_hallucination_rate: 0.0667
-         reduction_pct: 100.0
+  [ N/A] H7: CARF reduces hallucination by >= 40%
+         Measured: —  |  Threshold: 0.4
 
   [PASS] H8: ChimeraOracle >= 10x faster with < 20% accuracy loss
-         Measured: 32.7000  |  Threshold: 10.0
+         Measured: 40.7200  |  Threshold: 10.0
 
   [PASS] H9: CARF memory stable over 500+ queries (< 10% RSS growth)
-         Measured: 0.2100  |  Threshold: 10.0
-         tracemalloc_peak_mb: 12.62
+         Measured: -37.2600  |  Threshold: 10.0
+         tracemalloc_peak_mb: 12.67
 
-  [PASS] H10: Governance MAP accuracy >= 70% cross-domain link detection
-         Measured: 1.0000  |  Threshold: 0.7
-         domain_recall: 0.8571
-         cross_domain_accuracy: 1.0
-         total_cases: 8
+  [FAIL] H10: Governance MAP accuracy >= 70% cross-domain link detection
+         Measured: 0.4600  |  Threshold: 0.7
+         domain_recall: 0.2992
+         cross_domain_accuracy: 0.46
+         total_cases: 50
 
   [PASS] H11: Governance PRICE accuracy >= 95% cost computation precision
          Measured: 1.0000  |  Threshold: 0.95
-         max_absolute_error: 0.0
+         max_absolute_error: 2.8e-05
          breakdown_valid: True
          aggregation_valid: True
 
   [PASS] H12: Governance node latency P95 < 50ms (non-blocking)
-         Measured: 0.3600  |  Threshold: 50.0
-         avg_ms: 0.32
-         p50_ms: 0.31
-         p95_ms: 0.36
-         p99_ms: 0.36
+         Measured: 0.4800  |  Threshold: 50.0
+         avg_ms: 0.37
+         p50_ms: 0.35
+         p95_ms: 0.48
+         p99_ms: 0.48
          iterations: 20
          feature_flag_zero_overhead: True
 
+  [PASS] H13: PRICE accuracy >= 95% with expanded 15-case test set
+         Measured: 1.0000  |  Threshold: 0.95
+         total_cases: 15
+
+  [PASS] H14: RESOLVE conflict detection >= 80% with 30-case test set
+         Measured: 0.8667  |  Threshold: 0.8
+         total_cases: 30
+
+  [PASS] H15: Governance board lifecycle CRUD 100% success
+         Measured: 1.0000  |  Threshold: 1.0
+         template_rate: 1.0
+         compliance_valid: 1.0
+         demo_seeded: 1.0
+
+  [PASS] H16: Policy export/import YAML roundtrip fidelity >= 95%
+         Measured: 1.0000  |  Threshold: 0.95
+         json_ld_valid: 1.0
+         csl_rule_count_match: 1.0
+
+  [FAIL] H17: CARF counterfactual accuracy >= 10pp above raw LLM
+         Measured: 0.0000  |  Threshold: 0.1
+
+  [PASS] H24: Adversarial causal robustness >= 70%
+         Measured: 0.7000  |  Threshold: 0.7
+
+  [FAIL] H18: Policy-guided agent compliance >= 95%
+         Measured: 0.6000  |  Threshold: 0.95
+         escalation_rate: 0.8182
+
+  [PASS] H19: CARF hallucination rate <= 10% at scale
+         Measured: 0.0700  |  Threshold: 0.1
+         reduction: 0.7627
+
+  [PASS] H21: Cross-LLM provider agreement >= 85%
+         Measured: 1.0000  |  Threshold: 0.85
+
+  [PASS] H22: CLEAR composite score >= 0.75
+         Measured: 0.7745  |  Threshold: 0.75
+         cost: 0.9016
+         latency: 0.1823
+         efficacy: 0.9403
+         alignment: 0.9592
+         robustness: 0.8889
+
+  [PASS] H23: OWASP injection block rate >= 90%
+         Measured: 1.0000  |  Threshold: 0.9
+         pii_detection_rate: 1.0
+         sanitization_rate: 1.0
+
+  [PASS] H25: Red team overall defense rate >= 85%
+         Measured: 1.0000  |  Threshold: 0.85
+
+  [PASS] H26: Demographic parity ratio >= 0.80
+         Measured: 1.0000  |  Threshold: 0.8
+         equalized_odds_diff: 0.0
+
+  [FAIL] H27: Explainability fidelity >= 80%
+         Measured: 0.5000  |  Threshold: 0.8
+         stability: 1.0
+         avg_steps: 1.0
+
+  [PASS] H28: ALCOA+ audit trail compliance >= 95%
+         Measured: 1.0000  |  Threshold: 0.95
+
+  [PASS] H29: Energy proportional to complexity (Clear < Complicated < Complex)
+         Measured: 1.0000  |  Threshold: 1.0
+
+  [FAIL] H30: Scope 3 emission attribution accuracy >= 85%
+         Measured: 0.3000  |  Threshold: 0.85
+
+  [PASS] H31: SUS usability score >= 68
+         Measured: 68.4400  |  Threshold: 68.0
+
+  [FAIL] H32: Task completion success rate >= 90%
+         Measured: 0.8000  |  Threshold: 0.9
+
+  [PASS] H33: WCAG 2.2 Level A violations == 0
+         Measured: 0.0000  |  Threshold: 0.0
+
+  [PASS] H34: Supply chain prediction precision >= 70%
+         Measured: 0.9375  |  Threshold: 0.7
+         prediction_lead_time: 96.0
+
+  [FAIL] H35: Healthcare CATE accuracy vs RCT >= 90%
+         Measured: 0.8809  |  Threshold: 0.9
+
+  [PASS] H36: Finance VaR Kupiec p-value > 0.05
+         Measured: 1.0000  |  Threshold: 0.05
+
+  [PASS] H37: Load test P95 at 25 users <= 15s
+         Measured: 0.0419  |  Threshold: 15.0
+
+  [PASS] H38: Chaos cascade containment >= 80%
+         Measured: 1.0000  |  Threshold: 0.8
+
+  [PASS] H39: Soak test memory growth <= 5%
+         Measured: -1.5147  |  Threshold: 5.0
+         latency_drift: 6.9704
+
+REALISM VALIDATION
+------------------------------------------------------------
+  Benchmarks are accepted only when realism/reliability/feasibility evidence is present.
+  Validation dimensions:
+  - Realism: dataset profile, scenario diversity, temporal/adversarial coverage.
+  - Reliability: deterministic seeds, comparator baselines, stress rigor.
+  - Feasibility: automation maturity and runtime budget for continuous validation.
+  - Coverage ratio: 100.0%
+  - Provenance ratio: 100.0%
+  - Production proxy ratio: 100.0%
+  - Synthetic profile ratio: 21.2%
+  - Evidence score avg: 100.00/100
+  - Strong evidence ratio: 100.0%
+  - Absolute readiness index: 75.46/100
+
+  Category scores:
+    - core: realism=46.76, reliability=79.55, feasibility=85.45, count=7
+    - governance: realism=40.87, reliability=66.78, feasibility=89.78, count=3
+    - industry: realism=71.62, reliability=91.60, feasibility=84.23, count=4
+    - security: realism=50.91, reliability=88.50, feasibility=97.00, count=2
+    - causal: realism=70.44, reliability=94.16, feasibility=87.00, count=2
+    - competitive: realism=48.50, reliability=77.17, feasibility=91.83, count=4
+    - compliance: realism=57.96, reliability=82.22, feasibility=90.67, count=3
+    - sustainability: realism=73.47, reliability=93.00, feasibility=90.00, count=2
+    - ux: realism=48.24, reliability=76.11, feasibility=92.67, count=3
+    - performance: realism=60.38, reliability=73.44, feasibility=85.78, count=3
+
+  Quality gate blockers:
+    - Realism score below 65/100.
+
 METHODOLOGY
 ------------------------------------------------------------
-  - Causal: DoWhy ATE estimation on synthetic + industry DGPs
-    with confounded treatment assignment (logistic propensity).
-  - Bayesian: PyMC posterior inference with known ground truth,
-    90% HPD coverage, uncertainty decomposition.
-  - Router: Cynefin classification on 456-query labeled test set,
-    balanced domain sampling, weighted F1 + ECE.
-  - Guardian: Deterministic policy enforcement, 5x repetitions.
+  Core:
+  - Router: Cynefin classification on 456-query labeled test set.
+  - Causal: DoWhy ATE estimation on synthetic + industry DGPs.
+  - Bayesian: PyMC posterior inference with known ground truth.
+  - Guardian: Deterministic policy enforcement, 50x repetitions.
   - Performance: Latency + tracemalloc memory profiling.
-  - Governance: MAP triple extraction, PRICE cost precision,
-    RESOLVE conflict detection, AUDIT compliance scoring.
-  - Baselines: Raw LLM (same model, no pipeline) for comparison.
+  Governance:
+  - MAP triple extraction (50 cases), PRICE cost precision (15 cases),
+    RESOLVE conflict detection (30 cases), board lifecycle, policy roundtrip.
+  Security:
+  - OWASP LLM Top 10: injection, PII, sanitization (45 cases).
+  - Red Team: 8 attack surfaces, 40 attack cases.
+  Compliance:
+  - Fairness: demographic parity across 80 variations.
+  - XAI: explanation fidelity, stability, simplicity.
+  - ALCOA+: audit trail compliance on 50 queries.
+  Sustainability:
+  - Energy proportionality per Cynefin domain path.
+  - Scope 3 emission causal attribution accuracy.
+  Industry:
+  - Supply chain disruption prediction, healthcare CATE, VaR backtesting.
+  UX:
+  - SUS usability framework, task completion, WCAG 2.2 audit.
+  Performance:
+  - Load (1-25 concurrent), chaos cascade, soak (1000 queries).
+  Baselines: Raw LLM (same model, no pipeline) for comparison.
 
 EU AI ACT ALIGNMENT
 ------------------------------------------------------------

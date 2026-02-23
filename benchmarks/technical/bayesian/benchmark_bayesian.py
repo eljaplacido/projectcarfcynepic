@@ -456,6 +456,11 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
         "scenario_results": results,
     }
 
+    from benchmarks import finalize_benchmark_report
+
+    report = finalize_benchmark_report(report, benchmark_id="bayesian", source_reference="benchmark:bayesian", benchmark_config={"script": __file__})
+
+
     if output_path:
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)

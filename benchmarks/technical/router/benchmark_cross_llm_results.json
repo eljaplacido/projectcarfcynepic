@@ -1,0 +1,1018 @@
+{
+  "benchmark": "carf_cross_llm",
+  "hypothesis": "H21",
+  "timestamp": "2026-02-22T16:25:25.473800+00:00",
+  "n_queries": 30,
+  "n_providers": 3,
+  "metrics": {
+    "cross_provider_agreement": 1.0,
+    "pass_criterion": "cross_provider_agreement >= 0.85",
+    "passed": true,
+    "total_queries": 30,
+    "queries_with_full_agreement": 30
+  },
+  "per_domain": {
+    "Clear": {
+      "count": 6,
+      "agreement": 1.0,
+      "accuracy": 1.0
+    },
+    "Complicated": {
+      "count": 6,
+      "agreement": 1.0,
+      "accuracy": 0.6667
+    },
+    "Complex": {
+      "count": 6,
+      "agreement": 1.0,
+      "accuracy": 0.6667
+    },
+    "Chaotic": {
+      "count": 6,
+      "agreement": 1.0,
+      "accuracy": 0.5
+    },
+    "Disorder": {
+      "count": 6,
+      "agreement": 1.0,
+      "accuracy": 0.0
+    }
+  },
+  "per_provider": {
+    "deepseek": {
+      "queries_classified": 30,
+      "avg_confidence": 0.9143,
+      "avg_latency_ms": 0.47,
+      "error_count": 0
+    },
+    "openai": {
+      "queries_classified": 30,
+      "avg_confidence": 0.9143,
+      "avg_latency_ms": 0.4,
+      "error_count": 0
+    },
+    "anthropic": {
+      "queries_classified": 30,
+      "avg_confidence": 0.9143,
+      "avg_latency_ms": 0.25,
+      "error_count": 0
+    }
+  },
+  "individual_results": [
+    {
+      "query_id": 1,
+      "query": "What is the current exchange rate between EUR and USD?",
+      "expected_domain": "Clear",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 6.24,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.32,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.28,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 2,
+      "query": "How many vacation days do employees receive per year under the standard PTO poli",
+      "expected_domain": "Clear",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.26,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.27,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 3,
+      "query": "What is the standard tax rate for corporate income in Finland?",
+      "expected_domain": "Clear",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.25,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.28,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 4,
+      "query": "Look up the current inventory count for product SKU-12345.",
+      "expected_domain": "Clear",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.27,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.25,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.25,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 5,
+      "query": "What is our company's official return policy for defective products?",
+      "expected_domain": "Clear",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.26,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 6,
+      "query": "Display the SLA uptime percentage for our production cluster this month.",
+      "expected_domain": "Clear",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.25,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.27,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.25,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 7,
+      "query": "Analyze the root cause of the 15% revenue decline in Q3 compared to Q2.",
+      "expected_domain": "Complicated",
+      "majority_domain": "Complicated",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.25,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.23,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 8,
+      "query": "Determine whether our new pricing strategy caused the observed increase in custo",
+      "expected_domain": "Complicated",
+      "majority_domain": "Complicated",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.25,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 9,
+      "query": "Evaluate the causal impact of the supply chain diversification on lead time redu",
+      "expected_domain": "Complicated",
+      "majority_domain": "Complicated",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.25,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.23,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 10,
+      "query": "Assess whether the employee training program led to measurable productivity impr",
+      "expected_domain": "Complicated",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 1.12,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.27,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 11,
+      "query": "Investigate the relationship between marketing spend and conversion rate using o",
+      "expected_domain": "Complicated",
+      "majority_domain": "Complex",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.37,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 12,
+      "query": "Calculate the treatment effect of the new onboarding flow on 30-day retention.",
+      "expected_domain": "Complicated",
+      "majority_domain": "Complicated",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.29,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.27,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.27,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 13,
+      "query": "How will entering the Southeast Asian market affect our brand positioning over t",
+      "expected_domain": "Complex",
+      "majority_domain": "Complicated",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 14,
+      "query": "What is the likelihood that our AI product will face regulatory challenges under",
+      "expected_domain": "Complex",
+      "majority_domain": "Complex",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.26,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 15,
+      "query": "How should we adapt our organizational structure if remote work trends continue ",
+      "expected_domain": "Complex",
+      "majority_domain": "Complex",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.25,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 16,
+      "query": "What emerging technologies might disrupt our core business model in the next 5 y",
+      "expected_domain": "Complex",
+      "majority_domain": "Complex",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.23,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 17,
+      "query": "Explore how changing consumer preferences in sustainability might affect our pro",
+      "expected_domain": "Complex",
+      "majority_domain": "Complicated",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complicated",
+          "confidence": 0.88,
+          "latency_ms": 0.25,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 18,
+      "query": "What safe-to-fail experiments should we design to test our new marketplace hypot",
+      "expected_domain": "Complex",
+      "majority_domain": "Complex",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Complex",
+          "confidence": 0.85,
+          "latency_ms": 0.23,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 19,
+      "query": "Our production database is completely down and customers cannot process payments",
+      "expected_domain": "Chaotic",
+      "majority_domain": "Chaotic",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.28,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 20,
+      "query": "We just discovered a data breach affecting 100,000 customer records. Initiate in",
+      "expected_domain": "Chaotic",
+      "majority_domain": "Chaotic",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.25,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 21,
+      "query": "The main warehouse caught fire and we have orders due to ship today. Emergency a",
+      "expected_domain": "Chaotic",
+      "majority_domain": "Chaotic",
+      "all_agree": true,
+      "matches_expected": true,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Chaotic",
+          "confidence": 0.9,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 22,
+      "query": "A zero-day vulnerability is being actively exploited in our public-facing APIs. ",
+      "expected_domain": "Chaotic",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 23,
+      "query": "Our CEO was just arrested for fraud and media is calling. We need crisis communi",
+      "expected_domain": "Chaotic",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.26,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 24,
+      "query": "A ransomware attack has encrypted all servers. Systems are offline. What is the ",
+      "expected_domain": "Chaotic",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.29,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 25,
+      "query": "Hello, how are you?",
+      "expected_domain": "Disorder",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.26,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.26,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.25,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 26,
+      "query": "Tell me something interesting.",
+      "expected_domain": "Disorder",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.26,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.28,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.27,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 27,
+      "query": "What should we do about everything?",
+      "expected_domain": "Disorder",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 4.89,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.3,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 28,
+      "query": "The thing with the stuff needs to happen soon maybe.",
+      "expected_domain": "Disorder",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.24,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 29,
+      "query": "Fix it.",
+      "expected_domain": "Disorder",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        }
+      ]
+    },
+    {
+      "query_id": 30,
+      "query": "I don't know what I need but I need something done.",
+      "expected_domain": "Disorder",
+      "majority_domain": "Clear",
+      "all_agree": true,
+      "matches_expected": false,
+      "provider_results": [
+        {
+          "provider": "deepseek",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.22,
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.23,
+          "error": null
+        },
+        {
+          "provider": "anthropic",
+          "domain": "Clear",
+          "confidence": 0.95,
+          "latency_ms": 0.24,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-02-22T16:25:25.553903+00:00",
+  "benchmark_id": "cross_llm",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\router\\benchmark_cross_llm.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {
+    "n_queries": 30
+  },
+  "source_reference": "benchmark:cross_llm",
+  "provenance": {
+    "source_reference": "benchmark:cross_llm",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

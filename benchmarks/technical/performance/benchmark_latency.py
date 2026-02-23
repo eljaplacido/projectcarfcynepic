@@ -299,6 +299,9 @@ async def run_benchmark(
     logger.info(f"  Errors:        {report['error_count']}/{report['total_queries']}")
     for d, stats in per_domain_stats.items():
         logger.info(f"    {d:<14} {stats['count']:>3} queries, mean={stats['mean_ms']:.0f}ms, p95={stats['p95_ms']:.0f}ms")
+    from benchmarks import finalize_benchmark_report
+    report = finalize_benchmark_report(report, benchmark_id="performance", source_reference="benchmark:performance", benchmark_config={"script": __file__})
+
 
     if output_path:
         out = Path(output_path)

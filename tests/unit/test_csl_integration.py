@@ -15,18 +15,15 @@ import pytest
 from src.core.state import CynefinDomain, EpistemicState, GuardianVerdict
 from src.services.csl_policy_service import (
     CSLConfig,
-    CSLEvaluation,
     CSLPolicy,
     CSLPolicyService,
     CSLRule,
-    CSLRuleResult,
 )
 from src.services.policy_refinement_agent import (
     PolicyRefinementAgent,
     PolicyRefinementRequest,
 )
 from src.services.policy_scaffold_service import PolicyScaffoldService
-
 
 # =============================================================================
 # CSL Config Tests
@@ -305,6 +302,90 @@ class TestCSLPolicyService:
         assert ctx["action"]["amount"] == 5000
         assert ctx["user"]["role"] == "senior"
         assert ctx["risk"]["level"] == "MEDIUM"
+
+    def test_context_mapping_normalizes_currency(self, monkeypatch):
+        """State-to-context mapping normalizes financial values into policy currency."""
+        monkeypatch.setenv("CARF_FX_RATES_JSON", '{"USD": 1.0, "JPY": 0.0067}')
+        config = CSLConfig(enabled=True)
+        service = CSLPolicyService(config=config)
+
+        state = EpistemicState(
+            domain_confidence=0.9,
+            domain_entropy=0.3,
+            cynefin_domain=CynefinDomain.CLEAR,
+            proposed_action={"action_type": "transfer", "amount": 50000, "currency": "JPY"},
+            context={"user_role": "junior", "daily_spend_total": 150000, "daily_spend_currency": "JPY"},
+        )
+
+        ctx = service.map_state_to_context(state)
+
+        assert ctx["action"]["policy_currency"] == "USD"
+        assert ctx["action"]["requires_currency_conversion"] is True
+        assert ctx["action"]["currency_conversion_ok"] is True
+        assert ctx["action"]["amount"] == pytest.approx(335.0)
+        assert ctx["action"]["daily_total"] == pytest.approx(1005.0)
+
+    @pytest.mark.asyncio
+    async def test_evaluate_budget_uses_normalized_amount(self, monkeypatch):
+        """Role-based thresholds must evaluate normalized currency amounts."""
+        monkeypatch.setenv("CARF_FX_RATES_JSON", '{"USD": 1.0, "JPY": 0.0067}')
+        config = CSLConfig(enabled=True)
+        service = CSLPolicyService(config=config)
+
+        state = EpistemicState(
+            domain_confidence=0.95,
+            cynefin_domain=CynefinDomain.CLEAR,
+            proposed_action={
+                "action_type": "transfer",
+                "amount": 50000,
+                "currency": "JPY",
+            },
+            context={"user_role": "junior"},
+        )
+
+        result = await service.evaluate(state)
+        assert result.allow is True
+        assert not any(v.rule_name == "junior_transfer_limit" for v in result.violations)
+
+    @pytest.mark.asyncio
+    async def test_evaluate_blocks_when_fx_conversion_missing(self, monkeypatch):
+        """Missing FX config must block cross-currency financial actions."""
+        monkeypatch.delenv("CARF_FX_RATES_JSON", raising=False)
+        config = CSLConfig(enabled=True)
+        service = CSLPolicyService(config=config)
+
+        state = EpistemicState(
+            domain_confidence=0.95,
+            cynefin_domain=CynefinDomain.CLEAR,
+            proposed_action={
+                "action_type": "transfer",
+                "amount": 500,
+                "currency": "JPY",
+            },
+            context={"user_role": "junior"},
+        )
+
+        result = await service.evaluate(state)
+        assert result.allow is False
+        assert any(v.rule_name == "currency_conversion_required_for_financial_actions" for v in result.violations)
+
+    def test_currency_gate_violation_payload(self, monkeypatch):
+        """Currency gate helper provides explicit diagnostics for missing FX."""
+        monkeypatch.delenv("CARF_FX_RATES_JSON", raising=False)
+        service = CSLPolicyService(config=CSLConfig(enabled=True))
+
+        state = EpistemicState(
+            domain_confidence=0.9,
+            cynefin_domain=CynefinDomain.CLEAR,
+            proposed_action={"action_type": "transfer", "amount": 500, "currency": "JPY"},
+            context={"user_role": "junior"},
+        )
+        context = service.map_state_to_context(state)
+
+        violation = service._currency_gate_violation(context)
+        assert violation is not None
+        assert violation.rule_name == "currency_conversion_required_for_financial_actions"
+        assert "configured FX rates" in violation.message
 
     @pytest.mark.asyncio
     async def test_fail_closed_on_error(self):

@@ -50,7 +50,7 @@ async def get_config_status() -> LLMConfigStatus:
 
     # Provider detection table: (provider_name, env_key, default_model, display_name)
     provider_table = [
-        ("deepseek", "DEEPSEEK_API_KEY", "deepseek-chat", "DeepSeek"),
+        ("deepseek", "DEEPSEEK_API_KEY", "deepseek-reasoner", "DeepSeek"),
         ("openai", "OPENAI_API_KEY", "gpt-4o-mini", "OpenAI"),
         ("anthropic", "ANTHROPIC_API_KEY", "claude-sonnet-4-5-20250929", "Anthropic"),
         ("google", "GOOGLE_API_KEY", "gemini-2.0-flash", "Google Gemini"),

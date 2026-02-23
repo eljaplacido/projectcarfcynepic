@@ -3,7 +3,7 @@
 import pytest
 
 from src.core.state import CynefinDomain, EpistemicState, GuardianVerdict
-from src.workflows.guardian import Guardian, PolicyEngine, PolicyViolation
+from src.workflows.guardian import Guardian, PolicyEngine
 
 
 class TestPolicyEngine:
@@ -32,11 +32,11 @@ class TestPolicyEngine:
         assert violations == []
 
     def test_financial_limit_currency_mismatch(self, engine):
-        """Test currency mismatch is flagged as violation."""
+        """Test unavailable currency conversion is flagged as violation."""
         violations = engine.check_financial_limit(50000, currency="JPY")
         assert len(violations) == 1
-        assert violations[0].policy_name == "currency_mismatch"
-        assert violations[0].severity == "medium"
+        assert violations[0].policy_name == "currency_conversion_unavailable"
+        assert violations[0].severity == "high"
 
     def test_always_escalate_delete(self, engine):
         """Test delete_data triggers escalation."""

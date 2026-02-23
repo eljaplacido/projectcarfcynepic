@@ -205,3 +205,98 @@ class TestHealthEndpoint:
         data = resp.json()
         assert data["enabled"] is True
         assert "status" in data
+
+
+class TestSemanticGraphEndpoints:
+    def test_get_semantic_graph(self, client):
+        # Seed one domain/policy so graph has deterministic structure
+        client.post("/governance/domains", json={
+            "domain_id": "procurement",
+            "display_name": "Procurement",
+        })
+        client.post("/governance/policies", json={
+            "name": "Spend Control",
+            "domain_id": "procurement",
+            "namespace": "procurement.spend_control",
+            "rules": [{"name": "max_spend", "condition": {}, "constraint": {"max_amount": 100000}, "message": "Cap spend"}],
+        })
+
+        resp = client.get("/governance/semantic-graph")
+        assert resp.status_code == 200
+        payload = resp.json()
+        assert "nodes" in payload
+        assert "edges" in payload
+        assert "stats" in payload
+        assert "explainability" in payload
+        assert "why_this" in payload["explainability"]
+        assert "how_confident" in payload["explainability"]
+        assert "based_on" in payload["explainability"]
+
+    def test_get_semantic_graph_board_not_found(self, client):
+        resp = client.get("/governance/semantic-graph?board_id=missing-board")
+        assert resp.status_code == 404
+
+
+class TestPolicyExtractionEndpoints:
+    def test_extract_policies_from_text_returns_explainability(self, client):
+        resp = client.post(
+            "/governance/policies/extract",
+            json={
+                "text": "If supplier risk > 0.8, procurement approval is required.",
+                "source_name": "test_policy_note",
+                "target_domain": "procurement",
+            },
+        )
+        assert resp.status_code == 200
+        payload = resp.json()
+        assert payload["source_name"] == "test_policy_note"
+        assert payload["target_domain"] == "procurement"
+        assert "extraction_confidence_avg" in payload
+        assert "explainability" in payload
+        assert "why_this" in payload["explainability"]
+        assert "how_confident" in payload["explainability"]
+        assert "based_on" in payload["explainability"]
+
+    def test_extract_policies_from_text_parses_fenced_json(self, client, monkeypatch):
+        def _fake_invoke(prompt: str) -> str:
+            return """```json
+[
+  {
+    "name": "supplier_risk_gate",
+    "condition": {"supplier_risk": {"gt": 0.8}},
+    "constraint": {"approval_required": true},
+    "message": "Require approval for high supplier risk",
+    "severity": "high",
+    "confidence": 0.9,
+    "rationale": "High supplier risk requires governance review.",
+    "evidence": ["supplier risk > 0.8", "approval is required"]
+  }
+]
+```"""
+
+        monkeypatch.setattr(governance, "_invoke_extraction_model", _fake_invoke)
+        resp = client.post(
+            "/governance/policies/extract",
+            json={"text": "supplier risk > 0.8 then approval is required"},
+        )
+        assert resp.status_code == 200
+        payload = resp.json()
+        assert payload["rules_extracted"] == 1
+        assert payload["rules"][0]["name"] == "supplier_risk_gate"
+        assert payload["rules"][0]["severity"] == "high"
+        assert payload["rules"][0]["confidence"] == 0.9
+        assert payload["rules"][0]["evidence"]
+
+    def test_extract_policies_from_text_reports_error(self, client, monkeypatch):
+        def _raise_error(prompt: str) -> str:
+            raise RuntimeError("model unavailable")
+
+        monkeypatch.setattr(governance, "_invoke_extraction_model", _raise_error)
+        resp = client.post(
+            "/governance/policies/extract",
+            json={"text": "dummy"},
+        )
+        assert resp.status_code == 200
+        payload = resp.json()
+        assert payload["rules_extracted"] == 0
+        assert payload["error"] is not None

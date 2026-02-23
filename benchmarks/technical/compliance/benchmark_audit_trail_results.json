@@ -1,0 +1,2497 @@
+{
+  "benchmark": "carf_audit_trail",
+  "timestamp": "2026-02-22T16:14:54.960467+00:00",
+  "metrics": {
+    "alcoa_compliance_rate": 1.0,
+    "alcoa_compliance_passed": true,
+    "total_entries": 50,
+    "fully_compliant_entries": 50,
+    "per_check_pass_rates": {
+      "attributable": 1.0,
+      "legible": 1.0,
+      "contemporaneous": 1.0,
+      "original": 1.0,
+      "accurate": 1.0,
+      "complete": 1.0,
+      "consistent": 1.0,
+      "enduring": 1.0,
+      "available": 1.0
+    },
+    "error_count": 0
+  },
+  "individual_results": [
+    {
+      "index": 1,
+      "query": "What is the current EUR to USD exchange rate?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.001s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 0f23aefc-2346-43c0-b029-5be95a047cd9"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 2,
+      "query": "How many business days are in Q1 2026?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: b4534ac5-8f8a-4fb0-9b73-e0a0d5c3f139"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 3,
+      "query": "What is the standard VAT rate in Germany?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: dcc67590-f4ca-4c23-bc92-a6893839c4cf"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 4,
+      "query": "List the ISO 27001 control categories.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 294d565d-03fb-4a12-88f1-e662e6cfd990"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 5,
+      "query": "What is the LIBOR replacement rate called?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: db680e5f-3bb7-4069-b681-2c2770891450"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 6,
+      "query": "Define the term 'double materiality' in ESG reporting.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: f10264b0-96d4-4e46-943a-7fdd16d1671e"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 7,
+      "query": "What is the legal entity identifier (LEI) format?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: c2270037-1ec1-4c2c-ab60-6030de569ada"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 8,
+      "query": "How many Scope categories exist in the GHG Protocol?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 6724862b-4ab8-473f-85aa-0c38c70f6e21"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 9,
+      "query": "What does CSRD stand for?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 50081d9c-c36b-4df1-9d1a-2b9417448935"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 10,
+      "query": "What is the maximum fine under GDPR Article 83?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 833cdfea-3fd6-4f07-81ef-69b7e08ec164"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 11,
+      "query": "How does increasing marketing spend affect quarterly revenue?",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 7c9d6495-ff5a-4567-bffe-202c822c1e54"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 12,
+      "query": "What is the ROI of upgrading our ERP system?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: d4210853-521d-4bbd-b8c9-39ed431df360"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 13,
+      "query": "Analyse the cost-benefit of switching to renewable energy for our facilities.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 8dacbcb5-bc71-4a2e-b1f1-905f524cfd76"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 14,
+      "query": "Compare the TCO of on-premise vs cloud hosting for our data centre.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 601101e6-2b44-4907-a7ca-cf7fb8f6beea"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 15,
+      "query": "What is the break-even point for our new product line?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 6f4b85ca-457b-4599-bb0b-6782b732a832"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 16,
+      "query": "Evaluate the impact of a 15% tariff increase on imported components.",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 2847366c-bd6c-4355-8ade-152479aaf46f"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 17,
+      "query": "Calculate our weighted average cost of capital (WACC).",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: e21796c7-5d7c-4893-844c-597b963a9bd5"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 18,
+      "query": "Assess the payback period for our warehouse automation investment.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: c3fc0445-1e41-4b94-ab5c-8d0b62b1ed1d"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 19,
+      "query": "Estimate the effect of remote work on our office space costs.",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 9829b89c-119f-4a5b-a847-d8841d39f4b0"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 20,
+      "query": "Project the financial impact of regulatory changes on our compliance budget.",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 01f06ea4-7e7f-4c1c-a0e3-335b6b7c0ffc"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 21,
+      "query": "How will geopolitical tensions affect our supply chain in Asia?",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 5a847b2f-cda4-4bf5-87cf-3043f6605c42"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 22,
+      "query": "What are the second-order effects of our layoff decision on morale?",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 8598abc6-1d14-410a-93e3-3a5e1e30a11c"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 23,
+      "query": "How might AI adoption change our competitive landscape over 5 years?",
+      "domain": "Complex",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 96eb0e73-d713-47c1-a14d-6c88570e993d"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 24,
+      "query": "Assess the cultural implications of our merger integration strategy.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.001s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 3113b959-a3c2-45d3-b3c0-b7d7b7340477"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 25,
+      "query": "What emerging risks should our board prioritise this quarter?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 6700325b-5258-4225-b0e1-3ad5b21cc7cd"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 26,
+      "query": "How does employee engagement correlate with customer satisfaction trends?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.001s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 7ae9d1a5-d944-46f1-b555-9e83c0af15f7"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 27,
+      "query": "What systemic risks does our concentrated supplier base create?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.001s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 7a5ab081-fcc6-4d02-8570-308d1d12e662"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 28,
+      "query": "Analyse how changing consumer preferences will affect our product portfolio.",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.001s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 23ab4fea-2ffe-49ed-b505-001c9aeecc23"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 29,
+      "query": "Evaluate the reputational impact of our environmental track record.",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.001s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 536ae175-bb74-4e38-a741-3fa36ea85a3f"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 30,
+      "query": "What feedback loops exist between our pricing strategy and market share?",
+      "domain": "Complex",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: a20b3119-a68a-423b-a192-42256b5546c5"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 31,
+      "query": "Our primary data centre is offline. What immediate steps should we take?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: e1be5a8f-9b64-401f-9976-df95a90a852a"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 32,
+      "query": "A critical vulnerability was disclosed affecting our production systems.",
+      "domain": "Chaotic",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: f5251d4c-bd90-447c-97ba-a8b72ebbe1b7"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 33,
+      "query": "Our CEO has resigned unexpectedly. Draft an interim governance plan.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 2cfe10c8-5fae-4ecb-aad2-209ec55415db"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 34,
+      "query": "A major supplier declared bankruptcy today. What are our options?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 58727176-a7f6-4208-b45f-15a91872f83c"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 35,
+      "query": "We received a ransomware demand affecting 30% of our systems.",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 6a8ab9bc-1a53-46e4-9964-0b7aa7f025fa"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 36,
+      "query": "A product recall is needed due to safety concerns reported this morning.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 5c9a5462-0cff-4d26-9594-7fad0e89e46d"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 37,
+      "query": "Flash flooding has damaged our main distribution warehouse.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 7b58f8e9-1314-4735-a1d1-16fbea33ea99"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 38,
+      "query": "Our key patent was invalidated by a court ruling today.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 99c0405c-b84c-44b9-9d59-47d41d9f2013"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 39,
+      "query": "A data breach exposed 100,000 customer records.",
+      "domain": "Chaotic",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: f9d9ecf6-67ca-4353-bdfc-d786ef907e22"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 40,
+      "query": "Union workers initiated a wildcat strike at our largest plant.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: ece0e3e6-405d-420b-81f8-3e75ac2f4682"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 41,
+      "query": "What should we do next?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: b783a1d1-6e8e-42ab-92d9-a3683dbf00e6"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 42,
+      "query": "Help me think about our strategy.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 070ee592-aec2-4f5a-9475-7a835e4c2184"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 43,
+      "query": "I am not sure what the problem is but something feels wrong.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: f4f55360-cbc4-48dd-b74f-8d105863576e"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 44,
+      "query": "Can you look into this situation and give me your thoughts?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 0fa204d9-2bfa-41a1-a603-2d2ff8ec1143"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 45,
+      "query": "Our numbers are off but I cannot pinpoint why.",
+      "domain": "Complicated",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: f9a3b7c4-eb18-4c72-9ee4-9675b93b1e65"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 46,
+      "query": "Review the sustainability clauses in our new procurement contracts.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 021eb3c3-de07-4988-9dfe-3df16e2179a1"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 47,
+      "query": "Assess GDPR compliance of our customer analytics pipeline.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: bbea1430-e86b-402e-9c2f-6062f7c9744a"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 48,
+      "query": "Evaluate the legal risks of our AI-powered hiring tool.",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 4d8ee41e-8de8-414a-bfb2-02f733f73390"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 49,
+      "query": "How do our carbon offset credits align with EU ETS regulations?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: 2793bdab-ae73-400c-b9e3-ad52fa8c66e2"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    },
+    {
+      "index": 50,
+      "query": "What governance controls do we need for the new cloud migration project?",
+      "domain": "Clear",
+      "verdict": "APPROVED",
+      "checks_passed": 9,
+      "checks_total": 9,
+      "compliance_rate": 1.0,
+      "fully_compliant": true,
+      "check_results": {
+        "attributable": {
+          "passed": true,
+          "reason": "Has identity field(s)"
+        },
+        "legible": {
+          "passed": true,
+          "reason": "Format: json, JSON-serialisable"
+        },
+        "contemporaneous": {
+          "passed": true,
+          "reason": "Record delay: 0.000s (within 1s)"
+        },
+        "original": {
+          "passed": true,
+          "reason": "Unique UUID: ff515dbd-2f8a-4711-b820-bdc864143bc4"
+        },
+        "accurate": {
+          "passed": true,
+          "reason": "All 4 required fields present"
+        },
+        "complete": {
+          "passed": true,
+          "reason": "All core fields populated"
+        },
+        "consistent": {
+          "passed": true,
+          "reason": "No contradictions found"
+        },
+        "enduring": {
+          "passed": true,
+          "reason": "Storage type: persistent"
+        },
+        "available": {
+          "passed": true,
+          "reason": "Queryable by entry_id and session_id"
+        }
+      },
+      "error": null
+    }
+  ],
+  "generated_at": "2026-02-22T16:14:55.039829+00:00",
+  "benchmark_id": "audit_trail",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\compliance\\benchmark_audit_trail.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:audit_trail",
+  "provenance": {
+    "source_reference": "benchmark:audit_trail",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

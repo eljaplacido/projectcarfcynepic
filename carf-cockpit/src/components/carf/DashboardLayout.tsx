@@ -8,7 +8,7 @@ import GuardianPanel from './GuardianPanel';
 import ExecutionTrace from './ExecutionTrace';
 import ConversationalResponse from './ConversationalResponse';
 import OnboardingOverlay from './OnboardingOverlay';
-import IntelligentChatTab from './IntelligentChatTab';
+import IntelligentChatTab, { type ChatUiAction } from './IntelligentChatTab';
 import WalkthroughManager from './WalkthroughManager';
 import DataOnboardingWizard from './DataOnboardingWizard';
 import MethodologyModal from './MethodologyModal';
@@ -25,7 +25,7 @@ import SensitivityPlot from './SensitivityPlot';
 import PromptGuidancePanel from './PromptGuidancePanel';
 import EscalationModal from './EscalationModal';
 import TransparencyPanel from './TransparencyPanel';
-import GovernanceView from './GovernanceView';
+import GovernanceView, { type GovernanceTab } from './GovernanceView';
 import { QuickThemeToggle } from '../ui/ThemeToggle';
 import type { Suggestion } from './PromptGuidancePanel';
 import { useQuery, useScenarios, useConfigStatus } from '../../hooks/useCarfApi';
@@ -163,6 +163,7 @@ const DashboardLayout: React.FC = () => {
     const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
     const [showEscalationModal, setShowEscalationModal] = useState<boolean>(false);
     const [pendingEscalationsCount, setPendingEscalationsCount] = useState<number>(0);
+    const [governanceTabOverride, setGovernanceTabOverride] = useState<GovernanceTab | null>(null);
 
     // Fetch pending escalations count periodically
     useEffect(() => {
@@ -601,6 +602,74 @@ const DashboardLayout: React.FC = () => {
         }
     };
 
+    const handleChatUiAction = useCallback((action: ChatUiAction): boolean => {
+        switch (action) {
+            case 'open_data_onboarding':
+                setShowOnboarding(false);
+                setShowDataWizard(true);
+                return true;
+            case 'open_file_analyzer':
+                setShowFileAnalysisModal(true);
+                return true;
+            case 'open_history':
+                setShowHistoryPanel(true);
+                return true;
+            case 'open_simulation_compare_latest':
+                if (history.length >= 2) {
+                    setViewMode('analyst');
+                    setComparisonSessions([history[0], history[1]]);
+                    return true;
+                }
+                return false;
+            case 'switch_view_analyst':
+                setViewMode('analyst');
+                setGovernanceTabOverride(null);
+                return true;
+            case 'switch_view_developer':
+                setViewMode('developer');
+                setGovernanceTabOverride(null);
+                return true;
+            case 'switch_view_executive':
+                setViewMode('executive');
+                setGovernanceTabOverride(null);
+                return true;
+            case 'switch_view_governance':
+                setViewMode('governance');
+                setGovernanceTabOverride(null);
+                return true;
+            case 'open_policy_ingestion':
+                setViewMode('governance');
+                setGovernanceTabOverride('policy');
+                return true;
+            case 'open_governance_boards':
+                setViewMode('governance');
+                setGovernanceTabOverride('boards');
+                return true;
+            case 'open_governance_specmap':
+                setViewMode('governance');
+                setGovernanceTabOverride('specmap');
+                return true;
+            case 'open_governance_semantic':
+                setViewMode('governance');
+                setGovernanceTabOverride('semantic');
+                return true;
+            case 'open_governance_cost':
+                setViewMode('governance');
+                setGovernanceTabOverride('cost');
+                return true;
+            case 'open_governance_policy':
+                setViewMode('governance');
+                setGovernanceTabOverride('policy');
+                return true;
+            case 'open_governance_compliance':
+                setViewMode('governance');
+                setGovernanceTabOverride('compliance');
+                return true;
+            default:
+                return false;
+        }
+    }, [history]);
+
     // Handle Socratic mode panel highlighting
     const handleHighlightPanels = useCallback((targets: HighlightTarget[]) => {
         // Remove previous highlights
@@ -850,7 +919,10 @@ const DashboardLayout: React.FC = () => {
                                 {(['analyst', 'developer', 'executive', 'governance'] as ViewMode[]).map((mode) => (
                                     <button
                                         key={mode}
-                                        onClick={() => setViewMode(mode)}
+                                        onClick={() => {
+                                            setViewMode(mode);
+                                            setGovernanceTabOverride(null);
+                                        }}
                                         className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === mode
                                             ? 'bg-white text-primary shadow-sm'
                                             : 'text-gray-600 hover:text-gray-900'
@@ -1231,6 +1303,7 @@ const DashboardLayout: React.FC = () => {
                         <GovernanceView
                             lastResult={queryResponse}
                             sessionId={queryResponse?.sessionId}
+                            activeTabOverride={governanceTabOverride}
                         />
                     </div>
                 ) : (
@@ -1443,6 +1516,7 @@ const DashboardLayout: React.FC = () => {
                 onExecuteQuery={handleQuerySubmit}
                 onOpenHistory={() => setShowHistoryPanel(true)}
                 onOpenAnalyze={() => setShowFileAnalysisModal(true)}
+                onUiAction={handleChatUiAction}
                 onLinkClick={handleLinkClick}
                 onHighlightPanels={handleHighlightPanels}
                 isProcessing={isProcessing || apiLoading}

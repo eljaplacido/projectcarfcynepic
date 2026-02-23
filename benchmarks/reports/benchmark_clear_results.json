@@ -1,0 +1,103 @@
+{
+  "benchmark": "carf_clear_composite",
+  "timestamp": "2026-02-22T16:21:51.361421+00:00",
+  "metrics": {
+    "clear_composite": 0.7745,
+    "clear_composite_passed": true,
+    "sub_scores": {
+      "cost": 0.9016,
+      "latency": 0.1823,
+      "efficacy": 0.9403,
+      "alignment": 0.9592,
+      "robustness": 0.8889
+    },
+    "weights": {
+      "cost": 0.2,
+      "latency": 0.2,
+      "efficacy": 0.2,
+      "alignment": 0.2,
+      "robustness": 0.2
+    }
+  },
+  "individual_results": [
+    {
+      "dimension": "cost",
+      "score": 0.9016,
+      "weight": 0.2,
+      "details": {
+        "source": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_governance_results.json",
+        "price_accuracy": 1.0,
+        "individual_results_count": 7
+      }
+    },
+    {
+      "dimension": "latency",
+      "score": 0.1823,
+      "weight": 0.2,
+      "details": {
+        "source": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\performance\\benchmark_latency_results.json",
+        "avg_duration_ms": 9259.59,
+        "governance_p95_ms": 0.36,
+        "governance_bonus": 0.1
+      }
+    },
+    {
+      "dimension": "efficacy",
+      "score": 0.9403,
+      "weight": 0.2,
+      "details": {
+        "causal_mse": 1.193987,
+        "causal_source": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\causal\\benchmark_causal_results.json",
+        "bayesian_coverage": 1.0,
+        "bayesian_source": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\bayesian\\benchmark_bayesian_results.json"
+      }
+    },
+    {
+      "dimension": "alignment",
+      "score": 0.9592,
+      "weight": 0.2,
+      "details": {
+        "source": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_governance_results.json",
+        "map_accuracy": 1.0,
+        "resolve_detection_rate": 1.0,
+        "resolve_false_positive_rate": 0.0,
+        "audit_all_valid": true,
+        "audit_avg_compliance": 0.755
+      }
+    },
+    {
+      "dimension": "robustness",
+      "score": 0.8889,
+      "weight": 0.2,
+      "details": {
+        "source": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\guardian\\benchmark_guardian_results.json",
+        "detection_rate": 0.6667,
+        "determinism_rate": 1.0,
+        "false_positive_rate": 0.0
+      }
+    }
+  ],
+  "generated_at": "2026-02-22T16:21:51.468843+00:00",
+  "benchmark_id": "clear",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\reports\\benchmark_clear.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:clear",
+  "provenance": {
+    "source_reference": "benchmark:clear",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

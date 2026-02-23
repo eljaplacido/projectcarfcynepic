@@ -10,6 +10,23 @@ import {
 } from '../../config/questioningFlow';
 import MarkdownRenderer from './MarkdownRenderer';
 
+export type ChatUiAction =
+    | 'open_data_onboarding'
+    | 'open_file_analyzer'
+    | 'open_history'
+    | 'open_simulation_compare_latest'
+    | 'switch_view_analyst'
+    | 'switch_view_developer'
+    | 'switch_view_executive'
+    | 'switch_view_governance'
+    | 'open_policy_ingestion'
+    | 'open_governance_boards'
+    | 'open_governance_specmap'
+    | 'open_governance_semantic'
+    | 'open_governance_cost'
+    | 'open_governance_policy'
+    | 'open_governance_compliance';
+
 // Slash command definitions
 const SLASH_COMMANDS: SlashCommandConfig[] = [
     {
@@ -54,6 +71,12 @@ const SLASH_COMMANDS: SlashCommandConfig[] = [
         usage: '/benchmark [id]',
         example: '/benchmark sustainability_carbon_footprint',
     },
+    {
+        command: '/goto',
+        description: 'Navigate UI directly (view or workflow area)',
+        usage: '/goto [onboarding|history|simulation|analyst|developer|executive|governance|policy]',
+        example: '/goto governance',
+    },
     { command: '/summary', description: 'Generate executive summary of current analysis', usage: '/summary', example: '/summary' },
 ];
 
@@ -63,6 +86,7 @@ interface IntelligentChatTabProps {
     onExecuteQuery: (query: string) => void;
     onOpenHistory: () => void;
     onOpenAnalyze?: () => void;
+    onUiAction?: (action: ChatUiAction) => boolean;
     onLinkClick?: (panelId: string) => void;
     onHighlightPanels?: (targets: HighlightTarget[]) => void;
     isProcessing?: boolean;
@@ -82,6 +106,7 @@ const IntelligentChatTab: React.FC<IntelligentChatTabProps> = ({
     onExecuteQuery,
     onOpenHistory,
     onOpenAnalyze,
+    onUiAction,
     onLinkClick,
     onHighlightPanels,
     isProcessing = false,
@@ -139,6 +164,26 @@ const IntelligentChatTab: React.FC<IntelligentChatTabProps> = ({
         inputRef.current?.focus();
     }, []);
 
+    const parseGotoTarget = (args: string): ChatUiAction | null => {
+        const target = args.trim().toLowerCase();
+        if (!target) return null;
+        if (target.includes('onboarding') || target.includes('upload')) return 'open_data_onboarding';
+        if (target.includes('file')) return 'open_file_analyzer';
+        if (target.includes('history')) return 'open_history';
+        if (target.includes('simulation') || target.includes('compare')) return 'open_simulation_compare_latest';
+        if (target.includes('developer')) return 'switch_view_developer';
+        if (target.includes('executive')) return 'switch_view_executive';
+        if (target.includes('analyst') || target.includes('analysis')) return 'switch_view_analyst';
+        if (target.includes('boards')) return 'open_governance_boards';
+        if (target.includes('spec') || target.includes('map')) return 'open_governance_specmap';
+        if (target.includes('semantic') || target.includes('knowledge graph')) return 'open_governance_semantic';
+        if (target.includes('cost')) return 'open_governance_cost';
+        if (target.includes('policy') || target.includes('ingestion')) return 'open_governance_policy';
+        if (target.includes('compliance') || target.includes('audit')) return 'open_governance_compliance';
+        if (target.includes('governance')) return 'switch_view_governance';
+        return null;
+    };
+
     const processSlashCommand = useCallback(async (input: string) => {
         const parts = input.trim().split(' ');
         const command = parts[0].toLowerCase() as SlashCommand;
@@ -182,6 +227,20 @@ const IntelligentChatTab: React.FC<IntelligentChatTabProps> = ({
                 handleBenchmark(args);
                 return true;
 
+            case '/goto': {
+                const action = parseGotoTarget(args);
+                if (!action || !onUiAction) {
+                    onSendMessage(
+                        'Usage: /goto [onboarding|history|simulation|analyst|developer|executive|governance|boards|specmap|semantic|cost|policy|compliance]',
+                        false
+                    );
+                    return true;
+                }
+                const ok = onUiAction(action);
+                onSendMessage(ok ? actionSuccessMessage(action) : actionFailureMessage(action), true, '/goto' as SlashCommand);
+                return true;
+            }
+
             case '/summary': {
                 // Generate executive summary from current analysis context
                 const summaryContext = {
@@ -222,7 +281,7 @@ const IntelligentChatTab: React.FC<IntelligentChatTabProps> = ({
             default:
                 return false;
         }
-    }, [onExecuteQuery, onOpenHistory, onOpenAnalyze, onSendMessage]);
+    }, [onExecuteQuery, onOpenHistory, onOpenAnalyze, onSendMessage, onUiAction]);
 
     const startSocraticMode = () => {
         // Determine applicable flows based on query results
@@ -308,11 +367,13 @@ Use /history to see all past analyses.`;
 | \`/query [text]\` | Execute an analysis query |
 | \`/analysis\` | View last analysis snapshot |
 | \`/history\` | Browse past analyses |
+| \`/goto [target]\` | Navigate directly (views/onboarding/simulation/governance tabs) |
 | \`/help [topic]\` | Show help (topics: causal, bayesian, cynefin, guardian) |
 
 **Tips:**
 - Type \`/\` to see command autocomplete
 - Ask natural questions about your data
+- You can trigger UI actions with natural language (e.g. "take me to data upload onboarding")
 - Click on linked panels to see details`;
         } else {
             const topics: Record<string, string> = {
@@ -376,6 +437,101 @@ Type \`/help [topic]\` for specific guidance.`,
         }
 
         onSendMessage(helpText, true, '/help');
+    };
+
+    const detectUiAction = (input: string): ChatUiAction | null => {
+        const text = input.toLowerCase();
+
+        if (/data onboarding|upload data|data upload|ingest data|import data/.test(text)) {
+            return 'open_data_onboarding';
+        }
+        if (/file analysis|analyze file|upload file/.test(text)) {
+            return 'open_file_analyzer';
+        }
+        if (/history|analysis history|show past analyses/.test(text)) {
+            return 'open_history';
+        }
+        if (/simulation between.*latest|compare.*latest analys|latest two analys|compare.*recent analys/.test(text)) {
+            return 'open_simulation_compare_latest';
+        }
+        if (/governance view|open governance|go to governance/.test(text)) {
+            return 'switch_view_governance';
+        }
+        if (/governance boards|open boards/.test(text)) {
+            return 'open_governance_boards';
+        }
+        if (/spec map|impact map|governance map/.test(text)) {
+            return 'open_governance_specmap';
+        }
+        if (/semantic graph|knowledge graph|policy conflict graph|governance topology/.test(text)) {
+            return 'open_governance_semantic';
+        }
+        if (/cost intelligence|governance cost|show costs/.test(text)) {
+            return 'open_governance_cost';
+        }
+        if (/policy federation|governance policy|policy tab/.test(text)) {
+            return 'open_governance_policy';
+        }
+        if (/compliance audit|governance compliance|audit tab/.test(text)) {
+            return 'open_governance_compliance';
+        }
+        if (/policy ingestion|ingest policy|extract governance rules/.test(text)) {
+            return 'open_policy_ingestion';
+        }
+        if (/developer view|debug view/.test(text)) {
+            return 'switch_view_developer';
+        }
+        if (/executive view|kpi view/.test(text)) {
+            return 'switch_view_executive';
+        }
+        if (/analyst view|analysis view/.test(text)) {
+            return 'switch_view_analyst';
+        }
+        return null;
+    };
+
+    const actionSuccessMessage = (action: ChatUiAction): string => {
+        switch (action) {
+            case 'open_data_onboarding':
+                return 'Opened the data onboarding wizard.';
+            case 'open_file_analyzer':
+                return 'Opened the file analysis dialog.';
+            case 'open_history':
+                return 'Opened analysis history.';
+            case 'open_simulation_compare_latest':
+                return 'Opened Simulation Arena with the two latest analyses.';
+            case 'switch_view_analyst':
+                return 'Switched to Analyst view.';
+            case 'switch_view_developer':
+                return 'Switched to Developer view.';
+            case 'switch_view_executive':
+                return 'Switched to Executive view.';
+            case 'switch_view_governance':
+                return 'Switched to Governance view.';
+            case 'open_policy_ingestion':
+                return 'Switched to Governance view. Open the Policy Federation tab to ingest rules.';
+            case 'open_governance_boards':
+                return 'Opened Governance Boards tab.';
+            case 'open_governance_specmap':
+                return 'Opened Governance Spec Map tab.';
+            case 'open_governance_semantic':
+                return 'Opened Governance Semantic Graph tab.';
+            case 'open_governance_cost':
+                return 'Opened Governance Cost Intelligence tab.';
+            case 'open_governance_policy':
+                return 'Opened Governance Policy Federation tab.';
+            case 'open_governance_compliance':
+                return 'Opened Governance Compliance Audit tab.';
+            default:
+                return 'Action completed.';
+        }
+    };
+
+    const actionFailureMessage = (action: ChatUiAction): string => {
+        if (action === 'open_simulation_compare_latest') {
+            return 'Need at least two completed analyses to compare simulations.';
+        }
+        return 'Could not complete that UI action from the current state.';
     };
 
     const handleBenchmark = async (args: string) => {
@@ -596,6 +752,16 @@ ${nextFlowStep.question}${hintText}`;
                 setInputValue('');
                 return;
             }
+        }
+
+        // Natural-language UI actions
+        const uiAction = detectUiAction(trimmedInput);
+        if (uiAction && onUiAction) {
+            onSendMessage(trimmedInput, false);
+            const ok = onUiAction(uiAction);
+            onSendMessage(ok ? actionSuccessMessage(uiAction) : actionFailureMessage(uiAction), false);
+            setInputValue('');
+            return;
         }
 
         // Regular message - send to user first, then get AI response

@@ -217,7 +217,7 @@ class LLMProvider(str, Enum):
 class LLMConfig(BaseModel):
     """Configuration for LLM provider."""
     provider: LLMProvider = Field(default=LLMProvider.DEEPSEEK)
-    model: str = Field(default="deepseek-chat")
+    model: str = Field(default="deepseek-reasoner")
     temperature: float = Field(default=0.1, ge=0.0, le=2.0)
     max_tokens: int = Field(default=4096, ge=1)
     api_key: str | None = None
@@ -228,7 +228,7 @@ class LLMConfig(BaseModel):
 PROVIDER_CONFIGS = {
     LLMProvider.DEEPSEEK: {
         "base_url": "https://api.deepseek.com",
-        "default_model": "deepseek-chat",
+        "default_model": "deepseek-reasoner",
         "env_key": "DEEPSEEK_API_KEY",
         "client_type": "openai_compat",
     },

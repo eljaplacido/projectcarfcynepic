@@ -207,7 +207,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--examples-per-domain", type=int, default=500)
     parser.add_argument("--batch-size", type=int, default=50)
     parser.add_argument("--delay-seconds", type=float, default=0.5)
-    parser.add_argument("--model", default="deepseek-chat")
+    parser.add_argument("--model", default="deepseek-reasoner")
     parser.add_argument("--temperature", type=float, default=0.9)
     parser.add_argument("--base-url", default="https://api.deepseek.com")
     return parser.parse_args()

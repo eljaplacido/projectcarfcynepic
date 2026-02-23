@@ -330,6 +330,27 @@ Business Impact: Low - analyses flagged before delivery to users
 
 ---
 
+### Governance View
+
+Governance evaluation now includes a semantic topology surface (`/governance/semantic-graph`) that merges:
+
+- MAP semantic triples
+- policy ownership links
+- RESOLVE conflict edges
+
+Governance graph checks should answer:
+
+- **Why this topology?** (edge-level provenance and source references)
+- **How confident?** (aggregated edge confidence + conflict severity weighting)
+- **Based on what?** (board/session scope, triple count, policy/conflict coverage)
+
+Recommended metrics:
+
+- `graph_coverage_ratio`: fraction of active domains represented by nodes
+- `conflict_linkage_ratio`: fraction of unresolved conflicts represented by graph edges
+- `semantic_provenance_ratio`: fraction of semantic edges carrying provenance metadata
+- `explainability_completeness`: presence of `why_this`, `how_confident`, and `based_on`
+
 ## Integration Architecture
 
 ### Evaluation Service Integration Points
@@ -481,7 +502,7 @@ config = EvaluationConfig(
     enabled=True,
     relevancy_threshold=0.7,
     hallucination_threshold=0.3,
-    model_name="deepseek-chat",
+    model_name="deepseek-reasoner",
     api_base_url="https://api.deepseek.com",
     timeout_seconds=30,
     async_evaluation=True
@@ -508,14 +529,20 @@ config = EvaluationConfig(
 - [x] InsightsPanel frontend component
 - [x] AgentComparisonPanel frontend component
 - [x] Dark theme UI support
+- [x] Expanded benchmark hypothesis suite (H0-H39)
+- [x] Benchmark realism/reliability/feasibility scoring in report pipeline
+- [x] Governance semantic graph endpoint + cockpit view for policy/conflict topology
 - [ ] Neo4j quality score persistence
 - [ ] Kafka audit event extension
+- [ ] Nightly benchmark orchestration with realism gate enforcement in CI
+- [ ] Semantic graph quality regression tests (coverage/linkage/provenance thresholds)
 
 ### Long-Term (v1.0)
 - [ ] Real-time quality monitoring
 - [ ] Automated quality regression alerts
 - [ ] Human feedback loop integration
 - [ ] Domain-specific evaluation fine-tuning
+- [ ] External benchmark dataset packs (hybrid/real traces) with signed provenance
 
 ---
 
@@ -568,7 +595,7 @@ execution = tracker.start_agent_execution(
 tracker.complete_agent_execution(
     execution_id=execution.execution_id,
     output_summary="Effect: 0.15",
-    llm_usage=LLMUsage(model="deepseek-chat", total_tokens=1500),
+    llm_usage=LLMUsage(model="deepseek-reasoner", total_tokens=1500),
     quality_score=0.87
 )
 
@@ -627,19 +654,47 @@ The CARF Benchmark Suite (`benchmarks/`) provides **quantitative, reproducible v
 | ChimeraOracle (Speed) | Chimera vs DoWhy consistency | Fast predictions when available |
 | E2E Use Cases | All metrics combined | Full pipeline validation |
 
-### 9 Falsifiable Hypotheses
+### Benchmark Realism by View
 
-The benchmark suite tests 9 hypotheses comparing CARF vs raw LLM:
+Realism validation scores are now interpreted per platform view to improve actionability:
 
-- **H1**: ATE accuracy >= 50% lower MSE (validated by causal benchmark)
-- **H2**: Posterior coverage >= 90% (validated by bayesian benchmark)
-- **H3**: 100% violation detection (validated by guardian benchmark)
-- **H4**: 100% deterministic policy decisions (validated by guardian benchmark)
-- **H5**: EU AI Act compliance >= 90% (validated by transparency + guardian)
-- **H6**: Latency 2-5x slower but quality compensates (validated by performance benchmark)
-- **H7**: Hallucination reduction >= 40% (validated by DeepEval hallucination scores)
-- **H8**: ChimeraOracle >= 10x faster, < 20% accuracy loss (validated by chimera benchmark)
-- **H9**: Memory stable over 500+ queries (validated by performance benchmark)
+- **Analyst View**: prioritize realism dimensions tied to confounding strength, temporal slices, and missingness coverage before trusting causal recommendations.
+- **Developer View**: use reliability dimensions (seed reproducibility, stress levels, baseline comparators) to detect benchmark brittleness and regression risk.
+- **Executive View**: track feasibility and realism gate status alongside hypothesis pass rate to avoid over-trusting low-fidelity benchmark wins.
+- **Governance View**: audit production-proxy validation and adversarial coverage for policy, security, and compliance benchmark categories.
+
+### 39 Falsifiable Hypotheses + Realism Gate
+
+The benchmark suite now evaluates **H0-H39** across 9 categories:
+
+- Core (router, causal, bayesian, guardian, latency, hallucination, chimera, memory)
+- Governance (MAP/PRICE/RESOLVE, board lifecycle, policy roundtrip)
+- Causal deep validation (counterfactual and adversarial robustness)
+- Competitive delta (tau-bench, hallucination-at-scale, cross-LLM, CLEAR composite)
+- Security (OWASP LLM + red team)
+- Compliance (fairness, explainability, ALCOA+)
+- Sustainability (energy proportionality, Scope 3 attribution)
+- UX (SUS, task completion, WCAG 2.2)
+- Industry + performance/resilience (supply chain, healthcare, finance, load, chaos, soak)
+
+In addition to pass-rate grade, reports now include a **realism quality gate**:
+
+- `realism_score`: production likeness and complexity coverage
+- `reliability_score`: reproducibility + comparator rigor
+- `feasibility_score`: automation and runtime practicality
+- `evidence_score`: completeness of result-artifact provenance signals
+- `pass_rate_lower_95ci`: conservative statistical lower bound for benchmark pass rate
+- `absolute_readiness_index`: combined absolute score (realism, reliability, feasibility, and coverage)
+
+Operational rule:
+- Treat results as production-ready only when `realism_quality_gate = true` **and** `absolute_readiness_index >= 70`.
+
+Implementation note:
+- Benchmark runners should emit standardized evidence via `finalize_benchmark_report(...)` (`benchmarks/__init__.py`) so provenance signals are available without manual post-processing.
+- Use `python benchmarks/reports/check_result_evidence.py` for hard gating in CI/release checks.
+- Hypothesis metric extraction must treat `0.0` as valid observed evidence (not as missing data) to avoid false no-data evaluations.
+
+If realism gate fails, benchmark findings should be treated as provisional, even with high hypothesis pass rate.
 
 See `benchmarks/README.md` for running instructions and `docs/WALKTHROUGH.md` for detailed testing guide.
 

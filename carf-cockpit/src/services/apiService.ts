@@ -1139,6 +1139,7 @@ import type {
     GovernanceBoard,
     BoardTemplate,
     PolicyExtractionResult,
+    GovernanceSemanticGraph,
 } from '../types/carf';
 
 export async function getGovernanceDomains(): Promise<GovernanceDomain[]> {
@@ -1205,6 +1206,27 @@ export async function getGovernanceAudit(
 
 export async function getGovernanceHealth(): Promise<GovernanceHealth> {
     return withRetry(() => apiFetch('/governance/health'));
+}
+
+export async function getGovernanceSemanticGraph(
+    options?: {
+        boardId?: string;
+        sessionId?: string;
+        unresolvedOnly?: boolean;
+        tripleLimit?: number;
+    }
+): Promise<GovernanceSemanticGraph> {
+    const params = new URLSearchParams();
+    if (options?.boardId) params.append('board_id', options.boardId);
+    if (options?.sessionId) params.append('session_id', options.sessionId);
+    if (typeof options?.unresolvedOnly === 'boolean') {
+        params.append('unresolved_only', String(options.unresolvedOnly));
+    }
+    if (options?.tripleLimit != null) {
+        params.append('triple_limit', String(options.tripleLimit));
+    }
+    const qs = params.toString();
+    return withRetry(() => apiFetch(`/governance/semantic-graph${qs ? `?${qs}` : ''}`));
 }
 
 // ============================================================================
@@ -1381,6 +1403,181 @@ export async function seedGovernanceDemoData(
     return withRetry(() =>
         apiFetch(`/governance/seed/${encodeURIComponent(templateId)}`, {
             method: 'POST',
+        })
+    );
+}
+
+// ============================================================================
+// RAG API (Phase C — Retrieval-Augmented Generation)
+// ============================================================================
+
+export interface RAGStatus {
+    backend: string;
+    chunks: number;
+    domains_indexed: string[];
+    lightrag_available: boolean;
+}
+
+export interface RAGQueryResult {
+    query: string;
+    chunks: Array<{
+        content: string;
+        source: string;
+        domain_id: string | null;
+        similarity: number;
+    }>;
+    context_text: string;
+    total_chunks: number;
+}
+
+export async function getRAGStatus(): Promise<RAGStatus> {
+    return withRetry(() => apiFetch('/governance/rag/status'));
+}
+
+export async function ragIngestPolicies(): Promise<{ status: string; chunks: number }> {
+    return withRetry(() =>
+        apiFetch('/governance/rag/ingest-policies', { method: 'POST' })
+    );
+}
+
+export async function ragQuery(
+    query: string,
+    options?: { domain_id?: string; top_k?: number }
+): Promise<RAGQueryResult> {
+    return withRetry(() =>
+        apiFetch('/governance/rag/query', {
+            method: 'POST',
+            body: JSON.stringify({
+                query,
+                domain_id: options?.domain_id,
+                top_k: options?.top_k ?? 5,
+            }),
+        })
+    );
+}
+
+export async function ragIngestText(
+    text: string,
+    sourceName?: string,
+    targetDomain?: string
+): Promise<{ status: string; source: string; chunks: number }> {
+    return withRetry(() =>
+        apiFetch('/governance/rag/ingest-text', {
+            method: 'POST',
+            body: JSON.stringify({
+                text,
+                source_name: sourceName || 'manual_input',
+                target_domain: targetDomain,
+            }),
+        })
+    );
+}
+
+// ============================================================================
+// Document Upload API (Phase C — Multiformat Document Processing)
+// ============================================================================
+
+export interface DocumentUploadResult {
+    status: string;
+    filename: string;
+    file_type?: string;
+    text_length?: number;
+    chunks_ingested?: number;
+    error?: string;
+}
+
+export interface DocumentProcessorStatus {
+    supported_types: string[];
+    rag_anything_available: boolean;
+}
+
+export async function uploadGovernanceDocument(
+    file: File,
+    domainId?: string,
+    sourceName?: string
+): Promise<DocumentUploadResult> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const params = new URLSearchParams();
+    if (domainId) params.append('domain_id', domainId);
+    if (sourceName) params.append('source_name', sourceName);
+
+    const qs = params.toString();
+    const url = `${API_BASE_URL}/governance/documents/upload-file${qs ? `?${qs}` : ''}`;
+
+    const response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        let details: unknown;
+        try {
+            details = await response.json();
+        } catch {
+            details = await response.text();
+        }
+        throw new ApiError(response.status, `Upload Error: ${response.statusText}`, details);
+    }
+
+    return response.json();
+}
+
+export async function getDocumentProcessorStatus(): Promise<DocumentProcessorStatus> {
+    return withRetry(() => apiFetch('/governance/documents/status'));
+}
+
+// ============================================================================
+// Agent Memory API (Phase C — Persistent Cross-Session Memory)
+// ============================================================================
+
+export interface MemoryStatus {
+    backend: string;
+    entries: number;
+    patterns: Record<string, {
+        count: number;
+        avg_confidence: number;
+        methods: Record<string, number>;
+        verdicts: Record<string, number>;
+    }>;
+}
+
+export interface MemoryRecallResult {
+    entry: {
+        query: string;
+        domain: string;
+        domain_confidence: number;
+        response_summary: string;
+        causal_effect: number | null;
+        bayesian_posterior: number | null;
+        guardian_verdict: string | null;
+        quality_score: number | null;
+        session_id: string;
+        triggered_method: string;
+        timestamp: string;
+    };
+    similarity: number;
+}
+
+export async function getMemoryStatus(): Promise<MemoryStatus> {
+    return withRetry(() => apiFetch('/governance/memory/status'));
+}
+
+export async function compactMemory(): Promise<{ status: string; entries: number }> {
+    return withRetry(() =>
+        apiFetch('/governance/memory/compact', { method: 'POST' })
+    );
+}
+
+export async function recallMemory(
+    query: string,
+    topK = 5
+): Promise<MemoryRecallResult[]> {
+    return withRetry(() =>
+        apiFetch('/governance/memory/recall', {
+            method: 'POST',
+            body: JSON.stringify({ query, top_k: topK }),
         })
     );
 }

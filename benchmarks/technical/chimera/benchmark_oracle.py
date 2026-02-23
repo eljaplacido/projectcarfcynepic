@@ -186,6 +186,9 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
 
     logger.info(f"\n  Speed Ratio: {speed_ratio:.1f}x" if speed_ratio else "\n  Speed Ratio: N/A")
     logger.info(f"  Accuracy Loss: {accuracy_loss*100:.1f}%" if accuracy_loss is not None else "  Accuracy Loss: N/A")
+    from benchmarks import finalize_benchmark_report
+    report = finalize_benchmark_report(report, benchmark_id="chimera", source_reference="benchmark:chimera", benchmark_config={"script": __file__})
+
 
     if output_path:
         out = Path(output_path)

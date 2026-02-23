@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.core.deployment_profile import get_profile
 from src.utils.telemetry import init_telemetry
 
 # Load environment variables from project root (override system env vars)
@@ -49,8 +50,12 @@ async def lifespan(app: FastAPI):
         provider = os.getenv("LLM_PROVIDER", "deepseek")
         logger.info(f"LLM provider configured: {provider}")
 
+    # Resolve deployment profile
+    profile = get_profile()
+    logger.info(f"Deployment profile: {profile.mode.value}")
+
     # Initialise Neo4j and wire it into the causal engine
-    prod_mode = os.getenv("PROD_MODE", "").lower() in ("1", "true", "yes")
+    prod_mode = profile.require_neo4j
     neo4j_service = None
     try:
         from src.services.neo4j_service import get_neo4j_service, shutdown_neo4j
@@ -73,7 +78,7 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Neo4j unavailable (non-production): {exc}")
 
     # Initialise Governance subsystem (Phase 16 — optional)
-    if os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true":
+    if profile.governance_enabled:
         try:
             from src.services.federated_policy_service import get_federated_service
             from src.services.governance_graph_service import get_governance_graph_service
@@ -85,6 +90,14 @@ async def lifespan(app: FastAPI):
 
             gov_graph = get_governance_graph_service()
             await gov_graph.connect()
+            # Auto-ingest governance policies into RAG (non-blocking)
+            try:
+                from src.services.rag_service import get_rag_service
+                rag = get_rag_service()
+                count = rag.ingest_policies()
+                logger.info(f"RAG: Auto-ingested {count} policy chunks")
+            except Exception as rag_exc:
+                logger.debug(f"RAG policy auto-ingest skipped: {rag_exc}")
         except Exception as exc:
             logger.warning(f"Governance init failed (non-critical): {exc}")
     else:
@@ -93,7 +106,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown Governance graph cleanly
-    if os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true":
+    if profile.governance_enabled:
         try:
             from src.services.governance_graph_service import shutdown_governance_graph
             await shutdown_governance_graph()
@@ -118,15 +131,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS middleware for frontend integration
+# CORS middleware — profile-aware origins
+_profile = get_profile()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins in development
-    allow_credentials=False,  # Cannot use credentials with wildcard origin
+    allow_origins=_profile.cors_origins or ["*"],
+    allow_credentials=_profile.cors_allow_credentials,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+# Security middleware — profile-aware (no-op in research mode)
+from src.api.middleware import register_security_middleware  # noqa: E402
+register_security_middleware(app)
 
 # ── Register all routers ──────────────────────────────────────────────────
 
@@ -161,10 +179,30 @@ app.include_router(csl.router)
 app.include_router(query.router)
 
 # Governance router (Phase 16 — conditionally registered)
-if os.getenv("GOVERNANCE_ENABLED", "false").lower() == "true":
+if _profile.governance_enabled:
     from src.api.routers import governance  # noqa: E402
     app.include_router(governance.router)
     logger.info("Governance API router registered (/governance/*)")
+
+    # File upload endpoint (requires UploadFile at app level)
+    from fastapi import UploadFile, File as FastAPIFile
+
+    @app.post("/governance/documents/upload-file", tags=["governance"])
+    async def upload_governance_document(
+        file: UploadFile = FastAPIFile(...),
+        domain_id: str | None = None,
+        source_name: str | None = None,
+    ):
+        """Upload a document for RAG ingestion and optional policy extraction."""
+        from src.services.document_processor import get_document_processor
+        data = await file.read()
+        result = get_document_processor().process_and_ingest(
+            data,
+            filename=file.filename or "upload",
+            domain_id=domain_id,
+            source=source_name,
+        )
+        return result
 
 
 def main():

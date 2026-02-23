@@ -1,0 +1,130 @@
+{
+  "benchmark": "carf_adversarial_causal",
+  "hypothesis": "H24",
+  "timestamp": "2026-02-22T16:25:10.928708+00:00",
+  "n_scenarios": 10,
+  "n_successful": 10,
+  "n_within_50pct": 7,
+  "metrics": {
+    "robustness_rate": 0.7,
+    "robustness_target": 0.7,
+    "robustness_passed": true,
+    "mean_absolute_bias": 0.799129,
+    "mean_elapsed_seconds": 3.0842
+  },
+  "individual_results": [
+    {
+      "scenario": "confounding_injection",
+      "true_ate": 3.0,
+      "estimated_ate": 4.263632,
+      "bias": 1.263632,
+      "within_50pct": true,
+      "elapsed_seconds": 12.086544,
+      "error": null
+    },
+    {
+      "scenario": "selection_bias",
+      "true_ate": 2.0,
+      "estimated_ate": 1.945627,
+      "bias": -0.054373,
+      "within_50pct": true,
+      "elapsed_seconds": 2.172469,
+      "error": null
+    },
+    {
+      "scenario": "measurement_error",
+      "true_ate": 4.0,
+      "estimated_ate": 2.717036,
+      "bias": -1.282964,
+      "within_50pct": true,
+      "elapsed_seconds": 1.996566,
+      "error": null
+    },
+    {
+      "scenario": "collider_bias",
+      "true_ate": 2.5,
+      "estimated_ate": 0.989537,
+      "bias": -1.510463,
+      "within_50pct": false,
+      "elapsed_seconds": 2.106573,
+      "error": null
+    },
+    {
+      "scenario": "reverse_causation",
+      "true_ate": 0.0,
+      "estimated_ate": 1.558333,
+      "bias": 1.558333,
+      "within_50pct": false,
+      "elapsed_seconds": 2.071564,
+      "error": null
+    },
+    {
+      "scenario": "simpsons_paradox",
+      "true_ate": 1.5,
+      "estimated_ate": 1.49069,
+      "bias": -0.00931,
+      "within_50pct": true,
+      "elapsed_seconds": 2.048633,
+      "error": null
+    },
+    {
+      "scenario": "mediator_confounding",
+      "true_ate": 3.0,
+      "estimated_ate": 0.776338,
+      "bias": -2.223662,
+      "within_50pct": false,
+      "elapsed_seconds": 2.041348,
+      "error": null
+    },
+    {
+      "scenario": "time_varying_confounding",
+      "true_ate": 2.0,
+      "estimated_ate": 1.989632,
+      "bias": -0.010368,
+      "within_50pct": true,
+      "elapsed_seconds": 2.012188,
+      "error": null
+    },
+    {
+      "scenario": "interference_spillover",
+      "true_ate": 2.5,
+      "estimated_ate": 2.469906,
+      "bias": -0.030094,
+      "within_50pct": true,
+      "elapsed_seconds": 2.211934,
+      "error": null
+    },
+    {
+      "scenario": "informative_censoring",
+      "true_ate": -3.0,
+      "estimated_ate": -2.951904,
+      "bias": 0.048096,
+      "within_50pct": true,
+      "elapsed_seconds": 2.094386,
+      "error": null
+    }
+  ],
+  "generated_at": "2026-02-22T16:25:11.005929+00:00",
+  "benchmark_id": "adversarial_causal",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\causal\\benchmark_adversarial_causal.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:adversarial_causal",
+  "provenance": {
+    "source_reference": "benchmark:adversarial_causal",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

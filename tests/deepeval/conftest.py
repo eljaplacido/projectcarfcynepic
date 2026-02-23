@@ -25,7 +25,7 @@ class DeepSeekEvaluator(DeepEvalBaseLLM):
     """
 
     def __init__(self):
-        self.model_name = "deepseek-chat"
+        self.model_name = "deepseek-reasoner"
         self._client = None
 
     def load_model(self) -> Any:

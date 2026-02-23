@@ -1,7 +1,7 @@
 {
   "benchmark": "carf_causal_inference",
   "version": "2.0",
-  "timestamp": "2026-02-20T11:54:38.154543+00:00",
+  "timestamp": "2026-02-22T17:28:01.762949+00:00",
   "n_test_cases": 9,
   "n_successful": 9,
   "aggregate_metrics": {
@@ -57,7 +57,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 9.790696,
+      "elapsed_seconds": 17.456357,
       "error": null
     },
     {
@@ -78,7 +78,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.890677,
+      "elapsed_seconds": 2.068485,
       "error": null
     },
     {
@@ -99,7 +99,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.873611,
+      "elapsed_seconds": 2.216287,
       "error": null
     },
     {
@@ -120,7 +120,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.889318,
+      "elapsed_seconds": 2.082962,
       "error": null
     },
     {
@@ -141,7 +141,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 1.885053,
+      "elapsed_seconds": 2.107506,
       "error": null
     },
     {
@@ -162,7 +162,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 2.069329,
+      "elapsed_seconds": 2.137412,
       "error": null
     },
     {
@@ -183,7 +183,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 2.210294,
+      "elapsed_seconds": 2.085516,
       "error": null
     },
     {
@@ -204,7 +204,7 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 2.040651,
+      "elapsed_seconds": 2.080675,
       "error": null
     },
     {
@@ -225,8 +225,31 @@
         "random_common_cause": true
       },
       "refutation_pass_rate": 1.0,
-      "elapsed_seconds": 2.192545,
+      "elapsed_seconds": 2.063847,
       "error": null
     }
-  ]
+  ],
+  "generated_at": "2026-02-22T17:28:01.865845+00:00",
+  "benchmark_id": "causal",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\causal\\benchmark_causal.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:causal",
+  "provenance": {
+    "source_reference": "benchmark:causal",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
 }

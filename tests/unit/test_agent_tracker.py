@@ -104,7 +104,7 @@ class TestAgentTrackerService:
         )
 
         llm_usage = LLMUsage(
-            model="deepseek-chat",
+            model="deepseek-reasoner",
             provider="deepseek",
             prompt_tokens=500,
             completion_tokens=200,
@@ -149,7 +149,7 @@ class TestAgentTrackerService:
         tracker.complete_agent_execution(
             execution_id=exec1.execution_id,
             llm_usage=LLMUsage(
-                model="deepseek-chat",
+                model="deepseek-reasoner",
                 provider="deepseek",
                 total_tokens=100,
                 cost_usd=0.0001,
@@ -165,7 +165,7 @@ class TestAgentTrackerService:
         tracker.complete_agent_execution(
             execution_id=exec2.execution_id,
             llm_usage=LLMUsage(
-                model="deepseek-chat",
+                model="deepseek-reasoner",
                 provider="deepseek",
                 total_tokens=500,
                 cost_usd=0.0005,
@@ -193,7 +193,7 @@ class TestAgentTrackerService:
             tracker.complete_agent_execution(
                 execution_id=exec_i.execution_id,
                 llm_usage=LLMUsage(
-                    model="deepseek-chat",
+                    model="deepseek-reasoner",
                     provider="deepseek",
                     total_tokens=100,
                     cost_usd=0.0001,
@@ -281,7 +281,7 @@ class TestAgentTrackerService:
             tracker.complete_agent_execution(
                 execution_id=execution.execution_id,
                 llm_usage=LLMUsage(
-                    model="deepseek-chat",
+                    model="deepseek-reasoner",
                     provider="deepseek",
                     total_tokens=100,
                 ),

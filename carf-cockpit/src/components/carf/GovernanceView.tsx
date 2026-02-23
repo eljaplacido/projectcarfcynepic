@@ -1,35 +1,46 @@
 /**
  * GovernanceView — Main container for Orchestration Governance (Phase 16+17).
  *
- * 5-tab layout: Boards | Spec Map | Cost Intelligence | Policy Federation | Compliance Audit
+ * 6-tab layout: Boards | Spec Map | Semantic Graph | Cost Intelligence | Policy Federation | Compliance Audit
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { QueryResponse } from '../../types/carf';
 import GovernanceBoardTab from './GovernanceBoardTab';
 import SpecMapTab from './SpecMapTab';
 import CostIntelligenceTab from './CostIntelligenceTab';
 import PolicyFederationTab from './PolicyFederationTab';
 import ComplianceAuditTab from './ComplianceAuditTab';
+import GovernanceSemanticGraphTab from './GovernanceSemanticGraphTab';
+import RiskTopographyTab from './RiskTopographyTab';
 
-type GovernanceTab = 'boards' | 'specmap' | 'cost' | 'policy' | 'compliance';
+export type GovernanceTab = 'boards' | 'specmap' | 'semantic' | 'risk' | 'cost' | 'policy' | 'compliance';
 
 interface GovernanceViewProps {
     lastResult: QueryResponse | null;
     sessionId?: string;
+    activeTabOverride?: GovernanceTab | null;
 }
 
 const TABS: { id: GovernanceTab; label: string; icon: string }[] = [
     { id: 'boards', label: 'Boards', icon: 'B' },
     { id: 'specmap', label: 'Spec Map', icon: 'M' },
+    { id: 'semantic', label: 'Semantic Graph', icon: 'S' },
+    { id: 'risk', label: 'Risk Topography', icon: 'R' },
     { id: 'cost', label: 'Cost Intelligence', icon: '$' },
     { id: 'policy', label: 'Policy Federation', icon: 'P' },
     { id: 'compliance', label: 'Compliance Audit', icon: 'C' },
 ];
 
-const GovernanceView: React.FC<GovernanceViewProps> = ({ lastResult, sessionId }) => {
+const GovernanceView: React.FC<GovernanceViewProps> = ({ lastResult, sessionId, activeTabOverride = null }) => {
     const [activeTab, setActiveTab] = useState<GovernanceTab>('boards');
     const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (activeTabOverride) {
+            setActiveTab(activeTabOverride);
+        }
+    }, [activeTabOverride]);
 
     return (
         <div className="governance-view" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -73,6 +84,15 @@ const GovernanceView: React.FC<GovernanceViewProps> = ({ lastResult, sessionId }
                 )}
                 {activeTab === 'specmap' && (
                     <SpecMapTab lastResult={lastResult} selectedBoardId={selectedBoardId} />
+                )}
+                {activeTab === 'semantic' && (
+                    <GovernanceSemanticGraphTab
+                        selectedBoardId={selectedBoardId}
+                        sessionId={sessionId || lastResult?.sessionId}
+                    />
+                )}
+                {activeTab === 'risk' && (
+                    <RiskTopographyTab />
                 )}
                 {activeTab === 'cost' && (
                     <CostIntelligenceTab

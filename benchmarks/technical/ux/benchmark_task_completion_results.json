@@ -1,0 +1,309 @@
+{
+  "benchmark": "carf_task_completion",
+  "timestamp": "2026-02-22T16:31:13.760163+00:00",
+  "total_elapsed_s": 104.81,
+  "metrics": {
+    "success_rate": 0.8,
+    "avg_time_to_insight": 6.168,
+    "total_tasks": 20,
+    "successful_tasks": 16,
+    "failed_tasks": 4,
+    "threshold_success_rate": 0.9,
+    "meets_threshold": false
+  },
+  "category_stats": {
+    "Clear": {
+      "total": 5,
+      "successful": 5,
+      "success_rate": 1.0,
+      "avg_time_s": 0.013,
+      "max_time_s": 0.048
+    },
+    "Complicated": {
+      "total": 5,
+      "successful": 1,
+      "success_rate": 0.2,
+      "avg_time_s": 0.004,
+      "max_time_s": 0.004
+    },
+    "Complex": {
+      "total": 5,
+      "successful": 5,
+      "success_rate": 1.0,
+      "avg_time_s": 19.683,
+      "max_time_s": 24.986
+    },
+    "Governance": {
+      "total": 5,
+      "successful": 5,
+      "success_rate": 1.0,
+      "avg_time_s": 0.041,
+      "max_time_s": 0.189
+    }
+  },
+  "individual_results": [
+    {
+      "task_name": "clear_exchange_rate",
+      "category": "Clear",
+      "description": "Look up the current USD to EUR exchange rate",
+      "success": true,
+      "time_to_complete_s": 0.048,
+      "max_time_seconds": 10.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 3,
+      "error": null
+    },
+    {
+      "task_name": "clear_unit_conversion",
+      "category": "Clear",
+      "description": "Convert kilowatt-hours to megawatt-hours",
+      "success": true,
+      "time_to_complete_s": 0.004,
+      "max_time_seconds": 10.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 3,
+      "error": null
+    },
+    {
+      "task_name": "clear_vat_rate",
+      "category": "Clear",
+      "description": "Look up the standard VAT rate in Germany",
+      "success": true,
+      "time_to_complete_s": 0.004,
+      "max_time_seconds": 10.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 3,
+      "error": null
+    },
+    {
+      "task_name": "clear_metric_conversion",
+      "category": "Clear",
+      "description": "Convert 100 miles to kilometers",
+      "success": true,
+      "time_to_complete_s": 0.004,
+      "max_time_seconds": 10.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 3,
+      "error": null
+    },
+    {
+      "task_name": "clear_boiling_point",
+      "category": "Clear",
+      "description": "Look up the boiling point of water at sea level",
+      "success": true,
+      "time_to_complete_s": 0.004,
+      "max_time_seconds": 10.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 3,
+      "error": null
+    },
+    {
+      "task_name": "complicated_marketing_spend",
+      "category": "Complicated",
+      "description": "Analyze causal effect of marketing spend on revenue",
+      "success": false,
+      "time_to_complete_s": 0.015,
+      "max_time_seconds": 30.0,
+      "within_time_limit": true,
+      "steps_taken": 0,
+      "expected_steps": 5,
+      "error": "ValueError: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+    },
+    {
+      "task_name": "complicated_training_productivity",
+      "category": "Complicated",
+      "description": "Estimate causal effect of employee training on productivity",
+      "success": false,
+      "time_to_complete_s": 0.007,
+      "max_time_seconds": 30.0,
+      "within_time_limit": true,
+      "steps_taken": 0,
+      "expected_steps": 5,
+      "error": "ValueError: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+    },
+    {
+      "task_name": "complicated_supplier_diversification",
+      "category": "Complicated",
+      "description": "Analyze if supplier diversification reduces disruption",
+      "success": true,
+      "time_to_complete_s": 0.004,
+      "max_time_seconds": 30.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 5,
+      "error": null
+    },
+    {
+      "task_name": "complicated_pricing_impact",
+      "category": "Complicated",
+      "description": "Analyze the causal impact of pricing changes on customer retention",
+      "success": false,
+      "time_to_complete_s": 0.008,
+      "max_time_seconds": 30.0,
+      "within_time_limit": true,
+      "steps_taken": 0,
+      "expected_steps": 5,
+      "error": "ValueError: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+    },
+    {
+      "task_name": "complicated_remote_work_performance",
+      "category": "Complicated",
+      "description": "Analyze how remote work policy affects team performance",
+      "success": false,
+      "time_to_complete_s": 0.006,
+      "max_time_seconds": 30.0,
+      "within_time_limit": true,
+      "steps_taken": 0,
+      "expected_steps": 5,
+      "error": "ValueError: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+    },
+    {
+      "task_name": "complex_market_entry",
+      "category": "Complex",
+      "description": "Bayesian probing for market entry under regulatory uncertainty",
+      "success": true,
+      "time_to_complete_s": 19.826,
+      "max_time_seconds": 45.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 6,
+      "error": null
+    },
+    {
+      "task_name": "complex_climate_adaptation",
+      "category": "Complex",
+      "description": "Bayesian probing for climate adaptation strategy in agriculture",
+      "success": true,
+      "time_to_complete_s": 16.531,
+      "max_time_seconds": 45.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 6,
+      "error": null
+    },
+    {
+      "task_name": "complex_rnd_budget",
+      "category": "Complex",
+      "description": "Bayesian probing for R&D budget allocation under uncertainty",
+      "success": true,
+      "time_to_complete_s": 18.417,
+      "max_time_seconds": 45.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 6,
+      "error": null
+    },
+    {
+      "task_name": "complex_cybersecurity_threat",
+      "category": "Complex",
+      "description": "Bayesian probing for emerging cybersecurity threat assessment",
+      "success": true,
+      "time_to_complete_s": 18.654,
+      "max_time_seconds": 45.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 6,
+      "error": null
+    },
+    {
+      "task_name": "complex_demand_forecast",
+      "category": "Complex",
+      "description": "Bayesian probing for demand forecasting under supply chain disruption",
+      "success": true,
+      "time_to_complete_s": 24.986,
+      "max_time_seconds": 45.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 6,
+      "error": null
+    },
+    {
+      "task_name": "governance_policy_review",
+      "category": "Governance",
+      "description": "Review active governance policies for a specific domain",
+      "success": true,
+      "time_to_complete_s": 0.005,
+      "max_time_seconds": 15.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 4,
+      "error": null
+    },
+    {
+      "task_name": "governance_compliance_check",
+      "category": "Governance",
+      "description": "Run EU AI Act compliance check",
+      "success": true,
+      "time_to_complete_s": 0.004,
+      "max_time_seconds": 15.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 4,
+      "error": null
+    },
+    {
+      "task_name": "governance_conflict_detection",
+      "category": "Governance",
+      "description": "Detect conflicts between procurement and sustainability policies",
+      "success": true,
+      "time_to_complete_s": 0.189,
+      "max_time_seconds": 15.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 4,
+      "error": null
+    },
+    {
+      "task_name": "governance_audit_trail",
+      "category": "Governance",
+      "description": "Query the audit trail for a recent governance decision",
+      "success": true,
+      "time_to_complete_s": 0.004,
+      "max_time_seconds": 15.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 4,
+      "error": null
+    },
+    {
+      "task_name": "governance_cost_analysis",
+      "category": "Governance",
+      "description": "Analyze the cost breakdown for recent LLM-powered queries",
+      "success": true,
+      "time_to_complete_s": 0.005,
+      "max_time_seconds": 15.0,
+      "within_time_limit": true,
+      "steps_taken": 3,
+      "expected_steps": 4,
+      "error": null
+    }
+  ],
+  "generated_at": "2026-02-22T16:31:13.800894+00:00",
+  "benchmark_id": "task_completion",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\ux\\benchmark_task_completion.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:task_completion",
+  "provenance": {
+    "source_reference": "benchmark:task_completion",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

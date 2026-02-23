@@ -1,11 +1,11 @@
 {
   "benchmark": "carf_governance",
-  "timestamp": "2026-02-22T07:38:37.216171+00:00",
+  "timestamp": "2026-02-22T16:34:24.160389+00:00",
   "map": {
     "pillar": "MAP",
-    "total_cases": 8,
-    "avg_domain_recall": 0.8571,
-    "cross_domain_link_accuracy": 1.0,
+    "total_cases": 50,
+    "avg_domain_recall": 0.2992,
+    "cross_domain_link_accuracy": 0.46,
     "avg_latency_ms": 0.04,
     "individual_results": [
       {
@@ -22,7 +22,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.1
+        "latency_ms": 0.65
       },
       {
         "name": "finance_security_link",
@@ -38,7 +38,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.04
+        "latency_ms": 0.05
       },
       {
         "name": "legal_procurement_link",
@@ -54,7 +54,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.05
       },
       {
         "name": "sustainability_finance_link",
@@ -70,7 +70,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.04
+        "latency_ms": 0.05
       },
       {
         "name": "security_legal_link",
@@ -86,7 +86,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.04
       },
       {
         "name": "triple_domain_chain",
@@ -105,7 +105,7 @@
         "triple_count": 6,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.08
+        "latency_ms": 0.09
       },
       {
         "name": "no_cross_domain",
@@ -115,7 +115,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.02
+        "latency_ms": 0.03
       },
       {
         "name": "finance_only",
@@ -127,17 +127,582 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "hr_finance_link",
+        "expected_domains": [
+          "finance",
+          "hr"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "it_security_link",
+        "expected_domains": [
+          "it",
+          "security"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
         "latency_ms": 0.02
+      },
+      {
+        "name": "operations_sustainability_link",
+        "expected_domains": [
+          "operations",
+          "sustainability"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "marketing_legal_link",
+        "expected_domains": [
+          "legal",
+          "marketing"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "rnd_procurement_link",
+        "expected_domains": [
+          "procurement",
+          "rnd"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "hr_legal_link",
+        "expected_domains": [
+          "hr",
+          "legal"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "finance_procurement_link",
+        "expected_domains": [
+          "finance",
+          "procurement"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "it_operations_link",
+        "expected_domains": [
+          "it",
+          "operations"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "security_sustainability_link",
+        "expected_domains": [
+          "security",
+          "sustainability"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "marketing_finance_link",
+        "expected_domains": [
+          "finance",
+          "marketing"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "rnd_legal_link",
+        "expected_domains": [
+          "legal",
+          "rnd"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "hr_security_link",
+        "expected_domains": [
+          "hr",
+          "security"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "operations_finance_link",
+        "expected_domains": [
+          "finance",
+          "operations"
+        ],
+        "found_domains": [
+          "finance",
+          "legal",
+          "procurement"
+        ],
+        "domain_recall": 0.5,
+        "triple_count": 3,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.05
+      },
+      {
+        "name": "procurement_legal_link",
+        "expected_domains": [
+          "legal",
+          "procurement"
+        ],
+        "found_domains": [
+          "legal",
+          "procurement"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "it_finance_link",
+        "expected_domains": [
+          "finance",
+          "it"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "sustainability_legal_link",
+        "expected_domains": [
+          "legal",
+          "sustainability"
+        ],
+        "found_domains": [
+          "legal",
+          "sustainability"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "hr_operations_link",
+        "expected_domains": [
+          "hr",
+          "operations"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "rnd_finance_link",
+        "expected_domains": [
+          "finance",
+          "rnd"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "marketing_operations_link",
+        "expected_domains": [
+          "marketing",
+          "operations"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "rnd_sustainability_link",
+        "expected_domains": [
+          "rnd",
+          "sustainability"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "triple_hr_finance_legal",
+        "expected_domains": [
+          "finance",
+          "hr",
+          "legal"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "triple_it_security_legal",
+        "expected_domains": [
+          "it",
+          "legal",
+          "security"
+        ],
+        "found_domains": [
+          "legal",
+          "security"
+        ],
+        "domain_recall": 0.6667,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "triple_operations_sustainability_finance",
+        "expected_domains": [
+          "finance",
+          "operations",
+          "sustainability"
+        ],
+        "found_domains": [
+          "finance",
+          "sustainability"
+        ],
+        "domain_recall": 0.6667,
+        "triple_count": 1,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "triple_marketing_legal_finance",
+        "expected_domains": [
+          "finance",
+          "legal",
+          "marketing"
+        ],
+        "found_domains": [
+          "finance",
+          "legal",
+          "procurement"
+        ],
+        "domain_recall": 0.6667,
+        "triple_count": 3,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.04
+      },
+      {
+        "name": "triple_rnd_procurement_finance",
+        "expected_domains": [
+          "finance",
+          "procurement",
+          "rnd"
+        ],
+        "found_domains": [
+          "finance",
+          "procurement"
+        ],
+        "domain_recall": 0.6667,
+        "triple_count": 1,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "triple_hr_it_security",
+        "expected_domains": [
+          "hr",
+          "it",
+          "security"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "triple_procurement_sustainability_legal",
+        "expected_domains": [
+          "legal",
+          "procurement",
+          "sustainability"
+        ],
+        "found_domains": [
+          "legal",
+          "procurement",
+          "sustainability"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.05
+      },
+      {
+        "name": "triple_operations_it_finance",
+        "expected_domains": [
+          "finance",
+          "it",
+          "operations"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "triple_rnd_security_legal",
+        "expected_domains": [
+          "legal",
+          "rnd",
+          "security"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "triple_hr_sustainability_operations",
+        "expected_domains": [
+          "hr",
+          "operations",
+          "sustainability"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "hr_only",
+        "expected_domains": [
+          "hr"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "legal_only",
+        "expected_domains": [
+          "legal"
+        ],
+        "found_domains": [
+          "legal",
+          "procurement",
+          "security"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": false,
+        "link_correct": false,
+        "latency_ms": 0.06
+      },
+      {
+        "name": "security_only",
+        "expected_domains": [
+          "security"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "it_only",
+        "expected_domains": [
+          "it"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "procurement_only",
+        "expected_domains": [
+          "procurement"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "sustainability_only",
+        "expected_domains": [
+          "sustainability"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "operations_only",
+        "expected_domains": [
+          "operations"
+        ],
+        "found_domains": [],
+        "domain_recall": 0.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.01
+      },
+      {
+        "name": "no_domain_weather",
+        "expected_domains": [],
+        "found_domains": [],
+        "domain_recall": 1.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.01
+      },
+      {
+        "name": "no_domain_personal",
+        "expected_domains": [],
+        "found_domains": [],
+        "domain_recall": 1.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.02
+      },
+      {
+        "name": "no_domain_trivia",
+        "expected_domains": [],
+        "found_domains": [],
+        "domain_recall": 1.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.01
+      },
+      {
+        "name": "no_domain_math",
+        "expected_domains": [],
+        "found_domains": [],
+        "domain_recall": 1.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.01
+      },
+      {
+        "name": "no_domain_greeting",
+        "expected_domains": [],
+        "found_domains": [],
+        "domain_recall": 1.0,
+        "triple_count": 0,
+        "link_detected": false,
+        "link_correct": true,
+        "latency_ms": 0.01
       }
     ]
   },
   "price": {
     "pillar": "PRICE",
-    "total_cases": 7,
+    "total_cases": 15,
     "accuracy": 1.0,
-    "max_absolute_error": 0.0,
+    "max_absolute_error": 2.8e-05,
     "breakdown_valid": true,
-    "breakdown_latency_ms": 0.05,
+    "breakdown_latency_ms": 0.33,
     "aggregation_valid": true,
     "individual_results": [
       {
@@ -147,7 +712,7 @@
         "actual_cost": 0.42,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0041
+        "latency_ms": 0.0052
       },
       {
         "name": "openai_1M_tokens",
@@ -156,7 +721,7 @@
         "actual_cost": 9.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0026
+        "latency_ms": 0.0028
       },
       {
         "name": "anthropic_1M_tokens",
@@ -165,7 +730,7 @@
         "actual_cost": 18.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0013
+        "latency_ms": 0.0014
       },
       {
         "name": "ollama_free",
@@ -174,7 +739,7 @@
         "actual_cost": 0.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0008
+        "latency_ms": 0.0009
       },
       {
         "name": "zero_tokens",
@@ -183,7 +748,7 @@
         "actual_cost": 0.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.001
+        "latency_ms": 0.0011
       },
       {
         "name": "deepseek_small_query",
@@ -201,16 +766,88 @@
         "actual_cost": 0.14,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.001
+        "latency_ms": 0.0011
+      },
+      {
+        "name": "deepseek_large_input_small_output",
+        "provider": "deepseek",
+        "expected_cost": 0.714,
+        "actual_cost": 0.714,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0009
+      },
+      {
+        "name": "openai_small_input_large_output",
+        "provider": "openai",
+        "expected_cost": 12.3,
+        "actual_cost": 12.3,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0009
+      },
+      {
+        "name": "anthropic_small_query",
+        "provider": "anthropic",
+        "expected_cost": 0.0105,
+        "actual_cost": 0.0105,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0008
+      },
+      {
+        "name": "openai_output_only",
+        "provider": "openai",
+        "expected_cost": 6.0,
+        "actual_cost": 6.0,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0009
+      },
+      {
+        "name": "very_large_token_count_10M",
+        "provider": "deepseek",
+        "expected_cost": 4.2,
+        "actual_cost": 4.2,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0009
+      },
+      {
+        "name": "fractional_tokens",
+        "provider": "anthropic",
+        "expected_cost": 1.8e-05,
+        "actual_cost": 1.8e-05,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0009
+      },
+      {
+        "name": "negative_tokens_graceful",
+        "provider": "deepseek",
+        "expected_cost": 0.0,
+        "actual_cost": -2.8e-05,
+        "absolute_error": 2.8e-05,
+        "within_tolerance": true,
+        "latency_ms": 0.0009
+      },
+      {
+        "name": "mixed_ratio_anthropic",
+        "provider": "anthropic",
+        "expected_cost": 5.4,
+        "actual_cost": 5.4,
+        "absolute_error": 0.0,
+        "within_tolerance": true,
+        "latency_ms": 0.0008
       }
     ]
   },
   "resolve": {
     "pillar": "RESOLVE",
-    "total_cases": 3,
-    "conflict_detection_rate": 1.0,
+    "total_cases": 30,
+    "conflict_detection_rate": 0.7647,
     "false_positive_rate": 0.0,
-    "overall_accuracy": 1.0,
+    "overall_accuracy": 0.8667,
     "individual_results": [
       {
         "name": "spend_vs_budget_conflict",
@@ -218,7 +855,7 @@
         "conflict_detected": true,
         "conflicts_found": 1,
         "correct": true,
-        "latency_ms": 0.05
+        "latency_ms": 0.06
       },
       {
         "name": "priority_cap_conflict",
@@ -234,6 +871,222 @@
         "conflict_detected": false,
         "conflicts_found": 0,
         "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "temporal_conflict_deadlines",
+        "should_conflict": true,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": false,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "resource_allocation_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "priority_conflict_sustainability_vs_cost",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "scope_conflict_data_retention",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "authority_conflict_approval",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "threshold_conflict_risk",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "access_control_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "vendor_exclusivity_conflict",
+        "should_conflict": true,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": false,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "overtime_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "cloud_vs_onprem_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "training_budget_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.06
+      },
+      {
+        "name": "release_cadence_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "marketing_spend_conflict",
+        "should_conflict": true,
+        "conflict_detected": true,
+        "conflicts_found": 1,
+        "correct": true,
+        "latency_ms": 0.03
+      },
+      {
+        "name": "disjoint_hr_and_it",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "disjoint_sustainability_and_marketing",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "complementary_security_policies",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "complementary_finance_policies",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "same_domain_non_contradicting_hr",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "disjoint_operations_and_legal",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "complementary_procurement_policies",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "disjoint_rnd_and_operations",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "complementary_it_policies",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "disjoint_marketing_and_rnd",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "edge_empty_rules",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "edge_same_policy_twice",
+        "should_conflict": false,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": true,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "edge_overlapping_namespaces",
+        "should_conflict": true,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": false,
+        "latency_ms": 0.0
+      },
+      {
+        "name": "edge_circular_reference",
+        "should_conflict": true,
+        "conflict_detected": false,
+        "conflicts_found": 0,
+        "correct": false,
         "latency_ms": 0.0
       }
     ]
@@ -255,7 +1108,7 @@
         "articles_well_formed": true,
         "has_gaps": true,
         "has_recommendations": true,
-        "latency_ms": 0.04
+        "latency_ms": 0.05
       },
       {
         "framework": "csrd",
@@ -268,7 +1121,7 @@
         "articles_well_formed": true,
         "has_gaps": true,
         "has_recommendations": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.06
       },
       {
         "framework": "gdpr",
@@ -281,7 +1134,7 @@
         "articles_well_formed": true,
         "has_gaps": true,
         "has_recommendations": true,
-        "latency_ms": 0.02
+        "latency_ms": 0.03
       },
       {
         "framework": "iso_27001",
@@ -300,48 +1153,71 @@
   },
   "latency": {
     "iterations": 20,
-    "avg_ms": 0.32,
-    "p50_ms": 0.31,
-    "p95_ms": 0.36,
-    "p99_ms": 0.36,
-    "min_ms": 0.3,
-    "max_ms": 0.36,
+    "avg_ms": 0.37,
+    "p50_ms": 0.35,
+    "p95_ms": 0.48,
+    "p99_ms": 0.48,
+    "min_ms": 0.32,
+    "max_ms": 0.51,
     "p95_under_50ms": true,
     "all_latencies_ms": [
-      0.3,
-      0.3,
-      0.3,
-      0.3,
-      0.3,
-      0.3,
-      0.31,
-      0.31,
-      0.31,
-      0.31,
-      0.31,
-      0.31,
       0.32,
       0.33,
       0.33,
       0.33,
+      0.33,
+      0.33,
+      0.34,
+      0.34,
+      0.34,
       0.34,
       0.35,
+      0.35,
       0.36,
-      0.36
+      0.37,
+      0.4,
+      0.42,
+      0.42,
+      0.46,
+      0.48,
+      0.51
     ]
   },
   "feature_flag": {
     "iterations": 100,
-    "disabled_avg_us": 0.57,
-    "enabled_avg_us": 0.56,
-    "overhead_us": -0.01,
+    "disabled_avg_us": 0.64,
+    "enabled_avg_us": 0.58,
+    "overhead_us": -0.07,
     "zero_overhead": true
   },
-  "map_accuracy": 1.0,
+  "map_accuracy": 0.46,
   "price_accuracy": 1.0,
-  "conflict_detection_rate": 1.0,
+  "conflict_detection_rate": 0.7647,
   "conflict_false_positive_rate": 0.0,
   "compliance_all_valid": true,
-  "governance_p95_ms": 0.36,
-  "governance_p95_under_50ms": true
+  "governance_p95_ms": 0.48,
+  "governance_p95_under_50ms": true,
+  "generated_at": "2026-02-22T16:34:24.242783+00:00",
+  "benchmark_id": "governance",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_governance.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:governance",
+  "provenance": {
+    "source_reference": "benchmark:governance",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
 }

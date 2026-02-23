@@ -76,6 +76,11 @@ LANGSMITH_API_KEY=              # Tracing
 CARF_TEST_MODE=1                # Offline LLM stubs for tests
 CARF_API_URL=http://localhost:8000  # React Cockpit -> API target
 CARF_DATA_DIR=./var             # Dataset registry storage (optional)
+CARF_PROFILE=research           # Deployment profile: research | staging | production
+CARF_API_KEY=                   # API key for staging/production auth
+CARF_CORS_ORIGINS=              # Comma-separated CORS origins (overrides profile default)
+CARF_MEMORY_DIR=data/memory     # Persistent agent memory storage
+CARF_EMBEDDINGS_DIR=data/embeddings  # Numpy embedding cache
 ```
 
 Phase 3/4 (optional):
@@ -157,12 +162,20 @@ projectcarf/
       hooks/              # Custom React hooks
       types/              # TypeScript type definitions
   src/
-    core/               # Base classes, state schemas (NO external deps)
+    core/               # Base classes, state schemas, deployment profiles (NO external deps)
+      deployment_profile.py  # CARF_PROFILE env → ProfileConfig (research/staging/production)
     services/           # External integrations (Neo4j, HumanLayer, Kafka, OPA, SmartReflector, ExperienceBuffer)
+      embedding_engine.py    # Shared singleton for dense embeddings (all-MiniLM-L6-v2) + TF-IDF fallback
+      agent_memory.py        # Persistent vector memory (dense + TF-IDF, reflexion-weighted)
+      rag_service.py         # Graph-enhanced RAG with triple ingestion
+      experience_buffer.py   # Semantic memory (delegates to embedding engine)
     workflows/          # LangGraph definitions (the wiring)
+      graph.py              # StateGraph: router → rag_context → [domain] → guardian → governance
+      router.py             # Cynefin router with memory hint soft signals
     tools/              # Atomic tools (Pydantic schemas required)
     utils/              # Telemetry, resiliency decorators
     api/                # FastAPI routers + library.py (notebook API)
+      middleware.py         # Profile-aware security (auth, rate limiting, size limits)
     mcp/tools/          # MCP tool modules (reflector, memory, causal, etc.)
     dashboard/          # Streamlit Epistemic Cockpit (deprecated — use carf-cockpit/)
   config/               # YAML config and OPA policy
@@ -175,7 +188,7 @@ projectcarf/
     deepeval/           # LLM output quality evaluation (8 test files)
     eval/               # LLM-as-a-judge scenarios
     mocks/              # Mock HumanLayer, Neo4j, etc.
-  benchmarks/           # Technical & use-case benchmarks (H1-H11 hypotheses)
+  benchmarks/           # Technical & use-case benchmarks (H0-H39 + realism gate)
     technical/          # Router, causal, bayesian, guardian, performance, chimera, reflector, resiliency
     use_cases/          # End-to-end industry scenarios
     baselines/          # Raw LLM baseline comparison
@@ -237,12 +250,16 @@ The "3-Point Context" for notifications:
 
 ---
 
-## Current Phase: Phase 13 - Platform Evolution (Smart Reflector, Experience Buffer, MLOps)
+## Current Phase: Phase D Complete — Data Layer Coherence & Enterprise Readiness
 
-### Remaining Work (Phase 13+):
+### Data Flow (Phase D):
+```
+Entry → Memory Augmentation → Router (+ memory hints) → RAG Context →
+[Domain Agent] → Guardian → [Governance (+ RAG triple feed)] → END
+```
+
+### Remaining Work:
 - **ChimeraOracle LangGraph Integration** — Wire into StateGraph as fast-path node (currently standalone API only)
-- **LightRAG / Vector Store** — Semantic search and cross-session knowledge retrieval (not implemented)
-- **Guardian Currency-Aware Comparisons** — Financial thresholds need currency context
 - **CI/CD** — GitHub Actions workflow for automated testing
 
 ### CSL-Core Policy Engine
@@ -254,9 +271,11 @@ The "3-Point Context" for notifications:
 - **API:** Full CRUD via `/csl/*` endpoints, natural language rule creation supported
 
 ### Benchmark Suite
-- **Technical benchmarks**: Router classification (F1/ECE), Causal engine (ATE MSE), Bayesian (posterior coverage), Guardian (detection rate), Performance (P50/P95/P99), ChimeraOracle (speed ratio), Reflector self-correction, Resiliency/chaos
+- **Technical benchmarks**: Core + governance + causal deep validation + competitive + security + compliance + sustainability + UX + industry + performance/resilience
 - **Use case benchmarks**: End-to-end scenarios across 6 industries (supply chain, financial risk, sustainability, critical infra, healthcare, energy)
-- **11 falsifiable hypotheses** (H1-H11): CARF vs raw LLM comparison
+- **39 falsifiable hypotheses** (H0-H39): CARF vs raw LLM + governance + robustness comparisons
+- **Realism validation gate**: realism, reliability, feasibility, provenance, production-proxy ratios, and absolute readiness index
+- **Evidence gate CLI**: `python benchmarks/reports/check_result_evidence.py` for CI/release result-artifact quality checks
 - **Reports**: Unified comparison report generation
 - **Location**: `benchmarks/` directory with `benchmarks/README.md` for full instructions
 
@@ -272,7 +291,9 @@ The "3-Point Context" for notifications:
 - MCP server (18 cognitive tools for agentic AI integration)
 - Cynefin domain visualizations (Plotly.js: waterfall, radar, sankey, gauge)
 - Feedback API (closed-loop learning with domain overrides)
-- Benchmark suite (8 technical + use-case benchmarks, 11 falsifiable hypotheses)
+- Benchmark suite expansion (39 hypotheses across 9 categories + realism quality gate)
+- Governance semantic graph endpoint + cockpit semantic graph tab (`/governance/semantic-graph`)
+- Currency-aware financial enforcement in Guardian + CSL (`CARF_FX_RATES_JSON`)
 - TLA+ formal verification specs (StateGraph, EscalationProtocol)
 - Kafka audit trail (optional) + OPA Guardian (optional)
 - Docker Compose demo stack + seed scripts
@@ -282,6 +303,13 @@ The "3-Point Context" for notifications:
 - Library API (notebook-friendly wrappers for all CARF services)
 - Router Retraining pipeline (feedback extraction + JSONL export)
 - Actionable Insights with persona-specific action items and roadmaps
+- Phase D: Data Layer Coherence & Enterprise Readiness
+  - Shared Embedding Engine (sentence-transformers + TF-IDF fallback)
+  - Deployment Profiles (research/staging/production)
+  - Memory wired into query pipeline (context augmentation + router hints)
+  - RAG wired into pipeline (rag_context_node between router and domain agents)
+  - Governance-RAG coherence (policy CRUD → RAG re-ingestion, triple → RAG feed)
+  - Security middleware (API key auth, rate limiting, request size limits)
 
 ### Out of Scope:
 - Production autoscaling and Kubernetes

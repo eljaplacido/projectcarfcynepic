@@ -1,0 +1,980 @@
+{
+  "benchmark": "carf_wcag",
+  "timestamp": "2026-02-22T16:31:15.193062+00:00",
+  "elapsed_ms": 0.08,
+  "metrics": {
+    "level_a_violations": 0,
+    "level_aa_violations": 0,
+    "total_checks": 100,
+    "total_pass": 100,
+    "total_fail": 0,
+    "total_na": 0,
+    "pass_rate": 1.0,
+    "views_audited": 10,
+    "views_compliant_level_a": 10,
+    "views_compliant_level_aa": 10,
+    "all_level_a_pass": true,
+    "all_level_aa_pass": true
+  },
+  "criterion_summary": [
+    {
+      "criterion_id": "1.1.1",
+      "criterion_name": "Non-text Content",
+      "level": "A",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "1.3.1",
+      "criterion_name": "Info and Relationships",
+      "level": "A",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "1.4.1",
+      "criterion_name": "Use of Color",
+      "level": "A",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "1.4.3",
+      "criterion_name": "Contrast (Minimum)",
+      "level": "AA",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "2.1.1",
+      "criterion_name": "Keyboard",
+      "level": "A",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "2.4.1",
+      "criterion_name": "Bypass Blocks",
+      "level": "A",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "2.4.2",
+      "criterion_name": "Page Titled",
+      "level": "A",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "3.1.1",
+      "criterion_name": "Language of Page",
+      "level": "A",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "4.1.1",
+      "criterion_name": "Parsing",
+      "level": "A",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    },
+    {
+      "criterion_id": "4.1.2",
+      "criterion_name": "Name, Role, Value",
+      "level": "AA",
+      "views_pass": 10,
+      "views_fail": 0,
+      "views_na": 0,
+      "compliance_rate": 1.0
+    }
+  ],
+  "individual_results": [
+    {
+      "view_id": "dashboard_home",
+      "view_name": "Dashboard Home",
+      "route": "/",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "query_input",
+      "view_name": "Query Input",
+      "route": "/query",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "results_view",
+      "view_name": "Results View",
+      "route": "/results/:id",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "causal_graph",
+      "view_name": "Causal Graph",
+      "route": "/results/:id/causal",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "bayesian_viz",
+      "view_name": "Bayesian Visualization",
+      "route": "/results/:id/bayesian",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "guardian_verdict",
+      "view_name": "Guardian Verdict",
+      "route": "/results/:id/guardian",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "governance_board",
+      "view_name": "Governance Board",
+      "route": "/governance",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "compliance_report",
+      "view_name": "Compliance Report",
+      "route": "/governance/compliance/:framework",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "audit_trail",
+      "view_name": "Audit Trail",
+      "route": "/audit",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "view_id": "settings",
+      "view_name": "Settings",
+      "route": "/settings",
+      "level_a_violations": 0,
+      "level_aa_violations": 0,
+      "total_pass": 10,
+      "total_fail": 0,
+      "total_na": 0,
+      "compliant_level_a": true,
+      "compliant_level_aa": true,
+      "criteria_results": [
+        {
+          "criterion_id": "1.1.1",
+          "criterion_name": "Non-text Content",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.3.1",
+          "criterion_name": "Info and Relationships",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.1",
+          "criterion_name": "Use of Color",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "1.4.3",
+          "criterion_name": "Contrast (Minimum)",
+          "level": "AA",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.1.1",
+          "criterion_name": "Keyboard",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.1",
+          "criterion_name": "Bypass Blocks",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "2.4.2",
+          "criterion_name": "Page Titled",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "3.1.1",
+          "criterion_name": "Language of Page",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.1",
+          "criterion_name": "Parsing",
+          "level": "A",
+          "status": "pass"
+        },
+        {
+          "criterion_id": "4.1.2",
+          "criterion_name": "Name, Role, Value",
+          "level": "AA",
+          "status": "pass"
+        }
+      ]
+    }
+  ],
+  "wcag_criteria": [
+    {
+      "id": "1.1.1",
+      "name": "Non-text Content",
+      "level": "A"
+    },
+    {
+      "id": "1.3.1",
+      "name": "Info and Relationships",
+      "level": "A"
+    },
+    {
+      "id": "1.4.1",
+      "name": "Use of Color",
+      "level": "A"
+    },
+    {
+      "id": "1.4.3",
+      "name": "Contrast (Minimum)",
+      "level": "AA"
+    },
+    {
+      "id": "2.1.1",
+      "name": "Keyboard",
+      "level": "A"
+    },
+    {
+      "id": "2.4.1",
+      "name": "Bypass Blocks",
+      "level": "A"
+    },
+    {
+      "id": "2.4.2",
+      "name": "Page Titled",
+      "level": "A"
+    },
+    {
+      "id": "3.1.1",
+      "name": "Language of Page",
+      "level": "A"
+    },
+    {
+      "id": "4.1.1",
+      "name": "Parsing",
+      "level": "A"
+    },
+    {
+      "id": "4.1.2",
+      "name": "Name, Role, Value",
+      "level": "AA"
+    }
+  ],
+  "cockpit_views": [
+    {
+      "id": "dashboard_home",
+      "name": "Dashboard Home",
+      "route": "/"
+    },
+    {
+      "id": "query_input",
+      "name": "Query Input",
+      "route": "/query"
+    },
+    {
+      "id": "results_view",
+      "name": "Results View",
+      "route": "/results/:id"
+    },
+    {
+      "id": "causal_graph",
+      "name": "Causal Graph",
+      "route": "/results/:id/causal"
+    },
+    {
+      "id": "bayesian_viz",
+      "name": "Bayesian Visualization",
+      "route": "/results/:id/bayesian"
+    },
+    {
+      "id": "guardian_verdict",
+      "name": "Guardian Verdict",
+      "route": "/results/:id/guardian"
+    },
+    {
+      "id": "governance_board",
+      "name": "Governance Board",
+      "route": "/governance"
+    },
+    {
+      "id": "compliance_report",
+      "name": "Compliance Report",
+      "route": "/governance/compliance/:framework"
+    },
+    {
+      "id": "audit_trail",
+      "name": "Audit Trail",
+      "route": "/audit"
+    },
+    {
+      "id": "settings",
+      "name": "Settings",
+      "route": "/settings"
+    }
+  ],
+  "generated_at": "2026-02-22T16:31:15.326441+00:00",
+  "benchmark_id": "wcag",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\ux\\benchmark_wcag.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:wcag",
+  "provenance": {
+    "source_reference": "benchmark:wcag",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

@@ -26,10 +26,13 @@ vi.mock('../services/apiService', async (importOriginal) => {
     return {
         ...actual,
         getGovernanceDomains: vi.fn(),
+        getGovernanceBoards: vi.fn(),
+        getFederatedPolicies: vi.fn(),
+        getConflicts: vi.fn(),
     };
 });
 
-import { getGovernanceDomains } from '../services/apiService';
+import { getGovernanceDomains, getGovernanceBoards, getFederatedPolicies, getConflicts } from '../services/apiService';
 
 const mockDomains = [
     {
@@ -61,13 +64,28 @@ const mockDomains = [
     },
 ];
 
+const mockGetDomains = getGovernanceDomains as ReturnType<typeof vi.fn>;
+const mockGetBoards = getGovernanceBoards as ReturnType<typeof vi.fn>;
+const mockGetPolicies = getFederatedPolicies as ReturnType<typeof vi.fn>;
+const mockGetConflicts = getConflicts as ReturnType<typeof vi.fn>;
+
+function setupMocks(domains = mockDomains) {
+    mockGetDomains.mockResolvedValue(domains);
+    mockGetBoards.mockResolvedValue([]);
+    mockGetPolicies.mockResolvedValue([]);
+    mockGetConflicts.mockResolvedValue([]);
+}
+
 describe('SpecMapTab', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
     it('shows loading state initially', () => {
-        (getGovernanceDomains as ReturnType<typeof vi.fn>).mockReturnValue(new Promise(() => {}));
+        mockGetDomains.mockReturnValue(new Promise(() => {}));
+        mockGetBoards.mockReturnValue(new Promise(() => {}));
+        mockGetPolicies.mockReturnValue(new Promise(() => {}));
+        mockGetConflicts.mockReturnValue(new Promise(() => {}));
 
         render(<SpecMapTab lastResult={null} />);
 
@@ -75,7 +93,7 @@ describe('SpecMapTab', () => {
     });
 
     it('renders empty state when no domains configured', async () => {
-        (getGovernanceDomains as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+        setupMocks([]);
 
         render(<SpecMapTab lastResult={null} />);
 
@@ -86,7 +104,7 @@ describe('SpecMapTab', () => {
     });
 
     it('renders ReactFlow when domains exist', async () => {
-        (getGovernanceDomains as ReturnType<typeof vi.fn>).mockResolvedValue(mockDomains);
+        setupMocks();
 
         render(<SpecMapTab lastResult={null} />);
 
@@ -96,7 +114,7 @@ describe('SpecMapTab', () => {
     });
 
     it('passes correct number of nodes to ReactFlow', async () => {
-        (getGovernanceDomains as ReturnType<typeof vi.fn>).mockResolvedValue(mockDomains);
+        setupMocks();
 
         render(<SpecMapTab lastResult={null} />);
 
@@ -108,7 +126,7 @@ describe('SpecMapTab', () => {
     });
 
     it('renders domain labels in nodes', async () => {
-        (getGovernanceDomains as ReturnType<typeof vi.fn>).mockResolvedValue(mockDomains);
+        setupMocks();
 
         render(<SpecMapTab lastResult={null} />);
 
@@ -119,7 +137,7 @@ describe('SpecMapTab', () => {
     });
 
     it('renders without crashing when lastResult is null', async () => {
-        (getGovernanceDomains as ReturnType<typeof vi.fn>).mockResolvedValue(mockDomains);
+        setupMocks();
 
         const { container } = render(<SpecMapTab lastResult={null} />);
 

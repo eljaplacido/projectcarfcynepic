@@ -1,63 +1,67 @@
 {
   "benchmark": "carf_performance",
-  "timestamp": "2026-02-20T05:27:44.613766+00:00",
+  "timestamp": "2026-02-22T18:48:15.657048+00:00",
   "total_queries": 50,
   "successful": 50,
   "error_count": 0,
-  "avg_duration_ms": 9259.59,
-  "median_duration_ms": 2750.74,
-  "p95_duration_ms": 33722.08,
-  "p99_duration_ms": 36366.91,
+  "avg_duration_ms": 28431.82,
+  "median_duration_ms": 15092.53,
+  "p95_duration_ms": 85454.44,
+  "p99_duration_ms": 89258.37,
   "per_domain": {
     "Clear": {
       "count": 10,
-      "mean_ms": 2546.69,
-      "median_ms": 2447.52,
-      "p95_ms": 3051.4,
-      "p99_ms": 3052.82
+      "mean_ms": 11582.73,
+      "median_ms": 11953.17,
+      "p95_ms": 14021.53,
+      "p99_ms": 14321.15
     },
     "Complicated": {
       "count": 10,
-      "mean_ms": 16966.16,
-      "median_ms": 23544.67,
-      "p95_ms": 28722.95,
-      "p99_ms": 29138.25
+      "mean_ms": 50364.12,
+      "median_ms": 56997.57,
+      "p95_ms": 88788.76,
+      "p99_ms": 89873.12
     },
     "Complex": {
       "count": 10,
-      "mean_ms": 21548.91,
-      "median_ms": 32443.25,
-      "p95_ms": 36414.52,
-      "p99_ms": 36843.02
+      "mean_ms": 53084.46,
+      "median_ms": 69594.47,
+      "p95_ms": 86116.79,
+      "p99_ms": 87892.46
     },
     "Chaotic": {
       "count": 10,
-      "mean_ms": 2757.93,
-      "median_ms": 2723.82,
-      "p95_ms": 3059.93,
-      "p99_ms": 3151.72
+      "mean_ms": 14765.94,
+      "median_ms": 14542.04,
+      "p95_ms": 17067.79,
+      "p99_ms": 17347.01
     },
     "Disorder": {
       "count": 10,
-      "mean_ms": 2478.26,
-      "median_ms": 2465.34,
-      "p95_ms": 2826.41,
-      "p99_ms": 2891.63
+      "mean_ms": 12361.84,
+      "median_ms": 13378.67,
+      "p95_ms": 15924.8,
+      "p99_ms": 16139.28
     }
   },
   "memory": {
-    "rss_before_mb": 652.75,
-    "rss_after_mb": 654.14,
-    "memory_growth_pct": 0.21,
-    "tracemalloc_peak_mb": 12.62,
+    "rss_before_mb": 651.41,
+    "rss_after_mb": 408.69,
+    "memory_growth_pct": -37.26,
+    "tracemalloc_peak_mb": 12.67,
     "top_allocators": [
       {
         "file": "<frozen abc>:123",
-        "size_kb": 1374.5
+        "size_kb": 1375.4
       },
       {
         "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\asyncio\\proactor_events.py:191",
         "size_kb": 64.1
+      },
+      {
+        "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pydantic\\main.py:250",
+        "size_kb": 55.8
       },
       {
         "file": "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\copyreg.py:99",
@@ -86,427 +90,448 @@
       {
         "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\graph\\basic.py:255",
         "size_kb": 8.5
-      },
-      {
-        "file": "C:\\Users\\35845\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\pytensor\\graph\\fg.py:397",
-        "size_kb": 7.5
       }
     ],
     "snapshots": [
       {
         "query_index": 5,
-        "rss_mb": 647.37,
+        "rss_mb": 580.14,
         "tracemalloc_current_mb": 0.1,
-        "tracemalloc_peak_mb": 0.4
+        "tracemalloc_peak_mb": 0.41
       },
       {
         "query_index": 10,
-        "rss_mb": 647.23,
-        "tracemalloc_current_mb": 0.11,
-        "tracemalloc_peak_mb": 0.4
+        "rss_mb": 394.7,
+        "tracemalloc_current_mb": 0.12,
+        "tracemalloc_peak_mb": 0.41
       },
       {
         "query_index": 15,
-        "rss_mb": 649.7,
-        "tracemalloc_current_mb": 0.3,
-        "tracemalloc_peak_mb": 2.13
+        "rss_mb": 389.3,
+        "tracemalloc_current_mb": 0.32,
+        "tracemalloc_peak_mb": 2.09
       },
       {
         "query_index": 20,
-        "rss_mb": 649.71,
-        "tracemalloc_current_mb": 0.31,
-        "tracemalloc_peak_mb": 2.13
+        "rss_mb": 396.63,
+        "tracemalloc_current_mb": 0.33,
+        "tracemalloc_peak_mb": 2.12
       },
       {
         "query_index": 25,
-        "rss_mb": 658.27,
-        "tracemalloc_current_mb": 1.77,
-        "tracemalloc_peak_mb": 12.59
+        "rss_mb": 415.56,
+        "tracemalloc_current_mb": 1.8,
+        "tracemalloc_peak_mb": 12.67
       },
       {
         "query_index": 30,
-        "rss_mb": 658.69,
-        "tracemalloc_current_mb": 1.78,
-        "tracemalloc_peak_mb": 12.62
+        "rss_mb": 417.68,
+        "tracemalloc_current_mb": 1.81,
+        "tracemalloc_peak_mb": 12.67
       },
       {
         "query_index": 35,
-        "rss_mb": 654.2,
-        "tracemalloc_current_mb": 1.78,
-        "tracemalloc_peak_mb": 12.62
+        "rss_mb": 413.21,
+        "tracemalloc_current_mb": 1.82,
+        "tracemalloc_peak_mb": 12.67
       },
       {
         "query_index": 40,
-        "rss_mb": 654.2,
-        "tracemalloc_current_mb": 1.78,
-        "tracemalloc_peak_mb": 12.62
+        "rss_mb": 413.36,
+        "tracemalloc_current_mb": 1.83,
+        "tracemalloc_peak_mb": 12.67
       },
       {
         "query_index": 45,
-        "rss_mb": 654.17,
-        "tracemalloc_current_mb": 1.79,
-        "tracemalloc_peak_mb": 12.62
+        "rss_mb": 413.24,
+        "tracemalloc_current_mb": 1.84,
+        "tracemalloc_peak_mb": 12.67
       },
       {
         "query_index": 50,
-        "rss_mb": 654.14,
-        "tracemalloc_current_mb": 1.79,
-        "tracemalloc_peak_mb": 12.62
+        "rss_mb": 408.69,
+        "tracemalloc_current_mb": 1.85,
+        "tracemalloc_peak_mb": 12.67
       }
     ]
   },
-  "memory_growth_pct": 0.21,
+  "memory_growth_pct": -37.26,
   "throughput": {},
   "individual_results": [
     {
       "query": "What is the current USD to EUR exchange rate?",
       "domain": "Clear",
-      "latency_ms": 2634.04,
+      "latency_ms": 11176.08,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "How many kilowatt-hours are in a megawatt-hour?",
       "domain": "Clear",
-      "latency_ms": 2385.42,
+      "latency_ms": 14396.05,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "What is the standard VAT rate in Germany?",
       "domain": "Clear",
-      "latency_ms": 2509.62,
+      "latency_ms": 12960.91,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "Convert 100 miles to kilometers",
       "domain": "Clear",
-      "latency_ms": 3049.23,
-      "confidence": 0.95,
+      "latency_ms": 5720.02,
+      "confidence": 0.98,
       "error": null
     },
     {
       "query": "What is the current USD to EUR exchange rate?",
       "domain": "Clear",
-      "latency_ms": 3053.17,
+      "latency_ms": 13563.78,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "How many kilowatt-hours are in a megawatt-hour?",
       "domain": "Clear",
-      "latency_ms": 2270.51,
-      "confidence": 0.95,
+      "latency_ms": 10442.31,
+      "confidence": 1.0,
       "error": null
     },
     {
       "query": "What is the standard VAT rate in Germany?",
       "domain": "Clear",
-      "latency_ms": 2205.14,
+      "latency_ms": 12549.84,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "Convert 100 miles to kilometers",
       "domain": "Clear",
-      "latency_ms": 2694.91,
+      "latency_ms": 11041.34,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "What is the current USD to EUR exchange rate?",
       "domain": "Clear",
-      "latency_ms": 2293.75,
+      "latency_ms": 11356.49,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "How many kilowatt-hours are in a megawatt-hour?",
       "domain": "Clear",
-      "latency_ms": 2371.09,
+      "latency_ms": 12620.49,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "How does increasing marketing spend affect quarterly revenue?",
       "domain": "Complicated",
-      "latency_ms": 27688.15,
+      "latency_ms": 87132.11,
       "confidence": 0.88,
       "error": null
     },
     {
       "query": "What is the causal effect of employee training hours on productivity?",
       "domain": "Complicated",
-      "latency_ms": 22434.93,
-      "confidence": 0.88,
+      "latency_ms": 62480.96,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "Does supplier diversification reduce supply chain disruption frequency?",
       "domain": "Complicated",
-      "latency_ms": 28088.46,
-      "confidence": 0.85,
+      "latency_ms": 65386.33,
+      "confidence": 0.7,
       "error": null
     },
     {
       "query": "How does increasing marketing spend affect quarterly revenue?",
       "domain": "Complicated",
-      "latency_ms": 3254.24,
-      "confidence": 0.88,
+      "latency_ms": 19778.13,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "What is the causal effect of employee training hours on productivity?",
       "domain": "Complicated",
-      "latency_ms": 3208.48,
-      "confidence": 0.88,
+      "latency_ms": 17805.83,
+      "confidence": 0.85,
       "error": null
     },
     {
       "query": "Does supplier diversification reduce supply chain disruption frequency?",
       "domain": "Complicated",
-      "latency_ms": 29242.08,
-      "confidence": 0.85,
+      "latency_ms": 90144.21,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "How does increasing marketing spend affect quarterly revenue?",
       "domain": "Complicated",
-      "latency_ms": 24654.42,
-      "confidence": 0.88,
+      "latency_ms": 55211.82,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "What is the causal effect of employee training hours on productivity?",
       "domain": "Complicated",
-      "latency_ms": 24678.42,
-      "confidence": 0.88,
+      "latency_ms": 58783.33,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "Does supplier diversification reduce supply chain disruption frequency?",
       "domain": "Complicated",
-      "latency_ms": 3320.56,
-      "confidence": 0.85,
+      "latency_ms": 25244.43,
+      "confidence": 0.7,
       "error": null
     },
     {
       "query": "How does increasing marketing spend affect quarterly revenue?",
       "domain": "Complicated",
-      "latency_ms": 3091.85,
-      "confidence": 0.88,
+      "latency_ms": 21674.03,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "Should we enter the Asian market given uncertain regulatory changes?",
       "domain": "Complex",
-      "latency_ms": 32864.01,
+      "latency_ms": 75608.93,
       "confidence": 0.85,
       "error": null
     },
     {
       "query": "What strategy should we adopt for climate adaptation in agriculture?",
       "domain": "Complex",
-      "latency_ms": 32022.49,
+      "latency_ms": 70727.73,
       "confidence": 0.85,
       "error": null
     },
     {
       "query": "How should we allocate R&D budget under technological uncertainty?",
       "domain": "Complex",
-      "latency_ms": 32891.24,
+      "latency_ms": 78212.14,
       "confidence": 0.85,
       "error": null
     },
     {
       "query": "Should we enter the Asian market given uncertain regulatory changes?",
       "domain": "Complex",
-      "latency_ms": 2778.49,
+      "latency_ms": 15134.29,
       "confidence": 0.85,
       "error": null
     },
     {
       "query": "What strategy should we adopt for climate adaptation in agriculture?",
       "domain": "Complex",
-      "latency_ms": 2462.86,
-      "confidence": 0.85,
+      "latency_ms": 17249.78,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "How should we allocate R&D budget under technological uncertainty?",
       "domain": "Complex",
-      "latency_ms": 35759.87,
-      "confidence": 0.85,
+      "latency_ms": 88336.38,
+      "confidence": 0.75,
       "error": null
     },
     {
       "query": "Should we enter the Asian market given uncertain regulatory changes?",
       "domain": "Complex",
-      "latency_ms": 36950.14,
-      "confidence": 0.85,
+      "latency_ms": 83403.96,
+      "confidence": 0.75,
       "error": null
     },
     {
       "query": "What strategy should we adopt for climate adaptation in agriculture?",
       "domain": "Complex",
-      "latency_ms": 34401.85,
-      "confidence": 0.85,
+      "latency_ms": 68461.21,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "How should we allocate R&D budget under technological uncertainty?",
       "domain": "Complex",
-      "latency_ms": 2886.93,
-      "confidence": 0.85,
+      "latency_ms": 16598.8,
+      "confidence": 0.9,
       "error": null
     },
     {
       "query": "Should we enter the Asian market given uncertain regulatory changes?",
       "domain": "Complex",
-      "latency_ms": 2471.19,
+      "latency_ms": 17111.42,
       "confidence": 0.85,
       "error": null
     },
     {
       "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
       "domain": "Chaotic",
-      "latency_ms": 2705.54,
-      "confidence": 0.95,
+      "latency_ms": 14944.39,
+      "confidence": 0.9,
       "error": null
     },
     {
       "query": "URGENT: Infrastructure cascade failure across primary data centers",
       "domain": "Chaotic",
-      "latency_ms": 2919.7,
+      "latency_ms": 13418.11,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
       "domain": "Chaotic",
-      "latency_ms": 2625.65,
+      "latency_ms": 13999.08,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "URGENT: Infrastructure cascade failure across primary data centers",
       "domain": "Chaotic",
-      "latency_ms": 2601.44,
+      "latency_ms": 13720.11,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
       "domain": "Chaotic",
-      "latency_ms": 3174.67,
+      "latency_ms": 14510.5,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "URGENT: Infrastructure cascade failure across primary data centers",
       "domain": "Chaotic",
-      "latency_ms": 2676.09,
+      "latency_ms": 12832.02,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
       "domain": "Chaotic",
-      "latency_ms": 2769.11,
+      "latency_ms": 15603.61,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "URGENT: Infrastructure cascade failure across primary data centers",
       "domain": "Chaotic",
-      "latency_ms": 2759.38,
+      "latency_ms": 16641.22,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "CRITICAL: Fraud detected in 3 regions simultaneously, losses mounting",
       "domain": "Chaotic",
-      "latency_ms": 2605.58,
+      "latency_ms": 14573.58,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "URGENT: Infrastructure cascade failure across primary data centers",
       "domain": "Chaotic",
-      "latency_ms": 2742.1,
+      "latency_ms": 17416.81,
       "confidence": 0.95,
       "error": null
     },
     {
       "query": "Do something about the thing with the stuff",
       "domain": "Disorder",
-      "latency_ms": 2243.05,
-      "confidence": 0.1,
+      "latency_ms": 9504.55,
+      "confidence": 0.85,
       "error": null
     },
     {
       "query": "Maybe we should or maybe not, what do you think about everything?",
       "domain": "Disorder",
-      "latency_ms": 2684.53,
-      "confidence": 0.2,
+      "latency_ms": 14664.53,
+      "confidence": 0.1,
       "error": null
     },
     {
       "query": "Do something about the thing with the stuff",
       "domain": "Disorder",
-      "latency_ms": 2313.85,
-      "confidence": 0.1,
+      "latency_ms": 6475.6,
+      "confidence": 0.2,
       "error": null
     },
     {
       "query": "Maybe we should or maybe not, what do you think about everything?",
       "domain": "Disorder",
-      "latency_ms": 2098.04,
-      "confidence": 0.2,
+      "latency_ms": 15597.12,
+      "confidence": 0.85,
       "error": null
     },
     {
       "query": "Do something about the thing with the stuff",
       "domain": "Disorder",
-      "latency_ms": 2726.77,
-      "confidence": 0.1,
+      "latency_ms": 16192.9,
+      "confidence": 0.8,
       "error": null
     },
     {
       "query": "Maybe we should or maybe not, what do you think about everything?",
       "domain": "Disorder",
-      "latency_ms": 2615.33,
-      "confidence": 0.2,
+      "latency_ms": 12929.39,
+      "confidence": 0.7,
       "error": null
     },
     {
       "query": "Do something about the thing with the stuff",
       "domain": "Disorder",
-      "latency_ms": 2498.49,
-      "confidence": 0.1,
+      "latency_ms": 13477.71,
+      "confidence": 0.95,
       "error": null
     },
     {
       "query": "Maybe we should or maybe not, what do you think about everything?",
       "domain": "Disorder",
-      "latency_ms": 2907.93,
-      "confidence": 0.2,
+      "latency_ms": 13279.64,
+      "confidence": 0.9,
       "error": null
     },
     {
       "query": "Do something about the thing with the stuff",
       "domain": "Disorder",
-      "latency_ms": 2262.39,
-      "confidence": 0.1,
+      "latency_ms": 15050.76,
+      "confidence": 0.7,
       "error": null
     },
     {
       "query": "Maybe we should or maybe not, what do you think about everything?",
       "domain": "Disorder",
-      "latency_ms": 2432.19,
-      "confidence": 0.2,
+      "latency_ms": 6446.19,
+      "confidence": 0.6,
       "error": null
     }
-  ]
+  ],
+  "generated_at": "2026-02-22T18:48:15.744866+00:00",
+  "benchmark_id": "performance",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\performance\\benchmark_latency.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {
+    "total_queries": 50
+  },
+  "source_reference": "benchmark:performance",
+  "provenance": {
+    "source_reference": "benchmark:performance",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
 }

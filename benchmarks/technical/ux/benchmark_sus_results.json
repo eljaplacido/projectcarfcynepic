@@ -1,0 +1,604 @@
+{
+  "benchmark": "carf_sus",
+  "timestamp": "2026-02-22T16:29:28.605610+00:00",
+  "elapsed_ms": 0.43,
+  "metrics": {
+    "sus_score": 68.44,
+    "sus_min": 52.5,
+    "sus_max": 92.5,
+    "scenarios_total": 8,
+    "scenarios_passing": 4,
+    "pass_rate": 0.5,
+    "threshold": 68.0,
+    "above_average": true
+  },
+  "individual_results": [
+    {
+      "scenario_id": "T1",
+      "scenario_name": "Submit a clear domain query and interpret result",
+      "description": "User submits a simple factual query (e.g. exchange rate lookup), receives a Clear-domain routed response, and interprets the answer.",
+      "sus_score": 92.5,
+      "passed": true,
+      "contributions": [
+        {
+          "question_number": 1,
+          "question": "I think that I would like to use this system frequently",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 2,
+          "question": "I found the system unnecessarily complex",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 3,
+          "question": "I thought the system was easy to use",
+          "raw_score": 5,
+          "contribution": 4
+        },
+        {
+          "question_number": 4,
+          "question": "I think that I would need the support of a technical person to be able to use this system",
+          "raw_score": 1,
+          "contribution": 4
+        },
+        {
+          "question_number": 5,
+          "question": "I found the various functions in this system were well integrated",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 6,
+          "question": "I thought there was too much inconsistency in this system",
+          "raw_score": 1,
+          "contribution": 4
+        },
+        {
+          "question_number": 7,
+          "question": "I would imagine that most people would learn to use this system very quickly",
+          "raw_score": 5,
+          "contribution": 4
+        },
+        {
+          "question_number": 8,
+          "question": "I found the system very cumbersome to use",
+          "raw_score": 1,
+          "contribution": 4
+        },
+        {
+          "question_number": 9,
+          "question": "I felt very confident using the system",
+          "raw_score": 5,
+          "contribution": 4
+        },
+        {
+          "question_number": 10,
+          "question": "I needed to learn a lot of things before I could get going with this system",
+          "raw_score": 1,
+          "contribution": 4
+        }
+      ]
+    },
+    {
+      "scenario_id": "T2",
+      "scenario_name": "Submit a complicated query and review causal analysis",
+      "description": "User submits a causal-analysis query with data context, reviews the causal graph output including ATE, confidence intervals, and refutation results.",
+      "sus_score": 67.5,
+      "passed": false,
+      "contributions": [
+        {
+          "question_number": 1,
+          "question": "I think that I would like to use this system frequently",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 2,
+          "question": "I found the system unnecessarily complex",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 3,
+          "question": "I thought the system was easy to use",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 4,
+          "question": "I think that I would need the support of a technical person to be able to use this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 5,
+          "question": "I found the various functions in this system were well integrated",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 6,
+          "question": "I thought there was too much inconsistency in this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 7,
+          "question": "I would imagine that most people would learn to use this system very quickly",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 8,
+          "question": "I found the system very cumbersome to use",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 9,
+          "question": "I felt very confident using the system",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 10,
+          "question": "I needed to learn a lot of things before I could get going with this system",
+          "raw_score": 3,
+          "contribution": 2
+        }
+      ]
+    },
+    {
+      "scenario_id": "T3",
+      "scenario_name": "Review Guardian policy verdict explanation",
+      "description": "User triggers a query that requires Guardian evaluation, then reviews the verdict (APPROVED / REJECTED / REQUIRES_ESCALATION) and its explanatory rationale.",
+      "sus_score": 75.0,
+      "passed": true,
+      "contributions": [
+        {
+          "question_number": 1,
+          "question": "I think that I would like to use this system frequently",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 2,
+          "question": "I found the system unnecessarily complex",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 3,
+          "question": "I thought the system was easy to use",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 4,
+          "question": "I think that I would need the support of a technical person to be able to use this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 5,
+          "question": "I found the various functions in this system were well integrated",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 6,
+          "question": "I thought there was too much inconsistency in this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 7,
+          "question": "I would imagine that most people would learn to use this system very quickly",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 8,
+          "question": "I found the system very cumbersome to use",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 9,
+          "question": "I felt very confident using the system",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 10,
+          "question": "I needed to learn a lot of things before I could get going with this system",
+          "raw_score": 2,
+          "contribution": 3
+        }
+      ]
+    },
+    {
+      "scenario_id": "T4",
+      "scenario_name": "Navigate governance dashboard",
+      "description": "User navigates the Cockpit governance board, views active policies, compliance scores, and cross-domain impact triples.",
+      "sus_score": 55.0,
+      "passed": false,
+      "contributions": [
+        {
+          "question_number": 1,
+          "question": "I think that I would like to use this system frequently",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 2,
+          "question": "I found the system unnecessarily complex",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 3,
+          "question": "I thought the system was easy to use",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 4,
+          "question": "I think that I would need the support of a technical person to be able to use this system",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 5,
+          "question": "I found the various functions in this system were well integrated",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 6,
+          "question": "I thought there was too much inconsistency in this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 7,
+          "question": "I would imagine that most people would learn to use this system very quickly",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 8,
+          "question": "I found the system very cumbersome to use",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 9,
+          "question": "I felt very confident using the system",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 10,
+          "question": "I needed to learn a lot of things before I could get going with this system",
+          "raw_score": 3,
+          "contribution": 2
+        }
+      ]
+    },
+    {
+      "scenario_id": "T5",
+      "scenario_name": "Export compliance report",
+      "description": "User selects a compliance framework (e.g. EU AI Act), generates the compliance report, and exports it as JSON/PDF.",
+      "sus_score": 77.5,
+      "passed": true,
+      "contributions": [
+        {
+          "question_number": 1,
+          "question": "I think that I would like to use this system frequently",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 2,
+          "question": "I found the system unnecessarily complex",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 3,
+          "question": "I thought the system was easy to use",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 4,
+          "question": "I think that I would need the support of a technical person to be able to use this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 5,
+          "question": "I found the various functions in this system were well integrated",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 6,
+          "question": "I thought there was too much inconsistency in this system",
+          "raw_score": 1,
+          "contribution": 4
+        },
+        {
+          "question_number": 7,
+          "question": "I would imagine that most people would learn to use this system very quickly",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 8,
+          "question": "I found the system very cumbersome to use",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 9,
+          "question": "I felt very confident using the system",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 10,
+          "question": "I needed to learn a lot of things before I could get going with this system",
+          "raw_score": 2,
+          "contribution": 3
+        }
+      ]
+    },
+    {
+      "scenario_id": "T6",
+      "scenario_name": "Configure policy rules",
+      "description": "User opens the policy editor, creates a new federated policy rule with conditions and constraints, saves, and verifies conflict detection results.",
+      "sus_score": 52.5,
+      "passed": false,
+      "contributions": [
+        {
+          "question_number": 1,
+          "question": "I think that I would like to use this system frequently",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 2,
+          "question": "I found the system unnecessarily complex",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 3,
+          "question": "I thought the system was easy to use",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 4,
+          "question": "I think that I would need the support of a technical person to be able to use this system",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 5,
+          "question": "I found the various functions in this system were well integrated",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 6,
+          "question": "I thought there was too much inconsistency in this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 7,
+          "question": "I would imagine that most people would learn to use this system very quickly",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 8,
+          "question": "I found the system very cumbersome to use",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 9,
+          "question": "I felt very confident using the system",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 10,
+          "question": "I needed to learn a lot of things before I could get going with this system",
+          "raw_score": 3,
+          "contribution": 2
+        }
+      ]
+    },
+    {
+      "scenario_id": "T7",
+      "scenario_name": "Interpret Bayesian uncertainty visualization",
+      "description": "User submits a Complex-domain query, views the Bayesian posterior distribution visualization, reads credible intervals and free-energy metrics.",
+      "sus_score": 52.5,
+      "passed": false,
+      "contributions": [
+        {
+          "question_number": 1,
+          "question": "I think that I would like to use this system frequently",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 2,
+          "question": "I found the system unnecessarily complex",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 3,
+          "question": "I thought the system was easy to use",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 4,
+          "question": "I think that I would need the support of a technical person to be able to use this system",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 5,
+          "question": "I found the various functions in this system were well integrated",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 6,
+          "question": "I thought there was too much inconsistency in this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 7,
+          "question": "I would imagine that most people would learn to use this system very quickly",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 8,
+          "question": "I found the system very cumbersome to use",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 9,
+          "question": "I felt very confident using the system",
+          "raw_score": 3,
+          "contribution": 2
+        },
+        {
+          "question_number": 10,
+          "question": "I needed to learn a lot of things before I could get going with this system",
+          "raw_score": 4,
+          "contribution": 1
+        }
+      ]
+    },
+    {
+      "scenario_id": "T8",
+      "scenario_name": "Review audit trail for a specific query",
+      "description": "User navigates to the audit trail view, searches for a specific past query by session ID, reviews the full reasoning chain, domain classification, and guardian verdict history.",
+      "sus_score": 75.0,
+      "passed": true,
+      "contributions": [
+        {
+          "question_number": 1,
+          "question": "I think that I would like to use this system frequently",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 2,
+          "question": "I found the system unnecessarily complex",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 3,
+          "question": "I thought the system was easy to use",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 4,
+          "question": "I think that I would need the support of a technical person to be able to use this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 5,
+          "question": "I found the various functions in this system were well integrated",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 6,
+          "question": "I thought there was too much inconsistency in this system",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 7,
+          "question": "I would imagine that most people would learn to use this system very quickly",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 8,
+          "question": "I found the system very cumbersome to use",
+          "raw_score": 2,
+          "contribution": 3
+        },
+        {
+          "question_number": 9,
+          "question": "I felt very confident using the system",
+          "raw_score": 4,
+          "contribution": 3
+        },
+        {
+          "question_number": 10,
+          "question": "I needed to learn a lot of things before I could get going with this system",
+          "raw_score": 2,
+          "contribution": 3
+        }
+      ]
+    }
+  ],
+  "questionnaire": [
+    "I think that I would like to use this system frequently",
+    "I found the system unnecessarily complex",
+    "I thought the system was easy to use",
+    "I think that I would need the support of a technical person to be able to use this system",
+    "I found the various functions in this system were well integrated",
+    "I thought there was too much inconsistency in this system",
+    "I would imagine that most people would learn to use this system very quickly",
+    "I found the system very cumbersome to use",
+    "I felt very confident using the system",
+    "I needed to learn a lot of things before I could get going with this system"
+  ],
+  "generated_at": "2026-02-22T16:29:28.752452+00:00",
+  "benchmark_id": "sus",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\ux\\benchmark_sus.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:sus",
+  "provenance": {
+    "source_reference": "benchmark:sus",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

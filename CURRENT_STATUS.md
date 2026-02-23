@@ -1,8 +1,8 @@
 # CYNEPIC Architecture 0.5 - Current Status
 
-**Last Updated**: 2026-02-22
-**Phase**: Platform Evolution (Phase 16) — Orchestration Governance (OG)
-**Overall Status**: Phase 16 Complete — Grade A (11/12 hypotheses), 923 backend tests, 235 frontend tests (22 test files), Router 98%, E2E 84.6%
+**Last Updated**: 2026-02-23
+**Phase**: Phase D — Data Layer Coherence & Enterprise Readiness
+**Overall Status**: Phase D Complete — 947 backend tests, 235+ frontend tests, Memory + RAG wired into pipeline, deployment profiles, security middleware
 
 ---
 
@@ -112,6 +112,67 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 ---
 
 ## Recent Improvements
+
+### Phase 16.7: Currency-Aware Financial Policy Enforcement (2026-02-22)
+
+Completed in this cycle:
+1. Add shared currency normalization utility for governance/guardian financial checks.
+2. Make Guardian contextual financial limits currency-aware when FX configuration is provided.
+3. Make CSL-Core state mapping and evaluation fail-safe for unavailable currency conversion.
+
+### Phase 16.8: Benchmark Metric Extraction Reliability Hardening (2026-02-22)
+
+Completed in this cycle:
+1. Removed `or`-based metric fallbacks in report hypothesis evaluation for metrics where `0.0` is a valid value.
+2. Added explicit first-non-`None` extraction logic for key benchmark metrics (router, bayesian, counterfactual, healthcare, soak).
+3. Added regression tests to ensure zero-valued metrics are treated as evaluated evidence, not missing data.
+
+### Phase 16.6: Governance Semantic Graph + Agentic Navigation (2026-02-22)
+
+Completed in this cycle:
+1. Added `/governance/semantic-graph` endpoint with typed graph payload (domain/policy/concept nodes + conflict/triple edges + explainability).
+2. Added Governance cockpit `Semantic Graph` tab for policy conflict topology and MAP triple visibility.
+3. Extended agentic chat navigation to open governance semantic graph directly from natural language and `/goto` routing.
+
+### Phase 16.5: Evidence Gate CLI for CI/Release (2026-02-22)
+
+Completed in this cycle:
+1. Added `benchmarks/reports/check_result_evidence.py` for strict evidence gating with configurable thresholds.
+2. Added `evaluate_evidence_gate(...)` in `benchmarks/reports/realism.py` to provide deterministic pass/fail criteria and actionable reasons.
+3. Added unit tests for evidence gate behavior.
+4. Updated benchmark/evaluation/root docs with evidence gate command usage.
+
+### Phase 16.4: Benchmark Provenance Auto-Enrichment (2026-02-22)
+
+Completed in this cycle:
+1. Added `finalize_benchmark_report(...)` in `benchmarks/__init__.py` to enforce timestamp, benchmark config, dataset context, sample context, and provenance fields.
+2. Applied provenance auto-enrichment to benchmark runners across core, governance, security, compliance, sustainability, UX, industry, performance, resiliency, e2e, and baseline scripts.
+3. Updated baseline unified summary path (`baseline_results.summary.json`) to include standardized provenance metadata.
+4. Added unit test coverage for benchmark metadata enrichment.
+
+### Phase 16.3: Benchmark Evidence Provenance Enforcement (2026-02-22)
+
+Completed in this cycle:
+1. Added result-artifact evidence validation (`validate_result_evidence`) for all loaded benchmark outputs.
+2. Integrated evidence metrics into unified reports (`evidence_score_avg`, `strong_evidence_ratio`, `low_evidence_sources`).
+3. Tightened realism quality gate to block acceptance when evidence quality is insufficient.
+4. Added unit tests for realism/evidence gate behavior.
+
+### Phase 16.2: Governance Extraction + Absolute Readiness Hardening (2026-02-22)
+
+Completed in this cycle:
+1. Hardened `/governance/policies/extract` with retry/backoff (`tenacity`) and non-blocking LLM execution (`asyncio.to_thread`) to remove async blocking I/O risk.
+2. Added structured explainability outputs for extracted governance rules (`why_this`, `how_confident`, `based_on`, rule-level confidence/evidence/rationale).
+3. Added realism hardening metrics to benchmark report scoring (`provenance_ratio`, `production_proxy_ratio`, `synthetic_profile_ratio`) and strict gate-reason reporting.
+4. Added conservative pass-rate confidence bound (`pass_rate_lower_95ci`) and `absolute_readiness_index` to benchmark summaries.
+
+### Phase 16.1: Benchmark + Agentic UX Alignment (2026-02-22)
+
+Completed in this cycle:
+1. Added benchmark realism/reliability/feasibility quality gate to unified reporting (`benchmarks/reports/realism.py`, `benchmarks/reports/realism_manifest.json`).
+2. Integrated realism metrics into report summary + text output (`benchmarks/reports/generate_report.py`).
+3. Updated benchmark/evaluation/root docs for 39-hypothesis suite and realism gate policy.
+4. Added natural-language chat UI actions for analyst/developer/executive/governance navigation, data onboarding launch, and latest-analysis simulation compare.
 
 ### Phase 16: Orchestration Governance (OG) Integration (2026-02-22)
 
@@ -410,7 +471,7 @@ pytest tests/ -v --cov=src
 4. **Streamlit Dashboard**: Deprecated in favor of React cockpit
 5. **ChimeraOracle**: Standalone REST API only — not yet wired into LangGraph StateGraph workflow
 6. **LightRAG / Vector Store**: Not implemented — semantic search and cross-session knowledge retrieval missing
-7. **Guardian Currency**: Financial thresholds are currency-blind ($50K USD = ¥50K JPY)
+7. **FX Coverage Dependency**: Non-USD comparisons require configured `CARF_FX_RATES_JSON`; otherwise Guardian/CSL correctly block cross-currency financial actions.
 8. **Router Retraining**: Feedback collection works but no automated retraining pipeline yet
 
 ---

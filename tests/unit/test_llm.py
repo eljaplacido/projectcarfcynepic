@@ -168,7 +168,7 @@ class TestLLMConfig:
         """Test default configuration values."""
         config = LLMConfig()
         assert config.provider == LLMProvider.DEEPSEEK
-        assert config.model == "deepseek-chat"
+        assert config.model == "deepseek-reasoner"
         assert config.temperature == 0.1
         assert config.max_tokens == 4096
 
@@ -219,7 +219,7 @@ class TestProviderConfigs:
         """Test DeepSeek provider config."""
         config = PROVIDER_CONFIGS[LLMProvider.DEEPSEEK]
         assert config["base_url"] == "https://api.deepseek.com"
-        assert config["default_model"] == "deepseek-chat"
+        assert config["default_model"] == "deepseek-reasoner"
         assert config["env_key"] == "DEEPSEEK_API_KEY"
         assert config["client_type"] == "openai_compat"
 

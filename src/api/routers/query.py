@@ -35,6 +35,86 @@ logger = logging.getLogger("carf")
 router = APIRouter()
 
 
+def _extract_insights_and_steps(final_state) -> tuple[list[str], list[str]]:
+    """Extract key insights and recommended next steps from pipeline state."""
+    insights: list[str] = []
+    steps: list[str] = []
+
+    domain = final_state.cynefin_domain
+    confidence = final_state.domain_confidence
+
+    # Domain-based insight
+    domain_label = domain.value if hasattr(domain, "value") else str(domain)
+    insights.append(
+        f"Query classified as {domain_label} domain "
+        f"(confidence: {confidence:.0%})."
+    )
+
+    # Causal evidence insights
+    if final_state.causal_evidence:
+        ce = final_state.causal_evidence
+        direction = "increases" if ce.effect_size > 0 else "decreases"
+        insights.append(
+            f"Causal analysis: {ce.treatment} {direction} {ce.outcome} "
+            f"by {abs(ce.effect_size):.3f} units "
+            f"(CI: [{ce.confidence_interval[0]:.3f}, {ce.confidence_interval[1]:.3f}])."
+        )
+        passed = sum(1 for v in ce.refutation_results.values() if v)
+        total = len(ce.refutation_results)
+        if total > 0:
+            insights.append(
+                f"Refutation tests: {passed}/{total} passed — "
+                f"{'result is robust' if passed == total else 'some tests failed, interpret with caution'}."
+            )
+        if ce.p_value is not None:
+            if ce.p_value < 0.05:
+                insights.append(f"Statistically significant (p={ce.p_value:.4f}).")
+            else:
+                steps.append("Consider gathering more data — effect is not statistically significant.")
+
+    # Bayesian evidence insights
+    if final_state.bayesian_evidence:
+        be = final_state.bayesian_evidence
+        reduction = be.uncertainty_before - be.uncertainty_after
+        insights.append(
+            f"Bayesian analysis: posterior mean {be.posterior_mean:.3f} "
+            f"(uncertainty reduced by {reduction:.1%})."
+        )
+        if be.epistemic_uncertainty > 0.5:
+            steps.append("High epistemic uncertainty — consider collecting additional evidence.")
+        if be.recommended_probe:
+            steps.append(f"Recommended probe: {be.recommended_probe}")
+
+    # Guardian insights
+    if final_state.policy_violations:
+        insights.append(
+            f"Policy violations detected: {', '.join(final_state.policy_violations[:3])}."
+        )
+        steps.append("Address policy violations before proceeding with recommendations.")
+    elif final_state.guardian_verdict:
+        verdict = final_state.guardian_verdict.value if hasattr(final_state.guardian_verdict, "value") else str(final_state.guardian_verdict)
+        if verdict == "approved":
+            insights.append("All governance policies passed.")
+
+    # Domain-specific next steps
+    from src.core.state import CynefinDomain as CD
+    if domain == CD.CLEAR:
+        steps.append("Result is deterministic — safe to automate this decision.")
+    elif domain == CD.COMPLICATED:
+        steps.append("Review causal analysis details and consider expert validation.")
+    elif domain == CD.COMPLEX:
+        steps.append("Design safe-to-fail probes to reduce uncertainty before acting.")
+    elif domain == CD.CHAOTIC:
+        steps.append("Stabilize the situation first — act decisively, then sense and respond.")
+    elif domain == CD.DISORDER:
+        steps.append("Gather more context to enable proper domain classification.")
+
+    if final_state.should_escalate_to_human():
+        steps.append("Human review recommended before acting on these results.")
+
+    return insights, steps
+
+
 @router.post("/query", response_model=QueryResponse, tags=["Query"])
 async def process_query(request: QueryRequest):
     """Process a query through the CARF cognitive pipeline."""
@@ -165,6 +245,8 @@ async def process_query(request: QueryRequest):
             violations=final_state.policy_violations or [],
         )
 
+        key_insights, next_steps = _extract_insights_and_steps(final_state)
+
         return QueryResponse(
             session_id=str(final_state.session_id),
             domain=final_state.cynefin_domain,
@@ -178,6 +260,8 @@ async def process_query(request: QueryRequest):
             bayesian_result=bayesian_result,
             guardian_result=guardian_result,
             error=final_state.error,
+            key_insights=key_insights,
+            next_steps=next_steps,
             router_reasoning=final_state.current_hypothesis,
             router_key_indicators=final_state.router_key_indicators,
             domain_scores=final_state.domain_scores,
@@ -286,6 +370,8 @@ async def process_query_stream(request: QueryRequest):
                     "outcome": ce.outcome,
                 }
 
+            stream_insights, stream_next_steps = _extract_insights_and_steps(final_state)
+
             final_response = {
                 "step": "complete",
                 "status": "completed",
@@ -300,6 +386,8 @@ async def process_query_stream(request: QueryRequest):
                     "reasoningChain": reasoning_chain,
                     "causalResult": causal_result,
                     "guardianVerdict": final_state.guardian_verdict.value if final_state.guardian_verdict else None,
+                    "keyInsights": stream_insights,
+                    "nextSteps": stream_next_steps,
                 },
             }
             yield f"data: {json.dumps(final_response)}\n\n"
@@ -465,6 +553,8 @@ async def process_query_with_transparency(request: QueryRequest):
             methodology=final_state.triggered_method or "unknown",
         )
 
+        key_insights, next_steps = _extract_insights_and_steps(final_state)
+
         return EnhancedQueryResponse(
             session_id=str(final_state.session_id),
             domain=final_state.cynefin_domain,
@@ -478,6 +568,8 @@ async def process_query_with_transparency(request: QueryRequest):
             bayesian_result=bayesian_result,
             guardian_result=guardian_result,
             error=final_state.error,
+            key_insights=key_insights,
+            next_steps=next_steps,
             router_reasoning=final_state.current_hypothesis,
             router_key_indicators=final_state.router_key_indicators,
             domain_scores=final_state.domain_scores,

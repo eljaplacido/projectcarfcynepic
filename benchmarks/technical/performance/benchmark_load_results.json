@@ -1,0 +1,361 @@
+{
+  "benchmark": "carf_concurrent_load",
+  "timestamp": "2026-02-22T16:32:06.658827+00:00",
+  "metrics": {
+    "p95_at_25_users": 0.0419,
+    "p95_at_25_users_pass": true,
+    "concurrency_levels_tested": [
+      1,
+      5,
+      10,
+      25
+    ]
+  },
+  "per_level_summary": [
+    {
+      "concurrency": 1,
+      "total_queries": 10,
+      "successful": 10,
+      "errors": 0,
+      "wall_time_s": 0.0515,
+      "throughput_qps": 194.2543,
+      "mean_s": 0.0051,
+      "p50_s": 0.005,
+      "p95_s": 0.006,
+      "p99_s": 0.0062,
+      "min_s": 0.0043,
+      "max_s": 0.0062
+    },
+    {
+      "concurrency": 5,
+      "total_queries": 10,
+      "successful": 10,
+      "errors": 0,
+      "wall_time_s": 0.0504,
+      "throughput_qps": 198.3206,
+      "mean_s": 0.0229,
+      "p50_s": 0.0229,
+      "p95_s": 0.0251,
+      "p99_s": 0.0255,
+      "min_s": 0.0199,
+      "max_s": 0.0256
+    },
+    {
+      "concurrency": 10,
+      "total_queries": 10,
+      "successful": 10,
+      "errors": 0,
+      "wall_time_s": 0.0431,
+      "throughput_qps": 232.0977,
+      "mean_s": 0.0361,
+      "p50_s": 0.036,
+      "p95_s": 0.0386,
+      "p99_s": 0.0388,
+      "min_s": 0.0332,
+      "max_s": 0.0388
+    },
+    {
+      "concurrency": 25,
+      "total_queries": 10,
+      "successful": 10,
+      "errors": 0,
+      "wall_time_s": 0.0443,
+      "throughput_qps": 225.8892,
+      "mean_s": 0.0397,
+      "p50_s": 0.0402,
+      "p95_s": 0.0419,
+      "p99_s": 0.0421,
+      "min_s": 0.0367,
+      "max_s": 0.0421
+    }
+  ],
+  "individual_results": [
+    {
+      "concurrency": 1,
+      "total_queries": 10,
+      "successful": 10,
+      "errors": 0,
+      "wall_time_s": 0.0515,
+      "throughput_qps": 194.2543,
+      "mean_s": 0.0051,
+      "p50_s": 0.005,
+      "p95_s": 0.006,
+      "p99_s": 0.0062,
+      "min_s": 0.0043,
+      "max_s": 0.0062,
+      "individual_results": [
+        {
+          "query": "What is the current USD to EUR exchange rate?",
+          "latency_s": 0.0062,
+          "error": null
+        },
+        {
+          "query": "How many kilowatt-hours are in a megawatt-hour?",
+          "latency_s": 0.005,
+          "error": null
+        },
+        {
+          "query": "What is the standard VAT rate in Germany?",
+          "latency_s": 0.0052,
+          "error": null
+        },
+        {
+          "query": "Convert 100 miles to kilometers.",
+          "latency_s": 0.0044,
+          "error": null
+        },
+        {
+          "query": "What is the boiling point of water in Fahrenheit?",
+          "latency_s": 0.0057,
+          "error": null
+        },
+        {
+          "query": "How many bytes are in a gigabyte?",
+          "latency_s": 0.005,
+          "error": null
+        },
+        {
+          "query": "What is the capital of Finland?",
+          "latency_s": 0.0043,
+          "error": null
+        },
+        {
+          "query": "What is the speed of light in meters per second?",
+          "latency_s": 0.0053,
+          "error": null
+        },
+        {
+          "query": "How many days are in a leap year?",
+          "latency_s": 0.0048,
+          "error": null
+        },
+        {
+          "query": "What is the freezing point of water in Celsius?",
+          "latency_s": 0.005,
+          "error": null
+        }
+      ]
+    },
+    {
+      "concurrency": 5,
+      "total_queries": 10,
+      "successful": 10,
+      "errors": 0,
+      "wall_time_s": 0.0504,
+      "throughput_qps": 198.3206,
+      "mean_s": 0.0229,
+      "p50_s": 0.0229,
+      "p95_s": 0.0251,
+      "p99_s": 0.0255,
+      "min_s": 0.0199,
+      "max_s": 0.0256,
+      "individual_results": [
+        {
+          "query": "What is the current USD to EUR exchange rate?",
+          "latency_s": 0.0239,
+          "error": null
+        },
+        {
+          "query": "How many kilowatt-hours are in a megawatt-hour?",
+          "latency_s": 0.0224,
+          "error": null
+        },
+        {
+          "query": "What is the standard VAT rate in Germany?",
+          "latency_s": 0.0213,
+          "error": null
+        },
+        {
+          "query": "Convert 100 miles to kilometers.",
+          "latency_s": 0.0215,
+          "error": null
+        },
+        {
+          "query": "What is the boiling point of water in Fahrenheit?",
+          "latency_s": 0.0199,
+          "error": null
+        },
+        {
+          "query": "How many bytes are in a gigabyte?",
+          "latency_s": 0.0256,
+          "error": null
+        },
+        {
+          "query": "What is the capital of Finland?",
+          "latency_s": 0.0241,
+          "error": null
+        },
+        {
+          "query": "What is the speed of light in meters per second?",
+          "latency_s": 0.0244,
+          "error": null
+        },
+        {
+          "query": "How many days are in a leap year?",
+          "latency_s": 0.0234,
+          "error": null
+        },
+        {
+          "query": "What is the freezing point of water in Celsius?",
+          "latency_s": 0.0222,
+          "error": null
+        }
+      ]
+    },
+    {
+      "concurrency": 10,
+      "total_queries": 10,
+      "successful": 10,
+      "errors": 0,
+      "wall_time_s": 0.0431,
+      "throughput_qps": 232.0977,
+      "mean_s": 0.0361,
+      "p50_s": 0.036,
+      "p95_s": 0.0386,
+      "p99_s": 0.0388,
+      "min_s": 0.0332,
+      "max_s": 0.0388,
+      "individual_results": [
+        {
+          "query": "What is the current USD to EUR exchange rate?",
+          "latency_s": 0.0388,
+          "error": null
+        },
+        {
+          "query": "How many kilowatt-hours are in a megawatt-hour?",
+          "latency_s": 0.0384,
+          "error": null
+        },
+        {
+          "query": "What is the standard VAT rate in Germany?",
+          "latency_s": 0.0375,
+          "error": null
+        },
+        {
+          "query": "Convert 100 miles to kilometers.",
+          "latency_s": 0.0368,
+          "error": null
+        },
+        {
+          "query": "What is the boiling point of water in Fahrenheit?",
+          "latency_s": 0.036,
+          "error": null
+        },
+        {
+          "query": "How many bytes are in a gigabyte?",
+          "latency_s": 0.0344,
+          "error": null
+        },
+        {
+          "query": "What is the capital of Finland?",
+          "latency_s": 0.0361,
+          "error": null
+        },
+        {
+          "query": "What is the speed of light in meters per second?",
+          "latency_s": 0.0355,
+          "error": null
+        },
+        {
+          "query": "How many days are in a leap year?",
+          "latency_s": 0.0347,
+          "error": null
+        },
+        {
+          "query": "What is the freezing point of water in Celsius?",
+          "latency_s": 0.0332,
+          "error": null
+        }
+      ]
+    },
+    {
+      "concurrency": 25,
+      "total_queries": 10,
+      "successful": 10,
+      "errors": 0,
+      "wall_time_s": 0.0443,
+      "throughput_qps": 225.8892,
+      "mean_s": 0.0397,
+      "p50_s": 0.0402,
+      "p95_s": 0.0419,
+      "p99_s": 0.0421,
+      "min_s": 0.0367,
+      "max_s": 0.0421,
+      "individual_results": [
+        {
+          "query": "What is the current USD to EUR exchange rate?",
+          "latency_s": 0.0421,
+          "error": null
+        },
+        {
+          "query": "How many kilowatt-hours are in a megawatt-hour?",
+          "latency_s": 0.0416,
+          "error": null
+        },
+        {
+          "query": "What is the standard VAT rate in Germany?",
+          "latency_s": 0.0411,
+          "error": null
+        },
+        {
+          "query": "Convert 100 miles to kilometers.",
+          "latency_s": 0.0407,
+          "error": null
+        },
+        {
+          "query": "What is the boiling point of water in Fahrenheit?",
+          "latency_s": 0.0408,
+          "error": null
+        },
+        {
+          "query": "How many bytes are in a gigabyte?",
+          "latency_s": 0.0396,
+          "error": null
+        },
+        {
+          "query": "What is the capital of Finland?",
+          "latency_s": 0.0392,
+          "error": null
+        },
+        {
+          "query": "What is the speed of light in meters per second?",
+          "latency_s": 0.0367,
+          "error": null
+        },
+        {
+          "query": "How many days are in a leap year?",
+          "latency_s": 0.0382,
+          "error": null
+        },
+        {
+          "query": "What is the freezing point of water in Celsius?",
+          "latency_s": 0.0372,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-02-22T16:32:06.753719+00:00",
+  "benchmark_id": "load",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\performance\\benchmark_load.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:load",
+  "provenance": {
+    "source_reference": "benchmark:load",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

@@ -175,7 +175,7 @@ export interface AnalysisSession {
 }
 
 // Phase 7: Slash Commands
-export type SlashCommand = '/analyze' | '/question' | '/query' | '/analysis' | '/history' | '/help' | '/benchmark' | '/summary';
+export type SlashCommand = '/analyze' | '/question' | '/query' | '/analysis' | '/history' | '/help' | '/benchmark' | '/summary' | '/goto';
 
 export interface SlashCommandConfig {
     command: SlashCommand;
@@ -347,6 +347,37 @@ export interface GovernanceHealth {
     status: string;
 }
 
+export interface GovernanceSemanticNode {
+    node_id: string;
+    label: string;
+    node_type: 'domain' | 'policy' | 'concept' | string;
+    domain_id?: string | null;
+    metadata?: Record<string, unknown>;
+}
+
+export interface GovernanceSemanticEdge {
+    edge_id: string;
+    source: string;
+    target: string;
+    relation: string;
+    confidence: number;
+    metadata?: Record<string, unknown>;
+}
+
+export interface GovernanceSemanticGraph {
+    generated_at: string;
+    board_id?: string | null;
+    session_id?: string | null;
+    nodes: GovernanceSemanticNode[];
+    edges: GovernanceSemanticEdge[];
+    stats: Record<string, unknown>;
+    explainability: {
+        why_this?: string;
+        how_confident?: number;
+        based_on?: string[];
+    };
+}
+
 // Phase 17: Governance Board Types
 export interface BoardMember {
     user_id: string;
@@ -391,12 +422,22 @@ export interface PolicyExtractionResult {
     source_name: string;
     target_domain?: string | null;
     rules_extracted: number;
+    methodology?: string;
+    extraction_confidence_avg?: number;
+    explainability?: {
+        why_this?: string;
+        how_confident?: number;
+        based_on?: string[];
+    };
     rules: Array<{
         name: string;
         condition: Record<string, unknown>;
         constraint: Record<string, unknown>;
         message: string;
         severity: string;
+        confidence?: number;
+        rationale?: string;
+        evidence?: string[];
     }>;
     error?: string | null;
 }

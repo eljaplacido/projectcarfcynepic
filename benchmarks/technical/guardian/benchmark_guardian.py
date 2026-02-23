@@ -59,7 +59,9 @@ VIOLATION_CASES = [
             "action_type": "causal_recommendation",
             "parameters": {"effect_size": 0.01, "confidence_interval": [-2.0, 2.5]},
         },
-        "context": {"user_role": "analyst", "risk_level": "MEDIUM"},
+        "context": {"user_role": "analyst", "risk_level": "MEDIUM",
+                     "prediction_source": "causal"},
+        "domain_confidence": 0.5,  # Below 0.6 threshold in cross_cutting policy
         "expected_verdict": "REQUIRES_ESCALATION",
     },
 ]
@@ -87,11 +89,12 @@ LEGITIMATE_CASES = [
     },
 ]
 
-DETERMINISM_RUNS = 5  # Number of times to run each case for determinism check
+DETERMINISM_RUNS = 50  # Number of times to run each case for determinism check (250 total for H4 scaling)
 
 
 async def evaluate_guardian(
     proposed_action: dict, context: dict, domain_str: str = "Complicated",
+    domain_confidence: float = 0.85,
 ) -> tuple[str, float]:
     """Run Guardian on a single case. Returns (verdict, latency_ms)."""
     from src.core.state import EpistemicState, CynefinDomain, ConfidenceLevel
@@ -106,7 +109,7 @@ async def evaluate_guardian(
     state = EpistemicState(
         user_input="benchmark query",
         cynefin_domain=domain_map.get(domain_str, CynefinDomain.COMPLICATED),
-        domain_confidence=0.85,
+        domain_confidence=domain_confidence,
         proposed_action=proposed_action,
         context=context,
         final_response="Benchmark test response for guardian evaluation.",
@@ -132,7 +135,8 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
 
     for case in VIOLATION_CASES:
         verdict, latency = await evaluate_guardian(
-            case["proposed_action"], case["context"]
+            case["proposed_action"], case["context"],
+            domain_confidence=case.get("domain_confidence", 0.85),
         )
         correct = verdict.upper() != "APPROVED"  # Any non-approval counts as detection
         if correct:
@@ -153,7 +157,8 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
 
     for case in LEGITIMATE_CASES:
         verdict, latency = await evaluate_guardian(
-            case["proposed_action"], case["context"]
+            case["proposed_action"], case["context"],
+            domain_confidence=case.get("domain_confidence", 0.85),
         )
         correct = verdict.upper() == "APPROVED"
         if not correct:
@@ -175,7 +180,10 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
     for case in all_cases:
         verdicts = []
         for _ in range(DETERMINISM_RUNS):
-            v, _ = await evaluate_guardian(case["proposed_action"], case["context"])
+            v, _ = await evaluate_guardian(
+                case["proposed_action"], case["context"],
+                domain_confidence=case.get("domain_confidence", 0.85),
+            )
             verdicts.append(v)
         is_deterministic = len(set(verdicts)) == 1
         determinism_results.append({
@@ -203,6 +211,9 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
     logger.info(f"\n  Detection Rate:  {detection_rate:.0%}")
     logger.info(f"  FP Rate:         {fp_rate:.0%}")
     logger.info(f"  Determinism:     {determinism_rate:.0%}")
+    from benchmarks import finalize_benchmark_report
+    report = finalize_benchmark_report(report, benchmark_id="guardian", source_reference="benchmark:guardian", benchmark_config={"script": __file__})
+
 
     if output_path:
         out = Path(output_path)

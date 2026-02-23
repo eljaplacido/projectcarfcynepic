@@ -1,6 +1,6 @@
 {
   "benchmark": "carf_bayesian_inference",
-  "timestamp": "2026-02-20T11:56:42.752239+00:00",
+  "timestamp": "2026-02-22T17:37:22.744759+00:00",
   "n_scenarios": 8,
   "n_successful": 8,
   "aggregate": {
@@ -8,11 +8,11 @@
     "n_covered": 8,
     "well_calibrated": true,
     "decomposition_rate": 1.0,
-    "aggregate_pass_rate": 0.9219,
-    "mean_latency_seconds": 17.96
+    "aggregate_pass_rate": 1.0,
+    "mean_latency_seconds": 69.176
   },
   "coverage": 1.0,
-  "aggregate_pass_rate": 0.9219,
+  "aggregate_pass_rate": 1.0,
   "scenario_results": [
     {
       "name": "market_entry_risk",
@@ -21,31 +21,30 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
+        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [
-        "sufficient_probes"
-      ],
+      "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 23.136,
-        "posterior_mean": 0.093841,
-        "posterior_std": 0.019091,
+        "elapsed_seconds": 79.129,
+        "posterior_mean": 0.09393,
+        "posterior_std": 0.018655,
         "credible_interval": [
-          0.064089,
-          0.126899
+          0.062121,
+          0.123496
         ],
         "true_parameter": 0.08,
         "parameter_covered": true,
-        "n_probes": 1,
-        "recommended_probe": "Run a small A/B test on pricing",
-        "epistemic_uncertainty": 0.019041,
-        "aleatoric_uncertainty": 0.134727,
-        "state_epistemic_uncertainty": 0.1687
+        "n_probes": 3,
+        "recommended_probe": "Launch a limited fintech service in Thailand through a local partnership to test customer adoption, regulatory compliance, and operational challenges in a real-market setting.",
+        "epistemic_uncertainty": 0.018859,
+        "aleatoric_uncertainty": 0.135094,
+        "state_epistemic_uncertainty": 0.1672
       },
       "error": null,
-      "pass_rate": 0.875
+      "pass_rate": 1.0
     },
     {
       "name": "climate_crop_yield_uncertainty",
@@ -54,31 +53,30 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
+        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [
-        "sufficient_probes"
-      ],
+      "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 14.564,
-        "posterior_mean": 4.518404,
-        "posterior_std": 0.116725,
+        "elapsed_seconds": 60.648,
+        "posterior_mean": 4.526308,
+        "posterior_std": 0.127428,
         "credible_interval": [
-          4.329109,
-          4.713133
+          4.312812,
+          4.732051
         ],
         "true_parameter": 4.5,
         "parameter_covered": true,
-        "n_probes": 1,
-        "recommended_probe": "Run a small A/B test on pricing",
-        "epistemic_uncertainty": 0.120229,
-        "aleatoric_uncertainty": 0.819695,
-        "state_epistemic_uncertainty": 0.0259
+        "n_probes": 3,
+        "recommended_probe": "Implement a small-scale (1 hectare) experimental plot with a new crop rotation (wheat-corn-soybean) alongside the current practice. Measure yields over 2-3 cycles to compare yield and risk directly.",
+        "epistemic_uncertainty": 0.128161,
+        "aleatoric_uncertainty": 0.823882,
+        "state_epistemic_uncertainty": 0.0275
       },
       "error": null,
-      "pass_rate": 0.875
+      "pass_rate": 1.0
     },
     {
       "name": "tech_migration_roi",
@@ -94,20 +92,20 @@
       ],
       "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 7.96,
-        "posterior_mean": 0.632928,
-        "posterior_std": 0.06995,
+        "elapsed_seconds": 61.21,
+        "posterior_mean": 0.645804,
+        "posterior_std": 0.068003,
         "credible_interval": [
-          0.513038,
-          0.743174
+          0.526988,
+          0.750717
         ],
         "true_parameter": 0.62,
         "parameter_covered": true,
-        "n_probes": 1,
-        "recommended_probe": "Run a small A/B test on pricing",
-        "epistemic_uncertainty": 0.071394,
-        "aleatoric_uncertainty": 0.227238,
-        "state_epistemic_uncertainty": 0.1014
+        "n_probes": 4,
+        "recommended_probe": "Migrate a small, non-critical pipeline component to PyTorch and monitor development effort, integration issues, performance in production, and maintenance overhead.",
+        "epistemic_uncertainty": 0.068424,
+        "aleatoric_uncertainty": 0.224064,
+        "state_epistemic_uncertainty": 0.0958
       },
       "error": null,
       "pass_rate": 1.0
@@ -119,31 +117,30 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
+        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [
-        "sufficient_probes"
-      ],
+      "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 7.883,
-        "posterior_mean": 0.642578,
-        "posterior_std": 0.045361,
+        "elapsed_seconds": 58.388,
+        "posterior_mean": 0.633777,
+        "posterior_std": 0.043147,
         "credible_interval": [
-          0.567826,
-          0.717065
+          0.559024,
+          0.700979
         ],
         "true_parameter": 0.65,
         "parameter_covered": true,
-        "n_probes": 1,
-        "recommended_probe": "Run a small A/B test on pricing",
-        "epistemic_uncertainty": 0.045232,
-        "aleatoric_uncertainty": 0.227628,
-        "state_epistemic_uncertainty": 0.0658
+        "n_probes": 4,
+        "recommended_probe": "Analyze stored biosamples from Phase II patients for biomarker correlates of response to identify potential enrichment strategies for Phase III.",
+        "epistemic_uncertainty": 0.041333,
+        "aleatoric_uncertainty": 0.230397,
+        "state_epistemic_uncertainty": 0.0612
       },
       "error": null,
-      "pass_rate": 0.875
+      "pass_rate": 1.0
     },
     {
       "name": "supply_chain_lead_time",
@@ -152,31 +149,30 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
+        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [
-        "sufficient_probes"
-      ],
+      "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 18.184,
-        "posterior_mean": 28.96518,
-        "posterior_std": 0.678582,
+        "elapsed_seconds": 71.688,
+        "posterior_mean": 28.94626,
+        "posterior_std": 0.678228,
         "credible_interval": [
-          27.87954,
-          30.112074
+          27.862041,
+          30.09341
         ],
         "true_parameter": 28.980166666666662,
         "parameter_covered": true,
-        "n_probes": 1,
-        "recommended_probe": "Run a small A/B test on pricing",
-        "epistemic_uncertainty": 0.68308,
-        "aleatoric_uncertainty": 5.486065,
-        "state_epistemic_uncertainty": 0.023
+        "n_probes": 3,
+        "recommended_probe": "Test expedited shipping for 5 standard shipments (same supplier/product) while measuring if variability decreases significantly",
+        "epistemic_uncertainty": 0.698755,
+        "aleatoric_uncertainty": 5.475828,
+        "state_epistemic_uncertainty": 0.0236
       },
       "error": null,
-      "pass_rate": 0.875
+      "pass_rate": 1.0
     },
     {
       "name": "energy_grid_demand",
@@ -185,31 +181,30 @@
         "uncertainty_bounded",
         "coverage_90ci",
         "posterior_precision",
+        "sufficient_probes",
         "uncertainty_decomposition",
         "uncertainty_tracked",
         "response_quality"
       ],
-      "failed_checks": [
-        "sufficient_probes"
-      ],
+      "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 56.008,
-        "posterior_mean": 2505.716892,
-        "posterior_std": 36.668653,
+        "elapsed_seconds": 125.733,
+        "posterior_mean": 2506.477474,
+        "posterior_std": 37.292809,
         "credible_interval": [
-          2447.355635,
-          2567.995502
+          2444.025471,
+          2566.718811
         ],
         "true_parameter": 2505.6475,
         "parameter_covered": true,
-        "n_probes": 1,
-        "recommended_probe": "Run a small A/B test on pricing",
-        "epistemic_uncertainty": 35.929319,
-        "aleatoric_uncertainty": 315.69509,
-        "state_epistemic_uncertainty": 0.0141
+        "n_probes": 4,
+        "recommended_probe": "Collect additional hourly demand data for the next 7 days to increase sample size and validate consistency of diurnal patterns.",
+        "epistemic_uncertainty": 36.697842,
+        "aleatoric_uncertainty": 315.751579,
+        "state_epistemic_uncertainty": 0.0144
       },
       "error": null,
-      "pass_rate": 0.875
+      "pass_rate": 1.0
     },
     {
       "name": "insurance_claim_frequency",
@@ -225,20 +220,20 @@
       ],
       "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 8.008,
-        "posterior_mean": 0.098988,
-        "posterior_std": 0.019413,
+        "elapsed_seconds": 51.266,
+        "posterior_mean": 0.099451,
+        "posterior_std": 0.021648,
         "credible_interval": [
-          0.068185,
-          0.132053
+          0.065907,
+          0.13713
         ],
         "true_parameter": 0.08,
         "parameter_covered": true,
-        "n_probes": 1,
-        "recommended_probe": "Run a small A/B test on pricing",
-        "epistemic_uncertainty": 0.02015,
-        "aleatoric_uncertainty": 0.088783,
-        "state_epistemic_uncertainty": 0.1691
+        "n_probes": 4,
+        "recommended_probe": "Implement a telematics pilot program offering discounts to 20 randomly selected policyholders for installing a driving behavior app; monitor their driving and claims for 6 months.",
+        "epistemic_uncertainty": 0.021789,
+        "aleatoric_uncertainty": 0.089086,
+        "state_epistemic_uncertainty": 0.1797
       },
       "error": null,
       "pass_rate": 1.0
@@ -257,23 +252,46 @@
       ],
       "failed_checks": [],
       "metrics": {
-        "elapsed_seconds": 7.937,
-        "posterior_mean": 0.040349,
-        "posterior_std": 0.008968,
+        "elapsed_seconds": 45.345,
+        "posterior_mean": 0.039607,
+        "posterior_std": 0.008312,
         "credible_interval": [
-          0.026565,
-          0.056068
+          0.026793,
+          0.054141
         ],
         "true_parameter": 0.035,
         "parameter_covered": true,
-        "n_probes": 1,
-        "recommended_probe": "Run a small A/B test on pricing",
-        "epistemic_uncertainty": 0.009032,
-        "aleatoric_uncertainty": 0.038639,
-        "state_epistemic_uncertainty": 0.1829
+        "n_probes": 3,
+        "recommended_probe": "Continue A/B test with increased sample size to 2000 total visitors on the variant to narrow the credible interval.",
+        "epistemic_uncertainty": 0.008315,
+        "aleatoric_uncertainty": 0.037969,
+        "state_epistemic_uncertainty": 0.1735
       },
       "error": null,
       "pass_rate": 1.0
     }
-  ]
+  ],
+  "generated_at": "2026-02-22T17:37:22.789657+00:00",
+  "benchmark_id": "bayesian",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\bayesian\\benchmark_bayesian.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:bayesian",
+  "provenance": {
+    "source_reference": "benchmark:bayesian",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
 }

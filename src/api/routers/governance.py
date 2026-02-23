@@ -9,11 +9,16 @@ All endpoints under /governance/ prefix. Only registered when GOVERNANCE_ENABLED
 
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
+import re
+from datetime import datetime
 from typing import Any, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
+from tenacity import RetryError
 
 from src.core.governance_models import (
     ComplianceFramework,
@@ -26,6 +31,7 @@ from src.core.governance_models import (
     GovernanceHealth,
     PolicyConflict,
 )
+from src.utils.resiliency import retry_with_backoff
 
 logger = logging.getLogger("carf.api.governance")
 
@@ -128,6 +134,114 @@ class PolicyTextExtractionRequest(BaseModel):
     target_domain: Optional[str] = None
 
 
+class ExtractedPolicyRule(BaseModel):
+    """Structured policy rule extracted from free-form governance text."""
+
+    name: str
+    condition: dict[str, Any] = Field(default_factory=dict)
+    constraint: dict[str, Any] = Field(default_factory=dict)
+    message: str
+    severity: str
+    confidence: float = Field(default=0.6, ge=0.0, le=1.0)
+    rationale: str = ""
+    evidence: list[str] = Field(default_factory=list)
+
+
+class PolicyTextExtractionResponse(BaseModel):
+    """Response payload for policy extraction endpoint."""
+
+    source_name: str
+    target_domain: Optional[str] = None
+    rules_extracted: int
+    rules: list[ExtractedPolicyRule] = Field(default_factory=list)
+    methodology: str = "llm_structured_extraction_v1"
+    extraction_confidence_avg: float = Field(default=0.0, ge=0.0, le=1.0)
+    explainability: dict[str, Any] = Field(default_factory=dict)
+    error: Optional[str] = None
+
+
+class SemanticGraphNode(BaseModel):
+    """Node in governance semantic graph."""
+
+    node_id: str
+    label: str
+    node_type: str = Field(..., description="domain|policy|concept")
+    domain_id: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class SemanticGraphEdge(BaseModel):
+    """Edge in governance semantic graph."""
+
+    edge_id: str
+    source: str
+    target: str
+    relation: str
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class SemanticGraphResponse(BaseModel):
+    """Response payload for governance semantic graph visualization."""
+
+    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    board_id: Optional[str] = None
+    session_id: Optional[str] = None
+    nodes: list[SemanticGraphNode] = Field(default_factory=list)
+    edges: list[SemanticGraphEdge] = Field(default_factory=list)
+    stats: dict[str, Any] = Field(default_factory=dict)
+    explainability: dict[str, Any] = Field(default_factory=dict)
+
+
+def _semantic_key(value: str) -> str:
+    """Create a stable semantic key for graph node IDs."""
+    cleaned = re.sub(r"[^a-z0-9]+", "_", value.strip().lower())
+    return cleaned.strip("_") or "unknown"
+
+
+def _strip_markdown_fences(content: str) -> str:
+    """Remove code fences and keep raw JSON if fenced output is returned."""
+    payload = content.strip()
+    if payload.startswith("```"):
+        lines = payload.splitlines()
+        if len(lines) >= 2:
+            payload = "\n".join(lines[1:])
+        if payload.endswith("```"):
+            payload = payload[:-3]
+    return payload.strip()
+
+
+def _extract_json_fragment(content: str) -> str:
+    """Extract first JSON object/array fragment from a model response."""
+    cleaned = _strip_markdown_fences(content)
+    if cleaned.startswith("[") or cleaned.startswith("{"):
+        return cleaned
+
+    first_array = cleaned.find("[")
+    first_obj = cleaned.find("{")
+    starts = [idx for idx in (first_array, first_obj) if idx >= 0]
+    if not starts:
+        return cleaned
+    start = min(starts)
+
+    last_array = cleaned.rfind("]")
+    last_obj = cleaned.rfind("}")
+    end = max(last_array, last_obj)
+    if end < start:
+        return cleaned
+    return cleaned[start : end + 1]
+
+
+@retry_with_backoff(max_attempts=3, min_wait=1.0, max_wait=8.0, exceptions=(Exception,))
+def _invoke_extraction_model(prompt: str) -> str:
+    """Invoke extraction LLM with retry/backoff for transient provider failures."""
+    from src.core.llm import get_chat_model
+
+    llm = get_chat_model(purpose="governance_extraction")
+    response = llm.invoke(prompt)
+    return response.content if hasattr(response, "content") else str(response)
+
+
 # ---------------------------------------------------------------------------
 # Domain Endpoints
 # ---------------------------------------------------------------------------
@@ -225,6 +339,322 @@ async def get_impact_path(source: str, target: str):
     return []
 
 
+@router.get("/semantic-graph", response_model=SemanticGraphResponse)
+async def get_semantic_graph(
+    board_id: Optional[str] = None,
+    session_id: Optional[str] = None,
+    unresolved_only: bool = True,
+    triple_limit: int = 80,
+):
+    """Return a purpose-built governance semantic graph for visualization."""
+    try:
+        return await _build_semantic_graph(board_id, session_id, unresolved_only, triple_limit)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.warning("Semantic graph generation failed, returning empty graph: %s", exc)
+        return SemanticGraphResponse(
+            board_id=board_id,
+            session_id=session_id,
+            nodes=[],
+            edges=[],
+            stats={"error": str(exc), "domains": 0, "policies": 0, "concepts": 0},
+            explainability={
+                "why_this": "Graph generation failed; returning empty graph as fallback.",
+                "how_confident": 0.0,
+                "based_on": [f"error:{type(exc).__name__}"],
+            },
+        )
+
+
+async def _build_semantic_graph(
+    board_id: Optional[str],
+    session_id: Optional[str],
+    unresolved_only: bool,
+    triple_limit: int,
+) -> SemanticGraphResponse:
+    """Internal builder for the semantic graph — extracted for error isolation."""
+    from src.services.federated_policy_service import get_federated_service
+    from src.services.governance_graph_service import get_governance_graph_service
+
+    scope_note = "all governance domains"
+    federated = get_federated_service()
+    domains = federated.list_domains()
+    policies = federated.list_policies()
+    conflicts = (
+        federated.get_unresolved_conflicts()
+        if unresolved_only
+        else federated.get_all_conflicts()
+    )
+
+    scoped_domain_ids = {domain.domain_id for domain in domains}
+
+    if board_id:
+        from src.services.governance_board_service import get_board_service
+
+        board = get_board_service().get_board(board_id)
+        if board is None:
+            raise HTTPException(404, f"Board '{board_id}' not found")
+
+        if board.domain_ids:
+            scoped_domain_ids = set(board.domain_ids)
+            domains = [domain for domain in domains if domain.domain_id in scoped_domain_ids]
+            policies = [
+                policy for policy in policies
+                if policy.domain_id in scoped_domain_ids
+            ]
+        if board.policy_namespaces:
+            board_namespaces = set(board.policy_namespaces)
+            policies = [
+                policy for policy in policies
+                if policy.namespace in board_namespaces
+            ]
+
+        conflicts = [
+            conflict
+            for conflict in conflicts
+            if (
+                conflict.policy_a_domain in scoped_domain_ids
+                or conflict.policy_b_domain in scoped_domain_ids
+            )
+        ]
+        scope_note = f"governance board {board_id}"
+
+    graph_service = get_governance_graph_service()
+    triples: list[dict[str, Any]] = []
+    limit = max(1, min(triple_limit, 500))
+    if graph_service.is_available:
+        triples = await graph_service.get_all_triples(session_id=session_id, limit=limit)
+
+    if scoped_domain_ids:
+        triples = [
+            triple
+            for triple in triples
+            if (
+                str(triple.get("domain_source", "")) in scoped_domain_ids
+                or str(triple.get("domain_target", "")) in scoped_domain_ids
+            )
+        ]
+
+    node_map: dict[str, SemanticGraphNode] = {}
+    edges: list[SemanticGraphEdge] = []
+    edge_counter = 0
+
+    def add_node(node: SemanticGraphNode) -> None:
+        node_map.setdefault(node.node_id, node)
+
+    def add_edge(
+        source: str,
+        target: str,
+        relation: str,
+        confidence: float = 1.0,
+        metadata: Optional[dict[str, Any]] = None,
+    ) -> None:
+        nonlocal edge_counter
+        edge_counter += 1
+        edges.append(
+            SemanticGraphEdge(
+                edge_id=f"e_{edge_counter}",
+                source=source,
+                target=target,
+                relation=relation,
+                confidence=max(0.0, min(float(confidence), 1.0)),
+                metadata=metadata or {},
+            )
+        )
+
+    for domain in domains:
+        add_node(
+            SemanticGraphNode(
+                node_id=f"domain:{domain.domain_id}",
+                label=domain.display_name,
+                node_type="domain",
+                domain_id=domain.domain_id,
+                metadata={
+                    "owner_email": domain.owner_email,
+                    "tags": domain.tags,
+                    "color": domain.color,
+                },
+            )
+        )
+
+    policy_id_to_node: dict[str, str] = {}
+    for policy in policies:
+        policy_node_id = f"policy:{_semantic_key(policy.namespace)}"
+        policy_id_to_node[str(policy.policy_id)] = policy_node_id
+        add_node(
+            SemanticGraphNode(
+                node_id=policy_node_id,
+                label=policy.name,
+                node_type="policy",
+                domain_id=policy.domain_id,
+                metadata={
+                    "namespace": policy.namespace,
+                    "priority": policy.priority,
+                    "active": policy.is_active,
+                    "rule_count": len(policy.rules),
+                },
+            )
+        )
+        domain_node_id = f"domain:{policy.domain_id}"
+        if domain_node_id in node_map:
+            add_edge(
+                source=domain_node_id,
+                target=policy_node_id,
+                relation="owns_policy",
+                confidence=1.0,
+                metadata={"namespace": policy.namespace},
+            )
+
+    severity_confidence = {
+        "critical": 1.0,
+        "high": 0.9,
+        "medium": 0.75,
+        "low": 0.6,
+    }
+    for conflict in conflicts:
+        severity = conflict.severity.value if hasattr(conflict.severity, "value") else str(conflict.severity)
+        conflict_type = (
+            conflict.conflict_type.value if hasattr(conflict.conflict_type, "value") else str(conflict.conflict_type)
+        )
+        source = policy_id_to_node.get(
+            str(conflict.policy_a_id), f"policy:{_semantic_key(conflict.policy_a_name or conflict.policy_a_id)}"
+        )
+        target = policy_id_to_node.get(
+            str(conflict.policy_b_id), f"policy:{_semantic_key(conflict.policy_b_name or conflict.policy_b_id)}"
+        )
+        if source not in node_map:
+            add_node(
+                SemanticGraphNode(
+                    node_id=source,
+                    label=conflict.policy_a_name or str(conflict.policy_a_id),
+                    node_type="policy",
+                    domain_id=conflict.policy_a_domain,
+                    metadata={"inferred_from_conflict": True},
+                )
+            )
+        if target not in node_map:
+            add_node(
+                SemanticGraphNode(
+                    node_id=target,
+                    label=conflict.policy_b_name or str(conflict.policy_b_id),
+                    node_type="policy",
+                    domain_id=conflict.policy_b_domain,
+                    metadata={"inferred_from_conflict": True},
+                )
+            )
+        add_edge(
+            source=source,
+            target=target,
+            relation="conflicts_with",
+            confidence=severity_confidence.get(severity, 0.7),
+            metadata={
+                "severity": severity,
+                "conflict_type": conflict_type,
+                "description": conflict.description,
+                "resolved": conflict.resolution is not None,
+            },
+        )
+
+    for triple in triples:
+        subject = str(triple.get("subject", "")).strip()
+        obj = str(triple.get("object", "")).strip()
+        predicate = str(triple.get("predicate", "related_to")).strip() or "related_to"
+        source_domain = str(triple.get("domain_source", "")).strip()
+        target_domain = str(triple.get("domain_target", "")).strip()
+        confidence = float(triple.get("confidence", 0.6) or 0.6)
+        triple_id = str(triple.get("triple_id", f"{source_domain}_{predicate}_{target_domain}"))
+
+        if not subject or not obj:
+            continue
+        if scoped_domain_ids and source_domain and source_domain not in scoped_domain_ids and target_domain not in scoped_domain_ids:
+            continue
+
+        subject_node = f"concept:{_semantic_key(subject)}"
+        object_node = f"concept:{_semantic_key(obj)}"
+        add_node(
+            SemanticGraphNode(
+                node_id=subject_node,
+                label=subject,
+                node_type="concept",
+                metadata={"role": "subject"},
+            )
+        )
+        add_node(
+            SemanticGraphNode(
+                node_id=object_node,
+                label=obj,
+                node_type="concept",
+                metadata={"role": "object"},
+            )
+        )
+
+        if source_domain and f"domain:{source_domain}" in node_map:
+            add_edge(
+                source=f"domain:{source_domain}",
+                target=subject_node,
+                relation="domain_mentions",
+                confidence=min(confidence + 0.1, 1.0),
+                metadata={"triple_id": triple_id},
+            )
+        add_edge(
+            source=subject_node,
+            target=object_node,
+            relation=predicate,
+            confidence=confidence,
+            metadata={
+                "triple_id": triple_id,
+                "domain_source": source_domain,
+                "domain_target": target_domain,
+            },
+        )
+        if target_domain and f"domain:{target_domain}" in node_map:
+            add_edge(
+                source=object_node,
+                target=f"domain:{target_domain}",
+                relation="impacts_domain",
+                confidence=min(confidence + 0.1, 1.0),
+                metadata={"triple_id": triple_id},
+            )
+
+    avg_confidence = (
+        round(sum(edge.confidence for edge in edges) / max(len(edges), 1), 3)
+        if edges
+        else 0.0
+    )
+    explainability = {
+        "why_this": (
+            "This graph combines MAP semantic triples, policy ownership, and RESOLVE conflicts "
+            "to make governance interactions explicit."
+        ),
+        "how_confident": avg_confidence,
+        "based_on": [
+            f"scope:{scope_note}",
+            f"domains:{len([n for n in node_map.values() if n.node_type == 'domain'])}",
+            f"policies:{len([n for n in node_map.values() if n.node_type == 'policy'])}",
+            f"triples:{len(triples)}",
+            f"conflicts:{len(conflicts)}",
+            f"graph_backend:{'neo4j' if graph_service.is_available else 'degraded_in_memory'}",
+        ],
+    }
+
+    return SemanticGraphResponse(
+        board_id=board_id,
+        session_id=session_id,
+        nodes=list(node_map.values()),
+        edges=edges,
+        stats={
+            "domains": len([n for n in node_map.values() if n.node_type == "domain"]),
+            "policies": len([n for n in node_map.values() if n.node_type == "policy"]),
+            "concepts": len([n for n in node_map.values() if n.node_type == "concept"]),
+            "triples_loaded": len(triples),
+            "conflicts_loaded": len(conflicts),
+            "edge_count": len(edges),
+        },
+        explainability=explainability,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Policy Endpoints
 # ---------------------------------------------------------------------------
@@ -252,10 +682,17 @@ async def create_policy(req: PolicyCreateRequest):
         is_active=req.is_active,
         tags=req.tags,
     )
-    return get_federated_service().add_policy(policy)
+    result = get_federated_service().add_policy(policy)
+    # Incremental RAG re-ingestion (non-blocking)
+    try:
+        from src.services.rag_service import get_rag_service
+        get_rag_service().ingest_policies()
+    except Exception:
+        pass
+    return result
 
 
-@router.get("/policies/{namespace:path}")
+@router.get("/policies/{namespace}")
 async def get_policy(namespace: str):
     """Get a specific policy by namespace."""
     from src.services.federated_policy_service import get_federated_service
@@ -265,7 +702,7 @@ async def get_policy(namespace: str):
     return policy
 
 
-@router.put("/policies/{namespace:path}")
+@router.put("/policies/{namespace}")
 async def update_policy(namespace: str, req: PolicyUpdateRequest):
     """Update a federated policy."""
     from src.services.federated_policy_service import get_federated_service
@@ -273,15 +710,27 @@ async def update_policy(namespace: str, req: PolicyUpdateRequest):
     policy = get_federated_service().update_policy(namespace, updates)
     if policy is None:
         raise HTTPException(404, f"Policy '{namespace}' not found")
+    # Incremental RAG re-ingestion (non-blocking)
+    try:
+        from src.services.rag_service import get_rag_service
+        get_rag_service().ingest_policies()
+    except Exception:
+        pass
     return policy
 
 
-@router.delete("/policies/{namespace:path}", status_code=204)
+@router.delete("/policies/{namespace}", status_code=204)
 async def delete_policy(namespace: str):
     """Remove a federated policy."""
     from src.services.federated_policy_service import get_federated_service
     if not get_federated_service().remove_policy(namespace):
         raise HTTPException(404, f"Policy '{namespace}' not found")
+    # Incremental RAG re-ingestion (non-blocking)
+    try:
+        from src.services.rag_service import get_rag_service
+        get_rag_service().ingest_policies()
+    except Exception:
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -514,15 +963,10 @@ async def export_spec(req: SpecExportRequest):
 # Policy Text Extraction Endpoints
 # ---------------------------------------------------------------------------
 
-@router.post("/policies/extract")
+@router.post("/policies/extract", response_model=PolicyTextExtractionResponse)
 async def extract_policies_from_text(req: PolicyTextExtractionRequest):
     """Extract governance rules from unstructured text via LLM."""
-    import json as _json
-
     try:
-        from src.core.llm import get_chat_model
-        llm = get_chat_model(purpose="governance_extraction")
-
         prompt = f"""You are a governance policy extraction engine. Extract structured governance rules from the following text.
 
 For each rule found, return a JSON array of objects with these fields:
@@ -531,6 +975,9 @@ For each rule found, return a JSON array of objects with these fields:
 - constraint: dict of key-value constraints the rule enforces
 - message: human-readable description of the rule
 - severity: one of "critical", "high", "medium", "low"
+- confidence: number in [0,1] indicating extraction confidence for this rule
+- rationale: one sentence on why this rule applies
+- evidence: list of 1-3 short quotes/snippets from the input text supporting this rule
 
 Text to analyze:
 ---
@@ -539,55 +986,107 @@ Text to analyze:
 
 Return ONLY a valid JSON array. No markdown, no explanation."""
 
-        response = llm.invoke(prompt)
-        content = response.content if hasattr(response, "content") else str(response)
+        # LLM invoke is sync in current provider adapters; run off-thread from async endpoint.
+        content = await asyncio.to_thread(_invoke_extraction_model, prompt)
+        payload = _extract_json_fragment(content)
 
         # Parse the LLM response
-        # Strip markdown code fences if present
-        content = content.strip()
-        if content.startswith("```"):
-            lines = content.split("\n")
-            content = "\n".join(lines[1:])
-            if content.endswith("```"):
-                content = content[:-3].strip()
-
-        extracted_rules = _json.loads(content)
+        extracted_rules = json.loads(payload)
         if not isinstance(extracted_rules, list):
             extracted_rules = [extracted_rules]
 
         # Convert to FederatedPolicyRule format
-        from src.core.governance_models import FederatedPolicyRule, ConflictSeverity
-        rules = []
-        for rule_data in extracted_rules:
+        from src.core.governance_models import ConflictSeverity
+
+        rules: list[ExtractedPolicyRule] = []
+        for item in extracted_rules:
+            rule_data = item if isinstance(item, dict) else {}
             try:
                 severity = ConflictSeverity(rule_data.get("severity", "medium"))
             except ValueError:
                 severity = ConflictSeverity.MEDIUM
-            rules.append({
-                "name": rule_data.get("name", "unnamed_rule"),
-                "condition": rule_data.get("condition", {}),
-                "constraint": rule_data.get("constraint", {}),
-                "message": rule_data.get("message", ""),
-                "severity": severity.value,
-            })
+            confidence_raw = rule_data.get("confidence", 0.6)
+            try:
+                confidence = float(confidence_raw)
+            except (TypeError, ValueError):
+                confidence = 0.6
+            confidence = max(0.0, min(confidence, 1.0))
 
-        return {
-            "source_name": req.source_name,
-            "target_domain": req.target_domain,
-            "rules_extracted": len(rules),
-            "rules": rules,
-            "error": None,
-        }
+            evidence = rule_data.get("evidence", [])
+            if not isinstance(evidence, list):
+                evidence = []
+            evidence = [str(item).strip() for item in evidence if str(item).strip()][:3]
 
+            condition = rule_data.get("condition", {})
+            if not isinstance(condition, dict):
+                condition = {}
+            constraint = rule_data.get("constraint", {})
+            if not isinstance(constraint, dict):
+                constraint = {}
+
+            rules.append(
+                ExtractedPolicyRule(
+                    name=str(rule_data.get("name", "unnamed_rule")),
+                    condition=condition,
+                    constraint=constraint,
+                    message=str(rule_data.get("message", "")),
+                    severity=severity.value,
+                    confidence=confidence,
+                    rationale=str(rule_data.get("rationale", "")),
+                    evidence=evidence,
+                )
+            )
+
+        avg_confidence = round(
+            sum(rule.confidence for rule in rules) / max(len(rules), 1),
+            3,
+        )
+
+        return PolicyTextExtractionResponse(
+            source_name=req.source_name,
+            target_domain=req.target_domain,
+            rules_extracted=len(rules),
+            rules=rules,
+            extraction_confidence_avg=avg_confidence,
+            explainability={
+                "why_this": "Rules were extracted from unstructured governance text using a structured schema.",
+                "how_confident": avg_confidence,
+                "based_on": [
+                    f"source:{req.source_name}",
+                    f"text_characters:{len(req.text)}",
+                    f"rules_detected:{len(rules)}",
+                ],
+            },
+        )
+
+    except RetryError as exc:
+        logger.warning("Policy extraction retry attempts exhausted: %s", exc)
+        return PolicyTextExtractionResponse(
+            source_name=req.source_name,
+            target_domain=req.target_domain,
+            rules_extracted=0,
+            rules=[],
+            explainability={
+                "why_this": "Extraction failed due to repeated model invocation failures.",
+                "how_confident": 0.0,
+                "based_on": [f"source:{req.source_name}"],
+            },
+            error="LLM extraction failed after retries.",
+        )
     except Exception as exc:
-        logger.warning(f"Policy extraction failed: {exc}")
-        return {
-            "source_name": req.source_name,
-            "target_domain": req.target_domain,
-            "rules_extracted": 0,
-            "rules": [],
-            "error": str(exc),
-        }
+        logger.warning("Policy extraction failed: %s", exc)
+        return PolicyTextExtractionResponse(
+            source_name=req.source_name,
+            target_domain=req.target_domain,
+            rules_extracted=0,
+            rules=[],
+            explainability={
+                "why_this": "Extraction could not parse or validate model output.",
+                "how_confident": 0.0,
+                "based_on": [f"source:{req.source_name}"],
+            },
+            error=str(exc),
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -608,6 +1107,124 @@ async def seed_demo_data(template_id: str):
         "domains": board.domain_ids,
         "policies": board.policy_namespaces,
     }
+
+
+# ---------------------------------------------------------------------------
+# RAG / Knowledge Base Endpoints
+# ---------------------------------------------------------------------------
+
+@router.get("/rag/status")
+async def rag_status():
+    """Get RAG service status."""
+    from src.services.rag_service import get_rag_service
+    return get_rag_service().get_status()
+
+
+@router.post("/rag/ingest-policies")
+async def rag_ingest_policies():
+    """Ingest all federated policies into the RAG knowledge base."""
+    from src.services.rag_service import get_rag_service
+    count = get_rag_service().ingest_policies()
+    return {"status": "ingested", "chunks": count}
+
+
+class RAGQueryRequest(BaseModel):
+    query: str
+    domain_id: Optional[str] = None
+    top_k: int = 5
+
+
+@router.post("/rag/query")
+async def rag_query(req: RAGQueryRequest):
+    """Query the RAG knowledge base."""
+    from src.services.rag_service import get_rag_service
+    result = get_rag_service().retrieve(req.query, top_k=req.top_k, domain_id=req.domain_id)
+    return result.model_dump(mode="json")
+
+
+@router.post("/rag/ingest-text")
+async def rag_ingest_text(req: PolicyTextExtractionRequest):
+    """Ingest arbitrary text into the RAG knowledge base."""
+    from src.services.rag_service import get_rag_service
+    count = get_rag_service().ingest_text(
+        req.text,
+        source=req.source_name,
+        domain_id=req.target_domain,
+    )
+    return {"status": "ingested", "source": req.source_name, "chunks": count}
+
+
+# ---------------------------------------------------------------------------
+# Document Upload Endpoints
+# ---------------------------------------------------------------------------
+
+@router.post("/documents/upload")
+async def upload_document(
+    domain_id: Optional[str] = None,
+    source_name: Optional[str] = None,
+):
+    """Upload a document for RAG ingestion.
+
+    Accepts multipart/form-data with a 'file' field.
+    Supported formats: PDF, DOCX, CSV, JSON, TXT, MD, YAML.
+    """
+    from fastapi import UploadFile, File as FastAPIFile
+
+    # This endpoint is registered but the actual file handling requires
+    # the FastAPI File() dependency — implemented via a separate route below.
+    return {"error": "Use /governance/documents/upload-file instead"}
+
+
+@router.post("/documents/upload-file")
+async def upload_document_file(
+    domain_id: Optional[str] = None,
+    source_name: Optional[str] = None,
+):
+    """Placeholder for file upload — actual implementation uses Form dependency.
+
+    The frontend should POST multipart/form-data to this endpoint.
+    See the main app router for the actual file-accepting version.
+    """
+    return {"status": "ready", "supported_types": ["pdf", "docx", "csv", "json", "txt", "md", "yaml"]}
+
+
+@router.get("/documents/status")
+async def document_processor_status():
+    """Get document processor status."""
+    from src.services.document_processor import get_document_processor
+    return get_document_processor().get_status()
+
+
+# ---------------------------------------------------------------------------
+# Agent Memory Endpoints
+# ---------------------------------------------------------------------------
+
+@router.get("/memory/status")
+async def memory_status():
+    """Get agent memory status."""
+    from src.services.agent_memory import get_agent_memory
+    return get_agent_memory().get_status()
+
+
+@router.post("/memory/compact")
+async def memory_compact():
+    """Compact the agent memory file."""
+    from src.services.agent_memory import get_agent_memory
+    count = get_agent_memory().compact()
+    return {"status": "compacted", "entries": count}
+
+
+class MemoryRecallRequest(BaseModel):
+    query: str
+    top_k: int = 5
+
+
+@router.post("/memory/recall")
+async def memory_recall(req: MemoryRecallRequest):
+    """Recall similar past analyses from persistent memory."""
+    from src.services.agent_memory import get_agent_memory
+    results = get_agent_memory().recall(req.query, top_k=req.top_k)
+    return [r.model_dump(mode="json") for r in results]
 
 
 # ---------------------------------------------------------------------------

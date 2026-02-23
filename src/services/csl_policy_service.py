@@ -19,12 +19,15 @@ Architecture:
 from __future__ import annotations
 
 import asyncio
+import importlib.util
 import logging
 import os
 from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field
+
+from src.utils.currency import get_currency_config_hint, normalize_currency_amount
 
 logger = logging.getLogger("carf.csl")
 
@@ -42,7 +45,7 @@ class CSLConfig(BaseModel):
     audit_enabled: bool = Field(default=True)
 
     @classmethod
-    def from_env(cls) -> "CSLConfig":
+    def from_env(cls) -> CSLConfig:
         """Load CSL config from environment variables."""
         enabled_env = os.getenv("CSL_ENABLED")
         enabled = enabled_env.lower() != "false" if enabled_env is not None else True
@@ -152,6 +155,14 @@ class CSLRule:
     def _check_constraint(self, context: dict[str, Any]) -> bool:
         """Check if rule constraint is satisfied."""
         for key, constraint_val in self.constraint.items():
+            if (
+                key in {"action.amount", "action.daily_total"}
+                and bool(self._resolve_path(context, "action.requires_currency_conversion"))
+                and not bool(self._resolve_path(context, "action.currency_conversion_ok"))
+            ):
+                # Currency-aware checks are deferred to dedicated conversion gate rule.
+                continue
+
             actual = self._resolve_path(context, key)
             if actual is None:
                 return False
@@ -244,6 +255,14 @@ def _build_budget_limits_policy() -> CSLPolicy:
         condition={"user.role": "admin", "action.type": "transfer"},
         constraint={"action.amount": 500000},
         message="Admin users limited to $500,000 transfers",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="currency_conversion_required_for_financial_actions",
+        policy_name="budget_limits",
+        condition={"action.is_financial": True, "action.requires_currency_conversion": True},
+        constraint={"action.currency_conversion_ok": True},
+        message="Financial actions require configured FX rates (CARF_FX_RATES_JSON) for currency-aware checks",
     ))
 
     policy.add_rule(CSLRule(
@@ -486,6 +505,49 @@ def _build_data_access_policy() -> CSLPolicy:
     return policy
 
 
+def _build_cross_cutting_policy() -> CSLPolicy:
+    """Build the cross_cutting policy from built-in rules.
+
+    Mirrors cross_cutting.csl — cross-domain safety rules that span
+    multiple policy boundaries.
+    """
+    policy = CSLPolicy("cross_cutting", "1.0", "Cross-domain safety rules")
+
+    policy.add_rule(CSLRule(
+        name="chaotic_drift_limit",
+        policy_name="cross_cutting",
+        condition={"domain.type": "Chaotic", "prediction.drift_detected": True},
+        constraint={"action.amount": 5000},
+        message="Chaotic domain with drift: financial limit $5,000",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="low_confidence_causal_gate",
+        policy_name="cross_cutting",
+        condition={"prediction.source": "causal"},
+        constraint={"domain.confidence": {"min": 0.6}},
+        message="Low-confidence causal predictions require escalation",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="complex_export_limit",
+        policy_name="cross_cutting",
+        condition={"domain.type": "Complex", "action.type": "export"},
+        constraint={"approval.status": "approved"},
+        message="Complex domain exports require approval",
+    ))
+
+    policy.add_rule(CSLRule(
+        name="high_uncertainty_block",
+        policy_name="cross_cutting",
+        condition={},
+        constraint={"prediction.epistemic_uncertainty": {"max": 0.8}},
+        message="High epistemic uncertainty (>0.8) requires review-only mode",
+    ))
+
+    return policy
+
+
 # ---------------------------------------------------------------------------
 # Main service
 # ---------------------------------------------------------------------------
@@ -514,7 +576,9 @@ class CSLPolicyService:
 
         # Try to load csl-core
         try:
-            import csl_core  # type: ignore[import-untyped]
+            csl_spec = importlib.util.find_spec("csl_core")
+            if csl_spec is None:
+                raise ImportError("csl_core not installed")
             self._csl_available = True
             logger.info("CSL-Core library available, using formal verification")
         except ImportError:
@@ -532,6 +596,7 @@ class CSLPolicyService:
             _build_action_gates_policy(),
             _build_chimera_guards_policy(),
             _build_data_access_policy(),
+            _build_cross_cutting_policy(),
         ]
 
         # Load federated governance policies (Phase 16 — OG integration)
@@ -579,6 +644,84 @@ class CSLPolicyService:
             entropy = state.domain_entropy
             context_data = state.context if hasattr(state, "context") else {}
 
+        if not isinstance(proposed_action, dict):
+            proposed_action = {}
+
+        def _to_float(value: Any, default: float = 0.0) -> float:
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return default
+
+        params = proposed_action.get("parameters", {})
+        if not isinstance(params, dict):
+            params = {}
+
+        raw_amount = proposed_action.get("amount")
+        if raw_amount is None:
+            raw_amount = params.get("amount", 0.0)
+        amount = _to_float(raw_amount, default=0.0)
+
+        action_currency = str(
+            proposed_action.get("currency")
+            or params.get("currency")
+            or "USD"
+        ).strip().upper()
+
+        daily_total = _to_float(context_data.get("daily_spend_total", 0.0), default=0.0)
+        daily_total_currency = str(
+            context_data.get("daily_spend_currency", action_currency)
+        ).strip().upper()
+
+        policy_currency = str(
+            context_data.get("policy_currency", os.getenv("CARF_POLICY_CURRENCY", "USD"))
+        ).strip().upper()
+
+        amount_normalized = normalize_currency_amount(
+            amount=amount,
+            source_currency=action_currency,
+            target_currency=policy_currency,
+        )
+        daily_total_normalized = normalize_currency_amount(
+            amount=daily_total,
+            source_currency=daily_total_currency,
+            target_currency=policy_currency,
+        )
+
+        requires_currency_conversion = (
+            action_currency != policy_currency or daily_total_currency != policy_currency
+        )
+        currency_conversion_ok = amount_normalized.success and daily_total_normalized.success
+
+        amount_in_policy_currency = (
+            amount_normalized.normalized_amount
+            if amount_normalized.success and amount_normalized.normalized_amount is not None
+            else amount
+        )
+        daily_total_in_policy_currency = (
+            daily_total_normalized.normalized_amount
+            if daily_total_normalized.success and daily_total_normalized.normalized_amount is not None
+            else daily_total
+        )
+
+        action_type = str(proposed_action.get("action_type", "")).strip()
+        financial_action_types = {
+            "transfer",
+            "purchase",
+            "payment",
+            "refund",
+            "invoice",
+            "rebalance",
+            "trade",
+            "spend",
+        }
+        is_financial_action = action_type in financial_action_types or amount > 0.0
+
+        conversion_reasons = [
+            r for r in (amount_normalized.reason, daily_total_normalized.reason) if r
+        ]
+        currency_hint = get_currency_config_hint()
+
         # Build CSL context
         return {
             "domain": {
@@ -587,12 +730,20 @@ class CSLPolicyService:
                 "entropy": entropy,
             },
             "action": {
-                "type": proposed_action.get("action_type", ""),
-                "amount": proposed_action.get("amount")
-                    or proposed_action.get("parameters", {}).get("amount", 0),
+                "type": action_type,
+                "amount": amount_in_policy_currency,
+                "amount_raw": amount,
                 "description": proposed_action.get("description", ""),
-                "currency": proposed_action.get("currency", "USD"),
-                "daily_total": context_data.get("daily_spend_total", 0),
+                "currency": action_currency,
+                "policy_currency": policy_currency,
+                "daily_total": daily_total_in_policy_currency,
+                "daily_total_raw": daily_total,
+                "daily_total_currency": daily_total_currency,
+                "requires_currency_conversion": requires_currency_conversion,
+                "currency_conversion_ok": currency_conversion_ok,
+                "currency_conversion_reasons": conversion_reasons,
+                "currency_config": currency_hint,
+                "is_financial": is_financial_action,
             },
             "user": {
                 "role": context_data.get("user_role", "junior"),
@@ -712,6 +863,41 @@ class CSLPolicyService:
                 )
             return CSLEvaluation(allow=True, error=f"Evaluation failed: {exc}")
 
+    def _currency_gate_violation(self, context: dict[str, Any]) -> CSLRuleResult | None:
+        """Return explicit violation when cross-currency checks cannot be evaluated."""
+        action = context.get("action", {})
+        if not isinstance(action, dict):
+            return None
+
+        if (
+            bool(action.get("is_financial"))
+            and bool(action.get("requires_currency_conversion"))
+            and not bool(action.get("currency_conversion_ok"))
+        ):
+            reasons = action.get("currency_conversion_reasons")
+            reason_text = ", ".join(reasons) if isinstance(reasons, list) and reasons else "unknown"
+            currency_cfg = action.get("currency_config", {})
+            configured = (
+                ", ".join(currency_cfg.get("configured_currencies", []))
+                if isinstance(currency_cfg, dict)
+                else ""
+            )
+            message = (
+                "Financial actions require configured FX rates (CARF_FX_RATES_JSON) for "
+                f"currency-aware checks. reason={reason_text}"
+            )
+            if configured:
+                message += f"; configured_currencies={configured}"
+
+            return CSLRuleResult(
+                rule_name="currency_conversion_required_for_financial_actions",
+                policy_name="budget_limits",
+                passed=False,
+                message=message,
+                context_used={"action": action},
+            )
+        return None
+
     def _evaluate_with_csl_core(self, context: dict[str, Any]) -> CSLEvaluation:
         """Evaluate using the csl-core library.
 
@@ -738,11 +924,24 @@ class CSLPolicyService:
                     message=v.get("message", ""),
                 ))
 
+            gate_violation = self._currency_gate_violation(context)
+            if gate_violation and not any(
+                v.rule_name == gate_violation.rule_name for v in violations
+            ):
+                violations.append(gate_violation)
+
+            rules_checked = int(result.get("rules_checked", 0))
+            if gate_violation:
+                rules_checked += 1
+            rules_failed = len(violations)
+            rules_passed = max(rules_checked - rules_failed, 0)
+            allow = bool(result.get("allow", False)) and rules_failed == 0
+
             return CSLEvaluation(
-                allow=result.get("allow", False),
-                rules_checked=result.get("rules_checked", 0),
-                rules_passed=result.get("rules_passed", 0),
-                rules_failed=len(violations),
+                allow=allow,
+                rules_checked=rules_checked,
+                rules_passed=rules_passed,
+                rules_failed=rules_failed,
                 violations=violations,
                 audit_entries=result.get("audit", []),
             )

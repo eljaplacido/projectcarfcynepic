@@ -1,10 +1,10 @@
 {
   "total_scenarios": 13,
   "total_data_rows": 420,
-  "carf_passed": 11,
-  "carf_pass_rate": 0.8461538461538461,
-  "carf_domain_accuracy": 0.8461538461538461,
-  "llm_domain_accuracy": 0.0,
+  "carf_passed": 12,
+  "carf_pass_rate": 0.9230769230769231,
+  "carf_domain_accuracy": 0.9230769230769231,
+  "llm_domain_accuracy": 1.0,
   "domain_breakdown": {
     "complicated": {
       "total": 5,
@@ -23,8 +23,8 @@
     },
     "disorder": {
       "total": 2,
-      "passed": 0,
-      "domain_correct": 0
+      "passed": 1,
+      "domain_correct": 1
     }
   },
   "experience_buffer": {
@@ -33,32 +33,31 @@
     "patterns": {
       "Complicated": {
         "count": 5,
-        "avg_confidence": 0.88,
+        "avg_confidence": 0.82,
         "verdicts": {
-          "approved": 5
+          "requires_escalation": 3,
+          "approved": 2
         },
         "avg_causal_effect": -12.6588
       },
       "Chaotic": {
         "count": 3,
-        "avg_confidence": 0.9,
+        "avg_confidence": 0.9567,
         "verdicts": {},
         "avg_causal_effect": null
       },
       "Complex": {
         "count": 3,
-        "avg_confidence": 0.8767,
+        "avg_confidence": 0.8333,
         "verdicts": {
           "approved": 3
         },
         "avg_causal_effect": null
       },
-      "Clear": {
+      "Disorder": {
         "count": 1,
-        "avg_confidence": 0.95,
-        "verdicts": {
-          "approved": 1
-        },
+        "avg_confidence": 0.1,
+        "verdicts": {},
         "avg_causal_effect": null
       }
     }
@@ -73,15 +72,15 @@
         "result": {
           "success": true,
           "domain": "Complicated",
-          "confidence": 0.88,
+          "confidence": 0.8,
           "has_causal_evidence": true,
           "has_bayesian_evidence": false,
-          "escalation": false,
+          "escalation": true,
           "action_type": "causal_recommendation",
-          "guardian_verdict": "approved",
+          "guardian_verdict": "requires_escalation",
           "has_response": true,
-          "reasoning_steps": 3,
-          "duration_ms": 3947.82
+          "reasoning_steps": 4,
+          "duration_ms": 79613.49
         },
         "validation": {
           "domain_match": true,
@@ -92,15 +91,15 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
+          "domain": "complicated",
           "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.042599996959324926
+          "action_type": "causal_analysis",
+          "duration_ms": 16271.265499999572
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     },
@@ -113,15 +112,15 @@
         "result": {
           "success": true,
           "domain": "Complicated",
-          "confidence": 0.88,
+          "confidence": 0.8,
           "has_causal_evidence": true,
           "has_bayesian_evidence": false,
-          "escalation": false,
+          "escalation": true,
           "action_type": "causal_recommendation",
-          "guardian_verdict": "approved",
+          "guardian_verdict": "requires_escalation",
           "has_response": true,
-          "reasoning_steps": 3,
-          "duration_ms": 1826.16
+          "reasoning_steps": 4,
+          "duration_ms": 72033.45
         },
         "validation": {
           "domain_match": true,
@@ -132,15 +131,15 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.034199998481199145
+          "domain": "complicated",
+          "confidence": 0.8,
+          "action_type": "causal_analysis",
+          "duration_ms": 23820.572800002992
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     },
@@ -153,7 +152,7 @@
         "result": {
           "success": true,
           "domain": "Chaotic",
-          "confidence": 0.9,
+          "confidence": 0.97,
           "has_causal_evidence": false,
           "has_bayesian_evidence": false,
           "escalation": true,
@@ -161,7 +160,7 @@
           "guardian_verdict": null,
           "has_response": true,
           "reasoning_steps": 3,
-          "duration_ms": 420.68
+          "duration_ms": 8494.08
         },
         "validation": {
           "domain_match": true,
@@ -173,16 +172,16 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.04289999924367294
+          "domain": "chaotic",
+          "confidence": 0.9,
+          "action_type": "emergency_stop",
+          "duration_ms": 17809.414899995318
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
-        "carf_faster": false
+        "llm_domain_correct": true,
+        "carf_faster": true
       }
     },
     {
@@ -194,7 +193,7 @@
         "result": {
           "success": true,
           "domain": "Complicated",
-          "confidence": 0.88,
+          "confidence": 0.85,
           "has_causal_evidence": true,
           "has_bayesian_evidence": false,
           "escalation": false,
@@ -202,7 +201,7 @@
           "guardian_verdict": "approved",
           "has_response": true,
           "reasoning_steps": 3,
-          "duration_ms": 2883.68
+          "duration_ms": 36552.11
         },
         "validation": {
           "domain_match": true,
@@ -213,15 +212,15 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.03869999636663124
+          "domain": "complicated",
+          "confidence": 0.85,
+          "action_type": "causal_analysis",
+          "duration_ms": 17493.01739999646
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     },
@@ -234,15 +233,15 @@
         "result": {
           "success": true,
           "domain": "Complex",
-          "confidence": 0.85,
+          "confidence": 0.8,
           "has_causal_evidence": false,
           "has_bayesian_evidence": true,
-          "escalation": false,
+          "escalation": true,
           "action_type": "exploration_probe",
           "guardian_verdict": "approved",
           "has_response": true,
           "reasoning_steps": 3,
-          "duration_ms": 18409.16
+          "duration_ms": 84596.04
         },
         "validation": {
           "domain_match": true,
@@ -254,15 +253,15 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.036600002204068005
+          "domain": "complex",
+          "confidence": 0.9,
+          "action_type": "bayesian_probing",
+          "duration_ms": 50333.93629999773
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     },
@@ -275,7 +274,7 @@
         "result": {
           "success": true,
           "domain": "Chaotic",
-          "confidence": 0.9,
+          "confidence": 0.95,
           "has_causal_evidence": false,
           "has_bayesian_evidence": false,
           "escalation": true,
@@ -283,7 +282,7 @@
           "guardian_verdict": null,
           "has_response": true,
           "reasoning_steps": 3,
-          "duration_ms": 3.3
+          "duration_ms": 13090.54
         },
         "validation": {
           "domain_match": true,
@@ -295,16 +294,16 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.03560000186553225
+          "domain": "chaotic",
+          "confidence": 0.95,
+          "action_type": "emergency_stop",
+          "duration_ms": 16458.12830000068
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
-        "carf_faster": false
+        "llm_domain_correct": true,
+        "carf_faster": true
       }
     },
     {
@@ -316,7 +315,7 @@
         "result": {
           "success": true,
           "domain": "Complicated",
-          "confidence": 0.88,
+          "confidence": 0.85,
           "has_causal_evidence": true,
           "has_bayesian_evidence": false,
           "escalation": false,
@@ -324,7 +323,7 @@
           "guardian_verdict": "approved",
           "has_response": true,
           "reasoning_steps": 3,
-          "duration_ms": 1823.94
+          "duration_ms": 57945.06
         },
         "validation": {
           "domain_match": true,
@@ -335,15 +334,15 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.03979999746661633
+          "domain": "complicated",
+          "confidence": 0.8,
+          "action_type": "causal_analysis",
+          "duration_ms": 27034.013899996353
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     },
@@ -356,15 +355,15 @@
         "result": {
           "success": true,
           "domain": "Complex",
-          "confidence": 0.88,
+          "confidence": 0.8,
           "has_causal_evidence": false,
           "has_bayesian_evidence": true,
-          "escalation": false,
+          "escalation": true,
           "action_type": "exploration_probe",
           "guardian_verdict": "approved",
           "has_response": true,
           "reasoning_steps": 3,
-          "duration_ms": 39914.57
+          "duration_ms": 113321.09
         },
         "validation": {
           "domain_match": true,
@@ -376,15 +375,15 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.039500002458225936
+          "domain": "complex",
+          "confidence": 0.9,
+          "action_type": "bayesian_probing",
+          "duration_ms": 13522.14549999917
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     },
@@ -396,36 +395,36 @@
       "carf": {
         "result": {
           "success": true,
-          "domain": "Clear",
-          "confidence": 0.95,
+          "domain": "Disorder",
+          "confidence": 0.1,
           "has_causal_evidence": false,
           "has_bayesian_evidence": false,
-          "escalation": false,
-          "action_type": "lookup",
-          "guardian_verdict": "approved",
-          "has_response": true,
-          "reasoning_steps": 3,
-          "duration_ms": 3.85
+          "escalation": true,
+          "action_type": null,
+          "guardian_verdict": null,
+          "has_response": false,
+          "reasoning_steps": 2,
+          "duration_ms": 7756.11
         },
         "validation": {
-          "domain_match": false,
-          "escalation_triggered": false
+          "domain_match": true,
+          "escalation_triggered": true
         },
-        "passed": false
+        "passed": true
       },
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.03410000499570742
+          "domain": "disorder",
+          "confidence": 0.9,
+          "action_type": "human_escalation",
+          "duration_ms": 10308.768199996848
         }
       },
       "comparison": {
-        "carf_domain_correct": false,
-        "llm_domain_correct": false,
-        "carf_faster": false
+        "carf_domain_correct": true,
+        "llm_domain_correct": true,
+        "carf_faster": true
       }
     },
     {
@@ -437,15 +436,15 @@
         "result": {
           "success": true,
           "domain": "Complicated",
-          "confidence": 0.88,
+          "confidence": 0.8,
           "has_causal_evidence": true,
           "has_bayesian_evidence": false,
-          "escalation": false,
+          "escalation": true,
           "action_type": "causal_recommendation",
-          "guardian_verdict": "approved",
+          "guardian_verdict": "requires_escalation",
           "has_response": true,
-          "reasoning_steps": 3,
-          "duration_ms": 1852.98
+          "reasoning_steps": 4,
+          "duration_ms": 60350.45
         },
         "validation": {
           "domain_match": true,
@@ -456,15 +455,15 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.0360000049113296
+          "domain": "complicated",
+          "confidence": 0.8,
+          "action_type": "causal_analysis",
+          "duration_ms": 22002.65400000353
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     },
@@ -477,7 +476,7 @@
         "result": {
           "success": true,
           "domain": "Chaotic",
-          "confidence": 0.9,
+          "confidence": 0.95,
           "has_causal_evidence": false,
           "has_bayesian_evidence": false,
           "escalation": true,
@@ -485,7 +484,7 @@
           "guardian_verdict": null,
           "has_response": true,
           "reasoning_steps": 3,
-          "duration_ms": 3.36
+          "duration_ms": 13587.48
         },
         "validation": {
           "domain_match": true,
@@ -497,16 +496,16 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.04099999932805076
+          "domain": "chaotic",
+          "confidence": 0.95,
+          "action_type": "emergency_stop",
+          "duration_ms": 28793.469299998833
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
-        "carf_faster": false
+        "llm_domain_correct": true,
+        "carf_faster": true
       }
     },
     {
@@ -526,7 +525,7 @@
           "guardian_verdict": "approved",
           "has_response": true,
           "reasoning_steps": 3,
-          "duration_ms": 24808.03
+          "duration_ms": 63056.74
         },
         "validation": {
           "domain_match": true,
@@ -538,15 +537,15 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.03489999653538689
+          "domain": "complex",
+          "confidence": 0.9,
+          "action_type": "bayesian_probing",
+          "duration_ms": 17666.67559999769
         }
       },
       "comparison": {
         "carf_domain_correct": true,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     },
@@ -558,8 +557,8 @@
       "carf": {
         "result": {
           "success": false,
-          "error": "No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id).",
-          "duration_ms": 16.98
+          "error": "No data provided for Bayesian inference. Supply observations (list of floats) or successes/trials (binomial) via bayesian_inference config.",
+          "duration_ms": 24951.11
         },
         "validation": {
           "pipeline_success": false
@@ -569,17 +568,43 @@
       "llm_baseline": {
         "result": {
           "success": true,
-          "domain": "unknown",
-          "confidence": 0.7,
-          "action_type": null,
-          "duration_ms": 0.051399998483248055
+          "domain": "disorder",
+          "confidence": 0.95,
+          "action_type": "human_escalation",
+          "duration_ms": 18518.33479999914
         }
       },
       "comparison": {
         "carf_domain_correct": false,
-        "llm_domain_correct": false,
+        "llm_domain_correct": true,
         "carf_faster": false
       }
     }
-  ]
+  ],
+  "generated_at": "2026-02-22T19:04:11.020376+00:00",
+  "benchmark_id": "e2e",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\use_cases\\benchmark_e2e.py",
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "4f2accf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {
+    "total_scenarios": 13,
+    "total_data_rows": 420
+  },
+  "source_reference": "benchmark:e2e",
+  "provenance": {
+    "source_reference": "benchmark:e2e",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
 }

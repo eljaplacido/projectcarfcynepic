@@ -247,6 +247,13 @@ async def run_benchmark(
         "latency": latency_stats,
         "individual_results": results,
     }
+    from benchmarks import finalize_benchmark_report
+    output = finalize_benchmark_report(
+        output,
+        benchmark_id="router",
+        source_reference="benchmark:router",
+        benchmark_config={"script": __file__},
+    )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as fh:
