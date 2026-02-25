@@ -1,12 +1,12 @@
 {
   "benchmark": "carf_governance",
-  "timestamp": "2026-02-24T13:26:42.296430+00:00",
+  "timestamp": "2026-02-25T09:53:46.161471+00:00",
   "map": {
     "pillar": "MAP",
     "total_cases": 50,
-    "avg_domain_recall": 0.2992,
-    "cross_domain_link_accuracy": 0.46,
-    "avg_latency_ms": 0.02,
+    "avg_domain_recall": 0.7955,
+    "cross_domain_link_accuracy": 0.9,
+    "avg_latency_ms": 0.08,
     "individual_results": [
       {
         "name": "procurement_sustainability_link",
@@ -22,7 +22,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.09
+        "latency_ms": 0.14
       },
       {
         "name": "finance_security_link",
@@ -32,13 +32,15 @@
         ],
         "found_domains": [
           "finance",
+          "it",
+          "legal",
           "security"
         ],
         "domain_recall": 1.0,
-        "triple_count": 1,
+        "triple_count": 6,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.04
+        "latency_ms": 0.11
       },
       {
         "name": "legal_procurement_link",
@@ -54,7 +56,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.05
+        "latency_ms": 0.04
       },
       {
         "name": "sustainability_finance_link",
@@ -70,7 +72,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.04
       },
       {
         "name": "security_legal_link",
@@ -79,14 +81,15 @@
           "security"
         ],
         "found_domains": [
+          "it",
           "legal",
           "security"
         ],
         "domain_recall": 1.0,
-        "triple_count": 1,
+        "triple_count": 3,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.05
       },
       {
         "name": "triple_domain_chain",
@@ -99,13 +102,14 @@
           "finance",
           "legal",
           "procurement",
+          "rnd",
           "sustainability"
         ],
         "domain_recall": 1.0,
-        "triple_count": 6,
+        "triple_count": 10,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.07
+        "latency_ms": 0.11
       },
       {
         "name": "no_cross_domain",
@@ -115,7 +119,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.02
+        "latency_ms": 1.35
       },
       {
         "name": "finance_only",
@@ -127,7 +131,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.03
       },
       {
         "name": "hr_finance_link",
@@ -135,12 +139,15 @@
           "finance",
           "hr"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "finance",
+          "hr"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.05
       },
       {
         "name": "it_security_link",
@@ -148,12 +155,15 @@
           "it",
           "security"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "it",
+          "security"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.04
       },
       {
         "name": "operations_sustainability_link",
@@ -161,12 +171,15 @@
           "operations",
           "sustainability"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "operations",
+          "sustainability"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.06
       },
       {
         "name": "marketing_legal_link",
@@ -174,12 +187,16 @@
           "legal",
           "marketing"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.01
+        "found_domains": [
+          "legal",
+          "marketing",
+          "rnd"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.06
       },
       {
         "name": "rnd_procurement_link",
@@ -187,12 +204,15 @@
           "procurement",
           "rnd"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "procurement",
+          "rnd"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.05
       },
       {
         "name": "hr_legal_link",
@@ -200,12 +220,16 @@
           "hr",
           "legal"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "hr",
+          "legal",
+          "rnd"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.06
       },
       {
         "name": "finance_procurement_link",
@@ -213,12 +237,17 @@
           "finance",
           "procurement"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.01
+        "found_domains": [
+          "finance",
+          "hr",
+          "legal",
+          "procurement"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 6,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.09
       },
       {
         "name": "it_operations_link",
@@ -226,12 +255,15 @@
           "it",
           "operations"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.01
+        "found_domains": [
+          "it",
+          "operations"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.04
       },
       {
         "name": "security_sustainability_link",
@@ -239,12 +271,16 @@
           "security",
           "sustainability"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "legal",
+          "security",
+          "sustainability"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.05
       },
       {
         "name": "marketing_finance_link",
@@ -252,12 +288,17 @@
           "finance",
           "marketing"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "finance",
+          "it",
+          "marketing",
+          "rnd"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 6,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.08
       },
       {
         "name": "rnd_legal_link",
@@ -265,12 +306,15 @@
           "legal",
           "rnd"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.01
+        "found_domains": [
+          "legal",
+          "rnd"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.04
       },
       {
         "name": "hr_security_link",
@@ -278,12 +322,17 @@
           "hr",
           "security"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.01
+        "found_domains": [
+          "hr",
+          "legal",
+          "rnd",
+          "security"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 6,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.07
       },
       {
         "name": "operations_finance_link",
@@ -294,13 +343,15 @@
         "found_domains": [
           "finance",
           "legal",
-          "procurement"
+          "operations",
+          "procurement",
+          "rnd"
         ],
-        "domain_recall": 0.5,
-        "triple_count": 3,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.05
+        "domain_recall": 1.0,
+        "triple_count": 10,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.11
       },
       {
         "name": "procurement_legal_link",
@@ -329,7 +380,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.03
       },
       {
         "name": "sustainability_legal_link",
@@ -338,14 +389,16 @@
           "sustainability"
         ],
         "found_domains": [
+          "it",
           "legal",
+          "rnd",
           "sustainability"
         ],
         "domain_recall": 1.0,
-        "triple_count": 1,
+        "triple_count": 6,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.09
       },
       {
         "name": "hr_operations_link",
@@ -353,12 +406,17 @@
           "hr",
           "operations"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "hr",
+          "it",
+          "operations",
+          "rnd"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 6,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.08
       },
       {
         "name": "rnd_finance_link",
@@ -366,12 +424,16 @@
           "finance",
           "rnd"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.01
+        "found_domains": [
+          "finance",
+          "hr",
+          "rnd"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.05
       },
       {
         "name": "marketing_operations_link",
@@ -379,12 +441,15 @@
           "marketing",
           "operations"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.01
+        "found_domains": [
+          "marketing",
+          "operations"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.05
       },
       {
         "name": "rnd_sustainability_link",
@@ -392,12 +457,15 @@
           "rnd",
           "sustainability"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.01
+        "found_domains": [
+          "rnd",
+          "sustainability"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 1,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.04
       },
       {
         "name": "triple_hr_finance_legal",
@@ -406,12 +474,15 @@
           "hr",
           "legal"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
+        "found_domains": [
+          "hr",
+          "legal"
+        ],
+        "domain_recall": 0.6667,
+        "triple_count": 1,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.04
       },
       {
         "name": "triple_it_security_legal",
@@ -428,7 +499,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.04
       },
       {
         "name": "triple_operations_sustainability_finance",
@@ -439,13 +510,14 @@
         ],
         "found_domains": [
           "finance",
+          "operations",
           "sustainability"
         ],
-        "domain_recall": 0.6667,
-        "triple_count": 1,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.04
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.05
       },
       {
         "name": "triple_marketing_legal_finance",
@@ -457,13 +529,14 @@
         "found_domains": [
           "finance",
           "legal",
+          "marketing",
           "procurement"
         ],
-        "domain_recall": 0.6667,
-        "triple_count": 3,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.04
+        "domain_recall": 1.0,
+        "triple_count": 6,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.07
       },
       {
         "name": "triple_rnd_procurement_finance",
@@ -474,13 +547,15 @@
         ],
         "found_domains": [
           "finance",
-          "procurement"
+          "hr",
+          "procurement",
+          "rnd"
         ],
-        "domain_recall": 0.6667,
-        "triple_count": 1,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.03
+        "domain_recall": 1.0,
+        "triple_count": 6,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.08
       },
       {
         "name": "triple_hr_it_security",
@@ -489,12 +564,16 @@
           "it",
           "security"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "hr",
+          "it",
+          "security"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.06
       },
       {
         "name": "triple_procurement_sustainability_legal",
@@ -506,13 +585,14 @@
         "found_domains": [
           "legal",
           "procurement",
+          "rnd",
           "sustainability"
         ],
         "domain_recall": 1.0,
-        "triple_count": 3,
+        "triple_count": 6,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.04
+        "latency_ms": 0.09
       },
       {
         "name": "triple_operations_it_finance",
@@ -521,12 +601,16 @@
           "it",
           "operations"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "finance",
+          "it",
+          "operations"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.05
       },
       {
         "name": "triple_rnd_security_legal",
@@ -535,12 +619,17 @@
           "rnd",
           "security"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
-        "link_detected": false,
-        "link_correct": false,
-        "latency_ms": 0.02
+        "found_domains": [
+          "hr",
+          "legal",
+          "rnd",
+          "security"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 6,
+        "link_detected": true,
+        "link_correct": true,
+        "latency_ms": 0.08
       },
       {
         "name": "triple_hr_sustainability_operations",
@@ -549,12 +638,15 @@
           "operations",
           "sustainability"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
+        "found_domains": [
+          "hr",
+          "operations"
+        ],
+        "domain_recall": 0.6667,
+        "triple_count": 1,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.01
+        "latency_ms": 0.04
       },
       {
         "name": "hr_only",
@@ -566,7 +658,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.02
       },
       {
         "name": "legal_only",
@@ -574,15 +666,15 @@
           "legal"
         ],
         "found_domains": [
-          "legal",
           "procurement",
+          "rnd",
           "security"
         ],
-        "domain_recall": 1.0,
+        "domain_recall": 0.0,
         "triple_count": 3,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.04
+        "latency_ms": 0.05
       },
       {
         "name": "security_only",
@@ -594,7 +686,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.02
+        "latency_ms": 0.03
       },
       {
         "name": "it_only",
@@ -618,7 +710,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.02
       },
       {
         "name": "sustainability_only",
@@ -630,19 +722,23 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.02
       },
       {
         "name": "operations_only",
         "expected_domains": [
           "operations"
         ],
-        "found_domains": [],
-        "domain_recall": 0.0,
-        "triple_count": 0,
+        "found_domains": [
+          "hr",
+          "operations",
+          "rnd"
+        ],
+        "domain_recall": 1.0,
+        "triple_count": 3,
         "link_detected": false,
-        "link_correct": true,
-        "latency_ms": 0.01
+        "link_correct": false,
+        "latency_ms": 0.05
       },
       {
         "name": "no_domain_weather",
@@ -652,7 +748,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.02
       },
       {
         "name": "no_domain_personal",
@@ -662,7 +758,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.03
       },
       {
         "name": "no_domain_trivia",
@@ -672,7 +768,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.03
       },
       {
         "name": "no_domain_math",
@@ -682,7 +778,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.03
       },
       {
         "name": "no_domain_greeting",
@@ -692,7 +788,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.01
+        "latency_ms": 0.02
       }
     ]
   },
@@ -739,7 +835,7 @@
         "actual_cost": 0.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0009
+        "latency_ms": 0.0011
       },
       {
         "name": "zero_tokens",
@@ -748,7 +844,7 @@
         "actual_cost": 0.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0009
+        "latency_ms": 0.001
       },
       {
         "name": "deepseek_small_query",
@@ -757,7 +853,7 @@
         "actual_cost": 0.000126,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0011
+        "latency_ms": 0.001
       },
       {
         "name": "unknown_provider_fallback",
@@ -766,7 +862,7 @@
         "actual_cost": 0.14,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.001
+        "latency_ms": 0.0011
       },
       {
         "name": "deepseek_large_input_small_output",
@@ -802,7 +898,7 @@
         "actual_cost": 6.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0008
+        "latency_ms": 0.0009
       },
       {
         "name": "very_large_token_count_10M",
@@ -811,7 +907,7 @@
         "actual_cost": 4.2,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0009
+        "latency_ms": 0.0008
       },
       {
         "name": "fractional_tokens",
@@ -1134,7 +1230,7 @@
         "articles_well_formed": true,
         "has_gaps": true,
         "has_recommendations": true,
-        "latency_ms": 0.02
+        "latency_ms": 0.03
       },
       {
         "framework": "iso_27001",
@@ -1154,57 +1250,57 @@
   "latency": {
     "iterations": 20,
     "avg_ms": 0.47,
-    "p50_ms": 0.43,
-    "p95_ms": 0.7,
-    "p99_ms": 0.7,
-    "min_ms": 0.41,
-    "max_ms": 0.84,
+    "p50_ms": 0.44,
+    "p95_ms": 0.58,
+    "p99_ms": 0.58,
+    "min_ms": 0.43,
+    "max_ms": 0.69,
     "p95_under_50ms": true,
     "all_latencies_ms": [
-      0.41,
-      0.41,
-      0.41,
-      0.41,
-      0.41,
-      0.41,
-      0.42,
-      0.42,
-      0.42,
-      0.42,
-      0.43,
-      0.43,
       0.43,
       0.43,
       0.43,
       0.44,
+      0.44,
+      0.44,
+      0.44,
+      0.44,
+      0.44,
+      0.44,
+      0.44,
       0.45,
+      0.46,
+      0.46,
+      0.46,
+      0.47,
+      0.48,
+      0.5,
       0.58,
-      0.7,
-      0.84
+      0.69
     ]
   },
   "feature_flag": {
     "iterations": 100,
-    "disabled_avg_us": 29.67,
-    "enabled_avg_us": 6.71,
-    "overhead_us": -22.96,
+    "disabled_avg_us": 23.19,
+    "enabled_avg_us": 6.91,
+    "overhead_us": -16.28,
     "zero_overhead": true
   },
-  "map_accuracy": 0.46,
+  "map_accuracy": 0.9,
   "price_accuracy": 1.0,
   "conflict_detection_rate": 0.7647,
   "conflict_false_positive_rate": 0.0,
   "compliance_all_valid": true,
-  "governance_p95_ms": 0.7,
+  "governance_p95_ms": 0.58,
   "governance_p95_under_50ms": true,
-  "generated_at": "2026-02-24T13:26:42.336269+00:00",
+  "generated_at": "2026-02-25T09:53:46.200770+00:00",
   "benchmark_id": "governance",
   "methodology": "scripted_benchmark_v1",
   "benchmark_config": {
     "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_governance.py",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "git_hash": "ae8d2a3",
+    "git_hash": "4cd21bc",
     "platform": "Windows-11-10.0.26200-SP0",
     "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
   },

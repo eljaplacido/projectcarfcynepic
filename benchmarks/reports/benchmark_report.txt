@@ -1,15 +1,15 @@
 CARF UNIFIED BENCHMARK REPORT
 ============================================================
-Generated: 2026-02-22T21:27:30.725672
+Generated: 2026-02-25T12:08:27.164747
 Data sources: router, causal, bayesian, guardian, performance, chimera, governance, e2e, baseline, board_lifecycle, policy_roundtrip, owasp, red_team, counterbench, adversarial_causal, tau_bench, hallucination_scale, cross_llm, clear, fairness, xai, audit_trail, energy, scope3, sus, task_completion, wcag, supply_chain, healthcare, finance, load, chaos_cascade, soak
 Grade: A+
 
 SUMMARY
 ------------------------------------------------------------
-  Hypotheses evaluated: 38/39
-  Hypotheses passed:    31/38
-  Pass rate:            81.6%
-  Pass rate (95% LCB):  66.6%
+  Hypotheses evaluated: 39/39
+  Hypotheses passed:    36/39
+  Pass rate:            92.3%
+  Pass rate (95% LCB):  79.7%
   Data coverage:        33 benchmark categories loaded
   Realism gate:         FAIL
   Realism score:        55.15/100
@@ -53,8 +53,11 @@ HYPOTHESIS RESULTS
          carf_ms: 28431.82
          baseline_ms: 14934.56
 
-  [ N/A] H7: CARF reduces hallucination by >= 40%
-         Measured: —  |  Threshold: 0.4
+  [FAIL] H7: CARF reduces hallucination by >= 40%
+         Measured: -1.0000  |  Threshold: 0.4
+         carf_hallucination_rate: 0.2
+         llm_hallucination_rate: 0.0
+         reduction_pct: -100.0
 
   [PASS] H8: ChimeraOracle >= 10x faster with < 20% accuracy loss
          Measured: 40.7200  |  Threshold: 10.0
@@ -63,10 +66,10 @@ HYPOTHESIS RESULTS
          Measured: -37.2600  |  Threshold: 10.0
          tracemalloc_peak_mb: 12.67
 
-  [FAIL] H10: Governance MAP accuracy >= 70% cross-domain link detection
-         Measured: 0.4600  |  Threshold: 0.7
-         domain_recall: 0.2992
-         cross_domain_accuracy: 0.46
+  [PASS] H10: Governance MAP accuracy >= 70% cross-domain link detection
+         Measured: 0.9000  |  Threshold: 0.7
+         domain_recall: 0.7955
+         cross_domain_accuracy: 0.9
          total_cases: 50
 
   [PASS] H11: Governance PRICE accuracy >= 95% cost computation precision
@@ -76,11 +79,11 @@ HYPOTHESIS RESULTS
          aggregation_valid: True
 
   [PASS] H12: Governance node latency P95 < 50ms (non-blocking)
-         Measured: 0.4800  |  Threshold: 50.0
-         avg_ms: 0.37
-         p50_ms: 0.35
-         p95_ms: 0.48
-         p99_ms: 0.48
+         Measured: 0.5800  |  Threshold: 50.0
+         avg_ms: 0.47
+         p50_ms: 0.44
+         p95_ms: 0.58
+         p99_ms: 0.58
          iterations: 20
          feature_flag_zero_overhead: True
 
@@ -140,8 +143,8 @@ HYPOTHESIS RESULTS
          Measured: 1.0000  |  Threshold: 0.8
          equalized_odds_diff: 0.0
 
-  [FAIL] H27: Explainability fidelity >= 80%
-         Measured: 0.5000  |  Threshold: 0.8
+  [PASS] H27: Explainability fidelity >= 80%
+         Measured: 0.8000  |  Threshold: 0.8
          stability: 1.0
          avg_steps: 1.0
 
@@ -151,14 +154,14 @@ HYPOTHESIS RESULTS
   [PASS] H29: Energy proportional to complexity (Clear < Complicated < Complex)
          Measured: 1.0000  |  Threshold: 1.0
 
-  [FAIL] H30: Scope 3 emission attribution accuracy >= 85%
-         Measured: 0.3000  |  Threshold: 0.85
+  [PASS] H30: Scope 3 emission attribution accuracy >= 85%
+         Measured: 1.0000  |  Threshold: 0.85
 
   [PASS] H31: SUS usability score >= 68
          Measured: 68.4400  |  Threshold: 68.0
 
-  [FAIL] H32: Task completion success rate >= 90%
-         Measured: 0.8000  |  Threshold: 0.9
+  [PASS] H32: Task completion success rate >= 90%
+         Measured: 1.0000  |  Threshold: 0.9
 
   [PASS] H33: WCAG 2.2 Level A violations == 0
          Measured: 0.0000  |  Threshold: 0.0
@@ -167,8 +170,8 @@ HYPOTHESIS RESULTS
          Measured: 0.9375  |  Threshold: 0.7
          prediction_lead_time: 96.0
 
-  [FAIL] H35: Healthcare CATE accuracy vs RCT >= 90%
-         Measured: 0.8809  |  Threshold: 0.9
+  [PASS] H35: Healthcare CATE accuracy vs RCT >= 90%
+         Measured: 0.9786  |  Threshold: 0.9
 
   [PASS] H36: Finance VaR Kupiec p-value > 0.05
          Measured: 1.0000  |  Threshold: 0.05

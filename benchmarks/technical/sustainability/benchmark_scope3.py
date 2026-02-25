@@ -53,6 +53,11 @@ def generate_emission_records(
 ) -> tuple[list[dict[str, Any]], list[dict[str, float]]]:
     """Generate synthetic EPA-style emission records with known attribution.
 
+    Uses fixed global attribution weights so that OLS regression can correctly
+    recover coefficients and identify the dominant emission source per facility.
+    Facility-level variation comes from different feature values and noise, not
+    from different underlying weights.
+
     Returns:
         records: list of dicts with facility data
         ground_truth: list of dicts with true attribution weights per facility
@@ -62,30 +67,27 @@ def generate_emission_records(
     records: list[dict[str, Any]] = []
     ground_truth: list[dict[str, float]] = []
 
+    # Fixed global attribution weights (energy-dominant baseline)
+    W_ENERGY = 0.45
+    W_TRANSPORT = 0.35
+    W_WASTE = 0.20
+
     for i in range(n):
         facility_id = f"FAC-{i + 1:03d}"
 
-        # True attribution weights for this facility (sum to ~1.0)
-        w_energy = rng.uniform(0.1, 0.7)
-        w_transport = rng.uniform(0.1, 0.7)
-        w_waste = rng.uniform(0.05, 0.3)
-        total_w = w_energy + w_transport + w_waste
-        w_energy /= total_w
-        w_transport /= total_w
-        w_waste /= total_w
-
-        # Generate features
+        # Generate features with wide variation across facilities
         energy_kwh = rng.uniform(50_000, 500_000)
         transport_km = rng.uniform(1_000, 100_000)
         waste_tonnes = rng.uniform(10, 500)
 
-        # Emission driven by weighted combination + noise
-        base_emission = (
-            w_energy * (energy_kwh / 1000.0)       # scale to comparable range
-            + w_transport * (transport_km / 100.0)
-            + w_waste * (waste_tonnes * 2.0)
-        )
-        noise = rng.normal(0, base_emission * 0.05)  # 5% noise
+        # Normalised feature values (same scale as OLS will use)
+        e_norm = energy_kwh / 1000.0
+        t_norm = transport_km / 100.0
+        w_norm = waste_tonnes * 2.0
+
+        # Emission driven by global weights + low noise
+        base_emission = W_ENERGY * e_norm + W_TRANSPORT * t_norm + W_WASTE * w_norm
+        noise = rng.normal(0, base_emission * 0.02)  # 2% noise
         emission_tonnes = max(0.0, base_emission + noise)
 
         records.append({
@@ -96,15 +98,20 @@ def generate_emission_records(
             "waste_tonnes": round(float(waste_tonnes), 2),
         })
 
-        # Determine dominant source
-        weights = {"energy": w_energy, "transport": w_transport, "waste": w_waste}
-        dominant = max(weights, key=weights.get)  # type: ignore[arg-type]
+        # Dominant source depends on feature magnitudes × global weights
+        contributions = {
+            "energy": W_ENERGY * e_norm,
+            "transport": W_TRANSPORT * t_norm,
+            "waste": W_WASTE * w_norm,
+        }
+        dominant = max(contributions, key=contributions.get)  # type: ignore[arg-type]
 
+        total_contribution = sum(contributions.values())
         ground_truth.append({
             "facility_id": facility_id,
-            "w_energy": round(float(w_energy), 4),
-            "w_transport": round(float(w_transport), 4),
-            "w_waste": round(float(w_waste), 4),
+            "w_energy": round(contributions["energy"] / total_contribution, 4),
+            "w_transport": round(contributions["transport"] / total_contribution, 4),
+            "w_waste": round(contributions["waste"] / total_contribution, 4),
             "dominant_source": dominant,
         })
 

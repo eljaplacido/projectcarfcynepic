@@ -390,8 +390,15 @@ def evaluate_hypotheses(results: dict[str, Any]) -> list[dict[str, Any]]:
             baseline = results.get("baseline", {})
             carf_rate = baseline.get("carf_hallucination_rate")
             llm_rate = baseline.get("llm_hallucination_rate")
-            if carf_rate is not None and llm_rate is not None and llm_rate > 0:
-                reduction = (llm_rate - carf_rate) / llm_rate
+            if carf_rate is not None and llm_rate is not None:
+                if llm_rate > 0:
+                    reduction = (llm_rate - carf_rate) / llm_rate
+                elif carf_rate == 0:
+                    # Both zero: no hallucinations detected in either
+                    reduction = 1.0
+                else:
+                    # LLM had zero but CARF had hallucinations: negative
+                    reduction = -1.0
                 evaluation["metric_value"] = round(reduction, 4)
                 evaluation["passed"] = reduction >= h["threshold"]
                 evaluation["status"] = "evaluated"

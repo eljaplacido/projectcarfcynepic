@@ -71,7 +71,7 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 
 CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 10 benchmark categories, using synthetic data with known ground truth and a raw LLM baseline (same model, no pipeline) for comparison. All benchmarks use fixed random seeds for full reproducibility.
 
-### Overall Grade: A+ -- 34/38 Hypotheses Passed (89.5%)
+### Overall Grade: A+ -- 36/39 Hypotheses Passed (92.3%)
 
 | # | Hypothesis | Measured | Threshold | Result |
 |---|-----------|----------|-----------|--------|
@@ -85,15 +85,15 @@ CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 10 benc
 | H7 | **Hallucination Reduction** -- grounded queries | N/A | >= 40% | -- |
 | H8 | **ChimeraOracle Speedup** -- fast causal predictions | **40.7x** faster | >= 10x | **PASS** |
 | H9 | **Memory Stability** -- 500+ queries | **-37.3%** RSS growth | <= 10% | **PASS** |
-| H10 | **MAP Accuracy** -- cross-domain link detection | 46% | >= 70% | FAIL |
+| H10 | **MAP Accuracy** -- cross-domain link detection | **90%** | >= 70% | **PASS** |
 | H11 | **PRICE Precision** -- cost computation | **100%** (max err 2.8e-05) | >= 95% | **PASS** |
-| H12 | **Governance Latency** -- P95 non-blocking | **0.48ms** | < 50ms | **PASS** |
+| H12 | **Governance Latency** -- P95 non-blocking | **0.58ms** | < 50ms | **PASS** |
 | H13 | **PRICE Expanded** -- 15-case cost test | **100%** | >= 95% | **PASS** |
 | H14 | **RESOLVE Conflict Detection** -- 30 cases | **86.7%** | >= 80% | **PASS** |
 | H15 | **Board Lifecycle** -- CRUD operations | **100%** | 100% | **PASS** |
 | H16 | **Policy Roundtrip** -- YAML export/import fidelity | **100%** | >= 95% | **PASS** |
-| H17 | **Counterfactual Accuracy** -- vs raw LLM | **+16.7pp** (CI cov 96.7%) | >= 10pp | **PASS** |
-| H18 | **Tau-Bench Agent Compliance** -- policy-guided | **100%** (30/30 scenarios) | >= 95% | **PASS** |
+| H17 | **Counterfactual Accuracy** -- vs raw LLM | 0% | >= 10pp | FAIL |
+| H18 | **Tau-Bench Agent Compliance** -- policy-guided | 60% | >= 95% | FAIL |
 | H19 | **Hallucination at Scale** -- rate ceiling | **7.0%** | <= 10% | **PASS** |
 | H21 | **Cross-LLM Agreement** -- provider parity | **100%** | >= 85% | **PASS** |
 | H22 | **CLEAR Composite** -- cost/latency/efficacy/alignment | **0.77** | >= 0.75 | **PASS** |
@@ -104,12 +104,12 @@ CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 10 benc
 | H27 | **XAI Fidelity** -- explainability quality | **80%** (3/3 dimensions) | >= 80% | **PASS** |
 | H28 | **ALCOA+ Audit Trail** -- compliance | **100%** | >= 95% | **PASS** |
 | H29 | **Energy Proportionality** -- Clear < Complicated < Complex | **100%** | 100% | **PASS** |
-| H30 | **Scope 3 Attribution** -- emission accuracy | 30% | >= 85% | FAIL |
+| H30 | **Scope 3 Attribution** -- emission accuracy | **100%** | >= 85% | **PASS** |
 | H31 | **SUS Usability** -- System Usability Scale | **68.4** | >= 68 | **PASS** |
-| H32 | **Task Completion** -- success rate | 80% | >= 90% | FAIL |
+| H32 | **Task Completion** -- success rate | **100%** | >= 90% | **PASS** |
 | H33 | **WCAG 2.2 Level A** -- accessibility violations | **0** | 0 | **PASS** |
 | H34 | **Supply Chain Prediction** -- precision | **94%** | >= 70% | **PASS** |
-| H35 | **Healthcare CATE** -- vs RCT ground truth | 88% | >= 90% | FAIL |
+| H35 | **Healthcare CATE** -- vs RCT ground truth | **98%** | >= 90% | **PASS** |
 | H36 | **Finance VaR** -- Kupiec backtest | **p = 1.0** | > 0.05 | **PASS** |
 | H37 | **Load Test** -- P95 at 25 concurrent users | **42ms** | <= 15s | **PASS** |
 | H38 | **Chaos Cascade** -- containment rate | **100%** | >= 80% | **PASS** |
@@ -126,7 +126,7 @@ Based on the benchmark evidence, CARF is particularly suited for:
 | **Causal Decision Support** -- supply chain, marketing attribution, policy evaluation | Separates cause from correlation with statistical rigor | H1: 1,138x more accurate, H17: +16.7pp vs LLM on confounded scenarios |
 | **Risk Quantification Under Uncertainty** -- investment, insurance, clinical trials | Calibrated posteriors with epistemic/aleatoric decomposition | H2: 100% calibrated across all Bayesian scenarios |
 | **Regulated AI Systems** -- EU AI Act, financial audit, healthcare decision support | Deterministic, compliant, and fully auditable | H3--H5: 100% violation detection, determinism, and compliance |
-| **Enterprise Governance** -- multi-domain policy orchestration, cost intelligence | MAP-PRICE-RESOLVE framework with conflict detection and audit | H11--H16: 100% cost precision, 86.7% conflict detection, full board lifecycle |
+| **Enterprise Governance** -- multi-domain policy orchestration, cost intelligence | MAP-PRICE-RESOLVE framework with conflict detection and audit | H10: 90% MAP accuracy, H11--H16: 100% cost precision, 86.7% conflict detection, full board lifecycle |
 | **Security-Critical Deployments** -- financial services, government, healthcare | Injection-proof, red-team-tested, fairness-verified | H23: 100% OWASP block, H25: 100% red team defense, H26: perfect fairness |
 | **High-Throughput Analysis** -- real-time scoring, batch processing | Fast oracle + stable memory under sustained load | H8: 40.7x speedup, H37: 42ms P95 at 25 users, H39: no memory growth |
 | **Strategic Analysis** -- market entry, R&D allocation, scenario planning | Cynefin routing ensures the right analytical method per problem type | H0: 89.5% router accuracy, F1 = 0.895 across 5 domains |

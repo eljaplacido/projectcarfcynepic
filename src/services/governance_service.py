@@ -57,6 +57,31 @@ DOMAIN_DESCRIPTIONS: dict[str, str] = {
         "cost analysis, investment evaluation, tax planning, audit trails, "
         "risk assessment, and profitability analysis."
     ),
+    "hr": (
+        "Human resources management including recruitment, compensation, "
+        "benefits administration, employee relations, training programs, "
+        "workforce planning, payroll, and labor compliance."
+    ),
+    "it": (
+        "Information technology including cloud infrastructure, software "
+        "systems, network management, ERP platforms, SaaS licensing, "
+        "system migrations, and IT governance."
+    ),
+    "operations": (
+        "Operations management including manufacturing, logistics, "
+        "warehouse management, process optimization, facility management, "
+        "quality control, and operational efficiency."
+    ),
+    "marketing": (
+        "Marketing and communications including advertising campaigns, "
+        "brand management, digital marketing, social media, product "
+        "launches, and FTC compliance for marketing claims."
+    ),
+    "rnd": (
+        "Research and development including innovation programs, "
+        "prototyping, patent applications, laboratory management, "
+        "technology research, and product development."
+    ),
 }
 
 # Cached domain embeddings (lazy-loaded)
@@ -89,11 +114,16 @@ def _get_domain_embeddings() -> dict[str, Any] | None:
 
 # Domain keywords for entity-to-domain mapping
 DOMAIN_KEYWORDS: dict[str, list[str]] = {
-    "procurement": ["supplier", "procurement", "vendor", "purchase", "contract", "spend", "sourcing", "supply chain"],
-    "sustainability": ["carbon", "emission", "esg", "sustainability", "climate", "scope 3", "taxonomy", "materiality", "environmental"],
-    "security": ["security", "access", "encryption", "breach", "vulnerability", "threat", "authentication", "firewall"],
-    "legal": ["legal", "contract", "regulation", "compliance", "ip", "patent", "liability", "disclosure", "gdpr"],
-    "finance": ["budget", "revenue", "cost", "financial", "audit", "tax", "fx", "risk", "investment", "profit"],
+    "procurement": ["supplier", "procurement", "vendor", "purchase", "contract", "spend", "sourcing", "supply chain", "bidding", "bids", "capex", "equipment", "due diligence", "anti-bribery", "fcpa"],
+    "sustainability": ["carbon", "emission", "esg", "sustainability", "climate", "scope 3", "taxonomy", "materiality", "environmental", "net-zero", "solar", "renewable", "circular economy", "biodegradable", "offset"],
+    "security": ["security", "access", "encryption", "breach", "vulnerability", "threat", "authentication", "firewall", "penetration", "cybersecurity", "mfa", "anonymization", "privacy", "clearance", "forensic"],
+    "legal": ["legal", "regulation", "compliance", "ip", "patent", "liability", "disclosure", "gdpr", "ftc", "sec", "labor laws", "severance", "directive", "notification", "litigation"],
+    "finance": ["budget", "revenue", "cost", "financial", "audit", "tax", "fx", "risk", "investment", "profit", "capex", "cfo", "allocation", "forecast", "roi", "quarterly"],
+    "hr": ["employee", "salary", "compensation", "benefits", "onboarding", "termination", "payroll", "workforce", "labor", "bargaining", "training", "hr", "hiring", "recruitment", "performance review", "vacation", "pto"],
+    "it": ["cloud", "azure", "infrastructure", "erp", "saas", "license", "vpn", "network", "hardware", "software", "system", "upgrade", "migration", "it governance", "provisioning", "downtime", "server"],
+    "operations": ["manufacturing", "warehouse", "logistics", "operations", "fulfillment", "plant", "facility", "shift", "energy consumption", "shipping", "rerouting", "retrofit", "automation", "production", "throughput", "quality control"],
+    "marketing": ["marketing", "campaign", "advertising", "launch", "brand", "social media", "digital marketing", "influencer", "health claims", "product launch", "communications", "promotion"],
+    "rnd": ["r&d", "research", "development", "lab", "prototype", "algorithm", "ai", "innovation", "testing", "reagent", "specialized", "experiment", "clinical trial"],
 }
 
 
@@ -131,13 +161,43 @@ class GovernanceService:
 
         combined_text = f"{user_input} {final_response}".lower()
 
-        # Find mentioned domains
+        # Find mentioned domains via keyword matching
         mentioned_domains: list[str] = []
         for domain_id, keywords in DOMAIN_KEYWORDS.items():
             for kw in keywords:
                 if kw in combined_text:
                     mentioned_domains.append(domain_id)
                     break
+
+        # Embedding-based fallback when keyword matching finds fewer than 2 domains
+        if len(mentioned_domains) < 2:
+            domain_embeds = _get_domain_embeddings()
+            if domain_embeds:
+                try:
+                    from src.services.embedding_engine import get_embedding_engine
+                    engine = get_embedding_engine()
+                    # Extract candidate phrases from the text
+                    words = combined_text.split()
+                    bigrams = [f"{words[i]} {words[i+1]}" for i in range(len(words) - 1)]
+                    candidates = words + bigrams
+                    for candidate in candidates:
+                        if len(candidate) < 3:
+                            continue
+                        entity_vec = engine.encode([candidate])
+                        if entity_vec is not None and len(entity_vec) > 0:
+                            best_domain = None
+                            best_score = -1.0
+                            for domain_id, domain_vec in domain_embeds.items():
+                                score = float(engine.cosine_similarity(entity_vec[0], domain_vec))
+                                if score > best_score:
+                                    best_score = score
+                                    best_domain = domain_id
+                            if best_score >= 0.35 and best_domain and best_domain not in mentioned_domains:
+                                mentioned_domains.append(best_domain)
+                                if len(mentioned_domains) >= 2:
+                                    break
+                except Exception:
+                    pass  # Embedding unavailable; continue with keyword matches only
 
         # Create cross-domain triples when multiple domains are referenced
         if len(mentioned_domains) >= 2:
@@ -251,6 +311,11 @@ class GovernanceService:
             "security": "#EF4444",        # red
             "legal": "#8B5CF6",           # purple
             "finance": "#F59E0B",         # amber
+            "hr": "#EC4899",             # pink
+            "it": "#06B6D4",             # cyan
+            "operations": "#F97316",      # orange
+            "marketing": "#A855F7",       # violet
+            "rnd": "#14B8A6",            # teal
         }
 
         for i, domain in enumerate(domains):

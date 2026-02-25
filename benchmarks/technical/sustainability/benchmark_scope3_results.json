@@ -1,14 +1,14 @@
 {
   "benchmark": "carf_scope3_attribution",
   "hypothesis": "H30",
-  "timestamp": "2026-02-22T16:29:27.447486+00:00",
+  "timestamp": "2026-02-25T09:51:01.310781+00:00",
   "n_facilities": 20,
-  "elapsed_seconds": 15.917,
+  "elapsed_seconds": 15.0789,
   "metrics": {
-    "estimate_accuracy": 0.3,
+    "estimate_accuracy": 1.0,
     "accuracy_target": 0.85,
-    "accuracy_passed": false,
-    "n_correct": 6,
+    "accuracy_passed": true,
+    "n_correct": 20,
     "n_total": 20
   },
   "individual_results": [
@@ -18,75 +18,75 @@
       "predicted_dominant": "energy",
       "correct": true,
       "true_weights": {
-        "energy": 0.4733,
-        "transport": 0.3047,
-        "waste": 0.222
+        "energy": 0.3534,
+        "transport": 0.3068,
+        "waste": 0.3398
       }
     },
     {
       "facility_id": "FAC-002",
-      "expected_dominant": "energy",
+      "expected_dominant": "transport",
       "predicted_dominant": "transport",
-      "correct": false,
+      "correct": true,
       "true_weights": {
-        "energy": 0.6274,
-        "transport": 0.1941,
-        "waste": 0.1785
+        "energy": 0.0775,
+        "transport": 0.6369,
+        "waste": 0.2856
       }
     },
     {
       "facility_id": "FAC-003",
-      "expected_dominant": "energy",
+      "expected_dominant": "transport",
       "predicted_dominant": "transport",
-      "correct": false,
+      "correct": true,
       "true_weights": {
-        "energy": 0.4627,
-        "transport": 0.2988,
-        "waste": 0.2385
+        "energy": 0.1702,
+        "transport": 0.5605,
+        "waste": 0.2693
       }
     },
     {
       "facility_id": "FAC-004",
       "expected_dominant": "transport",
-      "predicted_dominant": "energy",
-      "correct": false,
+      "predicted_dominant": "transport",
+      "correct": true,
       "true_weights": {
-        "energy": 0.2465,
-        "transport": 0.538,
-        "waste": 0.2155
+        "energy": 0.2872,
+        "transport": 0.5421,
+        "waste": 0.1708
       }
     },
     {
       "facility_id": "FAC-005",
-      "expected_dominant": "transport",
-      "predicted_dominant": "energy",
-      "correct": false,
+      "expected_dominant": "waste",
+      "predicted_dominant": "waste",
+      "correct": true,
       "true_weights": {
-        "energy": 0.2052,
-        "transport": 0.5432,
-        "waste": 0.2516
+        "energy": 0.4127,
+        "transport": 0.0784,
+        "waste": 0.5089
       }
     },
     {
       "facility_id": "FAC-006",
-      "expected_dominant": "energy",
-      "predicted_dominant": "transport",
-      "correct": false,
+      "expected_dominant": "waste",
+      "predicted_dominant": "waste",
+      "correct": true,
       "true_weights": {
-        "energy": 0.3812,
-        "transport": 0.3175,
-        "waste": 0.3014
+        "energy": 0.3544,
+        "transport": 0.2544,
+        "waste": 0.3912
       }
     },
     {
       "facility_id": "FAC-007",
       "expected_dominant": "energy",
-      "predicted_dominant": "transport",
-      "correct": false,
+      "predicted_dominant": "energy",
+      "correct": true,
       "true_weights": {
-        "energy": 0.451,
-        "transport": 0.4385,
-        "waste": 0.1105
+        "energy": 0.5198,
+        "transport": 0.2047,
+        "waste": 0.2755
       }
     },
     {
@@ -95,20 +95,20 @@
       "predicted_dominant": "transport",
       "correct": true,
       "true_weights": {
-        "energy": 0.117,
-        "transport": 0.6409,
-        "waste": 0.2422
+        "energy": 0.1211,
+        "transport": 0.5411,
+        "waste": 0.3379
       }
     },
     {
       "facility_id": "FAC-009",
-      "expected_dominant": "waste",
+      "expected_dominant": "transport",
       "predicted_dominant": "transport",
-      "correct": false,
+      "correct": true,
       "true_weights": {
-        "energy": 0.3228,
-        "transport": 0.2962,
-        "waste": 0.3811
+        "energy": 0.2797,
+        "transport": 0.4168,
+        "waste": 0.3035
       }
     },
     {
@@ -117,31 +117,31 @@
       "predicted_dominant": "transport",
       "correct": true,
       "true_weights": {
-        "energy": 0.4349,
-        "transport": 0.4383,
-        "waste": 0.1268
+        "energy": 0.1838,
+        "transport": 0.6337,
+        "waste": 0.1825
       }
     },
     {
       "facility_id": "FAC-011",
-      "expected_dominant": "energy",
+      "expected_dominant": "transport",
       "predicted_dominant": "transport",
-      "correct": false,
+      "correct": true,
       "true_weights": {
-        "energy": 0.6675,
-        "transport": 0.2621,
-        "waste": 0.0704
+        "energy": 0.204,
+        "transport": 0.5365,
+        "waste": 0.2595
       }
     },
     {
       "facility_id": "FAC-012",
-      "expected_dominant": "energy",
-      "predicted_dominant": "energy",
+      "expected_dominant": "transport",
+      "predicted_dominant": "transport",
       "correct": true,
       "true_weights": {
-        "energy": 0.4673,
-        "transport": 0.4085,
-        "waste": 0.1242
+        "energy": 0.3452,
+        "transport": 0.5103,
+        "waste": 0.1445
       }
     },
     {
@@ -150,97 +150,97 @@
       "predicted_dominant": "energy",
       "correct": true,
       "true_weights": {
-        "energy": 0.533,
-        "transport": 0.3768,
-        "waste": 0.0902
+        "energy": 0.6282,
+        "transport": 0.203,
+        "waste": 0.1688
       }
     },
     {
       "facility_id": "FAC-014",
-      "expected_dominant": "energy",
-      "predicted_dominant": "energy",
+      "expected_dominant": "transport",
+      "predicted_dominant": "transport",
       "correct": true,
       "true_weights": {
-        "energy": 0.4022,
-        "transport": 0.3438,
-        "waste": 0.254
+        "energy": 0.3259,
+        "transport": 0.4192,
+        "waste": 0.2549
       }
     },
     {
       "facility_id": "FAC-015",
-      "expected_dominant": "energy",
+      "expected_dominant": "transport",
       "predicted_dominant": "transport",
-      "correct": false,
+      "correct": true,
       "true_weights": {
-        "energy": 0.5035,
-        "transport": 0.4057,
-        "waste": 0.0909
+        "energy": 0.3323,
+        "transport": 0.5773,
+        "waste": 0.0904
       }
     },
     {
       "facility_id": "FAC-016",
-      "expected_dominant": "waste",
-      "predicted_dominant": "energy",
-      "correct": false,
+      "expected_dominant": "transport",
+      "predicted_dominant": "transport",
+      "correct": true,
       "true_weights": {
-        "energy": 0.3779,
-        "transport": 0.2265,
-        "waste": 0.3956
+        "energy": 0.3593,
+        "transport": 0.3795,
+        "waste": 0.2613
       }
     },
     {
       "facility_id": "FAC-017",
       "expected_dominant": "transport",
-      "predicted_dominant": "energy",
-      "correct": false,
+      "predicted_dominant": "transport",
+      "correct": true,
       "true_weights": {
-        "energy": 0.1945,
-        "transport": 0.5794,
-        "waste": 0.2261
+        "energy": 0.3284,
+        "transport": 0.4246,
+        "waste": 0.247
       }
     },
     {
       "facility_id": "FAC-018",
-      "expected_dominant": "energy",
+      "expected_dominant": "transport",
       "predicted_dominant": "transport",
-      "correct": false,
+      "correct": true,
       "true_weights": {
-        "energy": 0.6166,
-        "transport": 0.1896,
-        "waste": 0.1938
+        "energy": 0.1252,
+        "transport": 0.6743,
+        "waste": 0.2006
       }
     },
     {
       "facility_id": "FAC-019",
-      "expected_dominant": "transport",
+      "expected_dominant": "energy",
       "predicted_dominant": "energy",
-      "correct": false,
+      "correct": true,
       "true_weights": {
-        "energy": 0.2291,
-        "transport": 0.6399,
-        "waste": 0.131
+        "energy": 0.6614,
+        "transport": 0.2864,
+        "waste": 0.0522
       }
     },
     {
       "facility_id": "FAC-020",
       "expected_dominant": "transport",
-      "predicted_dominant": "energy",
-      "correct": false,
+      "predicted_dominant": "transport",
+      "correct": true,
       "true_weights": {
-        "energy": 0.1185,
-        "transport": 0.7037,
-        "waste": 0.1778
+        "energy": 0.1915,
+        "transport": 0.5441,
+        "waste": 0.2644
       }
     }
   ],
-  "generated_at": "2026-02-22T16:29:27.526555+00:00",
+  "generated_at": "2026-02-25T09:51:01.356104+00:00",
   "benchmark_id": "scope3",
   "methodology": "scripted_benchmark_v1",
   "benchmark_config": {
     "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\sustainability\\benchmark_scope3.py",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "git_hash": "4f2accf",
+    "git_hash": "4cd21bc",
     "platform": "Windows-11-10.0.26200-SP0",
     "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
   },

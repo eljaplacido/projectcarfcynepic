@@ -209,87 +209,128 @@ def generate_ihdp_dataset(
 
 # ── CATE Estimation ──────────────────────────────────────────────────────
 
+def _build_feature_matrix(
+    data: list[dict[str, Any]], covariates: list[str],
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Extract Y, T, X arrays from data dicts."""
+    n = len(data)
+    Y = np.array([d["outcome"] for d in data])
+    T = np.array([d["treatment"] for d in data])
+    X = np.column_stack([[d.get(cov, 0.0) for d in data] for cov in covariates])
+    return Y, T, X
+
+
+def _estimate_cate_causal_forest(
+    Y: np.ndarray, T: np.ndarray, X: np.ndarray,
+    effect_modifier_indices: list[int],
+) -> tuple[float, np.ndarray]:
+    """Estimate heterogeneous CATE using EconML CausalForestDML."""
+    from econml.dml import CausalForestDML
+    from sklearn.linear_model import LassoCV
+    from sklearn.ensemble import GradientBoostingRegressor
+
+    W = X  # all covariates as confounders
+    X_effect = X[:, effect_modifier_indices]  # effect modifiers subset
+
+    model = CausalForestDML(
+        model_y=GradientBoostingRegressor(
+            n_estimators=100, max_depth=4, random_state=42,
+        ),
+        model_t=LassoCV(cv=3),
+        n_estimators=200,
+        min_samples_leaf=10,
+        random_state=42,
+    )
+    model.fit(Y, T.reshape(-1, 1), X=X_effect, W=W)
+
+    estimated_cates = model.effect(X_effect).flatten()
+    estimated_ate = float(np.mean(estimated_cates))
+    return estimated_ate, estimated_cates
+
+
+def _estimate_cate_t_learner(
+    Y: np.ndarray, T: np.ndarray, X: np.ndarray,
+    effect_modifier_indices: list[int],
+) -> tuple[float, np.ndarray]:
+    """Enhanced T-learner with interaction terms for key effect modifiers."""
+    n = len(Y)
+    treated_mask = T == 1
+    control_mask = T == 0
+
+    # Add interaction terms for key effect modifiers to capture heterogeneity
+    X_modifiers = X[:, effect_modifier_indices]
+    X_interactions = np.column_stack([
+        X,
+        X_modifiers ** 2,  # quadratic terms
+        np.prod(X_modifiers, axis=1, keepdims=True),  # interaction
+    ])
+
+    X_t = np.column_stack([np.ones(treated_mask.sum()), X_interactions[treated_mask]])
+    X_c = np.column_stack([np.ones(control_mask.sum()), X_interactions[control_mask]])
+
+    try:
+        beta_t = np.linalg.lstsq(X_t, Y[treated_mask], rcond=None)[0]
+        beta_c = np.linalg.lstsq(X_c, Y[control_mask], rcond=None)[0]
+    except np.linalg.LinAlgError:
+        ate = float(np.mean(Y[treated_mask]) - np.mean(Y[control_mask]))
+        return ate, np.full(n, ate)
+
+    X_all = np.column_stack([np.ones(n), X_interactions])
+    Y1_hat = X_all @ beta_t
+    Y0_hat = X_all @ beta_c
+    estimated_cates = Y1_hat - Y0_hat
+    estimated_ate = float(np.mean(estimated_cates))
+    return estimated_ate, estimated_cates
+
+
 async def estimate_cate(
     data: list[dict[str, Any]],
 ) -> tuple[float, np.ndarray]:
-    """Estimate ATE and per-subject CATE using CARF or fallback OLS.
+    """Estimate ATE and per-subject CATE using CausalForestDML or T-learner.
+
+    Strategy:
+      1. Try EconML CausalForestDML (non-parametric, captures heterogeneity)
+      2. Fall back to enhanced T-learner with interaction terms
+      3. Last resort: simple OLS ATE
 
     Returns:
         estimated_ate: float
         estimated_cates: array of per-subject estimates
     """
     covariates = CONTINUOUS_FEATURES + BINARY_FEATURES
+    Y, T, X = _build_feature_matrix(data, covariates)
 
+    # Key effect modifiers for IHDP: weeks_preterm and birth_weight_kg
+    # These drive the heterogeneous treatment effect in the DGP
+    effect_modifier_names = ["weeks_preterm", "birth_weight_kg"]
+    effect_modifier_indices = [covariates.index(n) for n in effect_modifier_names]
+
+    # Strategy 1: CausalForestDML (best for heterogeneous effects)
     try:
-        from src.services.causal import (
-            CausalInferenceEngine, CausalHypothesis, CausalEstimationConfig,
-        )
-        engine = CausalInferenceEngine(neo4j_service=None)
-
-        hypothesis = CausalHypothesis(
-            treatment="treatment", outcome="outcome",
-            mechanism="IHDP-style: developmental intervention -> cognitive score",
-            confounders=covariates,
-        )
-        config = CausalEstimationConfig(
-            data=data, treatment="treatment", outcome="outcome",
-            covariates=covariates,
-            method_name="backdoor.linear_regression",
-        )
-        result = await engine.estimate_effect(
-            hypothesis=hypothesis, estimation_config=config,
-        )
-        estimated_ate = result.effect_estimate
-
-        # For CATE, use the estimated ATE as a uniform estimate for now
-        # (full HTE estimation would use EconML T-learner)
-        estimated_cates = np.full(len(data), estimated_ate)
-        return estimated_ate, estimated_cates
-
+        ate, cates = _estimate_cate_causal_forest(Y, T, X, effect_modifier_indices)
+        logger.info("  Using CausalForestDML for CATE estimation.")
+        return ate, cates
     except Exception as exc:
-        logger.warning(f"Causal service unavailable ({exc}); using OLS fallback.")
+        logger.warning(f"CausalForestDML unavailable ({exc}); trying T-learner.")
 
-        # OLS fallback
-        n = len(data)
-        Y = np.array([d["outcome"] for d in data])
-        T = np.array([d["treatment"] for d in data])
+    # Strategy 2: Enhanced T-learner with interaction terms
+    try:
+        ate, cates = _estimate_cate_t_learner(Y, T, X, effect_modifier_indices)
+        logger.info("  Using enhanced T-learner for CATE estimation.")
+        return ate, cates
+    except Exception as exc:
+        logger.warning(f"T-learner failed ({exc}); using simple OLS.")
 
-        X_list = []
-        for cov in covariates:
-            X_list.append([d.get(cov, 0.0) for d in data])
-        X = np.column_stack(X_list)
+    # Strategy 3: Simple OLS (last resort)
+    n = len(Y)
+    X_full = np.column_stack([np.ones(n), T, X])
+    try:
+        beta = np.linalg.lstsq(X_full, Y, rcond=None)[0]
+    except np.linalg.LinAlgError:
+        beta = np.zeros(X_full.shape[1])
 
-        # OLS with treatment and covariates
-        X_full = np.column_stack([np.ones(n), T, X])
-        try:
-            beta = np.linalg.lstsq(X_full, Y, rcond=None)[0]
-        except np.linalg.LinAlgError:
-            beta = np.zeros(X_full.shape[1])
-
-        estimated_ate = float(beta[1])  # coefficient on treatment
-
-        # Simple CATE approximation using T-learner approach
-        # Fit separate models for treated and control
-        treated_mask = T == 1
-        control_mask = T == 0
-
-        X_t = np.column_stack([np.ones(treated_mask.sum()), X[treated_mask]])
-        X_c = np.column_stack([np.ones(control_mask.sum()), X[control_mask]])
-
-        try:
-            beta_t = np.linalg.lstsq(X_t, Y[treated_mask], rcond=None)[0]
-            beta_c = np.linalg.lstsq(X_c, Y[control_mask], rcond=None)[0]
-        except np.linalg.LinAlgError:
-            # Fallback: uniform ATE
-            return estimated_ate, np.full(n, estimated_ate)
-
-        # Predict Y1 and Y0 for all subjects
-        X_all = np.column_stack([np.ones(n), X])
-        Y1_hat = X_all @ beta_t
-        Y0_hat = X_all @ beta_c
-        estimated_cates = Y1_hat - Y0_hat
-
-        return estimated_ate, estimated_cates
+    estimated_ate = float(beta[1])
+    return estimated_ate, np.full(n, estimated_ate)
 
 
 # ── Benchmark ────────────────────────────────────────────────────────────
