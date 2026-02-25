@@ -2,357 +2,357 @@
   "router_accuracy": 1.0,
   "router_total": 50,
   "router_correct": 50,
-  "avg_duration_ms": 15120.84,
+  "avg_duration_ms": 16429.69,
   "router_details": [
     {
       "query": "URGENT: Massive data breach detected \u2014 all customer records exposed",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 17947.14
+      "duration_ms": 18776.76
     },
     {
       "query": "EMERGENCY: Chemical spill in manufacturing facility, evacuation in progress",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 11826.5
+      "duration_ms": 14500.7
     },
     {
       "query": "CRITICAL: Stock price crashed 40% in 5 minutes, trading halted",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 15502.39
+      "duration_ms": 17151.13
     },
     {
       "query": "ALERT: Ransomware has encrypted all production servers",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 15154.44
+      "duration_ms": 12130.27
     },
     {
       "query": "EMERGENCY: Hospital IT systems down, patient records inaccessible",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 17402.38
+      "duration_ms": 12286.61
     },
     {
       "query": "URGENT: Massive coordinated fraud \u2014 500 suspicious transactions in 3 minutes",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 24312.36
+      "duration_ms": 17097.03
     },
     {
       "query": "CRITICAL: Pipeline rupture detected, environmental contamination imminent",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 16439.77
+      "duration_ms": 19029.05
     },
     {
       "query": "EMERGENCY: Power grid cascade failure, 200,000 customers at risk of blackout",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 11192.45
+      "duration_ms": 18567.4
     },
     {
       "query": "ALERT: Food contamination detected in shipped products, recall needed immediatel",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 12729.35
+      "duration_ms": 16582.36
     },
     {
       "query": "CRITICAL: Aircraft systems failure mid-flight, emergency protocols needed NOW",
       "expected": "chaotic",
       "predicted": "chaotic",
       "correct": true,
-      "duration_ms": 21981.81
+      "duration_ms": 17272.21
     },
     {
       "query": "What is 2+2?",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 8083.83
+      "duration_ms": 15420.62
     },
     {
       "query": "Convert 100 USD to EUR at rate 0.92",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 11409.75
+      "duration_ms": 15498.05
     },
     {
       "query": "What is the boiling point of water in Celsius?",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 15804.4
+      "duration_ms": 16630.89
     },
     {
       "query": "Look up the current exchange rate for GBP to USD",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 15967.4
+      "duration_ms": 20190.22
     },
     {
       "query": "What day of the week is January 1, 2026?",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 8890.28
+      "duration_ms": 13585.52
     },
     {
       "query": "Calculate 15% tip on a $85 bill",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 8822.2
+      "duration_ms": 8932.09
     },
     {
       "query": "What is the square root of 144?",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 12010.21
+      "duration_ms": 10802.17
     },
     {
       "query": "Convert 5 miles to kilometers",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 7553.5
+      "duration_ms": 8820.58
     },
     {
       "query": "What is the ISO country code for Germany?",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 9609.2
+      "duration_ms": 12541.14
     },
     {
       "query": "How many days are in February 2024?",
       "expected": "clear",
       "predicted": "clear",
       "correct": true,
-      "duration_ms": 8525.79
+      "duration_ms": 8844.79
     },
     {
       "query": "Will the market recover after the currency crisis? What probes should we run?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 13086.15
+      "duration_ms": 15755.47
     },
     {
       "query": "How might climate change affect crop yields over the next decade?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 22087.1
+      "duration_ms": 20237.22
     },
     {
       "query": "What is the likelihood of a successful digital transformation given our current ",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 24774.99
+      "duration_ms": 19091.7
     },
     {
       "query": "How should we update our beliefs about customer preferences after the survey?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 24062.49
+      "duration_ms": 17663.95
     },
     {
       "query": "What is the probability of a supply chain disruption in the next 6 months?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 16318.12
+      "duration_ms": 46290.93
     },
     {
       "query": "How might emerging regulations affect our business model?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 17014.97
+      "duration_ms": 16216.23
     },
     {
       "query": "What are the possible outcomes of entering the Chinese market?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 16732.37
+      "duration_ms": 16359.75
     },
     {
       "query": "How should we explore the impact of AI on our workforce planning?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 14384.08
+      "duration_ms": 16935.56
     },
     {
       "query": "What safe-to-fail experiments could we design to test this strategy?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 18876.41
+      "duration_ms": 18827.43
     },
     {
       "query": "How might gene therapy adoption evolve over the next 5 years?",
       "expected": "complex",
       "predicted": "complex",
       "correct": true,
-      "duration_ms": 12508.66
+      "duration_ms": 19229.7
     },
     {
       "query": "What is the causal effect of marketing spend on customer acquisition?",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 18555.03
+      "duration_ms": 16765.92
     },
     {
       "query": "Why did our costs increase by 15% last quarter?",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 16875.64
+      "duration_ms": 22714.22
     },
     {
       "query": "What caused the database query slowdown last week?",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 17669.24
+      "duration_ms": 17953.69
     },
     {
       "query": "Analyze the root cause of the production error rate spike",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 16123.85
+      "duration_ms": 13377.07
     },
     {
       "query": "What factors are driving customer churn in the premium segment?",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 15593.23
+      "duration_ms": 16816.83
     },
     {
       "query": "Determine the impact of the new pricing strategy on revenue",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 19188.96
+      "duration_ms": 17400.76
     },
     {
       "query": "What is the causal relationship between employee training hours and productivity",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 18831.36
+      "duration_ms": 16722.8
     },
     {
       "query": "Analyze why conversion rates dropped after the UI redesign",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 17877.23
+      "duration_ms": 19593.67
     },
     {
       "query": "What caused the increase in supply chain lead times?",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 17109.54
+      "duration_ms": 18521.27
     },
     {
       "query": "Determine the effect of temperature on manufacturing defect rates",
       "expected": "complicated",
       "predicted": "complicated",
       "correct": true,
-      "duration_ms": 17420.27
+      "duration_ms": 14034.85
     },
     {
       "query": "Should we do something different?",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 6729.26
+      "duration_ms": 16137.13
     },
     {
       "query": "Things aren't working well",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 18072.8
+      "duration_ms": 14872.37
     },
     {
       "query": "Help",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 7509.27
+      "duration_ms": 7974.24
     },
     {
       "query": "What should we do?",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 13014.01
+      "duration_ms": 12926.93
     },
     {
       "query": "Is this good or bad?",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 15492.16
+      "duration_ms": 13726.09
     },
     {
       "query": "We need to maximize growth while minimizing all investment and reduce risk to ze",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 16371.86
+      "duration_ms": 26658.19
     },
     {
       "query": "Fix everything",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 9777.41
+      "duration_ms": 13619.02
     },
     {
       "query": "Make it better",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 8857.94
+      "duration_ms": 12963.18
     },
     {
       "query": "I don't know what to ask",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 21049.95
+      "duration_ms": 17699.84
     },
     {
       "query": "Do the thing with the data",
       "expected": "disorder",
       "predicted": "disorder",
       "correct": true,
-      "duration_ms": 12912.27
+      "duration_ms": 9738.79
     }
   ]
 }

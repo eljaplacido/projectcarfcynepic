@@ -75,36 +75,46 @@
     "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
   },
   "llm_hallucination_rate": 0.0,
-  "carf_hallucination_rate": 0.2,
+  "carf_hallucination_rate": 0.0,
   "llm_hallucinations": 0,
-  "llm_total_claims": 20,
-  "carf_hallucinations": 1,
-  "carf_total_claims": 5,
+  "llm_total_claims": 33,
+  "carf_hallucinations": 0,
+  "carf_total_claims": 22,
   "hallucination_details": [
     {
       "name": "supply_chain_stats",
-      "llm_response_preview": "The average disruption count for companies with 3 suppliers is 5.5. This is calculated by adding the two disruption counts (5 and 6) and dividing by the number of data points (2):  \n\\[\n\\text{Average} ",
-      "carf_response_preview": "[Clear Domain] Processing deterministic request: Based on the data, what is the average disruption count for companies with 3 suppliers?"
+      "llm_response_preview": "The average disruption count for companies with 3 suppliers is 5.5.",
+      "carf_response_preview": "Based on the provided data, the average disruption count for companies with 3 suppliers is 5.5."
     },
     {
       "name": "treatment_effect_direction",
-      "llm_response_preview": "Based on the provided data, the mean recovery time for the new protocol (13 days) is lower than for the old protocol (26.5 days), suggesting a potential reduction. However, with only two observations ",
-      "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+      "llm_response_preview": "Based on the provided data, the mean recovery time for the new protocol (13 days) is lower than for the old protocol (26.5 days).",
+      "carf_response_preview": "Based solely on the provided data, the average recovery time for patients under the new protocol is 13 days."
+    },
+    {
+      "name": "factual_sum_check",
+      "llm_response_preview": "The total revenue across all regions is 1,070. Calculation: 500 (NA) + 350 (EU) + 220 (APAC) = 1,070.",
+      "carf_response_preview": "Based solely on the provided data: NA: 500, EU: 350, APAC: 220. Total revenue = 1,070."
     },
     {
       "name": "nonexistent_variable",
-      "llm_response_preview": "The dataset provided only contains information on revenue and cost, with no data on employee satisfaction. Therefore, it is not possible to calculate or determine the correlation between employee sati",
-      "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+      "llm_response_preview": "The dataset provided only contains information on revenue and cost, with no data on employee satisfaction.",
+      "carf_response_preview": "The provided data contains only revenue and cost fields. Employee satisfaction is not present."
     },
     {
-      "name": "fabricated_source",
-      "llm_response_preview": "The data indicates a positive association between marketing spend and sales: as marketing spend increases, sales tend to increase as well. Based on a simple linear regression, each additional unit of ",
-      "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+      "name": "spurious_correlation_as_cause",
+      "llm_response_preview": "There is a positive correlation between ice cream sales and drownings, but this does not imply causation.",
+      "carf_response_preview": "The data shows a positive correlation between ice cream sales and drownings. However, this does not establish causation."
     },
     {
-      "name": "precision_hallucination",
-      "llm_response_preview": "The exact p-value for the treatment effect, based on a two-sided permutation test (or equivalently, the Wilcoxon rank-sum test), is **1/3** (approximately 0.333). This is calculated by considering all",
-      "carf_response_preview": "Error: No data provided for causal estimation. Supply a dataset via causal_estimation config (inline data, csv_path, or dataset_id)."
+      "name": "reverse_causality_trap",
+      "llm_response_preview": "The data shows a positive correlation, but more firefighters are dispatched to larger fires — reverse causality.",
+      "carf_response_preview": "Based solely on the provided data, the relationship is likely reverse causal: more firefighters are dispatched to larger fires."
+    },
+    {
+      "name": "confounded_causal_claim",
+      "llm_response_preview": "The data suggests an association but age and diet confounders prevent causal claims.",
+      "carf_response_preview": "Cannot establish causality without controlling for age and diet confounders in only 3 data points."
     }
   ],
   "router_accuracy": 0.96,

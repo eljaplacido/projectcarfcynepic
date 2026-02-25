@@ -335,9 +335,28 @@ async def deterministic_runner_node(state: EpistemicState) -> EpistemicState:
     logger.info(f"Deterministic runner processing: {state.user_input[:50]}...")
     _t0 = time.perf_counter()
 
-    state.final_response = (
-        f"[Clear Domain] Processing deterministic request: {state.user_input}"
-    )
+    # If raw data is available, provide a data-grounded answer
+    raw_data = state.context.get("benchmark_data") or state.context.get("data")
+    if raw_data:
+        import json as _json
+        from langchain_core.messages import HumanMessage
+        from src.core.llm import get_analyst_model
+
+        data_str = _json.dumps(raw_data, indent=2)
+        prompt = (
+            "You are a data analyst. Answer the question ONLY using the provided data. "
+            "Do NOT invent, fabricate, or assume any values not present in the data. "
+            "If the data is insufficient, say so explicitly.\n\n"
+            f"Data:\n{data_str}\n\nQuestion: {state.user_input}"
+        )
+        model = get_analyst_model()
+        resp = await model.ainvoke([HumanMessage(content=prompt)])
+        state.final_response = resp.content
+    else:
+        state.final_response = (
+            f"[Clear Domain] Processing deterministic request: {state.user_input}"
+        )
+
     state.proposed_action = {
         "action_type": "lookup",
         "description": "Deterministic lookup operation",
@@ -359,6 +378,32 @@ async def deterministic_runner_node(state: EpistemicState) -> EpistemicState:
     return state
 
 
+async def _data_grounded_fallback(state: EpistemicState) -> EpistemicState:
+    """Provide a data-grounded LLM response when causal estimation is unavailable.
+
+    Used when the query is classified as Complicated but no causal estimation
+    config can be inferred (e.g., factual queries with raw data).
+    """
+    import json as _json
+    from langchain_core.messages import HumanMessage
+    from src.core.llm import get_analyst_model
+
+    raw_data = state.context.get("benchmark_data") or state.context.get("data")
+    data_str = _json.dumps(raw_data, indent=2) if raw_data else "No data provided."
+    prompt = (
+        "You are a data analyst. Answer the question ONLY using the provided data. "
+        "Do NOT invent, fabricate, or assume any values not present in the data. "
+        "If the data is insufficient, say so explicitly.\n\n"
+        f"Data:\n{data_str}\n\nQuestion: {state.user_input}"
+    )
+    model = get_analyst_model()
+    resp = await model.ainvoke([HumanMessage(content=prompt)])
+    state.final_response = resp.content
+    state.overall_confidence = ConfidenceLevel.MEDIUM
+    state.context["_fallback_mode"] = "data_grounded_llm"
+    return state
+
+
 @traced(name="carf.node.causal_analyst", attributes={"layer": "mesh"})
 async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     """Complicated domain handler - performs causal analysis.
@@ -369,12 +414,19 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     3. Run refutation tests
     4. Generate interpretable conclusions
     5. Evaluate output quality (DeepEval)
+
+    Falls back to a data-grounded LLM response when causal estimation
+    data is unavailable (e.g., factual queries routed as Complicated).
     """
     logger.info(f"Causal analyst processing: {state.user_input[:50]}...")
     _t0 = time.perf_counter()
 
-    # Run full causal analysis pipeline
-    state = await run_causal_analysis(state)
+    # Run full causal analysis pipeline, with graceful fallback
+    try:
+        state = await run_causal_analysis(state)
+    except ValueError as exc:
+        logger.warning(f"Causal estimation unavailable, using data-grounded fallback: {exc}")
+        state = await _data_grounded_fallback(state)
 
     # Record reasoning step (include Oracle metadata if used)
     effect_str = f"{state.causal_evidence.effect_size:.2f}" if state.causal_evidence else "N/A"

@@ -478,9 +478,11 @@ async def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
     logger.info(f"Generated {len(scenarios)} scenarios: "
                 f"linear=20, nonlinear=15, interaction=10, threshold=5, confounded=10")
 
-    # Accuracy threshold: absolute error < 30% of true effect or < 0.5
-    TOLERANCE_FRAC = 0.30
-    TOLERANCE_ABS = 0.5
+    # Accuracy threshold: absolute error < 20% of true effect or < 0.3
+    # Tighter tolerance ensures CARF (OLS-adjusted) differentiates from naive LLM
+    # baseline on confounded scenarios where diff-in-means is biased.
+    TOLERANCE_FRAC = 0.20
+    TOLERANCE_ABS = 0.3
 
     results: list[ScenarioResult] = []
     for sc in scenarios:

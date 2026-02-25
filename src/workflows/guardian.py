@@ -469,21 +469,22 @@ class Guardian:
         if not violations:
             return GuardianVerdict.APPROVED
 
-        # Critical risk level → reject
-        if risk_level == "critical":
-            return GuardianVerdict.REJECTED
-
-        # Any critical-severity violation → reject
+        # Any critical-severity violation → reject (hard policy breach)
         critical_violations = [v for v in violations if v.severity == "critical"]
         if critical_violations:
             return GuardianVerdict.REJECTED
 
-        # High-severity violations that can be overridden → escalate
+        # Critical risk level with non-critical violations → escalate
+        # (dangerous actions need human approval, not automatic rejection)
+        if risk_level == "critical":
+            return GuardianVerdict.REQUIRES_ESCALATION
+
+        # High-severity violations → escalate for human review
         high_violations = [v for v in violations if v.severity == "high"]
         if high_violations:
             return GuardianVerdict.REQUIRES_ESCALATION
 
-        # Medium/low violations might still pass with warning
+        # Medium/low violations → escalate with warning
         return GuardianVerdict.REQUIRES_ESCALATION
 
     async def _apply_csl(
@@ -810,7 +811,7 @@ class Guardian:
                     f_limit = float(budget_limit)
                     if f_amount > f_limit:
                         ratio = f_amount / f_limit if f_limit > 0 else 10.0
-                        severity = "critical" if ratio >= 2.0 else "high"
+                        severity = "critical" if ratio >= 1.5 else "high"
                         violations.append(PolicyViolation(
                             policy_name="budget_limit_exceeded",
                             policy_category="financial",
@@ -821,9 +822,9 @@ class Guardian:
                             severity=severity,
                             suggested_fix=(
                                 f"Reduce amount to {f_limit:,.0f} or obtain "
-                                f"{'board' if ratio >= 2.0 else 'management'} approval"
+                                f"{'board' if ratio >= 1.5 else 'management'} approval"
                             ),
-                            user_overridable=(severity != "critical"),
+                            user_overridable=(ratio < 1.5),
                         ))
                         context_adjustments.append(
                             f"Amount exceeds explicit budget limit of {f_limit:,.0f}"

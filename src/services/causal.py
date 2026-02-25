@@ -332,18 +332,56 @@ Respond with a JSON object:
         self,
         context: dict[str, Any] | None,
     ) -> CausalEstimationConfig | None:
-        """Parse causal estimation configuration from context."""
+        """Parse causal estimation configuration from context.
+
+        Checks for ``causal_estimation``, ``causal_data``, and
+        ``benchmark_data`` keys.  When only raw data is provided
+        (``benchmark_data``), treatment and outcome columns are
+        inferred from common naming conventions.
+        """
         if not context:
             return None
 
         raw_config = context.get("causal_estimation") or context.get("causal_data")
-        if not raw_config:
+        if raw_config:
+            try:
+                return CausalEstimationConfig(**raw_config)
+            except Exception as exc:
+                logger.warning(f"Invalid causal estimation config: {exc}")
+                return None
+
+        # Fallback: auto-infer from benchmark_data (raw list-of-dicts)
+        raw_data = context.get("benchmark_data")
+        if not raw_data or not isinstance(raw_data, list) or not raw_data:
             return None
 
+        sample = raw_data[0] if raw_data else {}
+        columns = list(sample.keys())
+
+        # Infer treatment and outcome from common column names
+        treatment_names = ["treatment", "treated", "intervention", "T"]
+        outcome_names = ["outcome", "result", "Y", "response", "score"]
+
+        treatment = next((c for c in columns if c in treatment_names), None)
+        outcome = next((c for c in columns if c in outcome_names), None)
+
+        if not treatment or not outcome:
+            # If no obvious treatment/outcome, skip causal estimation
+            # and let the pipeline handle it as a data-grounded query
+            return None
+
+        covariates = [c for c in columns if c not in (treatment, outcome)]
+
         try:
-            return CausalEstimationConfig(**raw_config)
+            return CausalEstimationConfig(
+                data=raw_data,
+                treatment=treatment,
+                outcome=outcome,
+                covariates=covariates,
+                method_name="backdoor.linear_regression",
+            )
         except Exception as exc:
-            logger.warning(f"Invalid causal estimation config: {exc}")
+            logger.warning(f"Auto-inferred estimation config failed: {exc}")
             return None
 
     def _load_dataframe(self, config: CausalEstimationConfig) -> Any:
