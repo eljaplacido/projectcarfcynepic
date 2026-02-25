@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 /**
  * PlotlyChart — Unified wrapper for Plotly.js chart types.
  *

@@ -1,9 +1,9 @@
 {
   "benchmark": "carf_xai",
-  "timestamp": "2026-02-22T16:14:47.494575+00:00",
+  "timestamp": "2026-02-24T13:19:10.988325+00:00",
   "metrics": {
-    "fidelity": 0.5,
-    "fidelity_passed": false,
+    "fidelity": 0.8,
+    "fidelity_passed": true,
     "stability": 1.0,
     "stability_passed": true,
     "avg_steps": 1.0,
@@ -12,10 +12,10 @@
   "individual_results": [
     {
       "dimension": "fidelity",
-      "score": 0.5,
-      "passed": false,
+      "score": 0.8,
+      "passed": true,
       "total": 10,
-      "faithful_count": 5,
+      "faithful_count": 8,
       "results": [
         {
           "name": "procurement_causal",
@@ -24,14 +24,13 @@
           "actual_domain": "Complicated",
           "factors_found": [
             "supplier",
+            "cost",
             "production"
           ],
-          "factors_missing": [
-            "cost"
-          ],
-          "factor_coverage": 0.6667,
+          "factors_missing": [],
+          "factor_coverage": 1.0,
           "is_faithful": true,
-          "latency_ms": 0.88,
+          "latency_ms": 1.56,
           "error": null
         },
         {
@@ -40,15 +39,15 @@
           "expected_domain": "Complicated",
           "actual_domain": "Complicated",
           "factors_found": [
-            "budget"
-          ],
-          "factors_missing": [
-            "revenue",
+            "budget",
             "projection"
           ],
-          "factor_coverage": 0.3333,
-          "is_faithful": false,
-          "latency_ms": 0.35,
+          "factors_missing": [
+            "revenue"
+          ],
+          "factor_coverage": 0.6667,
+          "is_faithful": true,
+          "latency_ms": 0.33,
           "error": null
         },
         {
@@ -58,14 +57,13 @@
           "actual_domain": "Complex",
           "factors_found": [
             "renewable",
+            "emission",
             "energy"
           ],
-          "factors_missing": [
-            "emission"
-          ],
-          "factor_coverage": 0.6667,
+          "factors_missing": [],
+          "factor_coverage": 1.0,
           "is_faithful": true,
-          "latency_ms": 0.34,
+          "latency_ms": 0.25,
           "error": null
         },
         {
@@ -82,7 +80,7 @@
           ],
           "factor_coverage": 0.6667,
           "is_faithful": true,
-          "latency_ms": 0.27,
+          "latency_ms": 0.25,
           "error": null
         },
         {
@@ -92,14 +90,13 @@
           "actual_domain": "Complicated",
           "factors_found": [
             "remote",
+            "retention",
             "employee"
           ],
-          "factors_missing": [
-            "retention"
-          ],
-          "factor_coverage": 0.6667,
+          "factors_missing": [],
+          "factor_coverage": 1.0,
           "is_faithful": true,
-          "latency_ms": 0.25,
+          "latency_ms": 0.24,
           "error": null
         },
         {
@@ -116,7 +113,7 @@
           ],
           "factor_coverage": 0.6667,
           "is_faithful": true,
-          "latency_ms": 0.26,
+          "latency_ms": 0.24,
           "error": null
         },
         {
@@ -150,7 +147,7 @@
           ],
           "factor_coverage": 0.3333,
           "is_faithful": false,
-          "latency_ms": 0.25,
+          "latency_ms": 0.24,
           "error": null
         },
         {
@@ -159,15 +156,14 @@
           "expected_domain": "Chaotic",
           "actual_domain": "Complicated",
           "factors_found": [
+            "price",
+            "material",
             "increase"
           ],
-          "factors_missing": [
-            "price",
-            "material"
-          ],
-          "factor_coverage": 0.3333,
-          "is_faithful": false,
-          "latency_ms": 0.24,
+          "factors_missing": [],
+          "factor_coverage": 1.0,
+          "is_faithful": true,
+          "latency_ms": 0.23,
           "error": null
         },
         {
@@ -176,15 +172,15 @@
           "expected_domain": "Complex",
           "actual_domain": "Complex",
           "factors_found": [
-            "market"
-          ],
-          "factors_missing": [
-            "expansion",
+            "market",
             "geopolitical"
           ],
-          "factor_coverage": 0.3333,
-          "is_faithful": false,
-          "latency_ms": 0.24,
+          "factors_missing": [
+            "expansion"
+          ],
+          "factor_coverage": 0.6667,
+          "is_faithful": true,
+          "latency_ms": 0.23,
           "error": null
         }
       ]
@@ -352,7 +348,7 @@
           "domain": "Clear",
           "reasoning_steps": 1,
           "is_simple": true,
-          "latency_ms": 0.23,
+          "latency_ms": 0.21,
           "error": null
         },
         {
@@ -361,7 +357,7 @@
           "domain": "Complex",
           "reasoning_steps": 1,
           "is_simple": true,
-          "latency_ms": 0.24,
+          "latency_ms": 0.22,
           "error": null
         },
         {
@@ -370,7 +366,7 @@
           "domain": "Clear",
           "reasoning_steps": 1,
           "is_simple": true,
-          "latency_ms": 0.22,
+          "latency_ms": 0.21,
           "error": null
         },
         {
@@ -379,7 +375,7 @@
           "domain": "Clear",
           "reasoning_steps": 1,
           "is_simple": true,
-          "latency_ms": 0.22,
+          "latency_ms": 0.21,
           "error": null
         },
         {
@@ -406,7 +402,7 @@
           "domain": "Clear",
           "reasoning_steps": 1,
           "is_simple": true,
-          "latency_ms": 0.22,
+          "latency_ms": 0.21,
           "error": null
         },
         {
@@ -415,7 +411,7 @@
           "domain": "Clear",
           "reasoning_steps": 1,
           "is_simple": true,
-          "latency_ms": 0.22,
+          "latency_ms": 0.23,
           "error": null
         },
         {
@@ -424,7 +420,7 @@
           "domain": "Clear",
           "reasoning_steps": 1,
           "is_simple": true,
-          "latency_ms": 0.22,
+          "latency_ms": 0.21,
           "error": null
         },
         {
@@ -433,20 +429,20 @@
           "domain": "Clear",
           "reasoning_steps": 1,
           "is_simple": true,
-          "latency_ms": 0.22,
+          "latency_ms": 0.21,
           "error": null
         }
       ]
     }
   ],
-  "generated_at": "2026-02-22T16:14:47.568743+00:00",
+  "generated_at": "2026-02-24T13:19:11.035772+00:00",
   "benchmark_id": "xai",
   "methodology": "scripted_benchmark_v1",
   "benchmark_config": {
     "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\compliance\\benchmark_xai.py",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "git_hash": "4f2accf",
+    "git_hash": "ae8d2a3",
     "platform": "Windows-11-10.0.26200-SP0",
     "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
   },

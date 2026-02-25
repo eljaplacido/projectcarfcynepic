@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """End-to-End Tests for Scope 3 Gold Standard Use Case.
 
 Tests the complete analysis workflow from query submission through

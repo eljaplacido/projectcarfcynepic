@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Feedback API router — closed-loop learning from user input.
 
 Implements the feedback loop identified in platform evaluation §2.6:
@@ -12,12 +13,12 @@ import logging
 import os
 import sqlite3
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger("carf.feedback")
@@ -118,7 +119,7 @@ class FeedbackStore:
 
     def add(self, item: dict[str, Any]) -> str:
         feedback_id = str(uuid4())[:12]
-        received_at = datetime.now(timezone.utc).isoformat()
+        received_at = datetime.now(UTC).isoformat()
 
         with self._conn() as conn:
             conn.execute(
@@ -230,7 +231,7 @@ async def submit_feedback(item: FeedbackItem):
         feedback_id=feedback_id,
         status="received",
         message="Feedback recorded. Thank you for helping improve the platform.",
-        received_at=datetime.now(timezone.utc).isoformat(),
+        received_at=datetime.now(UTC).isoformat(),
     )
 
 
@@ -298,6 +299,40 @@ async def check_retraining_readiness():
     }
 
 
+@router.post("/feedback/retrain-router")
+async def retrain_router():
+    """Trigger keyword hint extraction from domain override feedback.
+
+    Reads domain overrides, extracts frequent terms per corrected domain,
+    and returns new keyword hints. Non-destructive: does not modify the
+    running router directly.
+    """
+    from src.services.router_retraining_service import get_router_retraining_service
+
+    service = get_router_retraining_service()
+
+    if not service.should_retrain(min_samples=5):
+        overrides = service.get_training_data()
+        return {
+            "status": "insufficient_data",
+            "total_overrides": len(overrides),
+            "min_required": 5,
+            "message": "Not enough domain overrides for meaningful retraining.",
+        }
+
+    hints = service.retrain_keyword_hints()
+
+    return {
+        "status": "hints_extracted",
+        "keyword_hints": hints,
+        "total_domains": len(hints),
+        "message": (
+            "Keyword hints extracted from domain overrides. "
+            "Apply these to DATA_STRUCTURE_HINTS in the router configuration."
+        ),
+    }
+
+
 @router.get("/feedback/export")
 async def export_feedback():
     """Export all feedback as JSON for analysis."""
@@ -306,5 +341,5 @@ async def export_feedback():
     return {
         "count": len(items),
         "items": items,
-        "export_timestamp": datetime.now(timezone.utc).isoformat(),
+        "export_timestamp": datetime.now(UTC).isoformat(),
     }

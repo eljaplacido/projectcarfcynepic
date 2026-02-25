@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Red Team Defense.
 
 Tests defense against 8 attack categories across the CARF pipeline.

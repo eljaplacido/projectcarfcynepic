@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Neo4j Service for CARF - Persistent Causal Graph Storage.
 
 Provides persistent storage for causal graphs, enabling:

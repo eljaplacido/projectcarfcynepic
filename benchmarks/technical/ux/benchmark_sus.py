@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF UX — System Usability Scale (SUS) Framework (H31).
 
 Implements the standard Brooke (1996) SUS questionnaire across 8 CARF task

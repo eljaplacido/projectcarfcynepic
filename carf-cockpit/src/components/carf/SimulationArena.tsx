@@ -1,6 +1,7 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 /**
  * Simulation Arena Component
- * 
+ *
  * Side-by-side comparison view for two analysis scenarios.
  * Enables users to compare causal effects, Bayesian beliefs, and domain classifications.
  */

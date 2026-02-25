@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Chaos/Resiliency subsystems.
 
 Tests CircuitBreaker lifecycle, concurrent stress, chaotic domain handling,

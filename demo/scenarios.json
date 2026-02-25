@@ -162,5 +162,119 @@
       "Show me supplier contact information"
     ],
     "tags": ["inventory", "lookup", "deterministic", "simple"]
+  },
+  {
+    "id": "csrd_double_materiality",
+    "name": "CSRD Double Materiality",
+    "description": "Assess double materiality of climate transition risk on operating costs under CSRD/ESRS framework.",
+    "payload_path": "demo/payloads/csrd_double_materiality.json",
+    "cynefin_domain": "Complicated",
+    "data_generation": {
+      "generator": "csrd_materiality",
+      "n_samples": 50,
+      "data_path": "demo/data/csrd_materiality.csv"
+    },
+    "suggested_queries": [
+      "What is the causal impact of climate transition risk on operating costs?",
+      "Assess double materiality for ESRS E1 climate change disclosure",
+      "Which sectors are most exposed to climate transition risk?"
+    ],
+    "tags": ["csrd", "esrs", "materiality", "climate", "sustainability"]
+  },
+  {
+    "id": "csrd_esrs_e1_climate",
+    "name": "ESRS E1 Climate Disclosure",
+    "description": "Evaluate ESRS E1 Climate Change disclosure by analyzing emission reduction programs.",
+    "payload_path": "demo/payloads/csrd_esrs_e1_climate.json",
+    "cynefin_domain": "Complicated",
+    "data_generation": {
+      "generator": "csrd_materiality",
+      "n_samples": 50,
+      "data_path": "demo/data/csrd_materiality.csv"
+    },
+    "suggested_queries": [
+      "What is the causal effect of emission reduction programs on GHG emissions?",
+      "How does energy source affect the effectiveness of reduction programs?",
+      "Which facility types benefit most from emission reduction programs?"
+    ],
+    "tags": ["csrd", "esrs_e1", "climate", "ghg", "emissions"]
+  },
+  {
+    "id": "csrd_esrs_s1_workforce",
+    "name": "ESRS S1 Workforce Assessment",
+    "description": "Assess ESRS S1 Own Workforce by analyzing training investment impact on retention.",
+    "payload_path": "demo/payloads/csrd_esrs_s1_workforce.json",
+    "cynefin_domain": "Complicated",
+    "data_generation": {
+      "generator": "csrd_materiality",
+      "n_samples": 50,
+      "data_path": "demo/data/csrd_materiality.csv"
+    },
+    "suggested_queries": [
+      "Does training investment improve employee retention?",
+      "What is the optimal training investment per employee?",
+      "How does seniority moderate the training-retention relationship?"
+    ],
+    "tags": ["csrd", "esrs_s1", "workforce", "retention", "training"]
+  },
+  {
+    "id": "energy_mix_optimization",
+    "name": "Energy Mix Optimization",
+    "description": "Optimize renewable energy mix to minimize costs while meeting sustainability targets.",
+    "payload_path": "demo/payloads/energy_mix_optimization.json",
+    "cynefin_domain": "Complicated",
+    "data_generation": {
+      "generator": "energy_generation",
+      "n_samples": 60,
+      "data_path": "demo/data/energy_generation.csv"
+    },
+    "suggested_queries": [
+      "What is the optimal renewable energy mix for cost minimization?",
+      "How does renewable share affect total generation cost?",
+      "What carbon intensity can we achieve at 40% renewable share?"
+    ],
+    "tags": ["energy", "renewable", "optimization", "cost", "sustainability"]
+  },
+  {
+    "id": "energy_demand_forecast",
+    "name": "Energy Demand Forecast",
+    "description": "Forecast energy demand using Bayesian inference on seasonal time-series data.",
+    "payload_path": "demo/payloads/energy_demand_forecast.json",
+    "cynefin_domain": "Complex",
+    "data_generation": null,
+    "suggested_queries": [
+      "What is the forecasted demand for next quarter?",
+      "How confident are we in the demand forecast?",
+      "What seasonal patterns affect energy demand?"
+    ],
+    "tags": ["energy", "forecast", "bayesian", "time_series", "demand"]
+  },
+  {
+    "id": "manufacturing_quality",
+    "name": "Manufacturing Quality Control",
+    "description": "Analyze the causal effect of process temperature adjustments on defect rate.",
+    "payload_path": "demo/payloads/manufacturing_quality.json",
+    "cynefin_domain": "Complicated",
+    "data_generation": null,
+    "suggested_queries": [
+      "Does adjusting process temperature reduce defect rates?",
+      "What is the optimal temperature range for quality?",
+      "How does operator experience moderate the temperature-defect relationship?"
+    ],
+    "tags": ["manufacturing", "quality", "process", "defect_rate"]
+  },
+  {
+    "id": "process_optimization",
+    "name": "Process Line Optimization",
+    "description": "Optimize production line parameters to maximize throughput while maintaining quality.",
+    "payload_path": "demo/payloads/process_optimization.json",
+    "cynefin_domain": "Complicated",
+    "data_generation": null,
+    "suggested_queries": [
+      "What is the effect of line speed increase on throughput?",
+      "How to maximize throughput without increasing defect rate?",
+      "Which shifts have the highest throughput potential?"
+    ],
+    "tags": ["manufacturing", "process", "optimization", "throughput"]
   }
 ]

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Bayesian active inference tools for MCP.
 
 Wraps ActiveInferenceEngine to expose belief exploration and PyMC

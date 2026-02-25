@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Experience Buffer — semantic memory for past CARF analyses.
 
 Stores past analysis entries and retrieves similar past queries.

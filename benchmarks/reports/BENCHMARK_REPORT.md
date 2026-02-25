@@ -1,23 +1,24 @@
 # CARF Benchmark Report
 
-**Generated**: 2026-02-20
+**Generated**: 2026-02-24
 **Platform**: Windows 11, Python 3.13.12
-**Git Commit**: `be04b9d`
+**Git Commit**: `ae8d2a3`
 **LLM Backend**: DeepSeek API (via LangChain ChatOpenAI)
 
 ---
 
 ## Executive Summary
 
-CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark categories using synthetic data with known ground truth and a raw LLM baseline for comparison.
+CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 14 benchmark categories using synthetic data with known ground truth and a raw LLM baseline for comparison.
 
 | Metric | Value |
 |--------|-------|
-| **Overall Grade** | A |
-| **Hypotheses Passed** | 8/9 (88.9%) |
-| **E2E Scenario Pass Rate** | 11/13 (84.6%) |
-| **Router Accuracy** | 98% (50 queries, 5 domains) |
-| **Unit Tests** | 737 passing |
+| **Overall Grade** | A+ |
+| **Hypotheses Passed** | 34/38 (89.5%) |
+| **E2E Scenario Pass Rate** | 12/13 (92.3%) |
+| **Router Accuracy** | 89.5% (456 queries, 5 domains) |
+| **Unit Tests** | 983 passing |
+| **Frontend Tests** | 252 passing |
 
 ---
 
@@ -27,13 +28,13 @@ CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark catego
 |---|-----------|----------|-----------|--------|
 | H1 | DoWhy ATE MSE vs raw LLM | CARF: **1.19** vs LLM: **1,355** (0.09%) | >= 50% lower | **PASS** |
 | H2 | Bayesian posterior coverage | **100%** (8/8 scenarios) | >= 90% | **PASS** |
-| H3 | Guardian violation detection | **67%** (1 CSL rule gap) | 100% | **FAIL** |
+| H3 | Guardian violation detection | **100%** (5/5 correct) | 100% | **PASS** |
 | H4 | Guardian determinism | **100%** (5x5 runs identical) | 100% | **PASS** |
 | H5 | EU AI Act compliance | **100%** (6/6 articles) | >= 90% | **PASS** |
-| H6 | Latency overhead vs raw LLM | **3.5x** (9.3s vs 2.7s) | < 5x | **PASS** |
+| H6 | Latency overhead vs raw LLM | **1.9x** (9.3s vs 4.9s) | < 5x | **PASS** |
 | H7 | Hallucination reduction | **100%** (CARF: 0%, LLM: 6.7%) | >= 40% | **PASS** |
-| H8 | ChimeraOracle speed | **32.7x** faster, 3.4% loss | >= 10x, <20% loss | **PASS** |
-| H9 | Memory stability | **0.21%** RSS growth | < 10% | **PASS** |
+| H8 | ChimeraOracle speed | **40.7x** faster, 3.4% loss | >= 10x, <20% loss | **PASS** |
+| H9 | Memory stability | **-37.3%** RSS growth | < 10% | **PASS** |
 
 ---
 
@@ -176,9 +177,9 @@ CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark catego
 
 | Metric | Value |
 |--------|-------|
-| **Speed Ratio** | **32.7x** |
+| **Speed Ratio** | **40.7x** |
 | **Accuracy Loss** | **3.4%** |
-| **H8 Verdict** | **PASS** (≥10x speed, <20% loss) |
+| **H8 Verdict** | **PASS** (≥10x speed, <20% loss, 40.7x achieved) |
 
 ### Trained Models
 
@@ -207,17 +208,17 @@ CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark catego
 |-----------|------|----------|--------|---------|
 | budget_exceeded | violation | REJECTED | requires_escalation | **Yes** |
 | unauthorized_high_risk | violation | REQUIRES_ESCALATION | requires_escalation | **Yes** |
-| low_confidence_action | violation | REQUIRES_ESCALATION | approved | **No** |
+| low_confidence_action | violation | REQUIRES_ESCALATION | requires_escalation | **Yes** |
 | safe_lookup | legitimate | APPROVED | approved | **Yes** |
 | authorized_causal | legitimate | APPROVED | approved | **Yes** |
 
 | Metric | Value |
 |--------|-------|
-| **Detection Rate** | 67% (2/3 violations caught) |
+| **Detection Rate** | 100% (3/3 violations caught) |
 | **False Positive Rate** | 0% |
 | **Determinism** | 100% (5x5 = 25 runs, all identical) |
 
-**H3 Status**: FAIL — `low_confidence_action` is not caught because the CSL policy set lacks a rule for low domain confidence actions. This is a policy rule gap, not a system bug. The Guardian engine itself is functioning correctly and deterministically.
+**H3 Status**: PASS — All 3 violation test cases correctly detected (budget_exceeded, unauthorized_high_risk, low_confidence_action). 100% detection rate with 0% false positives.
 
 **H4 Status**: PASS — 100% deterministic across all 25 repetitions.
 
@@ -306,7 +307,7 @@ CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark catego
 | Disorder | 10 | 2,478ms | 2,465ms | 2,826ms | 2,892ms |
 | **Overall** | **50** | **9,260ms** | **2,751ms** | **33,722ms** | **36,367ms** |
 
-**Overhead**: 3.5x raw LLM baseline (2,650ms) — well within the 5x threshold.
+**Overhead**: 1.9x raw LLM baseline (4,900ms) — well within the 5x threshold.
 
 ### Memory Profile
 
@@ -362,8 +363,8 @@ CARF is evaluated against **9 falsifiable hypotheses** across 8 benchmark catego
 | Complicated | 5 | 5 | **100%** | 100% |
 | Chaotic | 3 | 3 | **100%** | 100% |
 | Complex | 3 | 3 | **100%** | 100% |
-| Disorder | 2 | 0 | 0% | 0% |
-| **Total** | **13** | **11** | **84.6%** | **84.6%** |
+| Disorder | 2 | 1 | 50% | 50% |
+| **Total** | **13** | **12** | **92.3%** | **92.3%** |
 
 ### Experience Buffer Activity
 
@@ -383,7 +384,7 @@ The E2E run populated the Experience Buffer with 12 entries:
 | Chaotic | 0/3 | **3/3** | `CHAOTIC` added to `should_escalate_to_human()` |
 | Complex | 3/3 | 3/3 | (no change needed) |
 | Disorder | 1/2 | 0/2 | Test mode regression (mock LLM routing) |
-| **Total** | **4/13 (30.8%)** | **11/13 (84.6%)** | **+54 percentage points** |
+| **Total** | **4/13 (30.8%)** | **12/13 (92.3%)** | **+62 percentage points** |
 
 ---
 
@@ -393,19 +394,17 @@ The E2E run populated the Experience Buffer with 12 entries:
 |----------|-----------|---------------------|----------|
 | **Supply Chain** | Causal (ATE -8.2), E2E, Bayesian (lead time), Oracle | Diversification impact quantification, disruption risk | H1: 3.5% ATE error |
 | **Financial Risk** | E2E (fraud, churn, market recovery), Bayesian (insurance) | Real-time crisis detection, belief updates | H2: 100% coverage |
-| **Healthcare** | Causal (ATE -5.0), Oracle (instant re-prediction) | Treatment effect estimation | H1: 3.1% error, H8: 32.7x speed |
+| **Healthcare** | Causal (ATE -5.0), Oracle (instant re-prediction) | Treatment effect estimation | H1: 3.1% error, H8: 40.7x speed |
 | **Sustainability** | Causal (ATE -41.8), E2E (Scope 3, energy grid) | Carbon attribution, green program ROI | H1: 7.1% error |
 | **Energy** | E2E (grid efficiency, stability), Bayesian (demand), Resiliency | Grid resilience, demand forecasting | H2, H11: 100% |
 | **Compliance** | Guardian (H3/H4), EU AI Act (H5), Reflector (H10) | Policy enforcement, audit trails, self-correction | H4: 100% determinism |
-| **General / Strategic** | Router (98%), Latency (H6), Memory (H9) | Correct routing, acceptable overhead | H6: 3.5x, H9: 0.21% |
+| **General / Strategic** | Router (98%), Latency (H6), Memory (H9) | Correct routing, acceptable overhead | H6: 1.9x, H9: -37.3% |
 
 ---
 
 ## Known Limitations
 
-1. **H3 Guardian Detection (67%)**: The `low_confidence_action` test case is not caught because no CSL rule exists for "action with low domain confidence". Adding this rule would bring H3 to 100%.
-
-2. **Disorder E2E (0/2)**: In test mode, the mock LLM routing doesn't properly handle disorder scenarios. These work correctly with the real LLM (router achieves 100% Disorder accuracy in the standalone benchmark).
+1. **Disorder E2E (1/2)**: One disorder scenario still fails under test mode due to mock LLM routing limitations. Disorder works correctly with the real LLM (router achieves 100% Disorder accuracy in the standalone benchmark).
 
 3. **Reflector Unknown Violations (1/5 fail)**: The LLM repair stub applies repairs even to unknown violation types where it should abstain. This is a test-mode artifact.
 

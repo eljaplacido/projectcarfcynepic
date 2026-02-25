@@ -13,8 +13,6 @@ from __future__ import annotations
 
 import logging
 import os
-import re
-from datetime import datetime
 from typing import Any
 
 from src.core.governance_models import (
@@ -31,6 +29,63 @@ from src.core.governance_models import (
 )
 
 logger = logging.getLogger("carf.governance")
+
+# Rich domain descriptions for embedding-based classification
+DOMAIN_DESCRIPTIONS: dict[str, str] = {
+    "procurement": (
+        "Procurement and supply chain management including vendor selection, "
+        "purchase orders, supplier evaluation, contract negotiation, sourcing "
+        "strategy, and spend analysis."
+    ),
+    "sustainability": (
+        "Environmental sustainability including carbon emissions tracking, "
+        "ESG reporting, climate risk assessment, CSRD compliance, scope 3 "
+        "attribution, renewable energy, and circular economy."
+    ),
+    "security": (
+        "Information security and cybersecurity including access control, "
+        "encryption standards, vulnerability management, threat detection, "
+        "incident response, and authentication protocols."
+    ),
+    "legal": (
+        "Legal compliance and regulatory affairs including contracts, "
+        "intellectual property, GDPR data protection, liability assessment, "
+        "regulatory filings, and disclosure requirements."
+    ),
+    "finance": (
+        "Financial management including budgeting, revenue forecasting, "
+        "cost analysis, investment evaluation, tax planning, audit trails, "
+        "risk assessment, and profitability analysis."
+    ),
+}
+
+# Cached domain embeddings (lazy-loaded)
+_domain_embeddings: dict[str, Any] | None = None
+
+
+def _get_domain_embeddings() -> dict[str, Any] | None:
+    """Lazy-load and cache domain description embeddings.
+
+    Returns None if embedding engine is unavailable.
+    """
+    global _domain_embeddings
+    if _domain_embeddings is not None:
+        return _domain_embeddings
+
+    try:
+        from src.services.embedding_engine import get_embedding_engine
+        engine = get_embedding_engine()
+        _domain_embeddings = {}
+        for domain_id, description in DOMAIN_DESCRIPTIONS.items():
+            vectors = engine.encode([description])
+            if vectors is not None and len(vectors) > 0:
+                _domain_embeddings[domain_id] = vectors[0]
+        if not _domain_embeddings:
+            _domain_embeddings = None
+        return _domain_embeddings
+    except Exception:
+        return None
+
 
 # Domain keywords for entity-to-domain mapping
 DOMAIN_KEYWORDS: dict[str, list[str]] = {
@@ -144,7 +199,32 @@ class GovernanceService:
         return "impacts"
 
     def _classify_entity_domain(self, entity: str) -> str | None:
-        """Classify an entity into a governance domain."""
+        """Classify an entity into a governance domain.
+
+        First tries embedding-based cosine similarity (threshold >= 0.25).
+        Falls back to keyword matching when embeddings are unavailable.
+        """
+        # Try embedding-based classification first
+        domain_embeds = _get_domain_embeddings()
+        if domain_embeds:
+            try:
+                from src.services.embedding_engine import get_embedding_engine
+                engine = get_embedding_engine()
+                entity_vec = engine.encode([entity])
+                if entity_vec is not None and len(entity_vec) > 0:
+                    best_domain = None
+                    best_score = -1.0
+                    for domain_id, domain_vec in domain_embeds.items():
+                        score = float(engine.cosine_similarity(entity_vec[0], domain_vec))
+                        if score > best_score:
+                            best_score = score
+                            best_domain = domain_id
+                    if best_score >= 0.25 and best_domain is not None:
+                        return best_domain
+            except Exception:
+                pass  # Fall through to keyword matching
+
+        # Fallback: keyword matching
         entity_lower = entity.lower()
         for domain_id, keywords in DOMAIN_KEYWORDS.items():
             for kw in keywords:

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Smart Reflector tool for MCP.
 
 Exposes the SmartReflectorService's repair capability to any MCP-connected

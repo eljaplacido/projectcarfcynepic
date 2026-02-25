@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Unit tests for the Bayesian Active Inference Engine.
 
 Tests cover Pydantic models, BeliefNetwork operations, and configuration validation.

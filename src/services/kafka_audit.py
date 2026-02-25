@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Kafka audit trail service for CARF."""
 
 from __future__ import annotations

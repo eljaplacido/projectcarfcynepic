@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Policy scaffold service for domain-specific policy loading.
 
 Loads policy scaffolds by scenario domain type, enabling dynamic policy

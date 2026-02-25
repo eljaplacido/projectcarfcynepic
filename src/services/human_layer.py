@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """HumanLayer Service - Human-in-the-Loop Integration.
 
 Provides seamless human escalation via HumanLayer SDK for:

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Supply Chain Disruption Prediction (H34).
 
 Generates 30 synthetic time-series records representing suppliers, of which

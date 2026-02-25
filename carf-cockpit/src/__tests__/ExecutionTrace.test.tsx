@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ExecutionTrace from '../components/carf/ExecutionTrace';

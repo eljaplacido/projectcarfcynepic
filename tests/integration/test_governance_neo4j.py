@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Integration tests for Neo4j governance graph persistence.
 
 These tests require a live Neo4j connection and are skipped when Neo4j is

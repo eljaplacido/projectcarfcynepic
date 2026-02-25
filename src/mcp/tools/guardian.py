@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Guardian / CSL Policy tools for MCP.
 
 Wraps CSLPolicyService to expose policy evaluation, listing, rule

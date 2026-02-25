@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import React, { useState } from 'react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, Area, AreaChart } from 'recharts';
 import type { BayesianBeliefState } from '../../types/carf';

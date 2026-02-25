@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Unit tests for GovernanceService — central MAP-PRICE-RESOLVE orchestrator.
 
 Tests map_impacts, compute_cost, resolve_tensions, compute_compliance,

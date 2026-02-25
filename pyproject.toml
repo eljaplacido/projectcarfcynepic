@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "BSL 1.1"}
 authors = [
-    {name = "CARF Team"}
+    {name = "Cisuregen", email = "engineering@cisuregen.com"}
 ]
 keywords = ["agentic-ai", "causal-inference", "langgraph", "neuro-symbolic"]
 classifiers = [

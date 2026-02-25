@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Integration tests for the complete CARF workflow.
 
 These tests verify the end-to-end flow through the cognitive pipeline.

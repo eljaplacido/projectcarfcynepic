@@ -1,12 +1,12 @@
 {
   "benchmark": "carf_governance",
-  "timestamp": "2026-02-22T16:34:24.160389+00:00",
+  "timestamp": "2026-02-24T13:26:42.296430+00:00",
   "map": {
     "pillar": "MAP",
     "total_cases": 50,
     "avg_domain_recall": 0.2992,
     "cross_domain_link_accuracy": 0.46,
-    "avg_latency_ms": 0.04,
+    "avg_latency_ms": 0.02,
     "individual_results": [
       {
         "name": "procurement_sustainability_link",
@@ -22,7 +22,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.65
+        "latency_ms": 0.09
       },
       {
         "name": "finance_security_link",
@@ -38,7 +38,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.05
+        "latency_ms": 0.04
       },
       {
         "name": "legal_procurement_link",
@@ -70,7 +70,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.05
+        "latency_ms": 0.03
       },
       {
         "name": "security_legal_link",
@@ -86,7 +86,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.04
+        "latency_ms": 0.03
       },
       {
         "name": "triple_domain_chain",
@@ -105,7 +105,7 @@
         "triple_count": 6,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.09
+        "latency_ms": 0.07
       },
       {
         "name": "no_cross_domain",
@@ -115,7 +115,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.02
       },
       {
         "name": "finance_only",
@@ -127,7 +127,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.01
       },
       {
         "name": "hr_finance_link",
@@ -140,7 +140,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.03
+        "latency_ms": 0.02
       },
       {
         "name": "it_security_link",
@@ -179,7 +179,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "rnd_procurement_link",
@@ -218,7 +218,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "it_operations_link",
@@ -231,7 +231,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "security_sustainability_link",
@@ -270,7 +270,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "hr_security_link",
@@ -283,7 +283,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "operations_finance_link",
@@ -316,7 +316,7 @@
         "triple_count": 1,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.04
       },
       {
         "name": "it_finance_link",
@@ -371,7 +371,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "marketing_operations_link",
@@ -384,7 +384,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "rnd_sustainability_link",
@@ -397,7 +397,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "triple_hr_finance_legal",
@@ -445,7 +445,7 @@
         "triple_count": 1,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.03
+        "latency_ms": 0.04
       },
       {
         "name": "triple_marketing_legal_finance",
@@ -512,7 +512,7 @@
         "triple_count": 3,
         "link_detected": true,
         "link_correct": true,
-        "latency_ms": 0.05
+        "latency_ms": 0.04
       },
       {
         "name": "triple_operations_it_finance",
@@ -554,7 +554,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "hr_only",
@@ -566,7 +566,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "legal_only",
@@ -582,7 +582,7 @@
         "triple_count": 3,
         "link_detected": false,
         "link_correct": false,
-        "latency_ms": 0.06
+        "latency_ms": 0.04
       },
       {
         "name": "security_only",
@@ -618,7 +618,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "sustainability_only",
@@ -630,7 +630,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "operations_only",
@@ -662,7 +662,7 @@
         "triple_count": 0,
         "link_detected": false,
         "link_correct": true,
-        "latency_ms": 0.02
+        "latency_ms": 0.01
       },
       {
         "name": "no_domain_trivia",
@@ -702,7 +702,7 @@
     "accuracy": 1.0,
     "max_absolute_error": 2.8e-05,
     "breakdown_valid": true,
-    "breakdown_latency_ms": 0.33,
+    "breakdown_latency_ms": 0.05,
     "aggregation_valid": true,
     "individual_results": [
       {
@@ -712,7 +712,7 @@
         "actual_cost": 0.42,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0052
+        "latency_ms": 0.0048
       },
       {
         "name": "openai_1M_tokens",
@@ -721,7 +721,7 @@
         "actual_cost": 9.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0028
+        "latency_ms": 0.0027
       },
       {
         "name": "anthropic_1M_tokens",
@@ -730,7 +730,7 @@
         "actual_cost": 18.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0014
+        "latency_ms": 0.0013
       },
       {
         "name": "ollama_free",
@@ -748,7 +748,7 @@
         "actual_cost": 0.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0011
+        "latency_ms": 0.0009
       },
       {
         "name": "deepseek_small_query",
@@ -766,7 +766,7 @@
         "actual_cost": 0.14,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0011
+        "latency_ms": 0.001
       },
       {
         "name": "deepseek_large_input_small_output",
@@ -775,7 +775,7 @@
         "actual_cost": 0.714,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0009
+        "latency_ms": 0.0008
       },
       {
         "name": "openai_small_input_large_output",
@@ -793,7 +793,7 @@
         "actual_cost": 0.0105,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0008
+        "latency_ms": 0.0007
       },
       {
         "name": "openai_output_only",
@@ -802,7 +802,7 @@
         "actual_cost": 6.0,
         "absolute_error": 0.0,
         "within_tolerance": true,
-        "latency_ms": 0.0009
+        "latency_ms": 0.0008
       },
       {
         "name": "very_large_token_count_10M",
@@ -829,7 +829,7 @@
         "actual_cost": -2.8e-05,
         "absolute_error": 2.8e-05,
         "within_tolerance": true,
-        "latency_ms": 0.0009
+        "latency_ms": 0.001
       },
       {
         "name": "mixed_ratio_anthropic",
@@ -855,7 +855,7 @@
         "conflict_detected": true,
         "conflicts_found": 1,
         "correct": true,
-        "latency_ms": 0.06
+        "latency_ms": 0.05
       },
       {
         "name": "priority_cap_conflict",
@@ -959,7 +959,7 @@
         "conflict_detected": true,
         "conflicts_found": 1,
         "correct": true,
-        "latency_ms": 0.06
+        "latency_ms": 0.03
       },
       {
         "name": "release_cadence_conflict",
@@ -1108,7 +1108,7 @@
         "articles_well_formed": true,
         "has_gaps": true,
         "has_recommendations": true,
-        "latency_ms": 0.05
+        "latency_ms": 0.04
       },
       {
         "framework": "csrd",
@@ -1121,7 +1121,7 @@
         "articles_well_formed": true,
         "has_gaps": true,
         "has_recommendations": true,
-        "latency_ms": 0.06
+        "latency_ms": 0.03
       },
       {
         "framework": "gdpr",
@@ -1134,7 +1134,7 @@
         "articles_well_formed": true,
         "has_gaps": true,
         "has_recommendations": true,
-        "latency_ms": 0.03
+        "latency_ms": 0.02
       },
       {
         "framework": "iso_27001",
@@ -1153,41 +1153,41 @@
   },
   "latency": {
     "iterations": 20,
-    "avg_ms": 0.37,
-    "p50_ms": 0.35,
-    "p95_ms": 0.48,
-    "p99_ms": 0.48,
-    "min_ms": 0.32,
-    "max_ms": 0.51,
+    "avg_ms": 0.47,
+    "p50_ms": 0.43,
+    "p95_ms": 0.7,
+    "p99_ms": 0.7,
+    "min_ms": 0.41,
+    "max_ms": 0.84,
     "p95_under_50ms": true,
     "all_latencies_ms": [
-      0.32,
-      0.33,
-      0.33,
-      0.33,
-      0.33,
-      0.33,
-      0.34,
-      0.34,
-      0.34,
-      0.34,
-      0.35,
-      0.35,
-      0.36,
-      0.37,
-      0.4,
+      0.41,
+      0.41,
+      0.41,
+      0.41,
+      0.41,
+      0.41,
       0.42,
       0.42,
-      0.46,
-      0.48,
-      0.51
+      0.42,
+      0.42,
+      0.43,
+      0.43,
+      0.43,
+      0.43,
+      0.43,
+      0.44,
+      0.45,
+      0.58,
+      0.7,
+      0.84
     ]
   },
   "feature_flag": {
     "iterations": 100,
-    "disabled_avg_us": 0.64,
-    "enabled_avg_us": 0.58,
-    "overhead_us": -0.07,
+    "disabled_avg_us": 29.67,
+    "enabled_avg_us": 6.71,
+    "overhead_us": -22.96,
     "zero_overhead": true
   },
   "map_accuracy": 0.46,
@@ -1195,16 +1195,16 @@
   "conflict_detection_rate": 0.7647,
   "conflict_false_positive_rate": 0.0,
   "compliance_all_valid": true,
-  "governance_p95_ms": 0.48,
+  "governance_p95_ms": 0.7,
   "governance_p95_under_50ms": true,
-  "generated_at": "2026-02-22T16:34:24.242783+00:00",
+  "generated_at": "2026-02-24T13:26:42.336269+00:00",
   "benchmark_id": "governance",
   "methodology": "scripted_benchmark_v1",
   "benchmark_config": {
     "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_governance.py",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "git_hash": "4f2accf",
+    "git_hash": "ae8d2a3",
     "platform": "Windows-11-10.0.26200-SP0",
     "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
   },

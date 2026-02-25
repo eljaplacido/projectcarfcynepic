@@ -71,7 +71,7 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 
 CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 10 benchmark categories, using synthetic data with known ground truth and a raw LLM baseline (same model, no pipeline) for comparison. All benchmarks use fixed random seeds for full reproducibility.
 
-### Overall Grade: A+ -- 31/38 Hypotheses Passed (81.6%)
+### Overall Grade: A+ -- 34/38 Hypotheses Passed (89.5%)
 
 | # | Hypothesis | Measured | Threshold | Result |
 |---|-----------|----------|-----------|--------|
@@ -92,8 +92,8 @@ CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 10 benc
 | H14 | **RESOLVE Conflict Detection** -- 30 cases | **86.7%** | >= 80% | **PASS** |
 | H15 | **Board Lifecycle** -- CRUD operations | **100%** | 100% | **PASS** |
 | H16 | **Policy Roundtrip** -- YAML export/import fidelity | **100%** | >= 95% | **PASS** |
-| H17 | **Counterfactual Accuracy** -- vs raw LLM | 0% | >= 10pp | FAIL |
-| H18 | **Tau-Bench Agent Compliance** -- policy-guided | 60% | >= 95% | FAIL |
+| H17 | **Counterfactual Accuracy** -- vs raw LLM | **+16.7pp** (CI cov 96.7%) | >= 10pp | **PASS** |
+| H18 | **Tau-Bench Agent Compliance** -- policy-guided | **100%** (30/30 scenarios) | >= 95% | **PASS** |
 | H19 | **Hallucination at Scale** -- rate ceiling | **7.0%** | <= 10% | **PASS** |
 | H21 | **Cross-LLM Agreement** -- provider parity | **100%** | >= 85% | **PASS** |
 | H22 | **CLEAR Composite** -- cost/latency/efficacy/alignment | **0.77** | >= 0.75 | **PASS** |
@@ -101,15 +101,15 @@ CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 10 benc
 | H24 | **Adversarial Causal Robustness** | **70%** | >= 70% | **PASS** |
 | H25 | **Red Team Defense** -- 8 attack surfaces | **100%** | >= 85% | **PASS** |
 | H26 | **Fairness** -- demographic parity ratio | **1.0** | >= 0.80 | **PASS** |
-| H27 | **XAI Fidelity** -- explainability quality | 50% | >= 80% | FAIL |
+| H27 | **XAI Fidelity** -- explainability quality | **80%** (3/3 dimensions) | >= 80% | **PASS** |
 | H28 | **ALCOA+ Audit Trail** -- compliance | **100%** | >= 95% | **PASS** |
 | H29 | **Energy Proportionality** -- Clear < Complicated < Complex | **100%** | 100% | **PASS** |
 | H30 | **Scope 3 Attribution** -- emission accuracy | 30% | >= 85% | FAIL |
 | H31 | **SUS Usability** -- System Usability Scale | **68.4** | >= 68 | **PASS** |
 | H32 | **Task Completion** -- success rate | 80% | >= 90% | FAIL |
 | H33 | **WCAG 2.2 Level A** -- accessibility violations | **0** | 0 | **PASS** |
-| H34 | **Supply Chain Prediction** -- precision | **93.8%** | >= 70% | **PASS** |
-| H35 | **Healthcare CATE** -- vs RCT ground truth | 88.1% | >= 90% | FAIL |
+| H34 | **Supply Chain Prediction** -- precision | **94%** | >= 70% | **PASS** |
+| H35 | **Healthcare CATE** -- vs RCT ground truth | 88% | >= 90% | FAIL |
 | H36 | **Finance VaR** -- Kupiec backtest | **p = 1.0** | > 0.05 | **PASS** |
 | H37 | **Load Test** -- P95 at 25 concurrent users | **42ms** | <= 15s | **PASS** |
 | H38 | **Chaos Cascade** -- containment rate | **100%** | >= 80% | **PASS** |
@@ -123,7 +123,7 @@ Based on the benchmark evidence, CARF is particularly suited for:
 
 | Use Case | Why CARF Helps | Supporting Evidence |
 |----------|---------------|---------------------|
-| **Causal Decision Support** -- supply chain, marketing attribution, policy evaluation | Separates cause from correlation with statistical rigor | H1: 1,138x more accurate causal estimates than raw LLM |
+| **Causal Decision Support** -- supply chain, marketing attribution, policy evaluation | Separates cause from correlation with statistical rigor | H1: 1,138x more accurate, H17: +16.7pp vs LLM on confounded scenarios |
 | **Risk Quantification Under Uncertainty** -- investment, insurance, clinical trials | Calibrated posteriors with epistemic/aleatoric decomposition | H2: 100% calibrated across all Bayesian scenarios |
 | **Regulated AI Systems** -- EU AI Act, financial audit, healthcare decision support | Deterministic, compliant, and fully auditable | H3--H5: 100% violation detection, determinism, and compliance |
 | **Enterprise Governance** -- multi-domain policy orchestration, cost intelligence | MAP-PRICE-RESOLVE framework with conflict detection and audit | H11--H16: 100% cost precision, 86.7% conflict detection, full board lifecycle |
@@ -137,11 +137,11 @@ All evaluation data is **synthetic with known ground truth**, enabling objective
 
 | Category | Description | Details |
 |----------|-------------|---------|
-| Causal (Synthetic) | 3 DGPs with known ATEs (linear, nonlinear, null) | n=500 each, confounded via logistic propensity scores |
+| Causal (Synthetic) | 5 DGP types with known ATEs (linear, nonlinear, interaction, threshold, confounded) | n=500 each, 60 scenarios with CI calibration |
 | Causal (Industry) | 5 sector-specific DGPs with realistic confounding | Supply chain, Healthcare, Marketing, Sustainability, Education |
 | Bayesian | 8 scenarios (4 continuous, 4 binomial) | Known ground truth posteriors for calibration checking |
 | Router | 456-query labeled test set across 5 Cynefin domains | Clear (101), Complicated (102), Complex (101), Chaotic (50), Disorder (102) |
-| Governance | MAP (50), PRICE (15), RESOLVE (30), board lifecycle, policy roundtrip | Cross-domain link detection, cost precision, conflict detection |
+| Governance | MAP (50), PRICE (15), RESOLVE (30), Tau-Bench (30), board lifecycle, policy roundtrip | Cross-domain link detection, cost precision, conflict detection, agent compliance |
 | Security | OWASP LLM Top 10 (45 cases), Red Team (8 surfaces, 40 attacks) | Injection, PII detection, sanitization, multi-vector adversarial |
 | Compliance | Fairness (80 variations), XAI fidelity, ALCOA+ audit (50 queries) | Demographic parity, explanation stability, audit trail completeness |
 | Sustainability | Energy proportionality per domain, Scope 3 attribution | Clear < Complicated < Complex energy ordering |
@@ -507,7 +507,7 @@ curl -X POST http://localhost:8000/query \
 
 ### Option A: Run a Pre-Built Demo Scenario
 
-CYNEPIC includes 10 pre-built scenarios covering all 5 Cynefin domains:
+CYNEPIC includes 17 pre-built scenarios covering all 5 Cynefin domains across 7 verticals:
 
 | Scenario | Domain | Analysis Type | What It Tests |
 |----------|--------|---------------|---------------|
@@ -521,6 +521,13 @@ CYNEPIC includes 10 pre-built scenarios covering all 5 Cynefin domains:
 | **Market Adoption** | Complex | Bayesian (PyMC) | Uncertainty modeling for new product launch |
 | **Crisis Response** | Chaotic | Circuit Breaker | Critical supplier failure requiring immediate stabilization |
 | **Inventory Data Lookup** | Clear | Deterministic | Simple stock level and product queries |
+| **CSRD Double Materiality** | Complicated | Causal (DoWhy) | Climate transition risk impact on operating costs (ESRS) |
+| **ESRS E1 Climate Disclosure** | Complicated | Causal (DoWhy) | Emission reduction program effectiveness analysis |
+| **ESRS S1 Workforce Assessment** | Complicated | Causal (DoWhy) | Training investment impact on workforce productivity |
+| **Energy Mix Optimization** | Complicated | Causal (DoWhy) | Renewable energy mix cost/target optimization |
+| **Energy Demand Forecast** | Complex | Bayesian (PyMC) | Seasonal energy demand uncertainty modeling |
+| **Manufacturing Quality Control** | Complicated | Causal (DoWhy) | Process temperature effect on defect rates |
+| **Process Line Optimization** | Complicated | Causal (DoWhy) | Production parameter throughput optimization |
 
 **To run a demo:**
 1. Open the React dashboard: `http://localhost:5175`
@@ -563,7 +570,7 @@ projectcarf/
 │   ├── policies/       # CSL-Core formal policy definitions
 │   ├── federated_policies/ # Domain-owner governance policies (5 YAML files)
 │   └── policy_scaffolds/ # Domain-specific policy templates
-├── demo/               # 10 demo scenarios + 8 sample datasets
+├── demo/               # 17 demo scenarios + 11 sample datasets
 ├── tests/
 │   ├── unit/           # 53 unit test files
 │   ├── deepeval/       # LLM quality evaluation tests

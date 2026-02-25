@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Unit tests for GovernanceBoardService — Board CRUD, Templates, and Compliance.
 
 Tests create_board, list_boards, get_board, update_board, delete_board,

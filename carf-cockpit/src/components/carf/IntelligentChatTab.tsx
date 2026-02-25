@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import type { ChatMessage, SlashCommand, SlashCommandConfig, SocraticModeState, QueryResponse } from '../../types/carf';
 import api from '../../services/apiService';

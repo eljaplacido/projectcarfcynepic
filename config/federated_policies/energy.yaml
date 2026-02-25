@@ -1,0 +1,40 @@
+domain:
+  id: "energy"
+  display_name: "Energy Management"
+  owner_email: "energy-team@cisuregen.com"
+  namespace: "carf.energy"
+  tags: ["energy", "renewable", "grid", "sustainability"]
+
+policies:
+  - name: "renewable_target_minimum"
+    namespace: "carf.energy.targets"
+    rules:
+      - name: "min_renewable_share"
+        condition:
+          assessment_type: "mix_optimization"
+        constraint:
+          renewable_share:
+            min: 0.40
+        severity: "low"
+        message: "Renewable energy share must meet minimum 40% target"
+
+      - name: "max_carbon_intensity"
+        condition:
+          assessment_type: "mix_optimization"
+        constraint:
+          carbon_intensity:
+            max: 0.5
+        severity: "high"
+        message: "Carbon intensity exceeds maximum threshold of 0.5 tCO2/MWh"
+
+  - name: "energy_cost_governance"
+    namespace: "carf.energy.costs"
+    rules:
+      - name: "generation_cost_cap"
+        condition:
+          assessment_type: "mix_optimization"
+        constraint:
+          total_generation_cost:
+            max: 500000
+        severity: "low"
+        message: "Total generation cost exceeds governance cap"

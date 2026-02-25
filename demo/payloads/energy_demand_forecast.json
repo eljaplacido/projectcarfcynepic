@@ -1,0 +1,15 @@
+{
+  "query": "Forecast energy demand for next quarter considering seasonal patterns and growth trends",
+  "context": {
+    "bayesian_inference": {
+      "observations": [1200, 1350, 1180, 1420, 1300, 1480, 1220, 1390, 1250, 1450, 1320, 1500],
+      "time_column": "month",
+      "value_column": "demand_mw"
+    },
+    "scenario_metadata": {
+      "domain": "environmental",
+      "framework": "energy",
+      "assessment_type": "demand_forecast"
+    }
+  }
+}

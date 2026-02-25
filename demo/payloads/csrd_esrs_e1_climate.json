@@ -1,0 +1,17 @@
+{
+  "query": "Evaluate ESRS E1 Climate Change disclosure requirements for our GHG emissions trajectory",
+  "context": {
+    "causal_estimation": {
+      "treatment": "emission_reduction_program",
+      "outcome": "ghg_emissions_tco2e",
+      "covariates": ["facility_type", "energy_source", "production_volume", "year"],
+      "csv_path": "demo/data/csrd_materiality.csv"
+    },
+    "scenario_metadata": {
+      "domain": "environmental",
+      "framework": "CSRD",
+      "esrs_standard": "ESRS E1",
+      "assessment_type": "climate_disclosure"
+    }
+  }
+}

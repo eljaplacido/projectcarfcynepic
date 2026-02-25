@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Experience buffer tools for MCP.
 
 Exposes the CARF Experience Buffer's similarity search and pattern

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Tests for shared benchmark metadata/provenance helpers."""
 
 from benchmarks import finalize_benchmark_report

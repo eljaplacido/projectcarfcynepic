@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark realism, reliability, and feasibility validation helpers.
 
 This module adds a second quality layer on top of hypothesis pass/fail:

@@ -1,4 +1,5 @@
-﻿"""Currency normalization utilities for financial policy enforcement.
+﻿# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
+"""Currency normalization utilities for financial policy enforcement.
 
 Rates are configured via `CARF_FX_RATES_JSON` as JSON mapping:
     {"USD": 1.0, "EUR": 1.08, "JPY": 0.0067}

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Unit tests for GovernanceGraphService with Neo4j MOCKED.
 
 All methods should gracefully degrade when Neo4j is unavailable,

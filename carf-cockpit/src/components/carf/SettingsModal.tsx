@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import React, { useState } from 'react';
 import api from '../../services/apiService';
 

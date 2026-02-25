@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Evaluate ExplanationService using CARF UIX standards.
 
 Tests ensure explanations meet the UIX guidelines:

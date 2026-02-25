@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Evaluate CynefinRouter classification accuracy.
 
 Tests that the router correctly classifies queries into Cynefin domains:

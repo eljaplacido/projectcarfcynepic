@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """CYNEPIC Architecture 0.5 - Main Entry Point.
 
 This module initializes the CYNEPIC system (CYNefin-EPIstemic Cockpit)
@@ -131,8 +132,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS middleware — profile-aware origins
+# Security middleware — profile-aware (no-op in research mode)
+# NOTE: Security middleware is registered BEFORE CORS so that CORS ends up
+# as the outermost middleware (Starlette processes last-registered first).
+# This ensures CORS headers are added to ALL responses, including 429s.
 _profile = get_profile()
+from src.api.middleware import register_security_middleware  # noqa: E402
+register_security_middleware(app)
+
+# CORS middleware — registered LAST so it wraps the entire middleware stack
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_profile.cors_origins or ["*"],
@@ -141,10 +149,6 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
-
-# Security middleware — profile-aware (no-op in research mode)
-from src.api.middleware import register_security_middleware  # noqa: E402
-register_security_middleware(app)
 
 # ── Register all routers ──────────────────────────────────────────────────
 

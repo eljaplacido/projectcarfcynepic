@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Concurrent Load Testing (H37).
 
 Measures system behaviour under increasing concurrency by running

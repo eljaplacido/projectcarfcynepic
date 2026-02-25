@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Unit tests for GovernanceExportService — JSON-LD, YAML, and CSL export.
 
 Tests export_json_ld, export_yaml, and export_csl using a board created

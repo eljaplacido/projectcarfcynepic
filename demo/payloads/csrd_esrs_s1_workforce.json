@@ -1,0 +1,17 @@
+{
+  "query": "Assess ESRS S1 Own Workforce impacts of training investment on employee retention",
+  "context": {
+    "causal_estimation": {
+      "treatment": "training_investment_per_employee",
+      "outcome": "retention_rate",
+      "covariates": ["department", "seniority", "location", "salary_band"],
+      "csv_path": "demo/data/csrd_materiality.csv"
+    },
+    "scenario_metadata": {
+      "domain": "environmental",
+      "framework": "CSRD",
+      "esrs_standard": "ESRS S1",
+      "assessment_type": "workforce_assessment"
+    }
+  }
+}

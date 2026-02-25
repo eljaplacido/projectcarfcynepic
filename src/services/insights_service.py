@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Insights Service for CARF.
 
 Generates contextual, actionable insights for different user personas:

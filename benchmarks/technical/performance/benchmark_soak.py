@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Soak / Endurance Test (H39).
 
 Runs 1000 sequential queries through the CARF pipeline (or a mock

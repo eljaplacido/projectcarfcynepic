@@ -18,19 +18,19 @@ Key Principles:
 3. Uncertainty Quantification: Provide confidence intervals, not point estimates
 """
 
+import json
 import logging
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, TYPE_CHECKING
-import json
+from typing import TYPE_CHECKING, Any
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
 from src.core.llm import get_analyst_model
 from src.core.state import CausalEvidence, ConfidenceLevel, EpistemicState
-from src.utils.resiliency import async_retry_with_backoff
 from src.utils.cache import async_lru_cache
+from src.utils.resiliency import async_retry_with_backoff
 
 if TYPE_CHECKING:
     from src.services.neo4j_service import Neo4jService
@@ -369,7 +369,7 @@ Respond with a JSON object:
                  if config.effect_modifiers:
                      cols.extend(config.effect_modifiers)
                  usecols = list(set(cols)) # Deduplicate
-            
+
             df = pd.read_csv(config.csv_path, usecols=usecols)
         else:
             df = pd.DataFrame(config.data)
@@ -647,7 +647,6 @@ Respond with a JSON object:
 
         Returns detailed results per test: test name, estimate, p-value, pass/fail.
         """
-        import pandas as pd
         sensitivity_results = []
 
         try:
@@ -769,7 +768,6 @@ Respond with a JSON object:
 
         Includes propensity score matching and CATE subgroup analysis.
         """
-        import pandas as pd
         deep_results: dict[str, Any] = {
             "alternative_estimates": [],
             "heterogeneous_effects": [],
@@ -925,11 +923,11 @@ async def run_causal_analysis(
             try:
                 from src.services.chimera_oracle import get_oracle_engine
                 oracle = get_oracle_engine()
-                
+
                 if oracle.has_model(scenario_id):
                     logger.info(f"Using Fast Oracle for scenario {scenario_id}")
                     pred = oracle.predict_effect(scenario_id, state.context)
-                    
+
                     state.causal_evidence = CausalEvidence(
                         effect_size=pred.effect_estimate,
                         confidence_interval=pred.confidence_interval,
@@ -943,13 +941,25 @@ async def run_causal_analysis(
                     state.overall_confidence = ConfidenceLevel.HIGH
                     state.proposed_action = {
                         "action_type": "causal_recommendation",
-                        "description": f"Fast Oracle recommendation",
+                        "description": "Fast Oracle recommendation",
                         "parameters": {
                             "effect_size": pred.effect_estimate,
                             "confidence_interval": pred.confidence_interval
                         }
                     }
                     state.final_response = f"**Fast Oracle Analysis**\n\nEffect: {pred.effect_estimate:.2f}\nCI: {pred.confidence_interval}\nConfidence: High (Pre-validated model)"
+
+                    # Oracle transparency metadata (E3.2)
+                    state.context["_oracle_used"] = True
+                    state.context["_oracle_scenario_id"] = scenario_id
+                    state.context["_oracle_reliability"] = getattr(pred, "reliability", "high")
+                    drift = getattr(pred, "drift_detected", False)
+                    if drift:
+                        state.context["_oracle_drift_warning"] = (
+                            "Data drift detected since model training. "
+                            "Consider retraining the Oracle model."
+                        )
+
                     return state
             except Exception as e:
                 logger.warning(f"Fast Oracle failed, falling back to full analysis: {e}")

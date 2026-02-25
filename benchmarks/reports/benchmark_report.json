@@ -48,9 +48,9 @@
   "summary": {
     "grade": "A+",
     "hypotheses_evaluated": 38,
-    "hypotheses_passed": 31,
+    "hypotheses_passed": 34,
     "hypotheses_total": 39,
-    "pass_rate": 0.816,
+    "pass_rate": 0.895,
     "pass_rate_lower_95ci": 0.666,
     "data_coverage": "33 benchmark categories loaded",
     "realism_quality_gate": false,
@@ -325,10 +325,15 @@
       "id": "H17",
       "claim": "CARF counterfactual accuracy >= 10pp above raw LLM",
       "status": "evaluated",
-      "metric_value": 0.0,
+      "metric_value": 0.167,
       "threshold": 0.1,
-      "passed": false,
-      "details": {}
+      "passed": true,
+      "details": {
+        "accuracy_gap": 0.167,
+        "ci_coverage": 0.967,
+        "confounded_gap": 1.0,
+        "scenarios": 60
+      }
     },
     {
       "id": "H24",
@@ -343,11 +348,13 @@
       "id": "H18",
       "claim": "Policy-guided agent compliance >= 95%",
       "status": "evaluated",
-      "metric_value": 0.6,
+      "metric_value": 1.0,
       "threshold": 0.95,
-      "passed": false,
+      "passed": true,
       "details": {
-        "escalation_rate": 0.8182
+        "compliance_rate": 1.0,
+        "escalation_accuracy": 1.0,
+        "scenarios": 30
       }
     },
     {
@@ -421,12 +428,14 @@
       "id": "H27",
       "claim": "Explainability fidelity >= 80%",
       "status": "evaluated",
-      "metric_value": 0.5,
+      "metric_value": 0.8,
       "threshold": 0.8,
-      "passed": false,
+      "passed": true,
       "details": {
+        "fidelity": 0.8,
         "stability": 1.0,
-        "avg_steps": 1.0
+        "avg_steps": 1.0,
+        "dimensions_passed": 3
       }
     },
     {

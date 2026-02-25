@@ -469,12 +469,17 @@ class Guardian:
         if not violations:
             return GuardianVerdict.APPROVED
 
-        # Critical violations → reject
+        # Critical risk level → reject
         if risk_level == "critical":
             return GuardianVerdict.REJECTED
 
+        # Any critical-severity violation → reject
+        critical_violations = [v for v in violations if v.severity == "critical"]
+        if critical_violations:
+            return GuardianVerdict.REJECTED
+
         # High-severity violations that can be overridden → escalate
-        high_violations = [v for v in violations if v.severity in ("high", "critical")]
+        high_violations = [v for v in violations if v.severity == "high"]
         if high_violations:
             return GuardianVerdict.REQUIRES_ESCALATION
 
@@ -664,14 +669,19 @@ class Guardian:
 
         # Financial risk (from violations)
         financial_violations = [v for v in violations if v.policy_category == "financial"]
-        fin_score = min(1.0, len(financial_violations) * 0.5)
+        has_critical_financial = any(v.severity == "critical" for v in financial_violations)
+        fin_score = 1.0 if has_critical_financial else min(1.0, len(financial_violations) * 0.5)
+        fin_weight = weights.get("financial", 0.20)
+        # Critical financial violations get elevated weight to ensure rejection
+        if has_critical_financial:
+            fin_weight = max(fin_weight, 0.85)
         components.append(RiskComponent(
             name="Financial Risk",
             score=fin_score,
-            weight=weights.get("financial", 0.20),
-            weighted_score=fin_score * weights.get("financial", 0.20),
-            status="low" if fin_score < 0.3 else "medium" if fin_score < 0.6 else "high",
-            explanation=f"{len(financial_violations)} financial violations"
+            weight=fin_weight,
+            weighted_score=fin_score * fin_weight,
+            status="low" if fin_score < 0.3 else "medium" if fin_score < 0.6 else ("critical" if has_critical_financial else "high"),
+            explanation=f"{len(financial_violations)} financial violations" + (" (CRITICAL)" if has_critical_financial else "")
         ))
 
         # Operational risk
@@ -709,7 +719,24 @@ class Guardian:
             explanation=f"Mandatory escalation required" if escalation_violations else "No compliance issues"
         ))
 
-        total_risk = sum(c.weighted_score for c in components)
+        # Context-declared risk level (from upstream assessment or scenario)
+        ctx_risk = ""
+        if hasattr(state, "context") and isinstance(state.context, dict):
+            ctx_risk = str(state.context.get("risk_level", "")).upper()
+        ctx_risk_map = {"CRITICAL": 1.0, "HIGH": 0.7, "MEDIUM": 0.3, "LOW": 0.0}
+        ctx_score = ctx_risk_map.get(ctx_risk, 0.0)
+        if ctx_score > 0:
+            ctx_weight = 0.15
+            components.append(RiskComponent(
+                name="Context Risk",
+                score=ctx_score,
+                weight=ctx_weight,
+                weighted_score=ctx_score * ctx_weight,
+                status="low" if ctx_score < 0.3 else "medium" if ctx_score < 0.6 else ("critical" if ctx_score >= 1.0 else "high"),
+                explanation=f"Upstream risk assessment: {ctx_risk}"
+            ))
+
+        total_risk = min(1.0, sum(c.weighted_score for c in components))
         return total_risk, components
 
     async def evaluate(self, state: EpistemicState) -> GuardianDecision:
@@ -745,7 +772,21 @@ class Guardian:
         if reflection_violation:
             violations.append(reflection_violation)
 
-        # Check 3: Proposed action checks
+        # Check 3: Context-declared risk level
+        if hasattr(state, "context") and isinstance(state.context, dict):
+            declared_risk = str(state.context.get("risk_level", "")).upper()
+            if declared_risk in ("HIGH", "CRITICAL"):
+                policies_checked += 1
+                violations.append(PolicyViolation(
+                    policy_name="context_risk_level",
+                    policy_category="operational",
+                    description=f"Upstream risk assessment is {declared_risk}",
+                    severity="high",
+                    suggested_fix="Requires human review before proceeding",
+                    user_overridable=True,
+                ))
+
+        # Check 4: Proposed action checks
         if state.proposed_action:
             action = state.proposed_action
 
@@ -756,20 +797,50 @@ class Guardian:
             if escalation_violation:
                 violations.append(escalation_violation)
 
-            # Check context-aware financial limits
+            # Check financial limits
             amount = action.get("amount") or action.get("parameters", {}).get("amount")
             if amount is not None:
                 policies_checked += 1
-                financial_violations = self.policy_engine.check_financial_limit_contextual(
-                    float(amount),
-                    action.get("currency", "USD"),
-                    domain=state.cynefin_domain,
-                )
-                violations.extend(financial_violations)
-                if financial_violations:
-                    context_adjustments.append(
-                        f"Financial limit adjusted for {state.cynefin_domain.value} domain"
+                f_amount = float(amount)
+                params = action.get("parameters", {})
+                budget_limit = params.get("budget_limit")
+
+                if budget_limit is not None:
+                    # Explicit budget_limit takes precedence over domain limits
+                    f_limit = float(budget_limit)
+                    if f_amount > f_limit:
+                        ratio = f_amount / f_limit if f_limit > 0 else 10.0
+                        severity = "critical" if ratio >= 2.0 else "high"
+                        violations.append(PolicyViolation(
+                            policy_name="budget_limit_exceeded",
+                            policy_category="financial",
+                            description=(
+                                f"Amount {f_amount:,.0f} exceeds budget limit of "
+                                f"{f_limit:,.0f} ({ratio:.1f}x)"
+                            ),
+                            severity=severity,
+                            suggested_fix=(
+                                f"Reduce amount to {f_limit:,.0f} or obtain "
+                                f"{'board' if ratio >= 2.0 else 'management'} approval"
+                            ),
+                            user_overridable=(severity != "critical"),
+                        ))
+                        context_adjustments.append(
+                            f"Amount exceeds explicit budget limit of {f_limit:,.0f}"
+                        )
+                    # Within explicit budget_limit → no financial violation
+                else:
+                    # No explicit limit — fall back to domain-based check
+                    financial_violations = self.policy_engine.check_financial_limit_contextual(
+                        f_amount,
+                        action.get("currency", "USD"),
+                        domain=state.cynefin_domain,
                     )
+                    violations.extend(financial_violations)
+                    if financial_violations:
+                        context_adjustments.append(
+                            f"Financial limit adjusted for {state.cynefin_domain.value} domain"
+                        )
 
         # Compute risk breakdown
         risk_score, risk_breakdown = self._compute_risk_breakdown(state, violations)

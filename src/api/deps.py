@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Shared FastAPI dependencies and helper functions.
 
 Extracted from src/main.py so that multiple routers can reuse them.

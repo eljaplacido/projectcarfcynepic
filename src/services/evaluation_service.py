@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """DeepEval integration service for runtime LLM quality scoring.
 
 Provides real-time evaluation of LLM outputs using DeepEval metrics:

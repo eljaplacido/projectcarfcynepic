@@ -1,0 +1,16 @@
+{
+  "query": "Optimize our renewable energy mix to minimize costs while meeting 40% renewable target",
+  "context": {
+    "causal_estimation": {
+      "treatment": "renewable_share",
+      "outcome": "total_generation_cost",
+      "covariates": ["region", "season", "demand_mw", "grid_price"],
+      "csv_path": "demo/data/energy_generation.csv"
+    },
+    "scenario_metadata": {
+      "domain": "environmental",
+      "framework": "energy",
+      "assessment_type": "mix_optimization"
+    }
+  }
+}

@@ -1,25 +1,28 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Tests for src/workflows/graph.py."""
 
-import pytest
-from unittest.mock import patch, MagicMock, AsyncMock
 
-from src.workflows.graph import (
-    deterministic_runner_node,
-    circuit_breaker_node,
-    reflector_node,
-    route_by_domain,
-    route_after_guardian,
-    route_after_human,
-    build_carf_graph,
-    compile_carf_graph,
-    get_carf_graph,
-)
+import pytest
+
 from src.core.state import (
-    CynefinDomain,
     ConfidenceLevel,
+    CynefinDomain,
     EpistemicState,
     GuardianVerdict,
     HumanInteractionStatus,
+)
+from src.workflows.graph import (
+    _apply_financial_cap,
+    build_carf_graph,
+    circuit_breaker_node,
+    compile_carf_graph,
+    csl_precheck_node,
+    deterministic_runner_node,
+    get_carf_graph,
+    reflector_node,
+    route_after_guardian,
+    route_after_human,
+    route_by_domain,
 )
 
 
@@ -358,6 +361,111 @@ class TestReflectorSmartRepair:
         assert result.context["repair_strategy"] in ("heuristic", "llm", "hybrid")
 
 
+class TestCSLPrecheckNode:
+    """Tests for csl_precheck_node."""
+
+    @pytest.mark.asyncio
+    async def test_injects_financial_limit(self):
+        """Test CSL precheck injects financial limit based on domain."""
+        state = EpistemicState(
+            user_input="Test precheck",
+            cynefin_domain=CynefinDomain.COMPLICATED,
+        )
+
+        result = await csl_precheck_node(state)
+
+        # Should inject financial limit for Complicated domain
+        assert "_csl_financial_limit" in result.context
+        assert result.context["_csl_financial_limit"] == 50_000
+
+    @pytest.mark.asyncio
+    async def test_injects_constraints_list(self):
+        """Test CSL precheck injects human-readable constraints."""
+        state = EpistemicState(
+            user_input="Test precheck",
+            cynefin_domain=CynefinDomain.CLEAR,
+        )
+
+        result = await csl_precheck_node(state)
+
+        assert "_csl_precheck_constraints" in result.context
+        assert len(result.context["_csl_precheck_constraints"]) > 0
+
+    @pytest.mark.asyncio
+    async def test_chaotic_domain_gets_lower_limit(self):
+        """Test chaotic domain gets the lowest financial limit."""
+        state = EpistemicState(
+            user_input="Crisis!",
+            cynefin_domain=CynefinDomain.CHAOTIC,
+        )
+
+        result = await csl_precheck_node(state)
+
+        assert result.context.get("_csl_financial_limit") == 10_000
+
+    @pytest.mark.asyncio
+    async def test_confidence_threshold_for_chaotic(self):
+        """Test higher confidence threshold for chaotic domain."""
+        state = EpistemicState(
+            user_input="Crisis!",
+            cynefin_domain=CynefinDomain.CHAOTIC,
+        )
+
+        result = await csl_precheck_node(state)
+
+        assert result.context.get("_csl_confidence_threshold") == 0.8
+
+
+class TestApplyFinancialCap:
+    """Tests for _apply_financial_cap helper."""
+
+    def test_caps_amount_over_limit(self):
+        """Test that amount is capped to financial limit."""
+        state = EpistemicState(
+            user_input="Buy equipment",
+            proposed_action={
+                "action_type": "purchase",
+                "parameters": {"amount": 150_000},
+            },
+            context={"_csl_financial_limit": 50_000},
+        )
+
+        _apply_financial_cap(state)
+
+        assert state.proposed_action["parameters"]["amount"] == 50_000
+        assert state.proposed_action["parameters"]["_capped_from"] == 150_000
+
+    def test_no_cap_under_limit(self):
+        """Test that amount is not capped when under limit."""
+        state = EpistemicState(
+            user_input="Small purchase",
+            proposed_action={
+                "action_type": "purchase",
+                "parameters": {"amount": 5_000},
+            },
+            context={"_csl_financial_limit": 50_000},
+        )
+
+        _apply_financial_cap(state)
+
+        assert state.proposed_action["parameters"]["amount"] == 5_000
+        assert "_capped_from" not in state.proposed_action["parameters"]
+
+    def test_no_limit_in_context(self):
+        """Test no-op when financial limit not in context."""
+        state = EpistemicState(
+            user_input="Test",
+            proposed_action={
+                "action_type": "purchase",
+                "parameters": {"amount": 150_000},
+            },
+        )
+
+        _apply_financial_cap(state)
+
+        assert state.proposed_action["parameters"]["amount"] == 150_000
+
+
 class TestBuildCarfGraph:
     """Tests for build_carf_graph function."""
 
@@ -367,6 +475,7 @@ class TestBuildCarfGraph:
 
         # Check nodes are added
         assert "router" in workflow.nodes
+        assert "csl_precheck" in workflow.nodes
         assert "deterministic_runner" in workflow.nodes
         assert "causal_analyst" in workflow.nodes
         assert "bayesian_explorer" in workflow.nodes

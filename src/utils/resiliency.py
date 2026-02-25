@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Resiliency utilities for CARF.
 
 This module provides retry logic, circuit breakers, and other reliability patterns.

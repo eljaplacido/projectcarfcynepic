@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Adversarial Causal Inference Robustness (H24).
 
 Tests the causal inference engine against 10 adversarial data-generating

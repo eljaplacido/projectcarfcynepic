@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """LLM-Powered Explanation Service for CARF.
 
 Provides contextual explanations for all CARF components:

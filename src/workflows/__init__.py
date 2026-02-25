@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Workflows module: LangGraph definitions.
 
 Contains the StateGraph wiring and node implementations for the CARF cognitive mesh.

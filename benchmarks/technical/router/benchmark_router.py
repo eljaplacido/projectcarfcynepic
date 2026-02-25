@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark the CARF Cynefin Router against a labeled test set.
 
 Evaluates classification accuracy, weighted F1, confusion matrix,

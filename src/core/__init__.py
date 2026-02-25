@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Core module: Base classes, AgentState, and Interfaces.
 
 This module contains the foundational abstractions with no external dependencies.

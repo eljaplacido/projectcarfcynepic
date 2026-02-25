@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF IHDP-Style Causal Healthcare Benchmark (H35).
 
 Generates a synthetic dataset inspired by the Infant Health and Development

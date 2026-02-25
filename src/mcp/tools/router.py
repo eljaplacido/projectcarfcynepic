@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Cynefin Router tools for MCP.
 
 Wraps CynefinRouter to expose domain classification and configuration

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Large-Scale Hallucination Detection Benchmark (H19).
 
 Tests CARF's ability to reduce hallucinations across 200 test cases in

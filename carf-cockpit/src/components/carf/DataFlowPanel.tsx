@@ -1,6 +1,7 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 /**
  * DataFlowPanel Component
- * 
+ *
  * Visualizes the data flow through CARF's architecture layers.
  * Shows input → router → analysis → governance → output pipeline.
  * 

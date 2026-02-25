@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import React from 'react';
 import type { CausalAnalysisResult } from '../../types/carf';
 import ExplainableWrapper from './ExplainableWrapper';

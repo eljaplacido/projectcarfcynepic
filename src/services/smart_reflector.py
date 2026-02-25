@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Smart Reflector Service — hybrid heuristic + LLM repair for policy violations.
 
 Tries fast heuristic repairs first. If heuristic confidence is too low or the

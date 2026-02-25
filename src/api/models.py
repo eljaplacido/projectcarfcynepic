@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Pydantic request/response models for the CARF API.
 
 Extracted from src/main.py to enable reuse across routers.

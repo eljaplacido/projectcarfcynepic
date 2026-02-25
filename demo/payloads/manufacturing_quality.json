@@ -1,0 +1,15 @@
+{
+  "query": "Analyze the causal effect of process temperature adjustments on defect rate in manufacturing",
+  "context": {
+    "causal_estimation": {
+      "treatment": "temperature_adjustment",
+      "outcome": "defect_rate",
+      "covariates": ["material_batch", "operator_experience", "humidity", "machine_age"]
+    },
+    "scenario_metadata": {
+      "domain": "operational",
+      "framework": "manufacturing",
+      "assessment_type": "quality_control"
+    }
+  }
+}

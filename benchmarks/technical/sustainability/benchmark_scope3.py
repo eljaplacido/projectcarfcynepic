@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Scope 3 Emission Attribution Accuracy (H30).
 
 Generates 20 synthetic EPA-style emission records with known causal factors

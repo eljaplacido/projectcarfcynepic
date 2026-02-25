@@ -1,0 +1,46 @@
+# CSRD-specific Policy Scaffold
+# ESRS disclosure rules and double materiality requirements.
+
+scaffold:
+  name: "csrd_compliance"
+  domain: "environmental"
+  version: "1.0"
+  description: "Policy scaffold for CSRD and ESRS compliance scenarios"
+
+csl_policies:
+  - "budget_limits"
+  - "action_gates"
+  - "data_access"
+
+csl_overrides:
+  budget_limits:
+    domain_financial_limit: 75000
+    daily_spend_cap: 250000
+  action_gates:
+    high_risk_threshold: "MEDIUM"
+
+domain_rules:
+  esrs_e1_climate_disclosure:
+    description: "ESRS E1 requires GHG inventory and transition plan"
+    required_data: ["ghg_emissions_tco2e", "emission_reduction_target"]
+    action: "reject_if_missing"
+
+  esrs_s1_workforce_disclosure:
+    description: "ESRS S1 requires workforce metrics and training data"
+    required_data: ["headcount", "training_hours", "turnover_rate"]
+    action: "escalate_if_missing"
+
+  double_materiality_assessment:
+    description: "Both financial and impact materiality must be assessed"
+    dual_assessment_required: true
+    action: "block_if_single_perspective"
+
+  data_quality_threshold:
+    description: "Minimum data quality for CSRD disclosures"
+    min_completeness: 0.95
+    min_sample_size: 100
+    action: "warn_if_below"
+
+opa_policies:
+  - "environmental_audit"
+  - "csrd_disclosure_check"

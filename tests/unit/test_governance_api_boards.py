@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Tests for Governance Board API endpoints.
 
 Uses httpx.AsyncClient with ASGITransport to test FastAPI board endpoints

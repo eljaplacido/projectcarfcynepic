@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Tests for CynefinRouter._apply_causal_language_boost()."""
 
 import pytest

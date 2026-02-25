@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import React, { useState } from 'react';
 import type { QueryResponse } from '../../types/carf';
 import SuggestedQuestions, { generateSuggestedQuestions } from './SuggestedQuestions';

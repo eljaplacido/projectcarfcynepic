@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Unit tests for the Causal Inference Engine.
 
 Tests cover Pydantic models, CausalGraph operations, and configuration validation.

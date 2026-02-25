@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import { describe, it, expect } from 'vitest';
 import { computeHighlights } from '../hooks/useProactiveHighlight';
 import type { QueryResponse } from '../types/carf';

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Raw LLM Baseline Runner.
 
 Sends benchmark queries directly to the configured LLM WITHOUT the CARF pipeline.

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Multi-Component Failure Cascade Testing (H38).
 
 Simulates six increasingly severe failure scenarios to verify the system

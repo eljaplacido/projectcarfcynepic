@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import pytest
 from src.services.schema_detector import schema_detector, SchemaDetectionResult
 from src.services.improvement_suggestions import improvement_service, ImprovementContext, Suggestion

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Unit tests for FederatedPolicyService.
 
 Tests domain CRUD, policy CRUD, conflict detection/resolution,

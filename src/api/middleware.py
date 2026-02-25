@@ -178,7 +178,7 @@ def register_security_middleware(app: FastAPI) -> None:
 
     # Rate limiting
     if profile.rate_limiting_enabled:
-        rpm = 120 if profile.mode == DeploymentMode.PRODUCTION else 60
+        rpm = 120 if profile.mode == DeploymentMode.PRODUCTION else 300
         app.add_middleware(RateLimitMiddleware, requests_per_minute=rpm)
         logger.info("Rate limiting enabled: %d req/min", rpm)
 

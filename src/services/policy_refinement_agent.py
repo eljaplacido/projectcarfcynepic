@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Policy refinement agent for generating and validating CSL policies.
 
 This agent enables user-driven and automated policy refinement:

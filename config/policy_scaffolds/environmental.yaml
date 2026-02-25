@@ -40,6 +40,18 @@ domain_rules:
     verification_required: true
     action: "escalate_if_unverified"
 
+  emission_factor_validation:
+    description: "Validate emission factors against recognized databases (DEFRA, EPA, IPCC)"
+    recognized_sources: ["DEFRA", "EPA", "IPCC"]
+    cross_check_required: true
+    action: "reject_if_unrecognized"
+
+  csrd_reporting_boundary:
+    description: "Ensure CSRD reporting covers all entities in the consolidation boundary"
+    boundary_check: "full_consolidation"
+    include_subsidiaries: true
+    action: "block_if_incomplete"
+
 opa_policies:
   - "environmental_audit"
   - "data_lineage_check"

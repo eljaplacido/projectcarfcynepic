@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF UX — Task Completion Rate & Time-to-Insight (H32).
 
 Measures task completion success rate and time-to-insight across 20 CARF task

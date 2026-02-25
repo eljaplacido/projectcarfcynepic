@@ -1,0 +1,15 @@
+{
+  "query": "Optimize production line parameters to maximize throughput while maintaining quality standards",
+  "context": {
+    "causal_estimation": {
+      "treatment": "line_speed_increase",
+      "outcome": "throughput_units_per_hour",
+      "covariates": ["product_type", "shift", "worker_count", "machine_utilization"]
+    },
+    "scenario_metadata": {
+      "domain": "operational",
+      "framework": "manufacturing",
+      "assessment_type": "process_optimization"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import React, { useState, useEffect, useCallback } from 'react';
 import QueryInput from './QueryInput';
 import CynefinRouter from './CynefinRouter';

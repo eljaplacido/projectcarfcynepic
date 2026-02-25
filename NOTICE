@@ -1,0 +1,247 @@
+CARF - Complex-Adaptive Reasoning Fabric
+Copyright (c) 2026 Cisuregen
+
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE for details. On February 19, 2030, this software
+will automatically convert to the Apache License, Version 2.0.
+
+This product includes software developed by third parties.
+The following notices are provided in compliance with their
+respective license terms.
+
+========================================================================
+Core Orchestration
+========================================================================
+
+LangGraph (MIT License)
+  Copyright (c) LangChain, Inc.
+  https://github.com/langchain-ai/langgraph
+
+LangChain (MIT License)
+  Copyright (c) LangChain, Inc.
+  https://github.com/langchain-ai/langchain
+
+LangChain OpenAI (MIT License)
+  Copyright (c) LangChain, Inc.
+  https://github.com/langchain-ai/langchain
+
+========================================================================
+Causal Inference
+========================================================================
+
+DoWhy (MIT License)
+  Copyright (c) Microsoft Corporation
+  https://github.com/py-why/dowhy
+
+EconML (MIT License)
+  Copyright (c) Microsoft Corporation
+  https://github.com/py-why/EconML
+
+causal-learn (Apache License 2.0)
+  Copyright (c) Center for Causal Discovery
+  https://github.com/cmu-phil/causal-learn
+
+========================================================================
+Bayesian Inference
+========================================================================
+
+PyMC (Apache License 2.0)
+  Copyright (c) PyMC Development Team
+  https://github.com/pymc-devs/pymc
+
+ArviZ (Apache License 2.0)
+  Copyright (c) ArviZ Development Team
+  https://github.com/arviz-devs/arviz
+
+========================================================================
+Machine Learning & NLP
+========================================================================
+
+PyTorch (BSD-3-Clause License)
+  Copyright (c) Meta Platforms, Inc.
+  https://github.com/pytorch/pytorch
+
+Hugging Face Transformers (Apache License 2.0)
+  Copyright (c) Hugging Face, Inc.
+  https://github.com/huggingface/transformers
+
+Sentence Transformers (Apache License 2.0)
+  Copyright (c) UKP Lab, TU Darmstadt
+  https://github.com/UKPLab/sentence-transformers
+
+scikit-learn (BSD-3-Clause License)
+  Copyright (c) scikit-learn developers
+  https://github.com/scikit-learn/scikit-learn
+
+Hugging Face Datasets (Apache License 2.0)
+  Copyright (c) Hugging Face, Inc.
+  https://github.com/huggingface/datasets
+
+Hugging Face Accelerate (Apache License 2.0)
+  Copyright (c) Hugging Face, Inc.
+  https://github.com/huggingface/accelerate
+
+========================================================================
+API & Web Framework
+========================================================================
+
+FastAPI (MIT License)
+  Copyright (c) Sebastian Ramirez
+  https://github.com/tiangolo/fastapi
+
+Uvicorn (BSD-3-Clause License)
+  Copyright (c) Encode OSS Ltd.
+  https://github.com/encode/uvicorn
+
+Pydantic (MIT License)
+  Copyright (c) Samuel Colvin
+  https://github.com/pydantic/pydantic
+
+========================================================================
+Data Processing
+========================================================================
+
+pandas (BSD-3-Clause License)
+  Copyright (c) pandas Development Team
+  https://github.com/pandas-dev/pandas
+
+NumPy (BSD-3-Clause License)
+  Copyright (c) NumPy Developers
+  https://github.com/numpy/numpy
+
+========================================================================
+Databases & Infrastructure
+========================================================================
+
+Neo4j Python Driver (Apache License 2.0)
+  Copyright (c) Neo4j, Inc.
+  https://github.com/neo4j/neo4j-python-driver
+
+Redis Python Client (BSD-3-Clause License)
+  Copyright (c) Redis, Inc.
+  https://github.com/redis/redis-py
+
+SQLAlchemy (MIT License)
+  Copyright (c) Mike Bayer
+  https://github.com/sqlalchemy/sqlalchemy
+
+Confluent Kafka (Apache License 2.0)
+  Copyright (c) Confluent, Inc.
+  https://github.com/confluentinc/confluent-kafka-python
+
+========================================================================
+Policy & Verification
+========================================================================
+
+Z3 Solver (MIT License)
+  Copyright (c) Microsoft Corporation
+  https://github.com/Z3Prover/z3
+
+========================================================================
+Observability
+========================================================================
+
+OpenTelemetry (Apache License 2.0)
+  Copyright (c) OpenTelemetry Authors
+  https://github.com/open-telemetry/opentelemetry-python
+
+LangSmith (MIT License)
+  Copyright (c) LangChain, Inc.
+  https://github.com/langchain-ai/langsmith-sdk
+
+========================================================================
+Document Processing
+========================================================================
+
+PyPDF (BSD-3-Clause License)
+  Copyright (c) Mathieu Fenniak and contributors
+  https://github.com/py-pdf/pypdf
+
+openpyxl (MIT License)
+  Copyright (c) Eric Gazoni and Charlie Clark
+  https://github.com/fluidware/openpyxl
+
+========================================================================
+Configuration & Utilities
+========================================================================
+
+PyYAML (MIT License)
+  Copyright (c) Kirill Simonov
+  https://github.com/yaml/pyyaml
+
+python-dotenv (BSD-3-Clause License)
+  Copyright (c) Saurabh Kumar
+  https://github.com/theskumar/python-dotenv
+
+Tenacity (Apache License 2.0)
+  Copyright (c) Julien Danjou
+  https://github.com/jd/tenacity
+
+HumanLayer (MIT License)
+  Copyright (c) HumanLayer, Inc.
+  https://github.com/humanlayer/humanlayer
+
+========================================================================
+Evaluation
+========================================================================
+
+DeepEval (MIT License)
+  Copyright (c) Confident AI
+  https://github.com/confident-ai/deepeval
+
+========================================================================
+Frontend (CYNEPIC Cockpit)
+========================================================================
+
+React (MIT License)
+  Copyright (c) Meta Platforms, Inc.
+  https://github.com/facebook/react
+
+ReactFlow (MIT License)
+  Copyright (c) webkid GmbH
+  https://github.com/xyflow/xyflow
+
+Recharts (MIT License)
+  Copyright (c) Recharts Group
+  https://github.com/recharts/recharts
+
+Plotly.js (MIT License)
+  Copyright (c) Plotly, Inc.
+  https://github.com/plotly/plotly.js
+
+Lucide React (ISC License)
+  Copyright (c) Lucide Contributors
+  https://github.com/lucide-icons/lucide
+
+react-markdown (MIT License)
+  Copyright (c) Espen Hovlandsdal
+  https://github.com/remarkjs/react-markdown
+
+remark-gfm (MIT License)
+  Copyright (c) Titus Wormer
+  https://github.com/remarkjs/remark-gfm
+
+Tailwind CSS (MIT License)
+  Copyright (c) Tailwind Labs, Inc.
+  https://github.com/tailwindlabs/tailwindcss
+
+Vite (MIT License)
+  Copyright (c) Evan You
+  https://github.com/vitejs/vite
+
+========================================================================
+Docker Infrastructure (runtime dependencies)
+========================================================================
+
+Neo4j Community Edition (GPL v3 with FOSS Exception)
+  Note: Used as a runtime service only, not linked or
+  distributed with CARF. No GPL obligations transfer.
+  https://neo4j.com
+
+Apache Kafka / Confluent Platform (Apache License 2.0)
+  Copyright (c) The Apache Software Foundation
+  https://kafka.apache.org
+
+Open Policy Agent (Apache License 2.0)
+  Copyright (c) The Open Policy Agent Authors
+  https://github.com/open-policy-agent/opa

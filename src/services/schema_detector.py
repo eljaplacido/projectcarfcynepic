@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Schema Detection and Data Quality Validation Service.
 
 Provides intelligent CSV/data schema detection with:
@@ -78,11 +79,47 @@ class SchemaDetectionResult(BaseModel):
     analysis_recommendations: list[str] = Field(default_factory=list)
 
 
+# ESRS column patterns for CSRD data model detection
+ESRS_COLUMN_PATTERNS: dict[str, dict[str, list[str]]] = {
+    "treatment": {
+        "exact": [
+            "climate_transition_risk", "emission_reduction_program",
+            "training_investment_per_employee", "renewable_share",
+        ],
+        "partial": [
+            "transition", "program", "investment", "intervention",
+            "policy_change", "initiative",
+        ],
+    },
+    "outcome": {
+        "exact": [
+            "operating_cost_change", "ghg_emissions_tco2e",
+            "retention_rate", "total_generation_cost", "carbon_intensity",
+        ],
+        "partial": [
+            "emissions", "tco2e", "cost_change", "footprint",
+            "retention", "turnover", "disclosure_score",
+        ],
+    },
+    "covariate": {
+        "exact": [
+            "sector", "region", "company_size", "energy_intensity",
+            "facility_type", "energy_source", "production_volume",
+        ],
+        "partial": [
+            "sector", "industry", "geography", "intensity",
+            "materiality", "boundary", "scope",
+        ],
+    },
+}
+
+
 class SchemaDetector:
     """Intelligent CSV schema detector with data quality validation.
 
     Features:
     - Column role inference for causal analysis
+    - ESRS data model detection for CSRD scenarios
     - Comprehensive data quality metrics
     - Causal analysis readiness assessment
     - Actionable recommendations
@@ -354,7 +391,7 @@ class SchemaDetector:
             causal_issues.append("No outcome column detected")
         if len(df) < self.MIN_SAMPLE_SIZES["causal"]:
             causal_ready = False
-            causal_issues.append(f"Insufficient sample size for causal analysis")
+            causal_issues.append("Insufficient sample size for causal analysis")
         if completeness < 0.80:
             causal_ready = False
             causal_issues.append("Too many missing values for reliable analysis")
@@ -436,6 +473,41 @@ class SchemaDetector:
             )
 
         return recommendations
+
+
+    def detect_esrs_roles(self, columns: list[str]) -> dict[str, list[str]]:
+        """Detect ESRS-specific column roles for CSRD data models.
+
+        Args:
+            columns: List of column names from a DataFrame.
+
+        Returns:
+            Dict mapping role ('treatment', 'outcome', 'covariate') to matched columns.
+        """
+        roles: dict[str, list[str]] = {"treatment": [], "outcome": [], "covariate": []}
+
+        for col in columns:
+            col_lower = col.lower().replace("-", "_")
+            matched = False
+
+            for role, patterns in ESRS_COLUMN_PATTERNS.items():
+                if role not in roles:
+                    continue
+                # Exact match
+                if col_lower in patterns.get("exact", []):
+                    roles[role].append(col)
+                    matched = True
+                    break
+                # Partial match
+                for pattern in patterns.get("partial", []):
+                    if pattern in col_lower:
+                        roles[role].append(col)
+                        matched = True
+                        break
+                if matched:
+                    break
+
+        return roles
 
 
 # Singleton instance

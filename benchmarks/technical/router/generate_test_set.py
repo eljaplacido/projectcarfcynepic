@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Generate labeled Cynefin router benchmark test set.
 
 Produces 500+ hand-crafted queries across all 5 domains in JSONL format.

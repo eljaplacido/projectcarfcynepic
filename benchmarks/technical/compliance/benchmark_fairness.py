@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Demographic Fairness (H26).
 
 Tests whether the Cynefin router produces consistent domain classifications

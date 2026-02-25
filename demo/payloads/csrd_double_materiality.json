@@ -1,0 +1,17 @@
+{
+  "query": "Assess the double materiality of climate transition risk on our operating costs",
+  "context": {
+    "causal_estimation": {
+      "treatment": "climate_transition_risk",
+      "outcome": "operating_cost_change",
+      "covariates": ["sector", "region", "company_size", "energy_intensity"],
+      "csv_path": "demo/data/csrd_materiality.csv"
+    },
+    "scenario_metadata": {
+      "domain": "environmental",
+      "framework": "CSRD",
+      "esrs_standard": "ESRS E1",
+      "assessment_type": "double_materiality"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """End-to-End Use Case Benchmark Runner.
 
 Runs full CARF pipeline AND raw LLM baseline for each industry scenario,

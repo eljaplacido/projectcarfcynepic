@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 /**
  * GovernanceView — Main container for Orchestration Governance (Phase 16+17).
  *

@@ -1,6 +1,7 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 /**
  * ScenarioWalkthrough Component
- * 
+ *
  * Provides an interactive guided tour through the Scope 3 emissions analysis workflow.
  * Guides users step-by-step through the platform's features with highlights and explanations.
  */

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """End-to-end workflow evaluation tests.
 
 Tests complete CYNEPIC workflows from query to response:

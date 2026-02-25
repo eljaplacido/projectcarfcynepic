@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF UX — WCAG 2.2 Level A/AA Audit Checklist (H33).
 
 Structures a WCAG 2.2 accessibility audit for the CARF Cockpit (React/TypeScript

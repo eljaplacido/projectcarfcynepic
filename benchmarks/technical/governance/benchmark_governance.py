@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Orchestration Governance (OG) Subsystem.
 
 Tests all four pillars of the MAP-PRICE-RESOLVE-AUDIT framework:

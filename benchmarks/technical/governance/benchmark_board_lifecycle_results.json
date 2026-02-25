@@ -1,7 +1,7 @@
 {
   "benchmark": "carf_board_lifecycle",
   "hypothesis": "H15",
-  "timestamp": "2026-02-22T16:11:08.498847+00:00",
+  "timestamp": "2026-02-24T13:32:13.625861+00:00",
   "live_services": true,
   "crud": {
     "test": "crud",
@@ -13,10 +13,10 @@
       "delete": true
     },
     "latencies": {
-      "create_ms": 0.8945,
-      "read_ms": 0.0014,
-      "update_name_ms": 0.0689,
-      "update_desc_ms": 0.0269,
+      "create_ms": 0.0261,
+      "read_ms": 0.0013,
+      "update_name_ms": 0.0589,
+      "update_desc_ms": 0.0245,
       "delete_ms": 0.0104
     },
     "passed": 5,
@@ -28,35 +28,35 @@
     "individual_results": [
       {
         "template_id": "eu_ai_act",
-        "board_id": "868da08d-bc3",
+        "board_id": "93f85ecf-152",
         "success": true,
         "domain_count": 2,
         "policy_ns_count": 5,
-        "latency_ms": 18.8102
+        "latency_ms": 18.3348
       },
       {
         "template_id": "csrd",
-        "board_id": "4ee3af3f-760",
+        "board_id": "a811df6b-60f",
         "success": true,
         "domain_count": 3,
         "policy_ns_count": 3,
-        "latency_ms": 0.1515
+        "latency_ms": 0.1686
       },
       {
         "template_id": "gdpr",
-        "board_id": "85ac319b-966",
+        "board_id": "da500f0f-8c2",
         "success": true,
         "domain_count": 2,
         "policy_ns_count": 0,
-        "latency_ms": 0.0334
+        "latency_ms": 0.024
       },
       {
         "template_id": "iso_27001",
-        "board_id": "29de77d7-7cb",
+        "board_id": "720ef794-586",
         "success": true,
         "domain_count": 2,
         "policy_ns_count": 0,
-        "latency_ms": 0.0605
+        "latency_ms": 0.026
       }
     ],
     "created": 4,
@@ -83,7 +83,7 @@
           }
         ],
         "all_in_range": true,
-        "latency_ms": 1.3629
+        "latency_ms": 1.1148
       },
       {
         "template_id": "csrd",
@@ -102,7 +102,7 @@
           }
         ],
         "all_in_range": true,
-        "latency_ms": 0.074
+        "latency_ms": 0.0464
       },
       {
         "template_id": "gdpr",
@@ -115,7 +115,7 @@
           }
         ],
         "all_in_range": true,
-        "latency_ms": 0.0196
+        "latency_ms": 0.028
       },
       {
         "template_id": "iso_27001",
@@ -128,7 +128,7 @@
           }
         ],
         "all_in_range": true,
-        "latency_ms": 0.0195
+        "latency_ms": 0.0207
       }
     ],
     "valid": 4,
@@ -143,9 +143,9 @@
       "remove_member": true
     },
     "latencies": {
-      "add_ms": 0.0331,
+      "add_ms": 0.0332,
       "list_ms": 0.0008,
-      "remove_ms": 0.014
+      "remove_ms": 0.0205
     },
     "passed": 3,
     "total": 3,
@@ -156,19 +156,19 @@
     "individual_results": [
       {
         "template_id": "eu_ai_act",
-        "board_id": "62a72cfc-af1",
+        "board_id": "4552f519-a39",
         "seeded": true,
         "verified": true,
         "domain_count": 2,
-        "latency_ms": 2.7597
+        "latency_ms": 1.9439
       },
       {
         "template_id": "supply_chain",
-        "board_id": "30c1af82-04a",
+        "board_id": "23bba97a-8f2",
         "seeded": true,
         "verified": true,
         "domain_count": 4,
-        "latency_ms": 0.3762
+        "latency_ms": 0.3367
       }
     ],
     "seeded": 2,
@@ -179,14 +179,14 @@
   "template_rate": 1.0,
   "compliance_valid": 1.0,
   "demo_seeded": 1.0,
-  "generated_at": "2026-02-22T16:11:08.598638+00:00",
+  "generated_at": "2026-02-24T13:32:13.668380+00:00",
   "benchmark_id": "board_lifecycle",
   "methodology": "scripted_benchmark_v1",
   "benchmark_config": {
     "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_board_lifecycle.py",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "git_hash": "4f2accf",
+    "git_hash": "ae8d2a3",
     "platform": "Windows-11-10.0.26200-SP0",
     "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
   },

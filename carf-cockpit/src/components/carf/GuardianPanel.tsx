@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import React, { useState, useEffect } from 'react';
 import PolicyEditorModal from './PolicyEditorModal';
 import type { GuardianDecision } from '../../types/carf';
@@ -166,7 +167,7 @@ const GuardianPanel: React.FC<GuardianPanelProps> = ({ decision, onViewAuditTrai
                             </div>
                             <div className="space-y-1">
                                 {(guardianConfig.thresholds ?? []).map((t, idx) => (
-                                    <div key={idx} className="flex items-center justify-between text-[11px]">
+                                    <div key={`${t.name}-${idx}`} className="flex items-center justify-between text-[11px]">
                                         <span className="text-gray-500">{t.name}</span>
                                         <span className="font-mono text-gray-700">{t.value}</span>
                                     </div>
@@ -185,8 +186,8 @@ const GuardianPanel: React.FC<GuardianPanelProps> = ({ decision, onViewAuditTrai
                     <div data-testid="guardian-policy-descriptions">
                         <div className="text-xs font-semibold text-gray-700 mb-2">Available Policies</div>
                         <div className="space-y-2">
-                            {policyDescriptions.map((pd) => (
-                                <div key={pd.id} className="p-2.5 bg-gray-50 rounded border border-gray-100">
+                            {policyDescriptions.map((pd, idx) => (
+                                <div key={pd.id || pd.name || idx} className="p-2.5 bg-gray-50 rounded border border-gray-100">
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="text-xs font-medium text-gray-900">{pd.name}</span>
                                         {pd.euAiActArticle && getEuMatchBadge(pd.euAiActMatchLevel)}
@@ -334,7 +335,7 @@ const GuardianPanel: React.FC<GuardianPanelProps> = ({ decision, onViewAuditTrai
             {/* Policy Checks */}
             <ExplainableWrapper
                 component="guardian_policies"
-                context={{ totalPolicies: decision.policies.length, passedPolicies: decision.policies.filter(p => p.status === 'passed').length }}
+                context={{ totalPolicies: (decision.policies ?? []).length, passedPolicies: (decision.policies ?? []).filter(p => p.status === 'passed').length }}
                 title="Policy Checks"
             >
                 <div>
@@ -360,7 +361,7 @@ const GuardianPanel: React.FC<GuardianPanelProps> = ({ decision, onViewAuditTrai
                             const desc = policyDescMap.get(policy.name);
                             return (
                                 <ExplainableWrapper
-                                    key={idx}
+                                    key={`${policy.name}-${idx}`}
                                     component="guardian_policy"
                                     elementId={policy.name}
                                     context={{ policyName: policy.name, status: policy.status, details: policy.details }}

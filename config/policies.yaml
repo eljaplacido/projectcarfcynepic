@@ -101,6 +101,11 @@ escalation:
       - "modify_policy"
       - "external_api_write"
       - "production_deployment"
+      - "budget_transfer"
+      - "contract_sign"
+      - "data_anonymize"
+      - "data_transfer"
+      - "data_export"
 
   escalation_channels:
     primary: "slack"

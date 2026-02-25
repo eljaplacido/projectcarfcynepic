@@ -2,6 +2,8 @@
   "name": "cynepic-cockpit",
   "private": true,
   "version": "0.5.0",
+  "license": "BSL-1.1",
+  "author": "Cisuregen",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Causal inference tools for MCP.
 
 Wraps CausalInferenceEngine to expose causal discovery, full analysis

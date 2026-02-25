@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark ChimeraOracle vs DoWhy full pipeline.
 
 Measures H8: ChimeraOracle >= 10x faster with < 20% accuracy loss.

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Tests for benchmark evidence gate helpers."""
 
 from benchmarks.reports.realism import evaluate_evidence_gate

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Regression tests for hypothesis evaluation fallback handling."""
 
 from benchmarks.reports.generate_report import evaluate_hypotheses

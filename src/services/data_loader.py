@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Data Loader Service for CARF.
 
 Provides unified data loading from multiple sources:
@@ -17,7 +18,6 @@ import logging
 from collections import OrderedDict
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -364,6 +364,38 @@ class DataLoaderService:
     def clear_cache(self) -> None:
         """Clear the data cache."""
         self._cache.clear()
+
+    @staticmethod
+    def aggregate_time_series(
+        df: pd.DataFrame,
+        time_column: str,
+        value_columns: list[str],
+        freq: str = "M",
+        agg_func: str = "mean",
+    ) -> pd.DataFrame:
+        """Aggregate time-series data to a specified frequency.
+
+        Args:
+            df: Input DataFrame with a time column.
+            time_column: Name of the column containing timestamps.
+            value_columns: Columns to aggregate.
+            freq: Pandas frequency string ('D', 'W', 'M', 'Q', 'Y').
+            agg_func: Aggregation function ('mean', 'sum', 'median', 'min', 'max').
+
+        Returns:
+            Aggregated DataFrame indexed by period.
+        """
+        result = df.copy()
+        result[time_column] = pd.to_datetime(result[time_column], errors="coerce")
+        result = result.dropna(subset=[time_column])
+        result = result.set_index(time_column)
+
+        agg_map = {col: agg_func for col in value_columns if col in result.columns}
+        if not agg_map:
+            return result
+
+        aggregated = result.resample(freq).agg(agg_map)
+        return aggregated.dropna(how="all").reset_index()
 
 
 # Singleton instance

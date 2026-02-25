@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Central cache registry for CARF.
 
 Provides a single `clear_all_caches()` entry-point that clears every

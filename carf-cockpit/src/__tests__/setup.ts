@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 import '@testing-library/jest-dom/vitest';
 import { vi, beforeEach } from 'vitest';
 

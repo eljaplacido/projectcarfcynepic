@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """CARF Library API — use CARF cognitive services in notebooks and data pipelines.
 
 Thin wrappers over existing services for notebook-friendly use. Each function
@@ -16,6 +17,7 @@ Usage:
 
 from __future__ import annotations
 
+from datetime import UTC
 from typing import Any
 
 
@@ -222,6 +224,227 @@ async def run_pipeline(
     result["reasoning_steps"] = len(state.reasoning_chain)
 
     return result
+
+
+def get_system_capabilities() -> dict[str, Any]:
+    """Return a summary of the CARF system's available capabilities.
+
+    Useful for notebooks and integrations to discover what
+    analysis modes, services, and benchmarks are available.
+
+    Returns:
+        Dict describing available domains, services, and benchmarks.
+    """
+    capabilities: dict[str, Any] = {
+        "cynefin_domains": [
+            {"domain": "Clear", "agent": "deterministic_runner", "description": "Deterministic lookup operations"},
+            {"domain": "Complicated", "agent": "causal_analyst", "description": "Causal inference analysis"},
+            {"domain": "Complex", "agent": "bayesian_explorer", "description": "Bayesian active inference"},
+            {"domain": "Chaotic", "agent": "circuit_breaker", "description": "Emergency stabilization"},
+            {"domain": "Disorder", "agent": "human_escalation", "description": "Human-in-the-loop"},
+        ],
+        "services": {
+            "causal_inference": True,
+            "bayesian_inference": True,
+            "guardian_policy_engine": True,
+            "csl_policies": True,
+            "opa_policies": True,
+            "explanation_builder": True,
+            "embedding_engine": True,
+            "rag_retrieval": True,
+            "agent_memory": True,
+            "governance_map_price_resolve": True,
+        },
+        "library_functions": [
+            "classify_query", "run_causal", "run_bayesian",
+            "check_guardian", "run_pipeline", "query_memory",
+            "export_reproducibility_artifact", "get_system_capabilities",
+            "run_benchmark_suite",
+        ],
+        "benchmarks": [
+            {"id": "counterbench", "hypothesis": "H17", "description": "Counterfactual reasoning accuracy"},
+            {"id": "xai", "hypothesis": "H27", "description": "Explainability quality (fidelity, stability, simplicity)"},
+            {"id": "tau_bench", "hypothesis": "H18", "description": "Policy-guided agent compliance"},
+        ],
+    }
+
+    # Check optional service availability
+    try:
+        from src.services.embedding_engine import get_embedding_engine
+        engine = get_embedding_engine()
+        capabilities["services"]["embedding_engine_dense"] = engine._dense_available
+    except Exception:
+        capabilities["services"]["embedding_engine_dense"] = False
+
+    return capabilities
+
+
+async def run_benchmark_suite(
+    benchmark_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    """Run one or more benchmarks and return combined results.
+
+    Args:
+        benchmark_ids: List of benchmark IDs to run. If None, runs all.
+            Available: 'counterbench', 'xai', 'tau_bench'
+
+    Returns:
+        Dict with results per benchmark and overall summary.
+    """
+    available = {
+        "counterbench": "benchmarks.technical.causal.benchmark_counterbench",
+        "xai": "benchmarks.technical.compliance.benchmark_xai",
+        "tau_bench": "benchmarks.technical.governance.benchmark_tau_bench",
+    }
+
+    if benchmark_ids is None:
+        benchmark_ids = list(available.keys())
+
+    results: dict[str, Any] = {}
+    for bid in benchmark_ids:
+        if bid not in available:
+            results[bid] = {"error": f"Unknown benchmark: {bid}"}
+            continue
+
+        try:
+            import importlib
+            module = importlib.import_module(available[bid])
+            report = await module.run_benchmark()
+            results[bid] = {
+                "status": "completed",
+                "metrics": report.get("metrics", {}),
+                "passed": report.get("metrics", {}).get("passed", False),
+            }
+        except Exception as exc:
+            results[bid] = {"status": "error", "error": str(exc)}
+
+    passed_count = sum(1 for r in results.values() if r.get("passed"))
+    total = len(results)
+
+    return {
+        "benchmarks_run": benchmark_ids,
+        "results": results,
+        "summary": {
+            "total": total,
+            "passed": passed_count,
+            "failed": total - passed_count,
+            "grade": "A" if passed_count == total else "B" if passed_count >= total - 1 else "C",
+        },
+    }
+
+
+def export_reproducibility_artifact(
+    state_or_result: Any,
+    include_data: bool = False,
+) -> dict[str, Any]:
+    """Package an EpistemicState or pipeline result into a reproducibility artifact.
+
+    Creates a JSON-serializable artifact containing:
+    - Input parameters (query, context)
+    - Analysis configuration
+    - Evidence results
+    - Environment metadata (Python version, CARF version)
+    - Reasoning chain for audit
+
+    Args:
+        state_or_result: An EpistemicState object or pipeline result dict.
+        include_data: If True, includes raw data in the artifact.
+
+    Returns:
+        JSON-serializable dict containing the full reproducibility artifact.
+    """
+    import platform
+    import sys
+    from datetime import datetime
+
+    artifact: dict[str, Any] = {
+        "artifact_type": "carf_reproducibility",
+        "exported_at": datetime.now(UTC).isoformat(),
+        "environment": {
+            "python_version": sys.version,
+            "platform": platform.platform(),
+            "carf_test_mode": __import__("os").environ.get("CARF_TEST_MODE", "0"),
+        },
+    }
+
+    if isinstance(state_or_result, dict):
+        # Pipeline result dict
+        artifact["input"] = {
+            "query": state_or_result.get("user_input", state_or_result.get("query", "")),
+        }
+        artifact["results"] = {
+            k: v for k, v in state_or_result.items()
+            if k not in ("user_input", "query")
+        }
+    else:
+        # EpistemicState object
+        artifact["input"] = {
+            "query": getattr(state_or_result, "user_input", ""),
+            "session_id": str(getattr(state_or_result, "session_id", "")),
+        }
+
+        # Context (optionally with data)
+        context = getattr(state_or_result, "context", {}) or {}
+        if not include_data:
+            context = {
+                k: v for k, v in context.items()
+                if k != "causal_estimation" or not isinstance(v, dict) or "data" not in v
+            }
+        artifact["context"] = context
+
+        # Domain classification
+        domain = getattr(state_or_result, "cynefin_domain", None)
+        artifact["classification"] = {
+            "domain": domain.value if hasattr(domain, "value") else str(domain),
+            "confidence": getattr(state_or_result, "domain_confidence", 0.0),
+            "entropy": getattr(state_or_result, "domain_entropy", 0.0),
+        }
+
+        # Evidence
+        causal = getattr(state_or_result, "causal_evidence", None)
+        if causal:
+            artifact["causal_evidence"] = {
+                "effect_size": getattr(causal, "effect_size", None),
+                "confidence_interval": getattr(causal, "confidence_interval", None),
+                "refutation_passed": getattr(causal, "refutation_passed", None),
+                "p_value": getattr(causal, "p_value", None),
+                "treatment": getattr(causal, "treatment", ""),
+                "outcome": getattr(causal, "outcome", ""),
+            }
+
+        bayesian = getattr(state_or_result, "bayesian_evidence", None)
+        if bayesian:
+            artifact["bayesian_evidence"] = {
+                "posterior_mean": getattr(bayesian, "posterior_mean", None),
+                "credible_interval": getattr(bayesian, "credible_interval", None),
+                "epistemic_uncertainty": getattr(bayesian, "epistemic_uncertainty", None),
+            }
+
+        # Guardian verdict
+        verdict = getattr(state_or_result, "guardian_verdict", None)
+        if verdict:
+            artifact["guardian"] = {
+                "verdict": verdict.value if hasattr(verdict, "value") else str(verdict),
+                "violations": getattr(state_or_result, "policy_violations", []),
+            }
+
+        # Reasoning chain
+        chain = getattr(state_or_result, "reasoning_chain", [])
+        if chain:
+            artifact["reasoning_chain"] = [
+                {
+                    "node": getattr(step, "node_name", ""),
+                    "action": getattr(step, "action", ""),
+                    "output": getattr(step, "output_summary", ""),
+                    "confidence": getattr(step, "confidence", ""),
+                    "duration_ms": getattr(step, "duration_ms", 0),
+                }
+                for step in chain
+            ]
+
+        artifact["final_response"] = getattr(state_or_result, "final_response", None)
+
+    return artifact
 
 
 async def query_memory(

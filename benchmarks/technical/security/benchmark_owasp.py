@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF OWASP LLM Top 10 Security.
 
 Tests prompt injection resistance, PII detection, and output sanitization.

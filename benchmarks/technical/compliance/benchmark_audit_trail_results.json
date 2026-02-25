@@ -1,6 +1,6 @@
 {
   "benchmark": "carf_audit_trail",
-  "timestamp": "2026-02-22T16:14:54.960467+00:00",
+  "timestamp": "2026-02-24T13:27:03.598396+00:00",
   "metrics": {
     "alcoa_compliance_rate": 1.0,
     "alcoa_compliance_passed": true,
@@ -44,7 +44,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 0f23aefc-2346-43c0-b029-5be95a047cd9"
+          "reason": "Unique UUID: c3c0372e-edb6-43cf-a873-bb7a23d9c316"
         },
         "accurate": {
           "passed": true,
@@ -93,7 +93,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: b4534ac5-8f8a-4fb0-9b73-e0a0d5c3f139"
+          "reason": "Unique UUID: e534d944-87a0-4862-9abc-da93d0e88134"
         },
         "accurate": {
           "passed": true,
@@ -142,7 +142,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: dcc67590-f4ca-4c23-bc92-a6893839c4cf"
+          "reason": "Unique UUID: 6926edd1-e7c5-491d-9831-99b76eec8b8a"
         },
         "accurate": {
           "passed": true,
@@ -191,7 +191,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 294d565d-03fb-4a12-88f1-e662e6cfd990"
+          "reason": "Unique UUID: 999f4caf-43b0-4f9b-847e-37146a2c7310"
         },
         "accurate": {
           "passed": true,
@@ -240,7 +240,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: db680e5f-3bb7-4069-b681-2c2770891450"
+          "reason": "Unique UUID: 483d96f1-c8d4-40fb-bebd-2c3438e6442d"
         },
         "accurate": {
           "passed": true,
@@ -289,7 +289,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: f10264b0-96d4-4e46-943a-7fdd16d1671e"
+          "reason": "Unique UUID: 5506d62e-340b-4f81-9424-7507f93757c4"
         },
         "accurate": {
           "passed": true,
@@ -338,7 +338,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: c2270037-1ec1-4c2c-ab60-6030de569ada"
+          "reason": "Unique UUID: 18b6287f-53df-42ce-b0d8-38cfce6366d2"
         },
         "accurate": {
           "passed": true,
@@ -387,7 +387,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 6724862b-4ab8-473f-85aa-0c38c70f6e21"
+          "reason": "Unique UUID: c43a2579-963f-4501-a52e-63e0e52b5129"
         },
         "accurate": {
           "passed": true,
@@ -436,7 +436,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 50081d9c-c36b-4df1-9d1a-2b9417448935"
+          "reason": "Unique UUID: 13918f74-32f9-4d0f-8b72-3cf543c9eb2c"
         },
         "accurate": {
           "passed": true,
@@ -485,7 +485,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 833cdfea-3fd6-4f07-81ef-69b7e08ec164"
+          "reason": "Unique UUID: af24bbb4-3b16-44b0-bb0a-2f8cedcaa853"
         },
         "accurate": {
           "passed": true,
@@ -534,7 +534,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 7c9d6495-ff5a-4567-bffe-202c822c1e54"
+          "reason": "Unique UUID: 125c14a6-18bd-419e-81d8-73b646ffd130"
         },
         "accurate": {
           "passed": true,
@@ -583,7 +583,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: d4210853-521d-4bbd-b8c9-39ed431df360"
+          "reason": "Unique UUID: c91ca660-52c8-4ccc-be25-521d5607f4a3"
         },
         "accurate": {
           "passed": true,
@@ -632,7 +632,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 8dacbcb5-bc71-4a2e-b1f1-905f524cfd76"
+          "reason": "Unique UUID: 5ae78a4d-bd25-4396-b770-284094156a5f"
         },
         "accurate": {
           "passed": true,
@@ -681,7 +681,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 601101e6-2b44-4907-a7ca-cf7fb8f6beea"
+          "reason": "Unique UUID: 47c8f0b1-a704-4253-ac8f-de1b41e84de8"
         },
         "accurate": {
           "passed": true,
@@ -730,7 +730,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 6f4b85ca-457b-4599-bb0b-6782b732a832"
+          "reason": "Unique UUID: 0ddf53cd-5bc1-41f8-8e37-39c5da37c388"
         },
         "accurate": {
           "passed": true,
@@ -779,7 +779,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 2847366c-bd6c-4355-8ade-152479aaf46f"
+          "reason": "Unique UUID: 3ff0494c-9490-4d0e-9b51-075b8aec0671"
         },
         "accurate": {
           "passed": true,
@@ -828,7 +828,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: e21796c7-5d7c-4893-844c-597b963a9bd5"
+          "reason": "Unique UUID: 412b6895-306b-49df-9981-3abea9e3f591"
         },
         "accurate": {
           "passed": true,
@@ -877,7 +877,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: c3fc0445-1e41-4b94-ab5c-8d0b62b1ed1d"
+          "reason": "Unique UUID: de03408e-d97e-4491-a30c-32cc27a84817"
         },
         "accurate": {
           "passed": true,
@@ -926,7 +926,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 9829b89c-119f-4a5b-a847-d8841d39f4b0"
+          "reason": "Unique UUID: f2731dc1-fcb7-4566-a35f-cf06570be005"
         },
         "accurate": {
           "passed": true,
@@ -975,7 +975,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 01f06ea4-7e7f-4c1c-a0e3-335b6b7c0ffc"
+          "reason": "Unique UUID: 8a5dfdc1-0ebd-497d-97fe-68892111c4ee"
         },
         "accurate": {
           "passed": true,
@@ -1024,7 +1024,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 5a847b2f-cda4-4bf5-87cf-3043f6605c42"
+          "reason": "Unique UUID: eb4f9f45-1ed6-4a77-84c6-e7dc2500092c"
         },
         "accurate": {
           "passed": true,
@@ -1073,7 +1073,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 8598abc6-1d14-410a-93e3-3a5e1e30a11c"
+          "reason": "Unique UUID: 139bf203-1f5e-428c-a67a-1e71d28729ac"
         },
         "accurate": {
           "passed": true,
@@ -1118,11 +1118,11 @@
         },
         "contemporaneous": {
           "passed": true,
-          "reason": "Record delay: 0.000s (within 1s)"
+          "reason": "Record delay: 0.001s (within 1s)"
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 96eb0e73-d713-47c1-a14d-6c88570e993d"
+          "reason": "Unique UUID: a4099a86-b37c-4289-9237-8e00d5d39e21"
         },
         "accurate": {
           "passed": true,
@@ -1167,11 +1167,11 @@
         },
         "contemporaneous": {
           "passed": true,
-          "reason": "Record delay: 0.001s (within 1s)"
+          "reason": "Record delay: 0.000s (within 1s)"
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 3113b959-a3c2-45d3-b3c0-b7d7b7340477"
+          "reason": "Unique UUID: 74e4fe4c-087b-4f21-a0ca-368638b3463c"
         },
         "accurate": {
           "passed": true,
@@ -1220,7 +1220,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 6700325b-5258-4225-b0e1-3ad5b21cc7cd"
+          "reason": "Unique UUID: c95800b3-df8a-477d-a5c5-379e1271a8e8"
         },
         "accurate": {
           "passed": true,
@@ -1265,11 +1265,11 @@
         },
         "contemporaneous": {
           "passed": true,
-          "reason": "Record delay: 0.001s (within 1s)"
+          "reason": "Record delay: 0.000s (within 1s)"
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 7ae9d1a5-d944-46f1-b555-9e83c0af15f7"
+          "reason": "Unique UUID: 74480380-6c40-435c-9b40-c12813aaff62"
         },
         "accurate": {
           "passed": true,
@@ -1314,11 +1314,11 @@
         },
         "contemporaneous": {
           "passed": true,
-          "reason": "Record delay: 0.001s (within 1s)"
+          "reason": "Record delay: 0.000s (within 1s)"
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 7a5ab081-fcc6-4d02-8570-308d1d12e662"
+          "reason": "Unique UUID: 509aabeb-f0c3-41d3-98c0-2a6c5fff4c4d"
         },
         "accurate": {
           "passed": true,
@@ -1363,11 +1363,11 @@
         },
         "contemporaneous": {
           "passed": true,
-          "reason": "Record delay: 0.001s (within 1s)"
+          "reason": "Record delay: 0.000s (within 1s)"
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 23ab4fea-2ffe-49ed-b505-001c9aeecc23"
+          "reason": "Unique UUID: cdae356d-543c-44ca-b1bf-c2e5083e60ae"
         },
         "accurate": {
           "passed": true,
@@ -1412,11 +1412,11 @@
         },
         "contemporaneous": {
           "passed": true,
-          "reason": "Record delay: 0.001s (within 1s)"
+          "reason": "Record delay: 0.000s (within 1s)"
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 536ae175-bb74-4e38-a741-3fa36ea85a3f"
+          "reason": "Unique UUID: 99ea7dc6-8fb8-433a-a340-ea0a3969ce7f"
         },
         "accurate": {
           "passed": true,
@@ -1465,7 +1465,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: a20b3119-a68a-423b-a192-42256b5546c5"
+          "reason": "Unique UUID: 56fa23a2-5a03-4d44-9129-d02c5b4fa511"
         },
         "accurate": {
           "passed": true,
@@ -1514,7 +1514,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: e1be5a8f-9b64-401f-9976-df95a90a852a"
+          "reason": "Unique UUID: 4e712d05-fcd3-45ec-ac1a-b21a5dc3768d"
         },
         "accurate": {
           "passed": true,
@@ -1563,7 +1563,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: f5251d4c-bd90-447c-97ba-a8b72ebbe1b7"
+          "reason": "Unique UUID: 49fcd59e-a982-4b5c-ae80-7ef5a4ae8e6f"
         },
         "accurate": {
           "passed": true,
@@ -1612,7 +1612,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 2cfe10c8-5fae-4ecb-aad2-209ec55415db"
+          "reason": "Unique UUID: 7faab6ef-fefe-4c01-b20e-70beb3fbcd51"
         },
         "accurate": {
           "passed": true,
@@ -1661,7 +1661,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 58727176-a7f6-4208-b45f-15a91872f83c"
+          "reason": "Unique UUID: 09a3fcb2-c0f9-4ad1-bd93-ccfdc15cd302"
         },
         "accurate": {
           "passed": true,
@@ -1710,7 +1710,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 6a8ab9bc-1a53-46e4-9964-0b7aa7f025fa"
+          "reason": "Unique UUID: 4163267d-7264-4630-9f5d-f405628aee23"
         },
         "accurate": {
           "passed": true,
@@ -1759,7 +1759,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 5c9a5462-0cff-4d26-9594-7fad0e89e46d"
+          "reason": "Unique UUID: 7d281bcb-d0f7-4bb9-a045-6428954ac83a"
         },
         "accurate": {
           "passed": true,
@@ -1808,7 +1808,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 7b58f8e9-1314-4735-a1d1-16fbea33ea99"
+          "reason": "Unique UUID: f7d94109-b559-49b5-b874-4ed6a51a0017"
         },
         "accurate": {
           "passed": true,
@@ -1857,7 +1857,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 99c0405c-b84c-44b9-9d59-47d41d9f2013"
+          "reason": "Unique UUID: 079f6f23-9ad8-48ae-a1f5-f6bc89764ed7"
         },
         "accurate": {
           "passed": true,
@@ -1906,7 +1906,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: f9d9ecf6-67ca-4353-bdfc-d786ef907e22"
+          "reason": "Unique UUID: 7ca6ea56-9f2b-403b-964e-57d81db84387"
         },
         "accurate": {
           "passed": true,
@@ -1955,7 +1955,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: ece0e3e6-405d-420b-81f8-3e75ac2f4682"
+          "reason": "Unique UUID: ac328e69-3ec3-4ddd-8417-4e2fffdc2538"
         },
         "accurate": {
           "passed": true,
@@ -2004,7 +2004,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: b783a1d1-6e8e-42ab-92d9-a3683dbf00e6"
+          "reason": "Unique UUID: 72bbc964-3730-4cbf-b4da-2867f2ef608d"
         },
         "accurate": {
           "passed": true,
@@ -2053,7 +2053,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 070ee592-aec2-4f5a-9475-7a835e4c2184"
+          "reason": "Unique UUID: b5693448-7957-4163-af29-e41a82bb4925"
         },
         "accurate": {
           "passed": true,
@@ -2102,7 +2102,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: f4f55360-cbc4-48dd-b74f-8d105863576e"
+          "reason": "Unique UUID: 765e1aff-15a1-4d06-8653-3aadaed9e0c2"
         },
         "accurate": {
           "passed": true,
@@ -2151,7 +2151,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 0fa204d9-2bfa-41a1-a603-2d2ff8ec1143"
+          "reason": "Unique UUID: bdd1f264-e481-4b6b-88ad-628c34a25377"
         },
         "accurate": {
           "passed": true,
@@ -2200,7 +2200,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: f9a3b7c4-eb18-4c72-9ee4-9675b93b1e65"
+          "reason": "Unique UUID: f5d0be1f-90b1-4ccc-b862-76ed6aaa3baf"
         },
         "accurate": {
           "passed": true,
@@ -2249,7 +2249,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 021eb3c3-de07-4988-9dfe-3df16e2179a1"
+          "reason": "Unique UUID: d9f95323-04ec-44a5-998a-34d76559388d"
         },
         "accurate": {
           "passed": true,
@@ -2298,7 +2298,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: bbea1430-e86b-402e-9c2f-6062f7c9744a"
+          "reason": "Unique UUID: cbf2e3fa-d8a3-4a3a-ad54-1d6deff50ed6"
         },
         "accurate": {
           "passed": true,
@@ -2347,7 +2347,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 4d8ee41e-8de8-414a-bfb2-02f733f73390"
+          "reason": "Unique UUID: f15eb58a-bf77-4065-ba56-f942114ae4d6"
         },
         "accurate": {
           "passed": true,
@@ -2396,7 +2396,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: 2793bdab-ae73-400c-b9e3-ad52fa8c66e2"
+          "reason": "Unique UUID: b4944fe5-12e2-45c0-a4e4-30af47b6f963"
         },
         "accurate": {
           "passed": true,
@@ -2445,7 +2445,7 @@
         },
         "original": {
           "passed": true,
-          "reason": "Unique UUID: ff515dbd-2f8a-4711-b820-bdc864143bc4"
+          "reason": "Unique UUID: 6e158f33-4225-4d1c-b0cf-0a4e8c018edd"
         },
         "accurate": {
           "passed": true,
@@ -2471,14 +2471,14 @@
       "error": null
     }
   ],
-  "generated_at": "2026-02-22T16:14:55.039829+00:00",
+  "generated_at": "2026-02-24T13:27:03.637307+00:00",
   "benchmark_id": "audit_trail",
   "methodology": "scripted_benchmark_v1",
   "benchmark_config": {
     "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\compliance\\benchmark_audit_trail.py",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "git_hash": "4f2accf",
+    "git_hash": "ae8d2a3",
     "platform": "Windows-11-10.0.26200-SP0",
     "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
   },

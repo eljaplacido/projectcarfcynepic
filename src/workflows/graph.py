@@ -28,16 +28,17 @@ from typing import Literal
 from langgraph.graph import END, StateGraph
 
 from src.core.state import (
+    ConfidenceLevel,
     CynefinDomain,
     EpistemicState,
     GuardianVerdict,
     HumanInteractionStatus,
-    ConfidenceLevel,
 )
 from src.services.bayesian import run_active_inference
 from src.services.causal import run_causal_analysis
 from src.services.csl_policy_service import get_csl_service
-from src.services.evaluation_service import get_evaluation_service, DeepEvalScores
+from src.services.evaluation_service import DeepEvalScores, get_evaluation_service
+from src.services.explanation_builder import enrich_state_explanation
 from src.services.human_layer import human_escalation_node
 from src.services.kafka_audit import log_state_to_kafka
 from src.services.policy_scaffold_service import get_scaffold_service
@@ -196,6 +197,131 @@ async def csl_guardian_node(state: EpistemicState) -> EpistemicState:
 
 
 # =============================================================================
+# CSL PRE-CHECK NODE
+# =============================================================================
+
+
+@traced(name="carf.node.csl_precheck", attributes={"layer": "policy"})
+async def csl_precheck_node(state: EpistemicState) -> EpistemicState:
+    """Pre-check CSL constraints before domain agents process.
+
+    Queries the CSL policy service for applicable financial limits,
+    escalation rules, and active scaffold constraints. Injects these as
+    machine-readable and human-readable values into state.context so
+    domain agents can self-cap their proposals before Guardian evaluation.
+
+    Non-blocking: returns state unmodified if CSL is unavailable.
+    """
+    try:
+        csl_service = get_csl_service()
+        if not csl_service.is_available:
+            return state
+
+        context = state.context
+        domain = state.cynefin_domain
+
+        constraints: list[str] = []
+
+        # --- Financial limits based on domain ---
+        domain_limits = {
+            CynefinDomain.CLEAR: 100_000,
+            CynefinDomain.COMPLICATED: 50_000,
+            CynefinDomain.COMPLEX: 25_000,
+            CynefinDomain.CHAOTIC: 10_000,
+            CynefinDomain.DISORDER: 10_000,
+        }
+        financial_limit = domain_limits.get(domain, 50_000)
+
+        # Apply scaffold override if available
+        scaffold_service = get_scaffold_service()
+        scenario_meta = context.get("scenario_metadata", {})
+        if scenario_meta:
+            scaffold = scaffold_service.get_scaffold_for_scenario(scenario_meta)
+            if scaffold:
+                override_limit = (scaffold.csl_overrides or {}).get(
+                    "budget_limits", {}
+                )
+                if isinstance(override_limit, dict):
+                    scaffold_limit = override_limit.get("domain_financial_limit")
+                    if scaffold_limit is not None:
+                        financial_limit = min(financial_limit, int(scaffold_limit))
+
+        context["_csl_financial_limit"] = financial_limit
+        constraints.append(f"Financial auto-approval limit: ${financial_limit:,}")
+
+        # --- Confidence threshold ---
+        confidence_threshold = 0.6
+        if domain in (CynefinDomain.CHAOTIC, CynefinDomain.DISORDER):
+            confidence_threshold = 0.8
+        context["_csl_confidence_threshold"] = confidence_threshold
+        constraints.append(
+            f"Minimum confidence for autonomous action: {confidence_threshold:.0%}"
+        )
+
+        # --- Escalation rules ---
+        risk_level = context.get("risk_level", "LOW")
+        if risk_level in ("HIGH", "CRITICAL"):
+            constraints.append(
+                f"Risk level {risk_level}: actions require human approval"
+            )
+        user_role = context.get("user_role", "junior")
+        if user_role == "junior":
+            constraints.append(
+                "Junior role: elevated actions require manager approval"
+            )
+
+        # --- Active scaffold constraints ---
+        active_scaffold = context.get("_active_scaffold")
+        if active_scaffold:
+            constraints.append(f"Active scaffold: {active_scaffold}")
+
+        context["_csl_precheck_constraints"] = constraints
+        state.context = context
+
+        logger.debug(
+            "CSL precheck: domain=%s, financial_limit=%d, constraints=%d",
+            domain.value, financial_limit, len(constraints),
+        )
+
+    except Exception as exc:
+        logger.debug("CSL precheck skipped: %s", exc)
+
+    return state
+
+
+# =============================================================================
+# FINANCIAL CAP HELPER
+# =============================================================================
+
+
+def _apply_financial_cap(state: EpistemicState) -> None:
+    """Cap proposed_action amount to _csl_financial_limit if present.
+
+    Modifies state.proposed_action in place. Only acts when the proposed
+    action has a numeric ``amount`` in its ``parameters`` dict and the
+    CSL precheck has set ``_csl_financial_limit`` in context.
+    """
+    limit = state.context.get("_csl_financial_limit")
+    if limit is None:
+        return
+    action = state.proposed_action
+    if not isinstance(action, dict):
+        return
+    params = action.get("parameters")
+    if not isinstance(params, dict):
+        return
+    amount = params.get("amount")
+    if isinstance(amount, (int, float)) and amount > limit:
+        params["amount"] = limit
+        params["_capped_from"] = amount
+        action["parameters"] = params
+        state.proposed_action = action
+        logger.info(
+            "CSL precheck capped amount from %s to %s", amount, limit,
+        )
+
+
+# =============================================================================
 # COGNITIVE MESH AGENTS
 # =============================================================================
 
@@ -217,6 +343,9 @@ async def deterministic_runner_node(state: EpistemicState) -> EpistemicState:
         "description": "Deterministic lookup operation",
         "parameters": {"query": state.user_input},
     }
+
+    # CSL pre-check: cap financial amounts if present
+    _apply_financial_cap(state)
 
     state.add_reasoning_step(
         node_name="deterministic_runner",
@@ -247,14 +376,21 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     # Run full causal analysis pipeline
     state = await run_causal_analysis(state)
 
-    # Record reasoning step
+    # Record reasoning step (include Oracle metadata if used)
     effect_str = f"{state.causal_evidence.effect_size:.2f}" if state.causal_evidence else "N/A"
     refutation_str = "PASSED" if state.causal_evidence and state.causal_evidence.refutation_passed else "FAILED"
+    output_parts = [f"Effect: {effect_str}", f"Refutation: {refutation_str}"]
+    if state.context.get("_oracle_used"):
+        oracle_id = state.context.get("_oracle_scenario_id", "unknown")
+        output_parts.append(f"Oracle: {oracle_id}")
+        drift_warn = state.context.get("_oracle_drift_warning")
+        if drift_warn:
+            output_parts.append("DRIFT WARNING")
     state.add_reasoning_step(
         node_name="causal_analyst",
         action="Completed causal analysis",
         input_summary=state.user_input[:50],
-        output_summary=f"Effect: {effect_str}, Refutation: {refutation_str}",
+        output_summary=", ".join(output_parts),
         confidence=state.overall_confidence,
         duration_ms=int((time.perf_counter() - _t0) * 1000),
     )
@@ -274,6 +410,7 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
             context=context,
         )
 
+    state = enrich_state_explanation(state)
     return state
 
 
@@ -322,6 +459,7 @@ async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
             context=context,
         )
 
+    state = enrich_state_explanation(state)
     return state
 
 
@@ -572,7 +710,7 @@ def _governance_enabled() -> bool:
     env var to respect test-time monkey-patching.
     """
     try:
-        from src.core.deployment_profile import resolve_profile, _infer_mode
+        from src.core.deployment_profile import _infer_mode, resolve_profile
         profile = resolve_profile(_infer_mode())
         return profile.governance_enabled
     except Exception:
@@ -696,6 +834,7 @@ def build_carf_graph() -> StateGraph:
     # --- Add Nodes ---
     workflow.add_node("router", cynefin_router_node)
     workflow.add_node("rag_context", rag_context_node)
+    workflow.add_node("csl_precheck", csl_precheck_node)
     workflow.add_node("deterministic_runner", deterministic_runner_node)
     workflow.add_node("causal_analyst", causal_analyst_node)
     workflow.add_node("bayesian_explorer", bayesian_explorer_node)
@@ -709,12 +848,13 @@ def build_carf_graph() -> StateGraph:
 
     # --- Add Edges ---
 
-    # Router → RAG Context → Domain Agents
+    # Router → RAG Context → CSL Precheck → Domain Agents
     workflow.add_edge("router", "rag_context")
+    workflow.add_edge("rag_context", "csl_precheck")
 
-    # RAG Context → Domain Agents (conditional on domain)
+    # CSL Precheck → Domain Agents (conditional on domain)
     workflow.add_conditional_edges(
-        "rag_context",
+        "csl_precheck",
         route_by_domain,
         {
             "deterministic_runner": "deterministic_runner",
@@ -817,7 +957,7 @@ async def run_carf(
 
     # Reset token tracking for this run (Phase 16 — PRICE pillar)
     try:
-        from src.core.llm import reset_token_usage, get_accumulated_token_usage
+        from src.core.llm import get_accumulated_token_usage, reset_token_usage
         reset_token_usage()
     except Exception:
         pass
@@ -876,7 +1016,7 @@ async def run_carf(
 
     # Store experience for future retrieval (non-critical)
     try:
-        from src.services.experience_buffer import get_experience_buffer, ExperienceEntry
+        from src.services.experience_buffer import ExperienceEntry, get_experience_buffer
         buffer = get_experience_buffer()
         buffer.add(ExperienceEntry(
             query=user_input,

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Finance / VaR Backtesting (H36).
 
 Validates Value at Risk (VaR) model correctness using synthetic portfolio

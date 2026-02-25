@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Benchmark CARF Audit Trail ALCOA+ Compliance (H28).
 
 Tests audit trail entries against the ALCOA+ criteria used in regulated industries:
