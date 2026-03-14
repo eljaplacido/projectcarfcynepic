@@ -15,10 +15,15 @@ COPY config /app/config
 COPY demo /app/demo
 COPY scripts /app/scripts
 
+# Create var/ directory for local SQLite fallback
+RUN mkdir -p /app/var
+
 ARG EXTRAS="kafka"
 RUN pip install --upgrade pip \
     && pip install -e ".[${EXTRAS}]"
 
-EXPOSE 8000
+# Cloud Run sets PORT (default 8080); local dev uses 8000
+ENV PORT=8000
+EXPOSE ${PORT}
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD uvicorn src.main:app --host 0.0.0.0 --port ${PORT}

@@ -46,6 +46,10 @@ dependencies = [
 
     # Graph Database (Phase 3)
     "neo4j>=5.15.0",
+
+    # Cloud deployment (PostgreSQL + Firebase Auth)
+    "psycopg2-binary>=2.9.0",
+    "firebase-admin>=6.0.0",
 ]
 
 [project.optional-dependencies]

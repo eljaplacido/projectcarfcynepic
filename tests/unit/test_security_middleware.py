@@ -175,9 +175,18 @@ class TestRegistration:
     def test_staging_mode_registers_middleware(self):
         """In staging mode, auth and rate limiting should be active."""
         app = _make_app()
-        with patch.dict(os.environ, {"CARF_PROFILE": "staging", "CARF_API_KEY": "staging-key"}, clear=True):
+        # Disable Firebase so API key auth is used (Firebase is the default for staging)
+        with patch.dict(os.environ, {
+            "CARF_PROFILE": "staging",
+            "CARF_API_KEY": "staging-key",
+            "FIREBASE_AUTH_ENABLED": "false",
+        }, clear=True):
             import src.core.deployment_profile as dp
             dp._profile = None
+            # Override firebase_auth_enabled so API key path is taken
+            profile = dp.resolve_profile(dp.DeploymentMode.STAGING)
+            profile.firebase_auth_enabled = False
+            dp._profile = profile
             register_security_middleware(app)
             dp._profile = None
 

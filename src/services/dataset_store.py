@@ -15,6 +15,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+from src.core.database import execute, executemany, get_connection, is_postgres
+
 logger = logging.getLogger("carf.dataset_store")
 
 
@@ -57,7 +59,7 @@ class DatasetStore:
             self.data_dir.mkdir(parents=True, exist_ok=True)
 
         with self._open_conn() as conn:
-            conn.execute(
+            execute(conn,
                 """
                 CREATE TABLE IF NOT EXISTS datasets (
                     dataset_id TEXT PRIMARY KEY,
@@ -70,7 +72,7 @@ class DatasetStore:
                 )
                 """
             )
-            conn.execute(
+            execute(conn,
                 """
                 CREATE TABLE IF NOT EXISTS dataset_columns (
                     dataset_id TEXT NOT NULL,
@@ -79,7 +81,7 @@ class DatasetStore:
                 )
                 """
             )
-            conn.execute(
+            execute(conn,
                 """
                 CREATE TABLE IF NOT EXISTS dataset_payloads (
                     dataset_id TEXT PRIMARY KEY,
@@ -88,7 +90,7 @@ class DatasetStore:
                 )
                 """
             )
-            conn.execute(
+            execute(conn,
                 """
                 CREATE INDEX IF NOT EXISTS idx_dataset_columns_name
                 ON dataset_columns(column_name)
@@ -101,6 +103,9 @@ class DatasetStore:
             if self._connection is None:
                 self._connection = sqlite3.connect(":memory:")
             yield self._connection
+        elif is_postgres():
+            with get_connection() as conn:
+                yield conn
         else:
             with sqlite3.connect(self.db_path) as conn:
                 yield conn
@@ -156,7 +161,7 @@ class DatasetStore:
                 json.dump(rows, handle, ensure_ascii=True)
 
         with self._open_conn() as conn:
-            conn.execute(
+            execute(conn,
                 """
                 INSERT INTO datasets (
                     dataset_id, name, description, created_at, row_count,
@@ -173,12 +178,12 @@ class DatasetStore:
                     storage_path,
                 ),
             )
-            conn.executemany(
+            executemany(conn,
                 "INSERT INTO dataset_columns (dataset_id, column_name) VALUES (?, ?)",
                 [(dataset_id, column) for column in column_names],
             )
             if self.storage_mode == "memory":
-                conn.execute(
+                execute(conn,
                     "INSERT INTO dataset_payloads (dataset_id, payload) VALUES (?, ?)",
                     (dataset_id, json.dumps(rows, ensure_ascii=True)),
                 )
@@ -202,7 +207,7 @@ class DatasetStore:
 
     def list_datasets(self) -> list[DatasetMetadata]:
         with self._open_conn() as conn:
-            cursor = conn.execute(
+            cursor = execute(conn,
                 """
                 SELECT dataset_id, name, description, created_at, row_count,
                        column_names, storage_path
@@ -229,7 +234,7 @@ class DatasetStore:
 
     def get_dataset(self, dataset_id: str) -> DatasetMetadata:
         with self._open_conn() as conn:
-            cursor = conn.execute(
+            cursor = execute(conn,
                 """
                 SELECT dataset_id, name, description, created_at, row_count,
                        column_names, storage_path
@@ -257,7 +262,7 @@ class DatasetStore:
         metadata = self.get_dataset(dataset_id)
         if self.storage_mode == "memory":
             with self._open_conn() as conn:
-                cursor = conn.execute(
+                cursor = execute(conn,
                     "SELECT payload FROM dataset_payloads WHERE dataset_id = ?",
                     (dataset_id,),
                 )

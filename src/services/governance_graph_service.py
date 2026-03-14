@@ -263,6 +263,59 @@ class GovernanceGraphService:
             logger.warning(f"Get triples failed: {exc}")
             return []
 
+    async def search_triples(
+        self, query: str, limit: int = 5
+    ) -> list[ContextTriple]:
+        """Search triples by text matching on subject, predicate, or object.
+
+        Phase 17 GraphRAG integration: enables graph-structural retrieval
+        for hybrid RAG combining vector similarity + graph traversal.
+        """
+        if not self._available or self._driver is None:
+            return []
+        try:
+            database = os.getenv("NEO4J_DATABASE", "neo4j")
+            query_lower = query.lower()
+            # Extract search terms (words > 3 chars)
+            terms = [t.strip() for t in query_lower.split() if len(t.strip()) > 3]
+            if not terms:
+                return []
+
+            # Build regex pattern for matching
+            pattern = "|".join(terms[:5])
+
+            async with self._driver.session(database=database) as session:
+                result = await session.run("""
+                    MATCH (t:ContextTriple)
+                    WHERE toLower(t.subject) =~ $pattern
+                       OR toLower(t.object) =~ $pattern
+                       OR toLower(t.predicate) =~ $pattern
+                    RETURN t ORDER BY t.confidence DESC LIMIT $limit
+                """, {"pattern": f".*({pattern}).*", "limit": limit})
+
+                triples = []
+                async for record in result:
+                    node = record["t"]
+                    try:
+                        from uuid import UUID
+                        triple = ContextTriple(
+                            triple_id=UUID(node.get("triple_id", "00000000-0000-0000-0000-000000000000")),
+                            subject=node.get("subject", ""),
+                            predicate=node.get("predicate", ""),
+                            object=node.get("object", ""),
+                            domain_source=node.get("domain_source", ""),
+                            domain_target=node.get("domain_target", ""),
+                            confidence=float(node.get("confidence", 0.5)),
+                            evidence_type=node.get("evidence_type", "rule_based"),
+                        )
+                        triples.append(triple)
+                    except Exception:
+                        pass
+                return triples
+        except Exception as exc:
+            logger.warning("Triple search failed: %s", exc)
+            return []
+
     async def health_check(self) -> dict[str, Any]:
         """Check governance graph health."""
         if not self._available:

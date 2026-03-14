@@ -11,8 +11,22 @@ import type {
     ScenarioMetadata,
 } from '../types/carf';
 
+import { firebaseAuth, isFirebaseEnabled } from './firebaseConfig';
+
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+/**
+ * Get auth headers for API requests.
+ * Returns a Firebase JWT Bearer token when auth is enabled.
+ */
+async function getAuthHeaders(): Promise<Record<string, string>> {
+    if (!isFirebaseEnabled || !firebaseAuth?.currentUser) {
+        return {};
+    }
+    const token = await firebaseAuth.currentUser.getIdToken();
+    return { Authorization: `Bearer ${token}` };
+}
 
 // Types for API requests and responses
 export interface ChatMessage {
@@ -197,11 +211,13 @@ async function apiFetch<T>(
     options: RequestInit = {}
 ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
+    const authHeaders = await getAuthHeaders();
 
     const response = await fetch(url, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
+            ...authHeaders,
             ...options.headers,
         },
     });
@@ -305,10 +321,12 @@ export function submitQueryStream(
 
     (async () => {
         try {
+            const authHeaders = await getAuthHeaders();
             const response = await fetch(`${API_BASE_URL}/query/stream`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...authHeaders,
                 },
                 body: JSON.stringify(request),
                 signal: controller.signal,
@@ -409,9 +427,11 @@ export async function previewDataset(
 export async function analyzeFile(file: File): Promise<FileAnalysisResult> {
     const formData = new FormData();
     formData.append('file', file);
+    const authHeaders = await getAuthHeaders();
 
     const response = await fetch(`${API_BASE_URL}/analyze`, {
         method: 'POST',
+        headers: { ...authHeaders },
         body: formData,
     });
 
@@ -435,9 +455,11 @@ export async function analyzeText(
     const formData = new FormData();
     formData.append('text_content', textContent);
     formData.append('query', query);
+    const authHeaders = await getAuthHeaders();
 
     const response = await fetch(`${API_BASE_URL}/analyze`, {
         method: 'POST',
+        headers: { ...authHeaders },
         body: formData,
     });
 
@@ -970,9 +992,10 @@ export interface FeedbackResponse {
 }
 
 export async function submitFeedback(item: FeedbackItem): Promise<FeedbackResponse> {
+    const authHeaders = await getAuthHeaders();
     const response = await fetch(`${API_BASE_URL}/feedback`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify(item),
     });
     if (!response.ok) throw new ApiError(response.status, 'Failed to submit feedback');
@@ -980,9 +1003,46 @@ export async function submitFeedback(item: FeedbackItem): Promise<FeedbackRespon
 }
 
 export async function getFeedbackSummary(): Promise<Record<string, unknown>> {
-    const response = await fetch(`${API_BASE_URL}/feedback/summary`);
+    const authHeaders = await getAuthHeaders();
+    const response = await fetch(`${API_BASE_URL}/feedback/summary`, {
+        headers: { ...authHeaders },
+    });
     if (!response.ok) throw new ApiError(response.status, 'Failed to fetch feedback summary');
     return response.json();
+}
+
+// ============================================================================
+// Analysis History (cloud-backed, per-user)
+// ============================================================================
+
+export interface HistoryEntry {
+    id: string;
+    user_id: string;
+    query: string;
+    domain: string;
+    confidence: number;
+    result_json: string;
+    created_at: string;
+}
+
+export async function saveHistory(entry: {
+    query: string;
+    domain: string;
+    confidence: number;
+    result_json: string;
+}): Promise<HistoryEntry> {
+    return apiFetch<HistoryEntry>('/history', {
+        method: 'POST',
+        body: JSON.stringify(entry),
+    });
+}
+
+export async function listHistory(): Promise<{ items: HistoryEntry[] }> {
+    return apiFetch<{ items: HistoryEntry[] }>('/history');
+}
+
+export async function deleteHistoryEntry(entryId: string): Promise<{ status: string }> {
+    return apiFetch<{ status: string }>(`/history/${entryId}`, { method: 'DELETE' });
 }
 
 // ============================================================================
@@ -1581,6 +1641,144 @@ export async function recallMemory(
             body: JSON.stringify({ query, top_k: topK }),
         })
     );
+}
+
+// =============================================================================
+// Phase 17: World Model, Counterfactual, Neurosymbolic Endpoints
+// =============================================================================
+
+export async function runCounterfactual(request: {
+    query: string;
+    context?: Record<string, unknown>;
+    dataset_id?: string;
+}): Promise<{
+    factual_outcome: string;
+    counterfactual_outcome: string;
+    causal_attribution: Array<Record<string, unknown>>;
+    confidence: number;
+    narrative: string;
+    reasoning_steps: string[];
+}> {
+    return api(`${API_BASE_URL}/world-model/counterfactual`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+    });
+}
+
+export async function compareCounterfactualScenarios(request: {
+    base_query: string;
+    alternative_interventions: Record<string, number>[];
+    outcome_variable: string;
+    context?: Record<string, unknown>;
+}): Promise<{
+    scenarios: Array<Record<string, unknown>>;
+    best_scenario_index: number;
+    ranking_rationale: string;
+    outcome_range: [number, number];
+}> {
+    return api(`${API_BASE_URL}/world-model/counterfactual/compare`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+    });
+}
+
+export async function runCausalAttribution(request: {
+    outcome_description: string;
+    context?: Record<string, unknown>;
+    dataset_id?: string;
+}): Promise<{
+    outcome: string;
+    attributions: Array<Record<string, unknown>>;
+    but_for_tests: Array<Record<string, unknown>>;
+    narrative: string;
+}> {
+    return api(`${API_BASE_URL}/world-model/counterfactual/attribute`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+    });
+}
+
+export async function simulateWorldModel(request: {
+    query: string;
+    initial_conditions?: Record<string, number>;
+    interventions?: Record<string, number>;
+    steps?: number;
+    dataset_id?: string;
+    context?: Record<string, unknown>;
+}): Promise<{
+    trajectory: Record<string, number>[];
+    variables: string[];
+    interventions_applied: Record<string, number>;
+    model_confidence: number;
+    interpretation: string;
+}> {
+    return api(`${API_BASE_URL}/world-model/simulate`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+    });
+}
+
+export async function runNeurosymbolicReasoning(request: {
+    query: string;
+    context?: Record<string, unknown>;
+    use_knowledge_graph?: boolean;
+    max_iterations?: number;
+}): Promise<{
+    conclusion: string;
+    derived_facts: Array<Record<string, unknown>>;
+    rule_chain: string[];
+    shortcut_warnings: string[];
+    iterations: number;
+    confidence: number;
+    symbolic_grounding: Array<Record<string, unknown>>;
+}> {
+    return api(`${API_BASE_URL}/world-model/neurosymbolic/reason`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+    });
+}
+
+export async function validateReasoning(request: {
+    claim: string;
+    evidence?: string[];
+    context?: Record<string, unknown>;
+}): Promise<{
+    claim: string;
+    is_valid: boolean;
+    violations: string[];
+    shortcut_warnings: string[];
+    supporting_rules: string[];
+    confidence: number;
+}> {
+    const params = new URLSearchParams({ claim: request.claim });
+    return api(`${API_BASE_URL}/world-model/neurosymbolic/validate?${params}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            evidence: request.evidence,
+            context: request.context,
+        }),
+    });
+}
+
+export async function runDeepAnalysis(request: {
+    query: string;
+    context?: Record<string, unknown>;
+    include_counterfactual?: boolean;
+    include_neurosymbolic?: boolean;
+    include_simulation?: boolean;
+}): Promise<Record<string, unknown>> {
+    const params = new URLSearchParams({ query: request.query });
+    if (request.include_counterfactual !== undefined)
+        params.set('include_counterfactual', String(request.include_counterfactual));
+    if (request.include_neurosymbolic !== undefined)
+        params.set('include_neurosymbolic', String(request.include_neurosymbolic));
+    if (request.include_simulation !== undefined)
+        params.set('include_simulation', String(request.include_simulation));
+
+    return api(`${API_BASE_URL}/world-model/analyze-deep?${params}`, {
+        method: 'POST',
+        body: JSON.stringify(request.context || {}),
+    });
 }
 
 export default api;

@@ -161,11 +161,13 @@ from src.api.routers import (  # noqa: E402
     feedback,
     guardian,
     health,
+    history,
     oracle,
     query,
     router_config,
     simulation,
     transparency,
+    world_model,
 )
 
 app.include_router(health.router)
@@ -179,8 +181,10 @@ app.include_router(simulation.router)
 app.include_router(analysis.router)
 app.include_router(transparency.router)
 app.include_router(feedback.router)
+app.include_router(history.router)
 app.include_router(csl.router)
 app.include_router(query.router)
+app.include_router(world_model.router)
 
 # Governance router (Phase 16 — conditionally registered)
 if _profile.governance_enabled:

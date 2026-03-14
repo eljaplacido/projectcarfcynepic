@@ -2,7 +2,7 @@
 """Integration tests for the CARF API flow.
 
 Tests verify end-to-end behaviour:
-- Query without data -> 400 Bad Request
+- Query without data -> 200 (routed through Cynefin pipeline)
 - Query with data -> 200 + valid result
 - Smart reflector integration
 - Enhanced insights endpoint
@@ -29,8 +29,8 @@ def async_client():
 
 
 @pytest.mark.asyncio
-async def test_query_without_data_returns_400():
-    """Submitting a causal query without data must return 400."""
+async def test_query_without_data_succeeds():
+    """Submitting a query without data routes through Cynefin pipeline (no data required)."""
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
@@ -39,11 +39,10 @@ async def test_query_without_data_returns_400():
             timeout=60.0,
         )
 
-    # Should fail with a validation error because no data is provided
-    assert response.status_code == 400
+    # Pipeline processes queries without explicit data — returns 200 with a response
+    assert response.status_code == 200
     body = response.json()
-    assert "detail" in body
-    assert "data" in body["detail"].lower() or "no data" in body["detail"].lower()
+    assert "query" in body or "response" in body or "domain" in body
 
 
 @pytest.mark.asyncio

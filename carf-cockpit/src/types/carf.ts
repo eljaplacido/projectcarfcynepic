@@ -452,3 +452,159 @@ export interface SocraticModeState {
     answers: string[];
     suggestions: string[];
 }
+
+// =============================================================================
+// Phase 17: Causal World Models, Counterfactual Reasoning, Neurosymbolic AI
+// =============================================================================
+
+// Counterfactual Reasoning
+export interface CounterfactualEvidence {
+    factualOutcome: string;
+    counterfactualOutcome: string;
+    interventionDescription: string;
+    causalAttributions: CausalAttribution[];
+    confidence: number;
+    narrative: string;
+    reasoningSteps: string[];
+}
+
+export interface CausalAttribution {
+    cause: string;
+    importance: number; // 0-1
+    butForResult: boolean; // Would outcome change without this cause?
+    description: string;
+}
+
+export interface CounterfactualRequest {
+    query: string;
+    context?: Record<string, unknown>;
+    datasetId?: string;
+}
+
+export interface CounterfactualResponse {
+    factual_outcome: string;
+    counterfactual_outcome: string;
+    causal_attribution: CausalAttribution[];
+    confidence: number;
+    narrative: string;
+    reasoning_steps: string[];
+}
+
+export interface ScenarioComparisonRequest {
+    base_query: string;
+    alternative_interventions: Record<string, number>[];
+    outcome_variable: string;
+    context?: Record<string, unknown>;
+}
+
+export interface ScenarioComparisonResponse {
+    scenarios: ScenarioOutcome[];
+    best_scenario_index: number;
+    ranking_rationale: string;
+    outcome_range: [number, number];
+}
+
+export interface ScenarioOutcome {
+    intervention: Record<string, number>;
+    predicted_outcome: number;
+    confidence: number;
+    narrative: string;
+}
+
+// World Model Simulation
+export interface WorldModelSimulationRequest {
+    query: string;
+    initial_conditions: Record<string, number>;
+    interventions: Record<string, number>;
+    steps: number;
+    dataset_id?: string;
+    context?: Record<string, unknown>;
+}
+
+export interface WorldModelSimulationResponse {
+    trajectory: Record<string, number>[];
+    variables: string[];
+    interventions_applied: Record<string, number>;
+    model_confidence: number;
+    interpretation: string;
+}
+
+// Neurosymbolic Reasoning
+export interface NeurosymbolicEvidence {
+    conclusion: string;
+    derivedFactsCount: number;
+    rulesFired: string[];
+    shortcutWarnings: string[];
+    groundingSource: string;
+    iterations: number;
+    confidence: number;
+}
+
+export interface SymbolicFact {
+    entity: string;
+    attribute: string;
+    value: string;
+    confidence: number;
+    source: string;
+}
+
+export interface NeurosymbolicReasoningRequest {
+    query: string;
+    context?: Record<string, unknown>;
+    use_knowledge_graph?: boolean;
+    max_iterations?: number;
+}
+
+export interface NeurosymbolicReasoningResponse {
+    conclusion: string;
+    derived_facts: SymbolicFact[];
+    rule_chain: string[];
+    shortcut_warnings: string[];
+    iterations: number;
+    confidence: number;
+    symbolic_grounding: SymbolicFact[];
+}
+
+// Deep Analysis (combined pipeline)
+export interface DeepAnalysisRequest {
+    query: string;
+    context?: Record<string, unknown>;
+    include_counterfactual?: boolean;
+    include_neurosymbolic?: boolean;
+    include_simulation?: boolean;
+}
+
+export interface DeepAnalysisResponse {
+    query: string;
+    carf?: {
+        domain: CynefinDomain;
+        domain_confidence: number;
+        response: string | null;
+        verdict: string | null;
+        confidence: string;
+        causal_evidence?: CausalAnalysisResult;
+        bayesian_evidence?: BayesianBeliefState;
+    };
+    counterfactual?: {
+        factual: string;
+        counterfactual: string;
+        confidence: number;
+        narrative: string;
+        error?: string;
+    };
+    neurosymbolic?: {
+        conclusion: string;
+        derived_facts_count: number;
+        shortcut_warnings: string[];
+        iterations: number;
+        confidence: number;
+        error?: string;
+    };
+    simulation?: {
+        trajectory_length: number;
+        variables: string[];
+        confidence: number;
+        interpretation: string;
+        error?: string;
+    };
+}

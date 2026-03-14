@@ -21,6 +21,8 @@ from uuid import uuid4
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
+from src.core.database import execute, get_connection, is_postgres
+
 logger = logging.getLogger("carf.feedback")
 router = APIRouter(tags=["Feedback"])
 
@@ -80,22 +82,27 @@ class FeedbackStore:
         self._db_path = db_path or Path(
             os.getenv("CARF_DATA_DIR", Path(__file__).resolve().parents[3] / "var")
         ) / "carf_feedback.db"
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        if not is_postgres():
+            self._db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
     @contextmanager
     def _conn(self):
-        conn = sqlite3.connect(str(self._db_path))
-        conn.row_factory = sqlite3.Row
-        try:
-            yield conn
-            conn.commit()
-        finally:
-            conn.close()
+        if is_postgres():
+            with get_connection() as conn:
+                yield conn
+        else:
+            conn = sqlite3.connect(str(self._db_path))
+            conn.row_factory = sqlite3.Row
+            try:
+                yield conn
+                conn.commit()
+            finally:
+                conn.close()
 
     def _init_db(self) -> None:
         with self._conn() as conn:
-            conn.execute("""
+            execute(conn, """
                 CREATE TABLE IF NOT EXISTS feedback (
                     feedback_id TEXT PRIMARY KEY,
                     type TEXT NOT NULL,
@@ -106,7 +113,7 @@ class FeedbackStore:
                     received_at TEXT NOT NULL
                 )
             """)
-            conn.execute("""
+            execute(conn, """
                 CREATE TABLE IF NOT EXISTS domain_overrides (
                     feedback_id TEXT PRIMARY KEY,
                     session_id TEXT,
@@ -122,7 +129,7 @@ class FeedbackStore:
         received_at = datetime.now(UTC).isoformat()
 
         with self._conn() as conn:
-            conn.execute(
+            execute(conn,
                 "INSERT INTO feedback (feedback_id, type, description, context, rating, correct_domain, received_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (
                     feedback_id,
@@ -137,7 +144,7 @@ class FeedbackStore:
 
             # Track domain overrides separately for Router retraining
             if item.get("type") == "domain_override" and item.get("correct_domain"):
-                conn.execute(
+                execute(conn,
                     "INSERT INTO domain_overrides (feedback_id, session_id, original_domain, correct_domain, query, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
                     (
                         feedback_id,
@@ -151,16 +158,26 @@ class FeedbackStore:
 
         return feedback_id
 
-    def _row_to_dict(self, row: sqlite3.Row) -> dict[str, Any]:
-        d = dict(row)
+    _FEEDBACK_COLS = ("feedback_id", "type", "description", "context", "rating", "correct_domain", "received_at")
+    _OVERRIDE_COLS = ("feedback_id", "session_id", "original_domain", "correct_domain", "query", "timestamp")
+
+    def _row_to_dict(self, row: Any, columns: tuple[str, ...] = _FEEDBACK_COLS) -> dict[str, Any]:
+        if isinstance(row, dict):
+            d = row
+        elif hasattr(row, "keys"):
+            # sqlite3.Row
+            d = dict(row)
+        else:
+            # tuple from psycopg2
+            d = dict(zip(columns, row))
         if "context" in d and isinstance(d["context"], str):
             d["context"] = json.loads(d["context"])
         return d
 
     def get_summary(self) -> dict[str, Any]:
         with self._conn() as conn:
-            rows = conn.execute("SELECT * FROM feedback ORDER BY received_at DESC").fetchall()
-            items = [self._row_to_dict(r) for r in rows]
+            rows = execute(conn, "SELECT * FROM feedback ORDER BY received_at DESC").fetchall()
+            items = [self._row_to_dict(r, self._FEEDBACK_COLS) for r in rows]
 
             by_type: dict[str, int] = {}
             ratings: list[int] = []
@@ -171,8 +188,8 @@ class FeedbackStore:
                     ratings.append(item["rating"])
 
             overrides = [
-                dict(r)
-                for r in conn.execute("SELECT * FROM domain_overrides ORDER BY timestamp DESC").fetchall()
+                self._row_to_dict(r, self._OVERRIDE_COLS)
+                for r in execute(conn, "SELECT * FROM domain_overrides ORDER BY timestamp DESC").fetchall()
             ]
 
         return {
@@ -186,13 +203,13 @@ class FeedbackStore:
     def get_domain_overrides(self) -> list[dict[str, Any]]:
         """Get domain overrides for Router retraining pipeline."""
         with self._conn() as conn:
-            rows = conn.execute("SELECT * FROM domain_overrides ORDER BY timestamp DESC").fetchall()
-            return [dict(r) for r in rows]
+            rows = execute(conn, "SELECT * FROM domain_overrides ORDER BY timestamp DESC").fetchall()
+            return [self._row_to_dict(r, self._OVERRIDE_COLS) for r in rows]
 
     def get_all(self) -> list[dict[str, Any]]:
         with self._conn() as conn:
-            rows = conn.execute("SELECT * FROM feedback ORDER BY received_at DESC").fetchall()
-            return [self._row_to_dict(r) for r in rows]
+            rows = execute(conn, "SELECT * FROM feedback ORDER BY received_at DESC").fetchall()
+            return [self._row_to_dict(r, self._FEEDBACK_COLS) for r in rows]
 
 
 _feedback_store: FeedbackStore | None = None

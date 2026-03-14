@@ -43,6 +43,7 @@ htmlcov/
 # Environment
 .env
 .env.local
+.env.production
 *.local
 
 # OS
@@ -88,3 +89,6 @@ data/
 
 # Sensitive IP Documentation
 carf_benchmarking_strategy.md
+
+# Large binary reference documents
+*.pdf

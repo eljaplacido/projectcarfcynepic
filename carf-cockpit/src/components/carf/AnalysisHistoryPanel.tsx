@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import type { AnalysisSession, CynefinDomain, QueryResponse } from '../../types/carf';
+import { isFirebaseEnabled } from '../../services/firebaseConfig';
+import { saveHistory, listHistory, deleteHistoryEntry } from '../../services/apiService';
 
 // localStorage keys
 const HISTORY_STORAGE_KEY = 'carf-analysis-history';
@@ -164,8 +166,29 @@ function reconstructSession(summary: HistorySummary, result: QueryResponse | nul
 // ---------------------------------------------------------------------------
 
 export const useAnalysisHistory = () => {
-    const [summaries, setSummaries] = useState<HistorySummary[]>(loadSummariesFromStorage);
+    const [summaries, setSummaries] = useState<HistorySummary[]>(
+        isFirebaseEnabled ? [] : loadSummariesFromStorage,
+    );
     const [fullResultsCache, setFullResultsCache] = useState<Record<string, QueryResponse>>({});
+
+    // Cloud mode: load history from API on mount
+    useEffect(() => {
+        if (!isFirebaseEnabled) return;
+        listHistory()
+            .then(({ items }) => {
+                const cloudSummaries: HistorySummary[] = items.map(item => ({
+                    id: item.id,
+                    query: item.query,
+                    domain: item.domain as CynefinDomain,
+                    confidence: item.confidence,
+                    sessionId: item.id,
+                    timestamp: item.created_at,
+                    duration: 0,
+                }));
+                setSummaries(cloudSummaries);
+            })
+            .catch(err => console.error('[AnalysisHistory] Failed to load cloud history:', err));
+    }, []);
 
     // Derive AnalysisSession[] from summaries + any cached full results
     const history: AnalysisSession[] = useMemo(
@@ -177,35 +200,57 @@ export const useAnalysisHistory = () => {
     const saveAnalysis = useCallback((session: AnalysisSession) => {
         const summary = toSummary(session);
 
+        // Cloud mode: persist to API
+        if (isFirebaseEnabled) {
+            saveHistory({
+                query: session.query,
+                domain: session.domain,
+                confidence: session.confidence,
+                result_json: safeStringify(session.result) ?? '{}',
+            }).catch(err => console.error('[AnalysisHistory] Failed to save to cloud:', err));
+        }
+
         setSummaries(prev => {
             const updated = [summary, ...prev.filter(s => s.id !== summary.id)].slice(0, MAX_HISTORY_ITEMS);
-            const json = safeStringify(updated);
-            if (json) safeSetItem(HISTORY_STORAGE_KEY, json);
+            if (!isFirebaseEnabled) {
+                const json = safeStringify(updated);
+                if (json) safeSetItem(HISTORY_STORAGE_KEY, json);
+            }
             return updated;
         });
 
         // Store the full result separately
         setFullResultsCache(prev => {
             const updated = { ...prev, [session.id]: session.result };
-            // Also persist
-            const allResults = loadFullResultsMap();
-            allResults[session.id] = session.result;
-            // Trim to MAX_HISTORY_ITEMS entries
-            const ids = Object.keys(allResults);
-            if (ids.length > MAX_HISTORY_ITEMS) {
-                ids.slice(MAX_HISTORY_ITEMS).forEach(id => delete allResults[id]);
+            if (!isFirebaseEnabled) {
+                // Also persist to localStorage
+                const allResults = loadFullResultsMap();
+                allResults[session.id] = session.result;
+                // Trim to MAX_HISTORY_ITEMS entries
+                const ids = Object.keys(allResults);
+                if (ids.length > MAX_HISTORY_ITEMS) {
+                    ids.slice(MAX_HISTORY_ITEMS).forEach(id => delete allResults[id]);
+                }
+                persistFullResultsMap(allResults);
             }
-            persistFullResultsMap(allResults);
             return updated;
         });
     }, []);
 
     // Delete analysis session
     const deleteAnalysis = useCallback((sessionId: string) => {
+        // Cloud mode: delete from API
+        if (isFirebaseEnabled) {
+            deleteHistoryEntry(sessionId)
+                .catch(err => console.error('[AnalysisHistory] Failed to delete from cloud:', err));
+        }
+
         setSummaries(prev => {
             const updated = prev.filter(s => s.id !== sessionId);
-            const json = safeStringify(updated);
-            if (json) safeSetItem(HISTORY_STORAGE_KEY, json);
+            if (!isFirebaseEnabled) {
+                const json = safeStringify(updated);
+                if (json) safeSetItem(HISTORY_STORAGE_KEY, json);
+            }
             return updated;
         });
 
@@ -215,18 +260,22 @@ export const useAnalysisHistory = () => {
             return updated;
         });
 
-        // Remove from persisted full results
-        const allResults = loadFullResultsMap();
-        delete allResults[sessionId];
-        persistFullResultsMap(allResults);
+        if (!isFirebaseEnabled) {
+            // Remove from persisted full results
+            const allResults = loadFullResultsMap();
+            delete allResults[sessionId];
+            persistFullResultsMap(allResults);
+        }
     }, []);
 
     // Clear all history
     const clearHistory = useCallback(() => {
         setSummaries([]);
         setFullResultsCache({});
-        safeRemoveItem(HISTORY_STORAGE_KEY);
-        safeRemoveItem(FULL_RESULT_STORAGE_KEY);
+        if (!isFirebaseEnabled) {
+            safeRemoveItem(HISTORY_STORAGE_KEY);
+            safeRemoveItem(FULL_RESULT_STORAGE_KEY);
+        }
     }, []);
 
     /**
@@ -242,13 +291,17 @@ export const useAnalysisHistory = () => {
             return reconstructSession(summary, fullResultsCache[sessionId]);
         }
 
-        // Load from localStorage on demand
-        const allResults = loadFullResultsMap();
-        const result = allResults[sessionId] ?? null;
-        if (result) {
-            setFullResultsCache(prev => ({ ...prev, [sessionId]: result }));
+        if (!isFirebaseEnabled) {
+            // Load from localStorage on demand
+            const allResults = loadFullResultsMap();
+            const result = allResults[sessionId] ?? null;
+            if (result) {
+                setFullResultsCache(prev => ({ ...prev, [sessionId]: result }));
+            }
+            return reconstructSession(summary, result);
         }
-        return reconstructSession(summary, result);
+
+        return reconstructSession(summary, null);
     }, [summaries, fullResultsCache]);
 
     return { history, saveAnalysis, deleteAnalysis, clearHistory, loadFullResult };

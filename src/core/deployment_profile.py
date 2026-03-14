@@ -52,6 +52,7 @@ class ProfileConfig(BaseModel):
 
     # Auth / Security
     auth_enabled: bool = False
+    firebase_auth_enabled: bool = False
     rate_limiting_enabled: bool = False
     max_request_size_mb: int = 10
 
@@ -79,6 +80,7 @@ _PROFILE_PRESETS: dict[DeploymentMode, dict[str, Any]] = {
         "require_neo4j": False,
         "governance_enabled": True,
         "auth_enabled": True,
+        "firebase_auth_enabled": True,
         "rate_limiting_enabled": True,
         "structured_logging": True,
     },

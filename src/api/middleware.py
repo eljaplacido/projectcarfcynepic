@@ -182,8 +182,18 @@ def register_security_middleware(app: FastAPI) -> None:
         app.add_middleware(RateLimitMiddleware, requests_per_minute=rpm)
         logger.info("Rate limiting enabled: %d req/min", rpm)
 
-    # API key auth (requires CARF_API_KEY to be set)
-    if profile.auth_enabled:
+    # Auth: Firebase JWT (cloud) or API key (self-hosted)
+    firebase_enabled = (
+        profile.firebase_auth_enabled
+        or os.environ.get("FIREBASE_AUTH_ENABLED", "").lower() in ("1", "true", "yes")
+    )
+
+    if firebase_enabled:
+        from src.api.auth import FirebaseAuthMiddleware
+
+        app.add_middleware(FirebaseAuthMiddleware)
+        logger.info("Firebase JWT auth enabled (%s mode)", profile.mode.value)
+    elif profile.auth_enabled:
         api_key = os.environ.get("CARF_API_KEY", "")
         if not api_key:
             logger.warning(

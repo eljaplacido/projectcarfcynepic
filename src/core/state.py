@@ -97,6 +97,37 @@ class BayesianEvidence(BaseModel):
     recommended_probe: str | None = Field(default=None, description="Recommended next action")
 
 
+class CounterfactualEvidence(BaseModel):
+    """Evidence from counterfactual reasoning (Phase 17)."""
+
+    factual_outcome: str = Field(default="", description="What actually happened")
+    counterfactual_outcome: str = Field(default="", description="What would have happened")
+    intervention_description: str = Field(default="", description="The hypothetical change")
+    causal_attributions: list[dict[str, Any]] = Field(
+        default_factory=list, description="Causes ranked by importance"
+    )
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    narrative: str = Field(default="", description="Human-readable narrative")
+
+
+class NeurosymbolicEvidence(BaseModel):
+    """Evidence from neurosymbolic reasoning (Phase 17)."""
+
+    conclusion: str = Field(default="", description="Derived conclusion")
+    derived_facts_count: int = Field(default=0, description="Number of facts derived")
+    rules_fired: list[str] = Field(
+        default_factory=list, description="Symbolic rules that contributed"
+    )
+    shortcut_warnings: list[str] = Field(
+        default_factory=list, description="Detected reasoning shortcuts"
+    )
+    grounding_source: str = Field(
+        default="none", description="Knowledge graph, rules, or both"
+    )
+    iterations: int = Field(default=0, description="Neural-symbolic loop iterations")
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+
+
 
 
 class HumanVerificationMetadata(BaseModel):
@@ -190,6 +221,12 @@ class EpistemicState(BaseModel):
     )
     bayesian_evidence: Optional[BayesianEvidence] = Field(
         default=None, description="Evidence from Bayesian active inference"
+    )
+    counterfactual_evidence: Optional[CounterfactualEvidence] = Field(
+        default=None, description="Evidence from counterfactual reasoning (Phase 17)"
+    )
+    neurosymbolic_evidence: Optional[NeurosymbolicEvidence] = Field(
+        default=None, description="Evidence from neurosymbolic reasoning (Phase 17)"
     )
 
     # --- Uncertainty Tracking ---
