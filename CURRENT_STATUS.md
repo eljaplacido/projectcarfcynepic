@@ -1,20 +1,20 @@
 # CYNEPIC Architecture 0.5 - Current Status
 
-**Last Updated**: 2026-02-23
-**Phase**: Phase D — Data Layer Coherence & Enterprise Readiness
-**Overall Status**: Phase D Complete — 947 backend tests, 235+ frontend tests, Memory + RAG wired into pipeline, deployment profiles, security middleware
+**Last Updated**: 2026-03-14
+**Phase**: Phase 17 — Causal World Model, NeSy Engine, Auth & Cloud Deployment
+**Overall Status**: Phase 17 Complete — World model + counterfactual + neurosymbolic engines, Firebase auth, Cloud SQL, H-Neuron hallucination sentinel, 60+ new tests
 
 ---
 
 ## Test Coverage
 
 ```
-Total Tests: 923 backend + 235 frontend = 1,158 passing
-Overall Coverage: 72%
-Python Lines: 7,500+ lines
-React Components: 53 components (6 new: GovernanceView, SpecMapTab, CostIntelligenceTab, PolicyFederationTab, ComplianceAuditTab + 3 from Phase 15)
-Backend Unit Tests: 53 test files (12 new governance tests + 41 existing)
-Frontend Tests: 235 tests (22 test files, all passing) — 5 new governance test files
+Total Tests: 980+ backend + 235 frontend = 1,215+ passing
+Overall Coverage: 72%+
+Python Lines: 10,000+ lines
+React Components: 56 components (+AuthGuard, LoginPage, + Phase 17 types)
+Backend Unit Tests: 55+ test files (2 new Phase 17 test files with 60+ tests)
+Frontend Tests: 235 tests (22 test files, all passing)
 E2E Tests: 20 tests (Data Quality: 6/6 pass, API: varies by network)
 Benchmark Scripts: 9 technical + 1 e2e + 1 baseline + 1 report generator (12 hypotheses)
 TLA+ Specs: 2 (StateGraph, EscalationProtocol)
@@ -39,6 +39,12 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | **Cost Intelligence Service** | **NEW** | 96% | LLM token pricing, ROI, cost breakdown |
 | **Governance Graph Service** | **NEW** | 32% | Neo4j triple store (graceful degradation) |
 | **Governance API Router** | **NEW** | — | 18 endpoints under `/governance/*` |
+| **Causal World Model** | **NEW (P17)** | — | SCMs with do-calculus, forward simulation, OLS learning from data |
+| **Counterfactual Engine** | **NEW (P17)** | — | Level-3 Pearl reasoning, scenario comparison, but-for attribution |
+| **Neurosymbolic Engine** | **NEW (P17)** | — | Neural-symbolic loop: LLM fact extraction + forward-chaining + shortcut detection |
+| **H-Neuron Sentinel** | **NEW (P17)** | — | Hallucination detection via weighted signal fusion (proxy mode) |
+| **Cloud SQL Database** | **NEW (P17)** | — | SQLite/PostgreSQL factory, Cloud Run ADC support |
+| **Firebase Auth** | **NEW (P17)** | — | JWT middleware, lazy Firebase Admin SDK init |
 
 ### React Frontend (carf-cockpit)
 
@@ -69,13 +75,25 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | **InterventionSimulator** | **ENHANCED** | Multi-parameter What-If with confounders, save scenario |
 | **CausalAnalysisCard** | **ENHANCED** | Follow-up question generation |
 | **WalkthroughManager** | **ENHANCED** | 3 new tracks (Causal Deep Dive, Simulations, Developer Debugging) |
-| **AnalysisHistoryPanel** | **ENHANCED** | OOM crash fix, capped at 50, lazy-load |
+| **AnalysisHistoryPanel** | **ENHANCED** | OOM crash fix, capped at 50, lazy-load, cloud-backed history |
+| **AuthGuard** | **NEW (P17)** | Firebase auth gatekeeper, skips in local dev |
+| **LoginPage** | **NEW (P17)** | Google sign-in UI with branded gradient |
 | InsightsPanel | Complete | Action items, effort badges, roadmap stepper |
 | **GovernanceView** | **NEW** | 4-tab layout: Spec Map, Cost, Policy, Compliance |
 | **SpecMapTab** | **NEW** | ReactFlow domain node visualization |
 | **CostIntelligenceTab** | **NEW** | KPI cards + recharts cost breakdown |
 | **PolicyFederationTab** | **NEW** | Domain sidebar, policy cards, conflict panel |
 | **ComplianceAuditTab** | **NEW** | Framework selector, score gauge, article accordion |
+
+### React Hooks
+
+| Hook | Status | Notes |
+|------|--------|-------|
+| useCarfApi | Complete | Main API hook |
+| useTheme | Complete | Dark mode toggle |
+| useProactiveHighlight | Complete | Auto-highlight relevant panels |
+| useVisualizationConfig | Complete | Cynefin viz config with caching |
+| **useAuth** | **NEW (P17)** | Firebase auth state, sign-in/out, JWT token retrieval |
 
 ### New Services (Phase 13)
 
@@ -107,11 +125,47 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | **Feedback** | **5** | `/feedback`, `/feedback/summary`, `/feedback/domain-overrides`, `/feedback/export`, `/feedback/retraining-readiness` |
 | **Enhanced Insights** | **1** | **NEW** - `/insights/enhanced` (action items + roadmap) |
 | **Experience Buffer** | **2** | **NEW** - `/experience/similar`, `/experience/patterns` |
-| **Governance** | **18** | **NEW** — `/governance/domains`, `/governance/policies`, `/governance/conflicts`, `/governance/compliance/{framework}`, `/governance/cost/*`, `/governance/audit`, `/governance/health` |
+| **Governance** | **18** | `/governance/domains`, `/governance/policies`, `/governance/conflicts`, `/governance/compliance/{framework}`, `/governance/cost/*`, `/governance/audit`, `/governance/health` |
+| **World Model** | **10** | **NEW (P17)** — `/world-model/counterfactual`, `/counterfactual/compare`, `/counterfactual/attribute`, `/simulate`, `/neurosymbolic/reason`, `/neurosymbolic/validate`, `/h-neuron/status`, `/h-neuron/assess`, `/retrieve/neurosymbolic`, `/analyze-deep` |
+| **History** | **3** | **NEW (P17)** — `POST /history`, `GET /history`, `DELETE /history/{id}` (per-user, cloud-backed) |
 
 ---
 
 ## Recent Improvements
+
+### Phase 17: Causal World Model, NeSy Engine, Auth & Cloud Deployment (2026-03-14)
+
+Full causal-neurosymbolic reasoning stack, hallucination detection, Firebase authentication, and Cloud SQL deployment layer.
+
+**Causal World Model (17A):**
+1. **CausalWorldModelService** (`src/services/causal_world_model.py`) — Structural Causal Models with forward simulation, do-calculus interventions, and Pearl's three-step counterfactual (Abduction → Action → Prediction). Learns structural equations via OLS from data + causal graph. LLM-assisted probabilistic simulation fallback when no data available.
+2. **CounterfactualEngine** (`src/services/counterfactual_engine.py`) — Level-3 counterfactual reasoning (Pearl's Ladder). SCM-based reasoning with LLM fallback. But-for causation tests. Multi-scenario comparison with result caching.
+
+**Neurosymbolic Engine (17B):**
+3. **NeuralSymbolicReasoner** (`src/services/neurosymbolic_engine.py`) — Tight neural-symbolic integration loop: LLM fact extraction → symbolic forward-chaining → rule validation → shortcut detection. CSL policy rule import, Neo4j graph grounding, violation correction. Confidence computation based on derivation quality.
+
+**H-Neuron Hallucination Sentinel (17C):**
+4. **HNeuronSentinel** (`src/services/h_neuron_interceptor.py`) — Mechanistic hallucination detection via weighted signal fusion (DeepEval risk, domain confidence, epistemic uncertainty, reflection count, quality scores). Proxy mode with fusible CARF signals. Environment-based feature flagging. Cynefin domain activation.
+
+**Authentication & Cloud Deployment (17D):**
+5. **Firebase Auth** (`src/api/auth.py`) — JWT middleware verifying Authorization Bearer tokens. Lazy Firebase Admin SDK init. Bypasses auth for health/docs/CORS endpoints.
+6. **AuthGuard + LoginPage** — React components for Firebase Google sign-in. AuthGuard skips auth when Firebase is not configured (local dev).
+7. **useAuth hook** — Manages Firebase auth state, provides signIn/signOut/getToken for API Bearer headers.
+8. **Cloud SQL Database** (`src/core/database.py`) — Connection factory supporting SQLite (local) and PostgreSQL (cloud) with transparent placeholder adaptation. Cloud Run ADC support.
+9. **History Router** (`src/api/routers/history.py`) — Per-user analysis history (save/list/delete) with user isolation via `request.state.user_id`.
+10. **Migration Script** (`scripts/migrate_to_cloud_sql.py`) — One-time SQLite → PostgreSQL migration for datasets, feedback, and history tables.
+
+**State & Types (17E):**
+11. **CounterfactualEvidence** + **NeurosymbolicEvidence** models in `src/core/state.py` — State carries full evidence trail from all Phase 17 services.
+12. **Frontend types** in `carf-cockpit/src/types/carf.ts` — TypeScript interfaces for all Phase 17 API responses.
+13. **apiService.ts** — Auth header helper, Phase 17 endpoint functions, retry logic with exponential backoff.
+
+**Infrastructure:**
+14. **Dockerfile** — Updated for cloud deployment.
+15. **firebase.json** — Firebase Hosting config serving `carf-cockpit/dist` with SPA rewrites.
+16. **Doc reorganization** — Legacy docs moved to `docs/archive/`. 5 new research/architecture docs added.
+
+**Testing:** 60+ new tests across 2 test files (`test_phase17_integration.py`, `test_phase17_world_model.py`) covering H-Neuron proxy mode, NeSy-RAG interconnection, SCM-NeSy integration, end-to-end pipeline coherence, and all individual components.
 
 ### Phase 16.7: Currency-Aware Financial Policy Enforcement (2026-02-22)
 
@@ -403,17 +457,29 @@ Layer 2: Causal-Bayesian Mesh
 ├── Clear → Deterministic rules
 └── Chaotic → Circuit breaker
 
-Layer 3: Guardian (Policy Enforcement)
+Layer 3: Causal World Model (Phase 17)
+├── Structural Causal Models (SCMs) with OLS learning
+├── Counterfactual Engine (Pearl Level-3)
+├── Neurosymbolic Engine (LLM + forward-chaining)
+└── H-Neuron Sentinel (hallucination detection)
+
+Layer 4: Guardian (Policy Enforcement)
 ├── OPA policy evaluation
 ├── Risk level assessment
 ├── Human escalation triggers
 └── Audit trail logging
 
-Layer 4: Human Layer (Escalation)
+Layer 5: Human Layer (Escalation)
 ├── 3-Point Context notifications
 ├── Channel configuration
 ├── Manual intervention requests
 └── Resolution tracking
+
+Layer 6: Auth & Cloud (Phase 17)
+├── Firebase JWT authentication
+├── Cloud SQL (SQLite/PostgreSQL)
+├── Per-user analysis history
+└── Firebase Hosting (SPA)
 ```
 
 ---
@@ -434,6 +500,20 @@ LANGSMITH_API_KEY=ls-...    # For tracing
 NEO4J_URI=bolt://localhost:7687
 KAFKA_ENABLED=false
 OPA_ENABLED=false
+DATABASE_URL=postgresql://...  # Cloud SQL (Phase 17, omit for local SQLite)
+GOOGLE_APPLICATION_CREDENTIALS=...  # Cloud Run ADC (Phase 17)
+H_NEURON_ENABLED=true       # Enable H-Neuron hallucination sentinel (Phase 17)
+```
+
+### Frontend Environment Variables (carf-cockpit/.env.production)
+```bash
+VITE_API_URL=https://...              # Cloud Run API URL
+VITE_FIREBASE_API_KEY=...             # Firebase auth (Phase 17)
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
 ```
 
 ---
@@ -466,13 +546,15 @@ pytest tests/ -v --cov=src
 ## Known Limitations
 
 1. **Causal/Bayesian Engines**: Use LLM simulation when DoWhy/PyMC not available (graceful degradation)
-2. **Neo4j Integration**: Connection pool exists but queries need real database
+2. **Neo4j Integration**: Connection pool exists but queries need real database; NeSy graph grounding requires Neo4j
 3. **Kafka Audit**: Infrastructure ready but not persisting to real Kafka
 4. **Streamlit Dashboard**: Deprecated in favor of React cockpit
 5. **ChimeraOracle**: Standalone REST API only — not yet wired into LangGraph StateGraph workflow
 6. **LightRAG / Vector Store**: Not implemented — semantic search and cross-session knowledge retrieval missing
-7. **FX Coverage Dependency**: Non-USD comparisons require configured `CARF_FX_RATES_JSON`; otherwise Guardian/CSL correctly block cross-currency financial actions.
+7. **FX Coverage Dependency**: Non-USD comparisons require configured `CARF_FX_RATES_JSON`; otherwise Guardian/CSL correctly block cross-currency financial actions
 8. **Router Retraining**: Feedback collection works but no automated retraining pipeline yet
+9. **H-Neuron Mechanistic Mode**: Proxy mode (signal fusion) active; true mechanistic mode (PyTorch hooks) is placeholder only
+10. **Firebase Auth**: Requires Firebase project setup for production; local dev bypasses auth entirely
 
 ---
 
@@ -513,25 +595,33 @@ pytest tests/ -v --cov=src
 projectcarf/
 ├── src/
 │   ├── main.py              # FastAPI entry point
-│   ├── api/routers/         # Modularized API routers (12 routers incl. feedback)
-│   ├── core/                # State schemas, LLM config
-│   ├── services/            # 16 services (incl. chimera_oracle, visualization_engine)
+│   ├── api/
+│   │   ├── auth.py          # Firebase JWT middleware (Phase 17)
+│   │   └── routers/         # 14 API routers (+history, +world_model)
+│   ├── core/
+│   │   ├── state.py         # Pydantic state schemas (+CounterfactualEvidence, +NeurosymbolicEvidence)
+│   │   └── database.py      # SQLite/PostgreSQL connection factory (Phase 17)
+│   ├── services/            # 20 services (+causal_world_model, +counterfactual_engine, +neurosymbolic_engine, +h_neuron_interceptor)
 │   ├── workflows/           # LangGraph nodes (router, guardian, graph)
 │   └── mcp/                 # MCP server (15 cognitive tools)
 ├── carf-cockpit/
 │   └── src/
-│       ├── components/carf/ # 47 React components (incl. MarkdownRenderer, AgentFlowChart)
-│       ├── hooks/           # React hooks (useProactiveHighlight, useVisualizationConfig, useCarfApi, useTheme)
-│       ├── services/        # API client (apiService.ts with typed interfaces)
-│       ├── __tests__/       # 17 test files (201 tests)
-│       └── types/           # TypeScript types
+│       ├── components/carf/ # 56 React components (+AuthGuard, +LoginPage)
+│       ├── hooks/           # 5 React hooks (+useAuth)
+│       ├── services/        # API client + Firebase config
+│       ├── __tests__/       # 17 test files (235 tests)
+│       └── types/           # TypeScript types (+Phase 17 interfaces)
 ├── tests/
-│   ├── unit/               # 20+ test files
+│   ├── unit/               # 22+ test files (+test_phase17_integration, +test_phase17_world_model)
 │   └── e2e/                # End-to-end tests (gold standard scenarios)
+├── scripts/
+│   └── migrate_to_cloud_sql.py  # SQLite → PostgreSQL migration (Phase 17)
 ├── demo/
-│   ├── data/               # 8 realistic datasets (scope3, supply_chain, pricing, etc.)
+│   ├── data/               # 8 realistic datasets
 │   └── payloads/           # 10 scenario configurations
-└── docs/                   # Documentation
+├── docs/                   # Architecture & research docs
+│   └── archive/            # Legacy docs (moved in Phase 17)
+└── firebase.json           # Firebase Hosting config (Phase 17)
 ```
 
 ---
