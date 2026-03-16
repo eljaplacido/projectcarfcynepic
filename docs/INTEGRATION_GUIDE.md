@@ -110,9 +110,90 @@ def check_po_risk(po_data):
         }
     )
     result = response.json()
-    
+
     if result['guardian']['status'] == 'pass':
         return "APPROVE"
     else:
         return f"REVIEW: {result['guardian']['reason']}"
 ```
+
+---
+
+## 6. MCP Agentic Integration (Phase 13+)
+
+CARF exposes **18 cognitive tools** via its Model Context Protocol (MCP) server for integration with external AI agents (Claude, GPT, custom agents).
+
+### Available MCP Tools
+
+| Module | Tools | Purpose |
+|--------|-------|---------|
+| **router** | `classify_query`, `get_routing_config` | Cynefin domain classification |
+| **causal** | `causal_analyze`, `estimate_effect` | Causal inference via DoWhy/EconML |
+| **bayesian** | `bayesian_infer`, `update_beliefs` | Bayesian posterior estimation |
+| **guardian** | `check_policy`, `evaluate_risk` | Policy compliance checking |
+| **oracle** | `fast_predict`, `compare_strategies` | ChimeraOracle fast causal predictions |
+| **memory** | `query_experience_buffer`, `search_memory` | Semantic memory retrieval |
+| **reflector** | `reflector_repair` | Self-correction on rejected actions |
+
+### MCP Server Setup
+```bash
+# Start MCP server (alongside FastAPI)
+python -m src.mcp
+```
+
+### Key Safety Boundary
+MCP tools expose CARF's **analytical capabilities** as read-mostly services. External agents **cannot** use MCP tools to modify CARF's policies, configuration, or internal state. The `reflector_repair` tool allows external agents to use CARF's repair logic on *their* proposed actions, not on CARF's internals.
+
+---
+
+## 7. Phase 17 API Endpoints
+
+### Causal World Model & Neurosymbolic Reasoning
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/world-model/counterfactual` | Counterfactual reasoning from natural language |
+| POST | `/world-model/counterfactual/compare` | Multi-scenario comparison |
+| POST | `/world-model/counterfactual/attribute` | Causal attribution with but-for tests |
+| POST | `/world-model/simulate` | Forward simulation with do-calculus interventions |
+| POST | `/world-model/neurosymbolic/reason` | Full neural-symbolic reasoning loop |
+| POST | `/world-model/neurosymbolic/validate` | Claim validation against symbolic KB |
+| GET | `/world-model/h-neuron/status` | H-Neuron sentinel configuration |
+| POST | `/world-model/h-neuron/assess` | Run hallucination risk assessment |
+| POST | `/world-model/retrieve/neurosymbolic` | NeSy-augmented retrieval (3-layer) |
+| POST | `/world-model/analyze-deep` | Combined CARF + counterfactual + NeSy + simulation |
+
+### Governance (18 endpoints)
+
+Key endpoints under `/governance/*`:
+- `GET /governance/domains` — List governance domains
+- `POST /governance/policies/extract` — LLM-assisted policy extraction
+- `GET /governance/conflicts` — Cross-domain conflict detection
+- `GET /governance/compliance/{framework}` — Compliance scoring (EU AI Act, CSRD, GDPR, ISO 27001)
+- `GET /governance/cost/breakdown` — LLM token cost analysis
+- `GET /governance/audit` — Audit trail
+
+### Authentication (Phase 17)
+
+Production deployments use Firebase JWT authentication:
+```bash
+# Authenticated request
+curl -X POST https://api.example.com/query \
+  -H "Authorization: Bearer <firebase_jwt_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Analyze supplier risk"}'
+```
+
+Local development bypasses auth automatically.
+
+---
+
+## 8. Deployment Profiles
+
+CARF supports three deployment profiles via `CARF_PROFILE` environment variable:
+
+| Profile | Auth | Rate Limit | CORS | Use Case |
+|---------|------|-----------|------|----------|
+| `research` | None | None | `*` | Local development, experimentation |
+| `staging` | API key | 100 req/min | Configured origins | Testing, demo |
+| `production` | API key + Firebase JWT | 50 req/min | Strict origins | Enterprise deployment |

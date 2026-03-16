@@ -608,3 +608,69 @@ export interface DeepAnalysisResponse {
         error?: string;
     };
 }
+
+// =============================================================================
+// Phase 18: Monitoring Types
+// =============================================================================
+
+export interface DriftSnapshot {
+  timestamp: string;
+  window_size: number;
+  current_distribution: Record<string, number>;
+  baseline_distribution: Record<string, number>;
+  kl_divergence: number;
+  max_domain_shift: number;
+  shifted_domain: string;
+  drift_detected: boolean;
+  alert_reason: string;
+}
+
+export interface DriftStatus {
+  total_observations: number;
+  baseline_established: boolean;
+  baseline_distribution: Record<string, number>;
+  current_distribution: Record<string, number>;
+  alert_count: number;
+  snapshot_count: number;
+  last_snapshot: DriftSnapshot | null;
+  config: { baseline_window: number; detection_window: number; kl_threshold: number; domain_shift_threshold: number };
+}
+
+export interface BiasReport {
+  timestamp: string;
+  total_entries: number;
+  domain_distribution: Record<string, number>;
+  domain_percentages: Record<string, number>;
+  chi_squared_statistic: number;
+  chi_squared_p_value: number;
+  distribution_biased: boolean;
+  quality_by_domain: Record<string, { mean: number; count: number; min: number; max: number }>;
+  quality_disparity: number;
+  quality_biased: boolean;
+  verdict_by_domain: Record<string, Record<string, number>>;
+  approval_rate_disparity: number;
+  overall_bias_detected: boolean;
+  findings: string[];
+}
+
+export interface ConvergenceResult {
+  epoch: number;
+  accuracy_delta: number;
+  converged: boolean;
+  regressed: boolean;
+  plateau_detected: boolean;
+  recommendation: string;
+  history: Array<{ epoch: number; accuracy: number; timestamp: string }>;
+}
+
+export interface ConvergenceStatus {
+  total_epochs: number;
+  convergence: ConvergenceResult;
+  config: { epsilon: number; max_plateau_epochs: number };
+}
+
+export interface MonitoringStatus {
+  drift: DriftStatus;
+  bias: { overall_bias_detected: boolean; findings_count: number; findings: string[] };
+  convergence: ConvergenceStatus;
+}

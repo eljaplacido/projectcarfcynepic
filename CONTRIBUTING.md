@@ -61,16 +61,19 @@ Be respectful, inclusive, and constructive. We welcome contributors of all backg
 ```
 projectcarf/
 ├── src/
-│   ├── core/           # Schemas, state, LLM utilities
-│   ├── services/       # Business logic (causal, bayesian, neo4j)
-│   ├── workflows/      # LangGraph orchestration
-│   ├── dashboard/      # Streamlit UI
+│   ├── core/           # Schemas, state, LLM utilities, deployment profiles
+│   ├── services/       # 30+ services (causal, bayesian, governance, monitoring, etc.)
+│   ├── workflows/      # LangGraph orchestration (graph.py, router.py, guardian.py)
+│   ├── api/routers/    # 17 FastAPI routers (80+ endpoints)
+│   ├── mcp/            # MCP server (18 cognitive tools)
 │   └── main.py         # FastAPI entry point
-├── carf-cockpit/       # React Platform Cockpit
-├── tests/              # Test suites
-├── docs/               # Documentation
-├── demo/               # Demo scenarios and data
-└── config/             # Configuration files
+├── carf-cockpit/       # React Platform Cockpit (59 components, 4 views)
+├── tests/              # 1,365+ tests (unit, integration, e2e, deepeval)
+├── benchmarks/         # 45 hypotheses (H0-H45) + realism gate
+├── docs/               # 40+ architecture docs
+├── demo/               # 17 demo scenarios and data
+├── models/             # Trained models (DistilBERT + 5 CausalForest)
+└── config/             # Policies, federated policies, governance boards
 ```
 
 ## How to Contribute
@@ -196,17 +199,32 @@ def test_causal_effect_estimation():
 
 ### Feature Development
 
+- Scalable inference modes (Phase 18E: configurable MCMC/variational/cached)
+- Multi-agent collaborative causal discovery (Phase 18F)
 - New causal estimators (instrumental variables, regression discontinuity)
 - Additional Bayesian models
 - Enhanced visualization components
-- Multi-language support
 
 ### Architecture
 
-- Multi-tenant workspace support
+- Multi-tenant workspace support with governance isolation
 - Kubernetes deployment manifests
-- OAuth2 authentication integration
+- Federated causal learning across deployments
 - Performance optimizations
+
+### Safety & Monitoring
+
+- Enhanced drift detection algorithms
+- Advanced bias auditing (intersection of domain + quality + verdicts)
+- Automated compliance mapping (regulation text → CSL rules)
+- Benchmark data realism improvements
+
+### Key References for Contributors
+
+- **AGENTS.md** — Antipatterns AP-1 through AP-10, SRR model, coding standards
+- **docs/CARF_RSI_ANALYSIS.md** — RSI alignment requirements
+- **docs/EVALUATION_FRAMEWORK.md** — Quality metrics and benchmark requirements (45 hypotheses)
+- **docs/FUTURE_ROADMAP.md** — Research-informed roadmap with academic references
 
 ## Documentation
 

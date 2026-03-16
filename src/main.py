@@ -162,6 +162,7 @@ from src.api.routers import (  # noqa: E402
     guardian,
     health,
     history,
+    monitoring,
     oracle,
     query,
     router_config,
@@ -185,6 +186,7 @@ app.include_router(history.router)
 app.include_router(csl.router)
 app.include_router(query.router)
 app.include_router(world_model.router)
+app.include_router(monitoring.router)  # Phase 18: drift, bias, convergence
 
 # Governance router (Phase 16 — conditionally registered)
 if _profile.governance_enabled:

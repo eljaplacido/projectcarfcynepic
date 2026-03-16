@@ -88,3 +88,66 @@ Fast predictions from Chimera Oracle are validated:
 - Automatic alerts on quality degradation (>10% drop in any metric)
 
 See [Evaluation Framework](./EVALUATION_FRAMEWORK.md) for detailed implementation.
+
+---
+
+## Phase 17 LLM Roles (Causal World Model & NeSy)
+
+Phase 17 introduced new LLM touchpoints within clearly bounded roles:
+
+| Component | LLM Role | Deterministic Core | Safety Bound |
+|-----------|----------|-------------------|--------------|
+| **Causal World Model** | Probabilistic simulation fallback when no SCM data available | SCM evaluation, OLS learning, do-calculus | H-Neuron sentinel pre-delivery gate |
+| **Counterfactual Engine** | Natural language query parsing, Pearl's 3-step reasoning when no SCM | SCM-based counterfactual when data available | Cached results validation |
+| **Neurosymbolic Engine** | Fact extraction from unstructured text | Forward-chaining, shortcut detection, constraint validation | KB confidence thresholds, CSL policy rules |
+| **H-Neuron Sentinel** | None (proxy mode) | Weighted signal fusion, deterministic risk scoring | Threshold-based flagging |
+
+**Key principle:** LLMs serve as knowledge priors and natural language interfaces. All critical reasoning paths have deterministic fallbacks. The neurosymbolic engine explicitly validates LLM outputs through symbolic constraint checking before they enter the knowledge base.
+
+## Supervised Recursive Refinement (SRR) and LLM Safety
+
+CARF's LLM usage is governed by the SRR model (see [`CARF_RSI_ANALYSIS.md`](CARF_RSI_ANALYSIS.md)):
+
+- **LLMs cannot modify** policies, Guardian thresholds, CSL rules, or their own prompts
+- **LLMs can only repair** proposed actions within existing heuristic bounds (Reflector)
+- **Memory influence** from LLM-produced analyses is capped at 0.03 weight in routing hints
+- **Feedback-driven retraining** requires human triggering — LLMs cannot initiate model updates
+- **Guardian verdicts are deterministic** — preventing LLM manipulation of safety evaluator
+
+### Known SRR Gaps (Phase 18 Addresses)
+
+1. No monitoring of whether LLM-influenced memory hints cause routing drift over time
+2. No automated bias audit of LLM-produced analyses accumulated in memory
+3. No convergence detection in feedback→retraining loops
+4. ChimeraOracle bypasses Guardian enforcement (AP-7) — Phase 18 integrates into StateGraph
+
+## Multi-Agent Scaling Strategy (Research-Informed)
+
+> Source: [`research.md`](../research.md) §1.2, §4.1, §4.4
+
+As CARF scales to enterprise deployment, multi-agent LLM systems offer solutions for:
+
+### Collaborative Causal Discovery
+- **Variable Partitioning**: Different LLM agents specialize in subsets of variables
+- **Algorithm Selection**: Agent debates between PC, FCI, and score-based methods
+- **Validation**: Cross-agent graph structure voting with consensus threshold
+- **Integration**: Via existing LangGraph cognitive mesh — each discovery agent as a new domain node
+
+### Scalable Policy Management
+- **Policy Translation**: LLM agents convert natural language regulations to CSL rules
+- **Conflict Detection**: Multi-agent analysis of policy interactions across domains
+- **Dynamic Adaptation**: Agents monitor regulatory changes and propose policy updates
+- **Human Gate**: All policy modifications require human approval (SRR principle)
+
+### Enhanced Knowledge Operations
+- **RAG Quality**: LLM agents curate and validate RAG corpus entries
+- **Knowledge Graph Maintenance**: Automated Neo4j graph cleaning and enrichment
+- **Cross-Session Learning**: Agents extract patterns from accumulated analyses
+- **Bias Monitoring**: Dedicated auditor agent for memory corpus fairness (Phase 18)
+
+### Multi-Agent Coordination Guardrails
+- All inter-agent communication must pass through EpistemicState (no side channels)
+- Agent outputs validated by Guardian before affecting system state
+- Token budgets enforced per-agent to prevent runaway costs
+- Coordination overhead tracked by Cost Intelligence Service
+- Accountability: each agent decision logged with model ID and reasoning trace

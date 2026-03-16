@@ -1781,4 +1781,32 @@ export async function runDeepAnalysis(request: {
     });
 }
 
+// ============================================================================
+// Phase 18: Monitoring API
+// ============================================================================
+
+export async function getMonitoringDriftStatus(): Promise<import('../types/carf').DriftStatus> {
+    return withRetry(() => apiFetch('/monitoring/drift'));
+}
+
+export async function getMonitoringDriftHistory(limit = 20): Promise<{ snapshots: import('../types/carf').DriftSnapshot[] }> {
+    return withRetry(() => apiFetch(`/monitoring/drift/history?limit=${limit}`));
+}
+
+export async function resetMonitoringDriftBaseline(): Promise<{ status: string }> {
+    return withRetry(() => apiFetch('/monitoring/drift/reset', { method: 'POST' }));
+}
+
+export async function getMonitoringBiasAudit(): Promise<import('../types/carf').BiasReport> {
+    return withRetry(() => apiFetch('/monitoring/bias-audit'));
+}
+
+export async function getMonitoringConvergence(): Promise<import('../types/carf').ConvergenceStatus> {
+    return withRetry(() => apiFetch('/monitoring/convergence'));
+}
+
+export async function getMonitoringStatus(): Promise<import('../types/carf').MonitoringStatus> {
+    return withRetry(() => apiFetch('/monitoring/status'));
+}
+
 export default api;

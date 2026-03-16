@@ -1,7 +1,7 @@
 # Solution Vision: Complex-Adaptive Reasoning Fabric (CARF)
 
-**Version:** 2.0 (Target State)  
-**Date:** 2026-01-16  
+**Version:** 3.0 (Phase 17 Complete, Phase 18 Designed)
+**Date:** 2026-03-16
 **Status:** Living Document
 
 ---
@@ -16,47 +16,68 @@
 
 ## 2. Solution Architecture
 
-The solution is architected as a **4-Layer Cognitive Stack**, enforcing separation of concerns between routing, reasoning, memory, and verification.
+The solution is architected as a **6-Layer Cognitive Stack**, enforcing separation of concerns between routing, reasoning, world modeling, memory, verification, and deployment.
 
 ### High-Level Diagram
 
 ```mermaid
 graph TD
-    User[User / External System] --> IO[Input/Output Gateway]
-    IO --> L1[Layer 1: Sense-Making Router]
-    
+    User[User / External System] --> IO[Input/Output Gateway + Firebase Auth]
+    IO --> L1[Layer 1: Sense-Making Router + Memory Augmentation]
+
     subgraph "Layer 2: Cognitive Mesh (The Agents)"
         L1 -- "Clear" --> AgentRule[Deterministic Automation]
-        L1 -- "Complicated" --> AgentCausal[Causal Analyst (DoWhy)]
+        L1 -- "Complicated" --> AgentCausal[Causal Analyst (DoWhy) + ChimeraOracle Fast Path]
         L1 -- "Complex" --> AgentBayes[Bayesian Explorer (PyMC)]
         L1 -- "Chaotic" --> AgentSafe[Circuit Breaker]
         L1 -- "Disorder" --> AgentHuman[Human Escalation]
     end
-    
-    subgraph "Layer 3: Reasoning Services (State & Memory)"
-        AgentCausal <--> DB_Graph[(Neo4j: Causal DAGs)]
-        AgentBayes <--> DB_Prob[(Probabilistic Store)]
+
+    subgraph "Layer 3: Causal World Model (Phase 17)"
+        AgentCausal <--> WorldModel[SCMs + do-Calculus + Counterfactuals]
+        AgentCausal <--> NeSy[Neurosymbolic Engine: LLM + Forward-Chaining]
+        WorldModel <--> NeSy
+    end
+
+    subgraph "Layer 4: Reasoning Services (State & Memory)"
+        AgentCausal <--> DB_Graph[(Neo4j: Causal + Governance Graphs)]
+        AgentBayes <--> RAG[3-Layer NeSy-RAG: Vector + Graph + Symbolic]
+        AllAgents <--> Memory[Experience Buffer + Agent Memory]
         AllAgents <--> DB_Audit[(Kafka/Audit Log)]
     end
-    
-    subgraph "Layer 4: Verifiable Action (The Guardian)"
-        AgentRule --> Guardian
-        AgentCausal --> Guardian
-        AgentBayes --> Guardian
-        Guardian{Policy Check} -- "Approved" --> Action[Execute Action]
-        Guardian -- "Rejected" --> Reflector[Self-Correction Loop]
-        Guardian -- "High Risk" --> Human[HumanLayer Approval]
+
+    subgraph "Layer 5: Verifiable Action (The Guardian)"
+        AgentRule --> HNeuron[H-Neuron Sentinel: Hallucination Gate]
+        AgentCausal --> HNeuron
+        AgentBayes --> HNeuron
+        HNeuron --> Guardian{Policy Check: YAML + CSL-Core + OPA}
+        Guardian -- "Approved" --> Governance[MAP-PRICE-RESOLVE]
+        Guardian -- "Rejected" --> Reflector[Smart Reflector: Heuristic + LLM Repair]
+        Guardian -- "High Risk" --> Human[HumanLayer: 3-Point Context]
+        Governance --> Action[Execute Action]
+    end
+
+    subgraph "Layer 6: Auth & Cloud (Phase 17)"
+        CloudSQL[(Cloud SQL: SQLite/PostgreSQL)]
+        Firebase[Firebase Auth: JWT]
+        History[Per-User Analysis History]
     end
 ```
 
 ### Key Architectural Components
 
-1.  **Frontend (The Cockpit)**: A responsive, React-based Single Page Application (SPA) providing role-based views.
-2.  **Backend (The Engine)**: Python/FastAPI serving the LangGraph orchestration layer.
-3.  **Data Layer**:
-    *   **Neo4j**: Storing structural causal models (DAGs).
-    *   **Vector Store**: For semantic context and memory.
-    *   **Audit Log**: Immutable record of decisions and reasoning paths.
+1.  **Frontend (The Cockpit)**: A responsive, React-based SPA (58 components) providing 4 role-based views (Analyst, Developer, Executive, Governance) with Firebase authentication.
+2.  **Backend (The Engine)**: Python/FastAPI (80+ endpoints, 16 API routers) serving the LangGraph orchestration layer with 18 MCP cognitive tools for agentic integration.
+3.  **Causal World Model** (Phase 17): SCMs with do-calculus interventions, forward simulation, Pearl Level-3 counterfactuals, and neurosymbolic reasoning (LLM fact extraction + forward-chaining + shortcut detection).
+4.  **Data Layer**:
+    *   **Neo4j**: Storing structural causal models (DAGs) and governance triples.
+    *   **3-Layer NeSy-RAG**: Vector (sentence-transformers) + Graph (Neo4j) + Symbolic (Knowledge Base), fused via Reciprocal Rank Fusion.
+    *   **Agent Memory**: Persistent cross-session memory with reflexion-weighted recall.
+    *   **Experience Buffer**: Session-scoped semantic memory for similar query retrieval.
+    *   **Cloud SQL**: Per-user analysis history (SQLite local / PostgreSQL cloud).
+    *   **Audit Log**: Immutable decision record via Kafka.
+5.  **Safety Layer**: H-Neuron hallucination sentinel, Guardian (YAML + CSL-Core + OPA), Smart Reflector (bounded self-correction), HumanLayer escalation, TLA+ formally verified invariants.
+6.  **SRR Model**: Supervised Recursive Refinement — improvement loops bounded by formal invariants, policy enforcement, and human oversight. See [`CARF_RSI_ANALYSIS.md`](CARF_RSI_ANALYSIS.md).
 
 ---
 

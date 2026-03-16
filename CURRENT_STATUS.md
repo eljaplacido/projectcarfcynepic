@@ -1,22 +1,141 @@
 # CYNEPIC Architecture 0.5 - Current Status
 
-**Last Updated**: 2026-03-14
-**Phase**: Phase 17 — Causal World Model, NeSy Engine, Auth & Cloud Deployment
-**Overall Status**: Phase 17 Complete — World model + counterfactual + neurosymbolic engines, Firebase auth, Cloud SQL, H-Neuron hallucination sentinel, 60+ new tests
+**Last Updated**: 2026-03-16
+**Phase**: Phase 18 — Supervised Recursive Refinement, Scaling Hardening & Operational Intelligence
+**Overall Status**: Phase 18A-D Implemented — Drift detection, bias auditing, plateau detection, ChimeraOracle StateGraph integration. 4 RSI gaps closed. 4 new benchmarks (H40-H43). MonitoringPanel in all 4 views. 18E-18F designed (pending implementation).
+
+---
+
+## Phase 18 Design — Derived from Architecture Review & Research Analysis
+
+> Sources: [`research.md`](research.md) (neurosymbolic scaling research, 33 academic references), [`docs/CARF_RSI_ANALYSIS.md`](docs/CARF_RSI_ANALYSIS.md) (RSI deep architecture analysis)
+
+### Phase 18 Concept: Supervised Recursive Refinement (SRR) Hardening
+
+CARF occupies the "bounded self-correction → supervised self-modification" range on the RSI spectrum. Phase 18 closes the 4 gaps identified by the RSI analysis and implements scaling recommendations from the neurosymbolic research evaluation.
+
+### 18A: Drift Detection Service (RSI Gap #1)
+
+**Problem:** No mechanism monitors whether the memory→router feedback loop is gradually shifting routing patterns in unintended directions. The 0.03 weight limit on memory hints mitigates but does not eliminate drift risk.
+
+**Design:**
+- Track domain routing distribution over rolling windows (hourly/daily/weekly)
+- Compute KL-divergence between current and baseline routing distributions
+- Alert on statistically significant shifts (configurable threshold, default p<0.05)
+- Expose via `/monitoring/drift` API endpoint and Developer View panel
+- Store drift metrics in agent memory for cross-session tracking
+
+**Benchmark Impact:** New hypothesis H40 (drift detection sensitivity) — system must detect >5% routing shift within 100 queries. No impact on existing H0-H39.
+
+**Data Layer Impact:** Reads from `experience_buffer.py` domain patterns and `agent_memory.py` JSONL store. Additive — no schema changes to EpistemicState.
+
+**Integration Impact:** New MCP tool `monitor_drift` for agentic monitoring. New frontend panel in Developer View.
+
+### 18B: Automated Bias Auditing (RSI Gap #2)
+
+**Problem:** No system-level bias audit across accumulated agent memory. If memory accumulates biased past analyses, memory hints could gradually bias routing.
+
+**Design:**
+- Periodic scan of agent memory corpus for domain distribution skew
+- Cross-reference memory quality scores against domain to detect systematic quality differences
+- Statistical tests for representation bias (chi-squared test on domain frequencies vs expected)
+- Extend existing H36 fairness benchmark with memory-level bias metrics
+- Report via `/monitoring/bias-audit` endpoint and Governance View
+
+**Benchmark Impact:** Extends H36 (fairness). New hypothesis H41 (memory bias detection). No regression on existing benchmarks.
+
+**Data Layer Impact:** Reads from `agent_memory.py` store. Additive analysis layer.
+
+**Persona Alignment:** Executive View gets bias audit KPI cards. Developer View gets statistical breakdowns. Analyst View gets per-query bias context.
+
+### 18C: Plateau Detection in Retraining (RSI Gap #3)
+
+**Problem:** Router retraining pipeline lacks convergence monitoring. No mechanism to detect when successive retraining cycles produce diminishing returns or overfit to feedback.
+
+**Design:**
+- Track accuracy delta between successive retraining epochs
+- Implement early stopping when improvement < configurable epsilon (default 0.5%)
+- Log retraining history with accuracy curves
+- Alert when plateau detected (diminishing returns) or regression detected (accuracy drop)
+- Expose via `/feedback/retraining-convergence` endpoint
+
+**Benchmark Impact:** New hypothesis H42 (plateau detection sensitivity). No regression on existing H0-H39.
+
+**Data Layer Impact:** Extends `router_retraining_service.py` with convergence tracking. Additive.
+
+### 18D: ChimeraOracle StateGraph Integration (RSI Gap #4 / AP-7)
+
+**Problem:** ChimeraOracle accessible only via standalone `/oracle/predict` endpoint, bypassing Guardian enforcement, audit trail, and evaluation. This is antipattern AP-7 (Isolated Services in Cognitive Mesh).
+
+**Design:**
+- Add `chimera_fast_path` node to LangGraph StateGraph
+- Router conditional edge: if Complicated domain + pre-trained model available + confidence > 0.9 → fast path
+- Guardian evaluation on ChimeraOracle output (same as causal analyst)
+- EvaluationService scoring at chimera node (hallucination, relevancy)
+- Fallback to full causal analyst if ChimeraOracle confidence < threshold
+
+**Benchmark Impact:** H8 (ChimeraOracle speed) now measured within workflow context. New hypothesis H43 (fast-path Guardian enforcement). May slightly increase H8 latency due to Guardian overhead but ensures safety compliance.
+
+**Data Layer Impact:** Modifies `graph.py` StateGraph wiring. ChimeraOracle output flows through existing Guardian and Governance nodes.
+
+**E2E Flow Impact:**
+```
+Router → [if fast-path eligible] → ChimeraOracle → Guardian → Governance → END
+       → [else]                  → Causal Analyst → Guardian → Governance → END
+```
+
+### 18E: Scalable Inference Strategy (Research Recommendation)
+
+**Problem:** Bayesian inference via MCMC is computationally intensive for real-time enterprise use. Causal DAG discovery is NP-hard and scales super-exponentially.
+
+**Design:**
+- Implement configurable inference mode: `full` (MCMC), `approximate` (variational), `cached` (pre-computed)
+- Add inference mode selection to deployment profiles (research=full, staging=approximate, production=cached)
+- Cache posterior distributions for repeated query patterns
+- Document BCD Nets integration path for future variational DAG learning
+
+**Benchmark Impact:** New hypothesis H44 (approximate inference fidelity vs full MCMC). Existing H2 (Bayesian calibration) must pass in all inference modes.
+
+**Data Layer Impact:** Extends `bayesian.py` with mode parameter. Cache layer for posterior distributions.
+
+### 18F: Multi-Agent Collaborative Discovery (Research Recommendation)
+
+**Problem:** Single-agent causal discovery struggles with high-dimensional variable spaces (combinatorial explosion).
+
+**Design:**
+- Architect agent specialization: variable subset agents, algorithm selection agents, validation agents
+- Collaborative graph structure voting via consensus mechanism
+- Distributed hypothesis testing across agent pool
+- Integration via existing LangGraph cognitive mesh extension
+
+**Benchmark Impact:** New hypothesis H45 (multi-agent discovery accuracy vs single-agent on >20 variables). Long-term research track.
+
+**Persona Alignment:** Developer View shows agent collaboration trace. Executive View shows discovery efficiency metrics.
+
+### Phase 18 Implementation Priority
+
+| Component | Priority | Effort | Safety Impact | Scaling Impact |
+|-----------|----------|--------|---------------|----------------|
+| 18D ChimeraOracle Integration | P0 | Medium | High (closes AP-7) | Medium |
+| 18A Drift Detection | P1 | Low | High (RSI safety) | Low |
+| 18C Plateau Detection | P1 | Low | Medium | Low |
+| 18B Bias Auditing | P2 | Medium | High (fairness) | Low |
+| 18E Scalable Inference | P2 | High | Low | High |
+| 18F Multi-Agent Discovery | P3 | Very High | Low | Very High |
 
 ---
 
 ## Test Coverage
 
 ```
-Total Tests: 980+ backend + 235 frontend = 1,215+ passing
-Overall Coverage: 72%+
-Python Lines: 10,000+ lines
-React Components: 56 components (+AuthGuard, LoginPage, + Phase 17 types)
-Backend Unit Tests: 55+ test files (2 new Phase 17 test files with 60+ tests)
-Frontend Tests: 235 tests (22 test files, all passing)
+Total Tests: 1,130+ backend + 235+ frontend = 1,365+ passing
+Overall Coverage: 68%+
+Python Lines: 12,000+ lines
+React Components: 59 components (+MonitoringPanel, AuthGuard, LoginPage)
+Backend Unit Tests: 58+ test files (Phase 18: test_phase18_improvements, test_monitoring_api)
+Frontend Tests: 240+ tests (23+ test files, all passing)
 E2E Tests: 20 tests (Data Quality: 6/6 pass, API: varies by network)
-Benchmark Scripts: 9 technical + 1 e2e + 1 baseline + 1 report generator (12 hypotheses)
+Benchmark Scripts: 13 technical + 1 e2e + 1 baseline + 1 report generator (45 hypotheses)
 TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 ```
 
@@ -45,6 +164,11 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | **H-Neuron Sentinel** | **NEW (P17)** | — | Hallucination detection via weighted signal fusion (proxy mode) |
 | **Cloud SQL Database** | **NEW (P17)** | — | SQLite/PostgreSQL factory, Cloud Run ADC support |
 | **Firebase Auth** | **NEW (P17)** | — | JWT middleware, lazy Firebase Admin SDK init |
+| **Drift Detector** | **NEW (P18)** | — | KL-divergence monitoring, rolling windows, alert thresholds |
+| **Bias Auditor** | **NEW (P18)** | — | Chi-squared tests, quality disparity, verdict disparity |
+| **Plateau Detection** | **NEW (P18)** | — | Convergence monitoring, regression alerts, early stopping |
+| **ChimeraOracle Fast-Path** | **NEW (P18)** | — | StateGraph integration, Guardian enforcement, fallback |
+| **Monitoring API** | **NEW (P18)** | — | 7 endpoints under `/monitoring/*` |
 
 ### React Frontend (carf-cockpit)
 
@@ -78,6 +202,7 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | **AnalysisHistoryPanel** | **ENHANCED** | OOM crash fix, capped at 50, lazy-load, cloud-backed history |
 | **AuthGuard** | **NEW (P17)** | Firebase auth gatekeeper, skips in local dev |
 | **LoginPage** | **NEW (P17)** | Google sign-in UI with branded gradient |
+| **MonitoringPanel** | **NEW (P18)** | 3-tab panel: Drift Monitor, Bias Audit, Convergence — integrated into Developer + Governance views |
 | InsightsPanel | Complete | Action items, effort badges, roadmap stepper |
 | **GovernanceView** | **NEW** | 4-tab layout: Spec Map, Cost, Policy, Compliance |
 | **SpecMapTab** | **NEW** | ReactFlow domain node visualization |
@@ -94,6 +219,7 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | useProactiveHighlight | Complete | Auto-highlight relevant panels |
 | useVisualizationConfig | Complete | Cynefin viz config with caching |
 | **useAuth** | **NEW (P17)** | Firebase auth state, sign-in/out, JWT token retrieval |
+| **useMonitoring** | **NEW (P18)** | Drift/bias/convergence status with polling and auto-refresh |
 
 ### New Services (Phase 13)
 
@@ -128,10 +254,48 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 | **Governance** | **18** | `/governance/domains`, `/governance/policies`, `/governance/conflicts`, `/governance/compliance/{framework}`, `/governance/cost/*`, `/governance/audit`, `/governance/health` |
 | **World Model** | **10** | **NEW (P17)** — `/world-model/counterfactual`, `/counterfactual/compare`, `/counterfactual/attribute`, `/simulate`, `/neurosymbolic/reason`, `/neurosymbolic/validate`, `/h-neuron/status`, `/h-neuron/assess`, `/retrieve/neurosymbolic`, `/analyze-deep` |
 | **History** | **3** | **NEW (P17)** — `POST /history`, `GET /history`, `DELETE /history/{id}` (per-user, cloud-backed) |
+| **Monitoring** | **7** | **NEW (P18)** — `/monitoring/drift`, `/monitoring/drift/history`, `/monitoring/drift/reset`, `/monitoring/bias-audit`, `/monitoring/convergence`, `/monitoring/convergence/record`, `/monitoring/status` |
 
 ---
 
 ## Recent Improvements
+
+### Phase 18: SRR Hardening & Operational Intelligence (2026-03-16)
+
+Closes all 4 RSI safety gaps identified by architecture review. Implements operational monitoring across all platform views.
+
+**Drift Detection (18A):**
+1. **DriftDetector** (`src/services/drift_detector.py`) — KL-divergence monitoring of routing distribution over rolling windows. Baseline established from first 100 observations. Alerts on distributional shift > configurable threshold. Bounded deque for snapshot history.
+2. Wired into `run_carf()` pipeline — every query records routing decision automatically.
+
+**Bias Auditing (18B):**
+3. **BiasAuditor** (`src/services/bias_auditor.py`) — Chi-squared test on domain representation, quality score disparity analysis, Guardian verdict approval rate disparity. Three-dimensional fairness audit of accumulated agent memory.
+
+**Plateau Detection (18C):**
+4. **RouterRetrainingService.check_convergence()** — Detects convergence plateau (<0.5% improvement over 3+ epochs), regression (accuracy drop), and productive improvement. Records accuracy history with timestamps.
+
+**ChimeraOracle StateGraph Integration (18D):**
+5. **chimera_fast_path_node** (`src/workflows/graph.py`) — Conditional fast-path in LangGraph StateGraph. Routes Complicated queries with high confidence to ChimeraOracle, with Guardian enforcement on output. Falls back to full causal_analyst on low reliability or drift warning. Closes AP-7 and AP-10.
+
+**Monitoring API (18E):**
+6. **Monitoring Router** (`src/api/routers/monitoring.py`) — 7 endpoints under `/monitoring/*` for drift, bias, convergence, and unified status. Registered in `main.py`.
+
+**Frontend Integration (18F):**
+7. **MonitoringPanel** (`carf-cockpit/src/components/carf/MonitoringPanel.tsx`) — 3-tab component (Drift, Bias, Convergence) with Recharts visualizations. Integrated into Developer View (Monitoring tab) and Governance View (Monitoring tab).
+8. **ExecutiveKPIPanel** — 3 new KPI cards: Routing Drift, Memory Bias, Retraining Health.
+9. **TypeScript types** — DriftStatus, BiasReport, ConvergenceStatus, MonitoringStatus interfaces.
+10. **apiService.ts** — 6 new monitoring API functions with retry and auth.
+
+**Benchmarks (18G):**
+11. **H40** (`benchmarks/technical/monitoring/benchmark_drift_detection.py`) — 5 realistic enterprise scenarios, sensitivity/specificity metrics.
+12. **H41** (`benchmarks/technical/monitoring/benchmark_bias_audit.py`) — 5 realistic memory corpus scenarios.
+13. **H42** (`benchmarks/technical/monitoring/benchmark_plateau_detection.py`) — 5 real DistilBERT training curve scenarios.
+14. **H43** (`benchmarks/technical/monitoring/benchmark_fast_path_guardian.py`) — Guardian enforcement rate validation.
+
+**Testing:**
+15. 50+ new backend tests across `test_phase18_improvements.py` and `test_monitoring_api.py`.
+16. 8+ new frontend tests for MonitoringPanel.
+17. All 1,130+ existing backend tests continue passing — zero regressions.
 
 ### Phase 17: Causal World Model, NeSy Engine, Auth & Cloud Deployment (2026-03-14)
 

@@ -8,11 +8,13 @@
 
 CARF (Complex-Adaptive Reasoning Fabric) is a neuro-symbolic-causal agentic system.
 
-Core Architecture: 4-layer cognitive stack
-1. Router (Layer 1): Cynefin classification -> routes to appropriate solver
+Core Architecture: 6-layer cognitive stack
+1. Router (Layer 1): Cynefin classification → routes to appropriate solver
 2. Cognitive Mesh (Layer 2): LangGraph agents (Deterministic, Causal, Bayesian, Circuit Breaker)
-3. Reasoning Services (Layer 3): Neo4j (causal graphs), Redis (memory), Bayesian inference
-4. Guardian (Layer 4): Policy enforcement, HumanLayer approval gates, optional OPA
+3. Causal World Model (Layer 3): SCMs, counterfactual engine, neurosymbolic reasoning, H-Neuron sentinel
+4. Reasoning Services (Layer 4): Neo4j (causal graphs), Experience Buffer (semantic memory), Agent Memory (persistent), RAG (3-layer retrieval)
+5. Guardian (Layer 5): Policy enforcement (YAML + CSL-Core + OPA), HumanLayer approval gates
+6. Auth & Cloud (Layer 6): Firebase JWT, Cloud SQL, per-user history
 
 ---
 
@@ -163,42 +165,57 @@ projectcarf/
       types/              # TypeScript type definitions
   src/
     core/               # Base classes, state schemas, deployment profiles (NO external deps)
-      deployment_profile.py  # CARF_PROFILE env → ProfileConfig (research/staging/production)
-    services/           # External integrations (Neo4j, HumanLayer, Kafka, OPA, SmartReflector, ExperienceBuffer)
-      embedding_engine.py    # Shared singleton for dense embeddings (all-MiniLM-L6-v2) + TF-IDF fallback
-      agent_memory.py        # Persistent vector memory (dense + TF-IDF, reflexion-weighted)
-      rag_service.py         # Graph-enhanced RAG with triple ingestion
-      experience_buffer.py   # Semantic memory (delegates to embedding engine)
+      state.py              # EpistemicState (immutable contract) + CounterfactualEvidence + NeurosymbolicEvidence
+      llm.py                # Multi-provider LLM abstraction (DeepSeek, OpenAI, Anthropic, Google GenAI)
+      database.py           # SQLite/PostgreSQL connection factory (Cloud SQL support)
+      deployment_profile.py # CARF_PROFILE env → ProfileConfig (research/staging/production)
+      governance_models.py  # 15 Pydantic governance models
+    services/           # 30+ services — analytical engines, memory, governance, policy
+      causal_world_model.py    # SCMs with do-calculus, forward simulation, OLS learning (Phase 17)
+      counterfactual_engine.py # Pearl Level-3 counterfactual reasoning (Phase 17)
+      neurosymbolic_engine.py  # LLM fact extraction + forward-chaining + shortcut detection (Phase 17)
+      h_neuron_interceptor.py  # Hallucination detection via weighted signal fusion (Phase 17)
+      embedding_engine.py      # Shared singleton for dense embeddings (all-MiniLM-L6-v2) + TF-IDF fallback
+      agent_memory.py          # Persistent vector memory (dense + TF-IDF, reflexion-weighted)
+      rag_service.py           # 3-layer NeSy-augmented RAG (vector + graph + symbolic, RRF fusion)
+      experience_buffer.py     # Semantic memory (delegates to embedding engine)
+      smart_reflector.py       # Hybrid heuristic + LLM repair for Guardian rejections
+      chimera_oracle.py        # CausalForestDML fast predictions (<100ms)
+      governance_service.py    # MAP-PRICE-RESOLVE orchestrator
+      # ... 20+ additional services
     workflows/          # LangGraph definitions (the wiring)
       graph.py              # StateGraph: router → rag_context → [domain] → guardian → governance
-      router.py             # Cynefin router with memory hint soft signals
-    tools/              # Atomic tools (Pydantic schemas required)
-    utils/              # Telemetry, resiliency decorators
+      router.py             # Cynefin router with memory hint soft signals + causal language boost
+      guardian.py            # Multi-layer policy engine (YAML + CSL-Core + OPA)
     api/                # FastAPI routers + library.py (notebook API)
-      middleware.py         # Profile-aware security (auth, rate limiting, size limits)
-    mcp/tools/          # MCP tool modules (reflector, memory, causal, etc.)
-    dashboard/          # Streamlit Epistemic Cockpit (deprecated — use carf-cockpit/)
-  config/               # YAML config and OPA policy
-    opa/
-  docs/                 # Architecture docs, walkthroughs
+      auth.py               # Firebase JWT middleware (Phase 17)
+      middleware.py          # Profile-aware security (auth, rate limiting, size limits)
+      routers/              # 16 API router modules (80+ endpoints)
+    mcp/tools/          # MCP tool modules (7 modules, 18 cognitive tools)
+    utils/              # Telemetry, resiliency, caching, currency
+  config/               # YAML config, OPA, CSL, federated policies, governance boards
+  docs/                 # 40+ architecture docs, walkthroughs, research
   tests/
-    unit/               # 41 unit test files
+    unit/               # 55+ unit test files
     e2e/                # End-to-end gold standard tests
     integration/        # API flow integration tests
     deepeval/           # LLM output quality evaluation (8 test files)
     eval/               # LLM-as-a-judge scenarios
     mocks/              # Mock HumanLayer, Neo4j, etc.
   benchmarks/           # Technical & use-case benchmarks (H0-H39 + realism gate)
-    technical/          # Router, causal, bayesian, guardian, performance, chimera, reflector, resiliency
-    use_cases/          # End-to-end industry scenarios
+    technical/          # 30+ benchmark scripts across 9 categories
     baselines/          # Raw LLM baseline comparison
-    reports/            # Unified report generation
+    reports/            # Unified report generation + evidence gate CLI
   tla_specs/            # TLA+ formal verification (StateGraph, EscalationProtocol)
-  demo/                 # Sample datasets and payloads
-  var/                  # Local dataset registry storage (gitignored)
-  scripts/              # Demo seed scripts
+  models/               # Trained models (DistilBERT router, 5 CausalForest models)
+  demo/                 # 17 sample datasets and payloads
+  .agent/skills/        # 12 agent skills (causal, query, guardian, etc.)
+  scripts/              # 13 scripts (training, generation, migration, seeding)
+  research.md           # Neurosymbolic scaling research (33 references)
   CURRENT_STATUS.md     # Living task/status doc
   AGENTS.md             # This file
+  DEV_REFERENCE.md      # Developer quick-start reference
+  HANDOFF.md            # Handoff documentation
   pyproject.toml        # Dependencies
 ```
 
@@ -250,7 +267,23 @@ The "3-Point Context" for notifications:
 
 ---
 
-## Current Phase: Phase D Complete — Data Layer Coherence & Enterprise Readiness
+## Supervised Recursive Refinement (SRR) Model
+
+CARF implements **Supervised Recursive Refinement** — a safety-first approach to system self-improvement where improvement loops exist but are bounded by formal invariants, policy enforcement, and human oversight at every layer.
+
+**Key SRR Properties:**
+- Self-correction bounded by `max_reflections` (default: 2) and Guardian enforcement
+- Meta-learning through memory systems with deliberately small influence (0.03 weight)
+- Self-modification requires human triggering and produces non-destructive suggestions
+- Multi-agent improvement flows through structured critic-worker architecture
+- Safety containment uses independent, deterministic, formally verified mechanisms (TLA+)
+- System CANNOT modify its own architecture, policies, or core logic autonomously
+
+**Reference:** See [`docs/CARF_RSI_ANALYSIS.md`](docs/CARF_RSI_ANALYSIS.md) for the complete RSI alignment assessment.
+
+---
+
+## Current Phase: Phase 18A-D Implemented — SRR Hardening & Operational Intelligence
 
 ### Data Flow (Phase D):
 ```
@@ -258,8 +291,17 @@ Entry → Memory Augmentation → Router (+ memory hints) → RAG Context →
 [Domain Agent] → Guardian → [Governance (+ RAG triple feed)] → END
 ```
 
-### Remaining Work:
-- **ChimeraOracle LangGraph Integration** — Wire into StateGraph as fast-path node (currently standalone API only)
+### Implemented (Phase 18A-D):
+- **ChimeraOracle LangGraph Integration** ✅ — `chimera_fast_path_node` in StateGraph with Guardian enforcement (AP-7/AP-10 closed)
+- **Drift Detection Service** ✅ — KL-divergence monitoring, `/monitoring/drift` API, Developer View integration
+- **Plateau Detection** ✅ — Convergence monitoring with regression alerts, `/monitoring/convergence` API
+- **Bias Auditing** ✅ — Chi-squared fairness tests, `/monitoring/bias-audit` API, Governance View integration
+- **Monitoring Panel** ✅ — 3-tab React component in Developer + Governance views, 3 Executive KPI cards
+- **Benchmarks H40-H43** ✅ — Drift sensitivity, bias accuracy, plateau detection, Guardian enforcement
+
+### Remaining Work (Phase 18E-F):
+- **Scalable Inference** (P2) — Configurable inference modes (full MCMC / approximate / cached)
+- **Multi-Agent Discovery** (P3) — Collaborative causal discovery for high-dimensional variables
 - **CI/CD** — GitHub Actions workflow for automated testing
 
 ### CSL-Core Policy Engine
@@ -279,37 +321,37 @@ Entry → Memory Augmentation → Router (+ memory hints) → RAG Context →
 - **Reports**: Unified comparison report generation
 - **Location**: `benchmarks/` directory with `benchmarks/README.md` for full instructions
 
-### Completed (Phases 1-12):
-- Full Cynefin router and cognitive mesh (DistilBERT + Shannon entropy)
+### Completed (Phases 1-17):
+- Full Cynefin router and cognitive mesh (DistilBERT + Shannon entropy + causal language boost)
 - Neo4j persistence + query utilities
 - DoWhy/EconML and PyMC optional inference paths
-- React Cockpit (44 components, three-view architecture, 5 test files)
+- React Cockpit (58 components, four-view architecture, 26 test files, 235 tests)
 - Explainability drill-downs for all analytical results
 - Data Onboarding Wizard with 10 demo scenarios across all 5 Cynefin domains
-- ChimeraOracle fast causal predictions (standalone API)
+- ChimeraOracle fast causal predictions (standalone API — **Phase 18 integrates into StateGraph**)
 - CSL-Core policy engine (35 rules across 5 policy categories)
 - MCP server (18 cognitive tools for agentic AI integration)
 - Cynefin domain visualizations (Plotly.js: waterfall, radar, sankey, gauge)
 - Feedback API (closed-loop learning with domain overrides)
-- Benchmark suite expansion (39 hypotheses across 9 categories + realism quality gate)
-- Governance semantic graph endpoint + cockpit semantic graph tab (`/governance/semantic-graph`)
-- Currency-aware financial enforcement in Guardian + CSL (`CARF_FX_RATES_JSON`)
+- Benchmark suite (39 hypotheses across 10 categories + realism quality gate + evidence gate CLI)
+- Governance semantic graph endpoint + cockpit semantic graph tab
+- Currency-aware financial enforcement in Guardian + CSL
 - TLA+ formal verification specs (StateGraph, EscalationProtocol)
 - Kafka audit trail (optional) + OPA Guardian (optional)
 - Docker Compose demo stack + seed scripts
-- Streamlit Dashboard (deprecated — replaced by React Cockpit)
 - Smart Reflector (hybrid heuristic + LLM repair for policy violations)
-- Experience Buffer (TF-IDF semantic memory for similar query retrieval)
+- Experience Buffer (sentence-transformer + TF-IDF semantic memory)
 - Library API (notebook-friendly wrappers for all CARF services)
 - Router Retraining pipeline (feedback extraction + JSONL export)
 - Actionable Insights with persona-specific action items and roadmaps
-- Phase D: Data Layer Coherence & Enterprise Readiness
-  - Shared Embedding Engine (sentence-transformers + TF-IDF fallback)
-  - Deployment Profiles (research/staging/production)
-  - Memory wired into query pipeline (context augmentation + router hints)
-  - RAG wired into pipeline (rag_context_node between router and domain agents)
-  - Governance-RAG coherence (policy CRUD → RAG re-ingestion, triple → RAG feed)
-  - Security middleware (API key auth, rate limiting, request size limits)
+- MAP-PRICE-RESOLVE governance framework (18 endpoints, 4-tab Governance View)
+- Phase 17: Causal World Model (SCMs, do-calculus, forward simulation, OLS learning)
+- Phase 17: Counterfactual Engine (Pearl Level-3, scenario comparison, but-for attribution)
+- Phase 17: Neurosymbolic Engine (LLM fact extraction + forward-chaining + shortcut detection)
+- Phase 17: H-Neuron Sentinel (hallucination detection via weighted signal fusion)
+- Phase 17: 3-layer NeSy-augmented RAG (vector + graph + symbolic, RRF fusion)
+- Phase 17: Firebase Auth + Cloud SQL + per-user analysis history
+- Data Layer Coherence: Shared Embedding Engine, Deployment Profiles, Memory→Router pipeline, RAG→Pipeline, Governance-RAG coherence, Security middleware
 
 ### Out of Scope:
 - Production autoscaling and Kubernetes
@@ -455,6 +497,30 @@ graph.add_conditional_edges("router", route_with_oracle_option)
 1. Clearly labeled in response metadata: `"mode": "test_stub"`
 2. Never cached alongside real responses
 3. Logged with warning level: `logger.warning("Using test stub for ...")`
+
+### AP-9: No Unmonitored Feedback Loops
+
+**Problem**: Self-improvement feedback loops (memory → router hints, feedback → retraining) without monitoring can cause silent drift, bias amplification, or plateau-induced overfitting.
+
+**Rule**: Every feedback loop in the system MUST have:
+1. A **drift metric** tracking distributional change over time (e.g., routing domain distribution)
+2. A **bound** limiting maximum influence (e.g., memory hint weight ≤ 0.03)
+3. A **convergence check** detecting diminishing returns in retraining cycles
+4. An **audit trail** logging all feedback-driven changes for human review
+
+**Context**: The RSI analysis identified 3 unmonitored feedback loops: memory→router, feedback→retraining, and evaluation→memory quality scores. Small influence weights (0.03) mitigate but do not eliminate drift risk.
+
+### AP-10: No Analytical Service Without Guardian Enforcement
+
+**Problem**: Analytical services accessible only via standalone REST endpoints bypass the LangGraph workflow, losing traceability, Guardian enforcement, and evaluation scoring. This is a generalization of AP-7.
+
+**Rule**: Every service that produces analytical conclusions (causal effects, Bayesian posteriors, counterfactuals, predictions) MUST:
+1. Be reachable through the LangGraph StateGraph (even if also exposed via direct API)
+2. Have its output evaluated by the EvaluationService (hallucination, relevancy, UIX)
+3. Pass through Guardian policy enforcement before delivery to the user
+4. Log a complete audit trail including data provenance and model version
+
+**Reference**: research.md §2.3 (System Integration Heterogeneity), RSI Analysis §5 (Tool Use)
 
 ---
 

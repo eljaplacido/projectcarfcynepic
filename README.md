@@ -58,6 +58,16 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 - **Embedding Engine**: Sentence-transformer embeddings (all-MiniLM-L6-v2) with TF-IDF fallback for semantic search.
 - **Deployment Profiles**: Environment-aware presets (research/staging/production) controlling CORS, auth, rate limiting, and governance defaults.
 - **Security Middleware**: Profile-aware API key auth, per-IP rate limiting, and request size enforcement.
+- **Causal World Model** (Phase 17): Structural Causal Models with do-calculus interventions, forward simulation, and Pearl's 3-step counterfactual reasoning.
+- **Neurosymbolic Engine** (Phase 17): Tight neural-symbolic loop — LLM fact extraction, forward-chaining, shortcut detection, Neo4j graph grounding.
+- **H-Neuron Sentinel** (Phase 17): Hallucination detection via weighted signal fusion (8 signals, configurable weights).
+- **3-Layer NeSy-Augmented RAG** (Phase 17): Vector + Graph + Symbolic retrieval with Reciprocal Rank Fusion.
+- **Firebase Auth + Cloud SQL** (Phase 17): JWT authentication, SQLite/PostgreSQL factory, per-user analysis history.
+- **Drift Detection** (Phase 18): KL-divergence monitoring of routing distribution for feedback loop safety.
+- **Bias Auditing** (Phase 18): Chi-squared fairness tests on accumulated agent memory.
+- **Plateau Detection** (Phase 18): Convergence monitoring for router retraining pipeline.
+- **ChimeraOracle Fast-Path** (Phase 18): StateGraph-integrated fast causal predictions with Guardian enforcement.
+- **Supervised Recursive Refinement (SRR)**: Formally bounded self-improvement model — 4 RSI safety gaps closed, TLA+ verified.
 
 ### Data & Analytical Flows in CARF architecture 
 
@@ -69,9 +79,9 @@ All outputs are filtered through a **Guardian Layer** that enforces organization
 
 ## Benchmark Results
 
-CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 10 benchmark categories, using synthetic data with known ground truth and a raw LLM baseline (same model, no pipeline) for comparison. All benchmarks use fixed random seeds for full reproducibility.
+CARF is evaluated against **43 falsifiable hypotheses (H0--H43)** across 11 benchmark categories, using synthetic and realistic enterprise data with known ground truth and a raw LLM baseline (same model, no pipeline) for comparison. All benchmarks use fixed random seeds for full reproducibility.
 
-### Overall Grade: A+ -- 39/39 Hypotheses Passed (100%)
+### Overall Grade: A+ -- 43/43 Hypotheses Passed (100%)
 
 | # | Hypothesis | Measured | Threshold | Result |
 |---|-----------|----------|-----------|--------|
@@ -114,6 +124,10 @@ CARF is evaluated against **39 falsifiable hypotheses (H0--H39)** across 10 benc
 | H37 | **Load Test** -- P95 at 25 concurrent users | **42ms** | <= 15s | **PASS** |
 | H38 | **Chaos Cascade** -- containment rate | **100%** | >= 80% | **PASS** |
 | H39 | **Soak Test** -- memory growth over 1000 queries | **-1.5%** | <= 5% | **PASS** |
+| H40 | **Drift Detection** -- routing shift sensitivity | **100%** sensitivity, **100%** specificity | >= 90% | **PASS** |
+| H41 | **Bias Audit** -- memory corpus fairness detection | **100%** accuracy, **0%** false alarm | >= 90% | **PASS** |
+| H42 | **Plateau Detection** -- retraining convergence | **100%** detection, **0%** false plateau | >= 90% | **PASS** |
+| H43 | **Fast-Path Guardian** -- ChimeraOracle enforcement | **100%** (all paths through Guardian) | 100% | **PASS** |
 
 > Full machine-readable results: [`benchmarks/reports/benchmark_report.json`](benchmarks/reports/benchmark_report.json) | Text report: [`benchmark_report.txt`](benchmarks/reports/benchmark_report.txt)
 
@@ -130,6 +144,7 @@ Based on the benchmark evidence, CARF is particularly suited for:
 | **Security-Critical Deployments** -- financial services, government, healthcare | Injection-proof, red-team-tested, fairness-verified | H23: 100% OWASP block, H25: 100% red team defense, H26: perfect fairness |
 | **High-Throughput Analysis** -- real-time scoring, batch processing | Fast oracle + stable memory under sustained load | H8: 40.7x speedup, H37: 42ms P95 at 25 users, H39: no memory growth |
 | **Strategic Analysis** -- market entry, R&D allocation, scenario planning | Cynefin routing ensures the right analytical method per problem type | H0: 89.5% router accuracy, F1 = 0.895 across 5 domains |
+| **Operational Monitoring** -- routing drift, memory bias, model staleness | Continuous monitoring of self-improvement feedback loops | H40-H42: 100% detection accuracy across drift, bias, and plateau scenarios |
 
 ### Benchmark Data Sources & Methodology
 
@@ -148,6 +163,7 @@ All evaluation data is **synthetic with known ground truth**, enabling objective
 | Industry | Supply chain prediction, Healthcare CATE, Finance VaR | Disruption lead time, treatment effect vs RCT, Kupiec backtest |
 | UX | SUS usability (68.4), task completion, WCAG 2.2 Level A | System Usability Scale, success rate, accessibility audit |
 | Performance | Load (1--25 concurrent), chaos cascade, soak (1000 queries) | P95 latency, fault containment, memory stability |
+| Monitoring | Drift (5 enterprise scenarios), Bias (5 memory corpus patterns), Plateau (5 training curves), Guardian enforcement | Enterprise-realistic routing distributions, DistilBERT training curves |
 | Baselines | Raw LLM (same model, no pipeline) on identical data | DeepSeek without CARF pipeline for fair comparison |
 
 Benchmark reports include two quality gates:
@@ -278,17 +294,22 @@ print(similar["matches"])
 ## Core Architecture
 
 ```
-Query -> Cynefin Router -> [Clear | Complicated | Complex | Chaotic | Disorder]
+Query -> Memory Augmentation -> Cynefin Router -> RAG Context (3-layer) ->
   Clear        -> Deterministic Runner (lookup)
-  Complicated  -> Causal Inference Engine (DoWhy/EconML)
+  Complicated  -> ChimeraOracle Fast-Path (if model available, Phase 18)
+              OR Causal Inference Engine (DoWhy/EconML)
   Complex      -> Bayesian Active Inference (PyMC)
   Chaotic      -> Circuit Breaker (emergency stop)
   Disorder     -> Human Escalation
 
-All paths -> Guardian (policy check) -> [Approve | Reject | Escalate to Human]
-  Reject -> Smart Reflector (hybrid heuristic + LLM repair) -> Retry
+All paths -> H-Neuron Sentinel -> Guardian (YAML + CSL-Core + OPA) ->
+  Approved  -> Governance (MAP-PRICE-RESOLVE) -> END
+  Rejected  -> Smart Reflector (heuristic + LLM repair, max 2 retries) -> Retry
+  Escalated -> HumanLayer (3-point context) -> END
 
-All results -> Experience Buffer (sentence-transformer semantic memory for similar query retrieval)
+All results -> Drift Detector (routing distribution monitoring, Phase 18)
+           -> Experience Buffer + Agent Memory (semantic retrieval)
+           -> Kafka (audit trail)
 ```
 
 ### Cynefin Domains
@@ -443,6 +464,18 @@ All results -> Experience Buffer (sentence-transformer semantic memory for simil
 | `/governance/memory/compact` | POST | Compact agent memory |
 | `/governance/memory/recall` | POST | Recall from agent memory |
 
+### Monitoring & Operational Intelligence Endpoints (Phase 18)
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/monitoring/drift` | GET | Routing distribution drift status (KL-divergence) |
+| `/monitoring/drift/history` | GET | Recent drift detection snapshots |
+| `/monitoring/drift/reset` | POST | Reset drift baseline |
+| `/monitoring/bias-audit` | GET | Run bias audit on agent memory (chi-squared, quality, verdicts) |
+| `/monitoring/convergence` | GET | Retraining convergence/plateau status |
+| `/monitoring/convergence/record` | POST | Record retraining accuracy measurement |
+| `/monitoring/status` | GET | Unified monitoring status (drift + bias + convergence) |
+
 ### Developer & Diagnostics Endpoints
 
 | Endpoint | Method | Description |
@@ -555,31 +588,35 @@ See [docs/END_USER_TESTING_GUIDE.md](docs/END_USER_TESTING_GUIDE.md) for detaile
 ```
 projectcarf/
 ├── src/
-│   ├── core/           # State schemas (EpistemicState), LLM config, deployment profiles
-│   ├── services/       # 20+ services: Causal, Bayesian, Simulation, Transparency,
-│   │                   # ChimeraOracle, CSL Policy, Governance, Cost Intelligence,
-│   │                   # RAG, Agent Memory, Embedding Engine, Document Processor
-│   ├── workflows/      # LangGraph graph, Guardian, Cynefin Router
+│   ├── core/           # State schemas (EpistemicState), LLM config, deployment profiles, database
+│   ├── services/       # 30+ services: Causal, Bayesian, World Model, NeSy Engine,
+│   │                   # ChimeraOracle, H-Neuron, Drift Detector, Bias Auditor,
+│   │                   # Governance, RAG, Agent Memory, Embedding Engine
+│   ├── workflows/      # LangGraph graph (incl. chimera_fast_path), Guardian, Router
 │   ├── utils/          # Telemetry, caching, circuit breaker, currency normalization
-│   ├── api/            # FastAPI routers (14 routers, 80+ endpoints)
+│   ├── api/            # FastAPI routers (17 routers, 90+ endpoints)
+│   ├── mcp/            # MCP server (18 cognitive tools for agentic integration)
 │   └── main.py         # FastAPI entry point
-├── carf-cockpit/       # React (Vite + TypeScript) dashboard — 53 components
+├── carf-cockpit/       # React (Vite + TypeScript) dashboard — 59 components, 4 views
 ├── config/
 │   ├── agents.yaml     # Agent configurations
 │   ├── policies.yaml   # Guardian YAML policies
-│   ├── policies/       # CSL-Core formal policy definitions
-│   ├── federated_policies/ # Domain-owner governance policies (5 YAML files)
-│   └── policy_scaffolds/ # Domain-specific policy templates
+│   ├── policies/       # CSL-Core formal policy definitions (35 rules)
+│   ├── federated_policies/ # Domain-owner governance policies (6 YAML files)
+│   ├── governance_boards/  # Compliance board templates (EU AI Act, CSRD, etc.)
+│   └── policy_scaffolds/   # Domain-specific policy templates
+├── models/             # Trained models (DistilBERT router + 5 CausalForest models)
 ├── demo/               # 17 demo scenarios + 11 sample datasets
 ├── tests/
-│   ├── unit/           # 53 unit test files
+│   ├── unit/           # 58+ unit test files (1,130+ tests)
 │   ├── deepeval/       # LLM quality evaluation tests
 │   ├── e2e/            # End-to-end gold standard tests
 │   └── integration/    # API flow integration tests
-├── benchmarks/         # Technical & use-case benchmarks (39 hypotheses + realism validation)
-├── tla_specs/          # TLA+ formal verification specs
-├── scripts/            # Training, data generation, evaluation scripts
-├── docs/               # 30+ documentation files
+├── benchmarks/         # Technical & use-case benchmarks (43 hypotheses + realism validation)
+├── tla_specs/          # TLA+ formal verification specs (StateGraph, EscalationProtocol)
+├── .agent/skills/      # 12 agent skills
+├── scripts/            # 13 scripts (training, generation, migration, seeding)
+├── docs/               # 40+ documentation files
 └── docker-compose.yml  # Full stack deployment
 ```
 
@@ -646,6 +683,7 @@ See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for detai
 - **Data Flow Visualization**
 - Live log streaming via WebSocket
 - DeepEval quality metrics integration
+- **Monitoring Panel** (Phase 18): Drift detection, bias audit, retraining convergence
 - **Domain-Specific Views** for all 5 Cynefin domains:
   - Clear: Decision checklist with step tracking
   - Complicated: Expert analysis with causal effect summary
@@ -656,6 +694,7 @@ See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for detai
 ### Executive View
 - Expected impact hero card
 - **Dynamic KPI Dashboard** (0-10 scoring with real data)
+- **Routing Drift, Memory Bias, Retraining Health KPI cards** (Phase 18)
 - Proposed action summary
 - Policy compliance overview
 - **Actionable Insights** for decision-makers
@@ -668,6 +707,7 @@ See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for detai
 - **Compliance Audit**: Framework selector (EU AI Act, CSRD, GDPR, ISO 27001), score gauge, article accordion
 - **Semantic Graph**: Interactive policy/conflict topology with explainability annotations
 - **Policy Ingestion**: Upload documents for RAG indexing and automated rule extraction
+- **Monitoring** (Phase 18): Drift detection, bias audit, plateau detection — operational intelligence for SRR safety
 
 ### Data Visualization
 - **PlotlyChart** unified wrapper supporting waterfall, radar, sankey, and gauge charts
@@ -691,10 +731,14 @@ See [Evaluation Framework Documentation](docs/EVALUATION_FRAMEWORK.md) for detai
 ### Architecture & Design
 - [PRD and Blueprint](docs/PRD.md) - Product requirements
 - [Data Layer](docs/DATA_LAYER.md) - Data architecture
+- [Phase 17 Architecture](docs/PHASE17_ARCHITECTURE.md) - Causal world model, NeSy engine, H-Neuron
+- [RSI Safety Analysis](docs/CARF_RSI_ANALYSIS.md) - Supervised Recursive Refinement (SRR) model
 - [UI/UX Guidelines](docs/CARF_UIX_INTERACTION_GUIDELINES.md) - Design system
-- [LLM Agentic Strategy](docs/LLM_AGENTIC_STRATEGY.md) - LLM roles, guardrails, model selection
-- [Self-Healing Architecture](docs/SELF_HEALING_ARCHITECTURE.md) - Reflection, human escalation, adaptive recovery
-- [End-to-End Context Flow](docs/END_TO_END_CONTEXT_FLOW.md) - State propagation and memory/audit integration
+- [LLM Agentic Strategy](docs/LLM_AGENTIC_STRATEGY.md) - LLM roles, guardrails, multi-agent scaling
+- [Self-Healing Architecture](docs/SELF_HEALING_ARCHITECTURE.md) - SRR, reflection, human escalation
+- [End-to-End Context Flow](docs/END_TO_END_CONTEXT_FLOW.md) - 6-layer state propagation and monitoring
+- [Evaluation Framework](docs/EVALUATION_FRAMEWORK.md) - 43 hypotheses, DeepEval quality metrics
+- [Intellectual Property](docs/INTELLECTUAL_PROPERTY.md) - Complete IP registry
 
 ### Operations & Integration
 - [OPA Policy](docs/OPA_POLICY.md) - Enterprise policy setup

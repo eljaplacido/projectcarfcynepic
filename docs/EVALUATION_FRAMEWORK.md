@@ -652,6 +652,10 @@ The CARF Benchmark Suite (`benchmarks/`) provides **quantitative, reproducible v
 | Guardian (Detection) | Task Completion on policy checks | 100% violation detection |
 | Performance (Latency) | — (infrastructure) | Responsive user experience |
 | ChimeraOracle (Speed) | Chimera vs DoWhy consistency | Fast predictions when available |
+| Drift Detection (H40) | Routing distribution KL-divergence | Operational stability monitoring |
+| Bias Audit (H41) | Memory chi-squared fairness | Unbiased routing influence |
+| Plateau Detection (H42) | Retraining convergence monitoring | Efficient model updates |
+| Fast-Path Guardian (H43) | Guardian enforcement on fast-path | 100% policy compliance for ChimeraOracle |
 | E2E Use Cases | All metrics combined | Full pipeline validation |
 
 ### Benchmark Realism by View
@@ -663,9 +667,9 @@ Realism validation scores are now interpreted per platform view to improve actio
 - **Executive View**: track feasibility and realism gate status alongside hypothesis pass rate to avoid over-trusting low-fidelity benchmark wins.
 - **Governance View**: audit production-proxy validation and adversarial coverage for policy, security, and compliance benchmark categories.
 
-### 39 Falsifiable Hypotheses + Realism Gate
+### 45 Falsifiable Hypotheses + Realism Gate
 
-The benchmark suite now evaluates **H0-H39** across 9 categories:
+The benchmark suite now evaluates **H0-H45** across 10 categories:
 
 - Core (router, causal, bayesian, guardian, latency, hallucination, chimera, memory)
 - Governance (MAP/PRICE/RESOLVE, board lifecycle, policy roundtrip)
@@ -676,6 +680,24 @@ The benchmark suite now evaluates **H0-H39** across 9 categories:
 - Sustainability (energy proportionality, Scope 3 attribution)
 - UX (SUS, task completion, WCAG 2.2)
 - Industry + performance/resilience (supply chain, healthcare, finance, load, chaos, soak)
+- **Monitoring (Phase 18)**: drift detection sensitivity, bias audit accuracy, plateau detection, fast-path Guardian enforcement
+
+### Phase 18 Monitoring Hypotheses (H40-H45)
+
+| ID | Claim | Metric | Threshold | Category |
+|----|-------|--------|-----------|----------|
+| **H40** | Drift detection detects >5% routing shift within 100 queries with >=90% sensitivity | `drift_sensitivity` | ≥ 0.90 | monitoring |
+| **H41** | Memory bias detection sensitivity >=90% for >10% domain skew in 100+ entries | `bias_detection_accuracy` | ≥ 0.90 | monitoring |
+| **H42** | Plateau detection identifies convergence within 5 epochs of <0.5% improvement | `plateau_detection_accuracy` | ≥ 0.90 | monitoring |
+| **H43** | ChimeraOracle fast-path Guardian enforcement == 100% | `guardian_enforcement_rate` | = 1.00 | monitoring |
+| **H44** | Approximate inference fidelity >=95% vs full MCMC | `inference_fidelity` | ≥ 0.95 | inference |
+| **H45** | Multi-agent discovery F1 >=0.80 on 20+ variables | `discovery_f1` | ≥ 0.80 | discovery |
+
+**Data realism requirements** (Phase 18):
+- Drift detection benchmarks use enterprise-realistic routing distributions (15% Clear, 40% Complicated, 30% Complex, 10% Chaotic, 5% Disorder)
+- Bias audit benchmarks use realistic agent memory patterns (finance-heavy, balanced, quality-gap scenarios)
+- Plateau detection benchmarks use real DistilBERT fine-tuning accuracy curves
+- H44-H45 are stub/placeholder pending Phase 18E/18F implementation
 
 In addition to pass-rate grade, reports now include a **realism quality gate**:
 

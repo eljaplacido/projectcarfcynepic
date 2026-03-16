@@ -1,7 +1,7 @@
 # CARF Development Reference
 
-> Last Updated: 2026-02-21
-> Current Phase: Phase 15 - CYNEPIC UIX Rehaul Complete
+> Last Updated: 2026-03-16
+> Current Phase: Phase 17 Complete → Phase 18 Designed (SRR Hardening & Operational Intelligence)
 
 ## Quick Start
 
@@ -31,19 +31,19 @@ projectcarf/
   .venv/                      # Virtual environment (Python 3.13)
   .env                        # Environment configuration (DO NOT COMMIT)
   .env.example                # Environment template
-  .gitignore                  # Git ignore rules
   pyproject.toml              # Project dependencies and config
-  CURRENT_STATUS.md           # Project status tracker
+  research.md                 # Neurosymbolic scaling research (33 academic references)
+  CURRENT_STATUS.md           # Project status tracker (Phase 18 design)
   DEV_REFERENCE.md            # This file
-  AGENTS.md                   # Agent architecture docs
+  AGENTS.md                   # Agent architecture docs + SRR model + antipatterns
 
   carf-cockpit/               # React Platform Cockpit (Vite + TypeScript + Tailwind)
     src/
-      components/carf/        # 47 React components (incl. MarkdownRenderer, AgentFlowChart)
-      __tests__/              # Frontend test suite (17 test files, 201 tests)
-      services/               # API client layer (apiService.ts)
-      hooks/                  # Custom React hooks (useProactiveHighlight, useVisualizationConfig, etc.)
-      types/                  # TypeScript type definitions
+      components/carf/        # 58 React components (4-view architecture)
+      __tests__/              # Frontend test suite (26 test files, 235+ tests)
+      services/               # API client + Firebase config (apiService.ts, firebaseConfig.ts)
+      hooks/                  # 5 custom hooks (useAuth, useTheme, useCarfApi, etc.)
+      types/                  # TypeScript type definitions (incl. Phase 17 interfaces)
 
   demo/
     data/                     # 8 sample datasets (scope3, supply_chain, pricing, etc.)
@@ -52,59 +52,77 @@ projectcarf/
 
   config/
     agents.yaml               # Agent configurations
-    policies.yaml             # Guardian policies
+    policies.yaml             # Guardian policies (immutable — requires human review)
     prompts.yaml              # LLM prompts
+    policies/                 # 5 CSL formal policy files (35 rules)
+    federated_policies/       # 6 domain-owner YAML policies
+    governance_boards/        # 4 compliance board templates (EU AI Act, CSRD, etc.)
+    policy_scaffolds/         # 5 policy scaffold templates
+    opa/                      # OPA Rego rules
 
-  docs/
-    PRD.md                    # Product requirements
-    DATA_LAYER.md             # Data architecture
-    UI_UIX_VISION_REACT.md    # React architecture vision
-    WALKTHROUGH.md            # Full testing walkthrough
-    DEMO_WALKTHROUGH.md       # Demo walkthrough
-    DEV_PRACTICES_AND_LIVING_DOCS.md
-    CARF_UIX_INTERACTION_GUIDELINES.md
-    archive/                  # Legacy docs (Streamlit UI, etc.)
+  docs/                       # 40+ architecture docs
+    PHASE17_ARCHITECTURE.md   # Causal world model, NeSy, H-Neuron
+    CARF_RSI_ANALYSIS.md      # RSI safety analysis (SRR model)
+    FUTURE_ROADMAP.md         # Research-informed roadmap (Phase 18+)
+    INTELLECTUAL_PROPERTY.md  # IP registry
+    INTEGRATION_GUIDE.md      # REST, event-driven, batch, ERP patterns
+    EVALUATION_FRAMEWORK.md   # DeepEval quality metrics
+    LLM_AGENTIC_STRATEGY.md  # LLM usage by layer
+    SELF_HEALING_ARCHITECTURE.md  # Self-correction + escalation
+    archive/                  # Legacy docs
 
   src/
     core/
-      state.py                # EpistemicState, CynefinDomain, etc.
-      llm.py                  # LLM configuration (DeepSeek/OpenAI)
-    api/routers/              # 12 modularized API routers (incl. feedback, CSL)
-    services/                 # 16 services
-      causal.py               # Causal Inference Engine
-      bayesian.py             # Bayesian Active Inference
-      human_layer.py          # Human-in-the-loop service
-      chimera_oracle.py       # ChimeraOracle (fast causal predictions)
-      visualization_engine.py # Visualization config per Cynefin domain
-      dataset_store.py        # Local dataset registry (SQLite + JSON)
-      neo4j_service.py        # Neo4j graph persistence
-      kafka_audit.py          # Kafka audit trail
+      state.py                # EpistemicState + CounterfactualEvidence + NeurosymbolicEvidence
+      llm.py                  # Multi-provider LLM (DeepSeek, OpenAI, Anthropic, Google GenAI)
+      database.py             # SQLite/PostgreSQL factory (Cloud SQL support, Phase 17)
+      deployment_profile.py   # research/staging/production profiles
+      governance_models.py    # 15 Pydantic governance models
+    api/
+      auth.py                 # Firebase JWT middleware (Phase 17)
+      middleware.py           # Profile-aware security (auth, rate limiting, size limits)
+      routers/                # 16 API routers (80+ endpoints)
+    services/                 # 30+ services
+      causal.py               # Causal Inference Engine (DoWhy/EconML)
+      bayesian.py             # Bayesian Active Inference (PyMC)
+      causal_world_model.py   # SCMs, do-calculus, forward simulation (Phase 17)
+      counterfactual_engine.py # Pearl Level-3 counterfactuals (Phase 17)
+      neurosymbolic_engine.py # LLM + forward-chaining + shortcut detection (Phase 17)
+      h_neuron_interceptor.py # Hallucination sentinel (Phase 17)
+      chimera_oracle.py       # CausalForestDML fast predictions (<100ms)
+      smart_reflector.py      # Hybrid heuristic + LLM self-correction
+      governance_service.py   # MAP-PRICE-RESOLVE orchestrator
+      rag_service.py          # 3-layer NeSy-augmented RAG (vector + graph + symbolic)
+      agent_memory.py         # Persistent cross-session memory (reflexion-weighted)
+      experience_buffer.py    # Semantic memory (sentence-transformers + TF-IDF)
+      # ... 20+ additional services
     workflows/
-      router.py               # Cynefin domain classifier
-      guardian.py             # Policy enforcement layer
-      graph.py                # LangGraph workflow
-    mcp/                      # MCP server (15 cognitive tools)
-    utils/
-      resiliency.py           # Retry, circuit breaker utils
-    main.py                   # FastAPI application
+      router.py               # Cynefin router (DistilBERT + LLM + entropy + causal boost)
+      guardian.py             # Multi-layer policy engine (YAML + CSL-Core + OPA)
+      graph.py                # LangGraph StateGraph orchestration
+    mcp/                      # MCP server (7 modules, 18 cognitive tools)
+    utils/                    # Telemetry, resiliency, caching, currency
 
   tests/
-    unit/                     # 27 unit test files
-    e2e/                      # End-to-end tests (gold standard scenarios)
-    integration/              # API flow integration tests
+    unit/                     # 55+ unit test files (980+ tests)
+    e2e/                      # End-to-end gold standard tests
+    integration/              # API flow + Neo4j integration tests
     deepeval/                 # LLM output quality evaluation (8 test files)
     eval/                     # Workflow integration tests
     mocks/                    # Mock HumanLayer, Neo4j, etc.
 
-  benchmarks/                 # Technical & use-case benchmarks (H1-H9)
-    technical/                # Router, causal, bayesian, guardian, performance, chimera
-    use_cases/                # End-to-end industry scenarios
-    baselines/                # Raw LLM baseline comparison
-    reports/                  # Unified report generation
+  benchmarks/                 # Technical & use-case benchmarks (H0-H39)
+    technical/                # 30+ benchmark scripts across 9 categories
+    baselines/                # Raw LLM baseline + hallucination scale
+    reports/                  # Unified report gen + realism gate + evidence gate CLI
+
+  models/                     # Trained models
+    router_distilbert/        # DistilBERT classifier + checkpoints
+    *.pkl                     # 5 CausalForest models
 
   tla_specs/                  # TLA+ formal verification (StateGraph, EscalationProtocol)
-
-  scripts/                    # Demo seed scripts, data generation, test scripts
+  .agent/skills/              # 12 agent skills (causal, query, guardian, etc.)
+  scripts/                    # 13 scripts (training, generation, migration, seeding)
 ```
 
 ---
@@ -112,15 +130,25 @@ projectcarf/
 ## Architecture Overview
 
 ```
-User Query -> Cynefin Router -> Domain -> Solver -> Guardian -> [Approved | Rejected | Escalate]
+User Query → Memory Augmentation → Router (+ memory hints) → RAG Context (3-layer) →
+  [Domain Agent] → H-Neuron Gate → Guardian (YAML + CSL + OPA) →
+    [APPROVED] → Governance (MAP-PRICE-RESOLVE) → END
+    [REJECTED] → Reflector (heuristic + LLM repair, max 2 retries) → Router
+    [ESCALATE] → HumanLayer (3-point context) → END
 
-Clear        -> Deterministic Runner
-Complicated -> Causal Inference Engine
-Complex     -> Bayesian Active Inference
-Chaotic     -> Circuit Breaker
-Disorder    -> HumanLayer Escalation
+Domain Routing:
+  Clear        → Deterministic Runner
+  Complicated  → Causal Inference Engine (DoWhy/EconML) [+ ChimeraOracle fast-path]
+  Complex      → Bayesian Active Inference (PyMC)
+  Chaotic      → Circuit Breaker → Human Escalation
+  Disorder     → Human Escalation
 
-Optional persistence: Neo4j for causal graphs and analysis history
+Phase 17 Cognitive Layers:
+  Causal World Model  → SCMs, do-calculus, forward simulation, counterfactuals
+  Neurosymbolic Engine → LLM fact extraction + forward-chaining + shortcut detection
+  H-Neuron Sentinel    → Hallucination detection via weighted signal fusion
+
+Persistence: Neo4j (causal graphs), Cloud SQL (history), Agent Memory (JSONL), Kafka (audit)
 ```
 
 ---
@@ -220,32 +248,31 @@ avoid filesystem restrictions in CI or locked-down Windows environments.
 LLM_PROVIDER=deepseek          # or "openai"
 DEEPSEEK_API_KEY=sk-...        # DeepSeek API key
 
-# Neo4j (Phase 3)
+# Optional — LLM
+OPENAI_API_KEY=sk-...          # OpenAI fallback
+HUMANLAYER_API_KEY=hl_...      # Human-in-the-loop
+LANGSMITH_API_KEY=ls-...       # Tracing
+
+# Optional — Deployment
+CARF_PROFILE=research          # research | staging | production
+CARF_API_KEY=                  # API key for staging/production auth
+CARF_CORS_ORIGINS=             # Comma-separated CORS origins
+CARF_DATA_DIR=./var            # Dataset registry storage
+CARF_MEMORY_DIR=data/memory    # Persistent agent memory storage
+CARF_EMBEDDINGS_DIR=data/embeddings  # Embedding cache
+
+# Optional — Infrastructure
 NEO4J_URI=bolt://localhost:7687
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=password
-NEO4J_DATABASE=neo4j
-
-# Optional
-HUMANLAYER_API_KEY=hl_...      # Human-in-the-loop
-LANGSMITH_API_KEY=ls-...       # Tracing
-CARF_DATA_DIR=./var            # Dataset registry storage (optional)
-
-# Kafka (Phase 3)
 KAFKA_ENABLED=false
-KAFKA_BOOTSTRAP_SERVERS=localhost:9092
-KAFKA_TOPIC=carf_decisions
-KAFKA_CLIENT_ID=carf
-
-# OPA (Guardian Policy)
 OPA_ENABLED=false
-OPA_URL=http://localhost:8181
-OPA_POLICY_PATH=/v1/data/carf/guardian/allow
-OPA_TIMEOUT_SECONDS=5
 
-Kafka audit events include `schema_version` and `event_id` fields (see `src/services/kafka_audit.py`).
-
-OPA sample policy: `config/opa/guardian.rego` (see `docs/OPA_POLICY.md`).
+# Phase 17 — Auth & Cloud
+DATABASE_URL=postgresql://...  # Cloud SQL (omit for local SQLite)
+GOOGLE_APPLICATION_CREDENTIALS=...  # Cloud Run ADC
+H_NEURON_ENABLED=true          # Enable H-Neuron hallucination sentinel
+VITE_FIREBASE_API_KEY=...      # Firebase auth (frontend)
 
 # Testing
 CARF_TEST_MODE=1               # Use deterministic offline LLM stubs
@@ -274,9 +301,10 @@ npm run dev
 # Opens at http://localhost:5175
 ```
 
-The React Cockpit includes 44 components: three-view architecture (Analyst/Executive/Developer),
+The React Cockpit includes 58 components: four-view architecture (Analyst/Executive/Developer/Governance),
 Cynefin domain visualizations (all 5 domains with Plotly.js charts), simulation arena with
-benchmarking, data onboarding wizard, feedback collection, and MCP server integration.
+benchmarking, data onboarding wizard, feedback collection, Firebase auth (AuthGuard + LoginPage),
+and MCP server integration. 235+ frontend tests across 26 test files.
 
 ## Demo Seeding
 
@@ -417,30 +445,55 @@ python scripts/test_carf.py
 ---
 
 ### Phase 5-11 - UIX, Explainability, CHIMEPIC (Complete)
-- [x] React Cockpit (44 components, three-view architecture)
+- [x] React Cockpit (58 components, four-view architecture)
 - [x] Explainability drill-down modals for all analytical results
 - [x] Confidence decomposition and zones
 - [x] Data Onboarding Wizard with sample datasets
-- [x] ConversationalResponse with confidence zones
-- [x] FloatingChatTab, WalkthroughManager, OnboardingOverlay
 - [x] ChimeraOracle fast causal predictions
-- [x] CSL-Core policy engine integration
-- [x] MCP server (15 cognitive tools)
+- [x] CSL-Core policy engine integration (35 rules, 5 categories)
+- [x] MCP server (18 cognitive tools)
 - [x] Cynefin domain visualizations (all 5 domains with Plotly.js)
-- [x] Feedback API (closed-loop learning)
-- [x] Benchmark suite (6 technical + use case benchmarks)
+- [x] Feedback API (closed-loop learning with domain overrides)
+- [x] Benchmark suite (39 hypotheses, 10 categories, realism + evidence gates)
 - [x] TLA+ formal verification specs
 
-## Remaining Gaps (Phase 12+)
+### Phase 12-16 - Governance, Benchmarks, UIX Rehaul (Complete)
+- [x] MAP-PRICE-RESOLVE governance framework (18 endpoints)
+- [x] Governance View (4-tab layout: Spec Map, Cost, Policy, Compliance)
+- [x] Currency-aware financial enforcement in Guardian + CSL
+- [x] Smart Reflector (hybrid heuristic + LLM repair)
+- [x] Experience Buffer (sentence-transformer + TF-IDF semantic memory)
+- [x] Router Retraining pipeline (feedback extraction + JSONL export)
+- [x] 39 benchmark hypotheses (Grade A+: 39/39 passing)
+- [x] Evidence gate CLI for CI/release quality checks
+- [x] Comprehensive UIX rehaul (actionability, explainability, view differentiation)
 
-- ChimeraOracle not yet wired into LangGraph StateGraph (standalone API only)
-- LightRAG / Vector Store (no implementation — semantic search missing)
-- Guardian currency-aware comparisons ($50K USD ≠ ¥50K JPY)
-- Router retraining pipeline from feedback data
-- GitHub Actions CI workflow
-- Demo GIF and live deployment
+### Phase 17 - Causal World Model, NeSy Engine, Auth & Cloud (Complete)
+- [x] CausalWorldModel — SCMs with do-calculus, forward simulation, OLS learning
+- [x] CounterfactualEngine — Pearl Level-3 reasoning, scenario comparison, attribution
+- [x] NeurosymbolicEngine — LLM fact extraction + forward-chaining + shortcut detection
+- [x] H-Neuron Sentinel — Hallucination detection via weighted signal fusion
+- [x] 3-layer NeSy-augmented RAG (vector + graph + symbolic, RRF fusion)
+- [x] Firebase Auth + Cloud SQL + per-user analysis history
+- [x] 60+ new Phase 17 tests
 
-**Reference**: See `docs/UI_UIX_VISION_REACT.md` for React architecture specifications.
+## Phase 18 (SRR Hardening & Operational Intelligence)
+
+> Derived from [`research.md`](research.md) + [`docs/CARF_RSI_ANALYSIS.md`](docs/CARF_RSI_ANALYSIS.md)
+
+- [x] **P0**: ChimeraOracle StateGraph integration — `chimera_fast_path_node` with Guardian enforcement (AP-7, AP-10 closed)
+- [x] **P1**: Drift detection — `DriftDetector` service, `/monitoring/drift` API, Developer View
+- [x] **P1**: Plateau detection — `RouterRetrainingService.check_convergence()`, `/monitoring/convergence` API
+- [x] **P2**: Bias auditing — `BiasAuditor` service, `/monitoring/bias-audit` API, Governance View
+- [x] **Benchmarks H40-H43**: Drift sensitivity, bias accuracy, plateau detection, fast-path Guardian
+- [x] **MonitoringPanel**: 3-tab React component in Developer + Governance views, 3 Executive KPI cards
+- [ ] **P2**: Scalable inference modes (full/approximate/cached) — Phase 18E designed
+- [ ] **P3**: Multi-agent collaborative causal discovery — Phase 18F designed
+- [ ] GitHub Actions CI workflow
+
+**Testing**: `pytest tests/unit/test_phase18_improvements.py tests/unit/test_monitoring_api.py -v`
+**Benchmarks**: `python benchmarks/technical/monitoring/benchmark_drift_detection.py`
+**Reference**: See `CURRENT_STATUS.md` for full details. See `docs/FUTURE_ROADMAP.md` for roadmap.
 
 ---
 
@@ -472,13 +525,23 @@ python scripts/test_carf.py
 
 ---
 
-## Recent Changes (2026-02-17)
+## Recent Changes (2026-03-16)
 
-- Documentation alignment pass: fixed 42+ stale references across all docs
-- Frontend safety fixes: optional chaining on deep property access in AnalysisHistoryPanel, ConversationalResponse
-- SimulationArena hooks order fix (React Rules of Hooks compliance)
-- Benchmark suite integration into all walkthrough and evaluation docs
-- AGENTS.md antipattern documentation (AP-1 through AP-8)
+- **Phase 18 Implementation**: SRR Hardening — 4 RSI gaps closed (drift detection, bias auditing, plateau detection, ChimeraOracle integration)
+- **New services**: `drift_detector.py`, `bias_auditor.py`, `chimera_fast_path_node` in graph.py, plateau detection in router_retraining_service.py
+- **New API**: `/monitoring/*` (7 endpoints — drift, bias, convergence, unified status)
+- **New frontend**: MonitoringPanel (3-tab), integrated into Developer + Governance views, 3 Executive KPI cards
+- **New benchmarks**: H40-H43 with realistic enterprise datasets (drift, bias, plateau, Guardian enforcement)
+- **New tests**: 50+ backend tests, 8+ frontend tests, zero regressions on 1,130+ existing tests
+- **Documentation**: All central docs updated — AGENTS.md, CURRENT_STATUS.md, DEV_REFERENCE.md, INTELLECTUAL_PROPERTY.md, EVALUATION_FRAMEWORK.md, CARF_RSI_ANALYSIS.md, FUTURE_ROADMAP.md, SOLUTION_VISION.md, END_TO_END_CONTEXT_FLOW.md, SELF_HEALING_ARCHITECTURE.md, INTEGRATION_GUIDE.md, LLM_AGENTIC_STRATEGY.md
+
+### Previous (2026-03-14)
+- Phase 17 complete: Causal World Model, NeSy Engine, H-Neuron Sentinel, Firebase Auth, Cloud SQL
+- 60+ new tests, doc reorganization, Dockerfile updated
+
+### Previous (2026-02-22)
+- Phase 16 complete: MAP-PRICE-RESOLVE governance, benchmark suite expansion to 39 hypotheses
+- Evidence gate CLI, realism quality gate, currency-aware financial enforcement
 
 ---
 

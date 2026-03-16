@@ -17,6 +17,7 @@ import api, { type LogEntry, type DeveloperState, submitFeedback } from '../../s
 import ExperienceBufferPanel from './ExperienceBufferPanel';
 import DataFlowPanel from './DataFlowPanel';
 import DataLayerInspector from './DataLayerInspector';
+import MonitoringPanel from './MonitoringPanel';
 
 interface DeveloperViewProps {
     response: QueryResponse | null;
@@ -1022,7 +1023,7 @@ const ImprovementModal: React.FC<{
 };
 
 const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace, isProcessing }) => {
-    const [activePanel, setActivePanel] = useState<'architecture' | 'logs' | 'timeline' | 'state' | 'experience' | 'dataflow' | 'datalayer' | 'evaluation'>('architecture');
+    const [activePanel, setActivePanel] = useState<'architecture' | 'logs' | 'timeline' | 'state' | 'experience' | 'dataflow' | 'datalayer' | 'evaluation' | 'monitoring'>('architecture');
     const [selectedLayer, setSelectedLayer] = useState<string | null>(null);
     const [showImprovementModal, setShowImprovementModal] = useState(false);
     const { state: developerState, loading, error, fetchState } = useDeveloperState();
@@ -1050,6 +1051,7 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
         { id: 'state', label: 'State', icon: '📊' },
         { id: 'evaluation', label: 'Evaluation', icon: '📈' },
         { id: 'experience', label: 'Experience', icon: '💾' },
+        { id: 'monitoring', label: 'Monitoring', icon: '📡' },
     ];
 
     return (
@@ -1149,6 +1151,7 @@ const DeveloperView: React.FC<DeveloperViewProps> = ({ response, executionTrace,
                         }}
                     />
                 )}
+                {activePanel === 'monitoring' && <MonitoringPanel />}
             </div>
 
             {/* Export Button */}

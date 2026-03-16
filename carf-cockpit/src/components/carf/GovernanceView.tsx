@@ -14,8 +14,9 @@ import PolicyFederationTab from './PolicyFederationTab';
 import ComplianceAuditTab from './ComplianceAuditTab';
 import GovernanceSemanticGraphTab from './GovernanceSemanticGraphTab';
 import RiskTopographyTab from './RiskTopographyTab';
+import MonitoringPanel from './MonitoringPanel';
 
-export type GovernanceTab = 'boards' | 'specmap' | 'semantic' | 'risk' | 'cost' | 'policy' | 'compliance';
+export type GovernanceTab = 'boards' | 'specmap' | 'semantic' | 'risk' | 'cost' | 'policy' | 'compliance' | 'monitoring';
 
 interface GovernanceViewProps {
     lastResult: QueryResponse | null;
@@ -31,6 +32,7 @@ const TABS: { id: GovernanceTab; label: string; icon: string }[] = [
     { id: 'cost', label: 'Cost Intelligence', icon: '$' },
     { id: 'policy', label: 'Policy Federation', icon: 'P' },
     { id: 'compliance', label: 'Compliance Audit', icon: 'C' },
+    { id: 'monitoring', label: 'Monitoring', icon: 'M' },
 ];
 
 const GovernanceView: React.FC<GovernanceViewProps> = ({ lastResult, sessionId, activeTabOverride = null }) => {
@@ -106,6 +108,9 @@ const GovernanceView: React.FC<GovernanceViewProps> = ({ lastResult, sessionId, 
                 )}
                 {activeTab === 'compliance' && (
                     <ComplianceAuditTab selectedBoardId={selectedBoardId} />
+                )}
+                {activeTab === 'monitoring' && (
+                    <MonitoringPanel />
                 )}
             </div>
         </div>

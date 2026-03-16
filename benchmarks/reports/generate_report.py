@@ -91,6 +91,11 @@ HYPOTHESES = [
     {"id": "H37", "claim": "Load test P95 at 25 users <= 15s", "metric": "p95_at_25_users", "threshold": 15.0, "direction": "lower_is_better", "test": "descriptive", "category": "performance"},
     {"id": "H38", "claim": "Chaos cascade containment >= 80%", "metric": "cascade_containment", "threshold": 0.80, "direction": "higher_is_better", "test": "proportion_test", "category": "performance"},
     {"id": "H39", "claim": "Soak test memory growth <= 5%", "metric": "soak_memory_growth", "threshold": 5.0, "direction": "lower_is_better", "test": "descriptive", "category": "performance"},
+    # ── Monitoring (H40-H43) ──
+    {"id": "H40", "claim": "Drift detection detects >5% routing shift within 100 queries with >=90% sensitivity", "metric": "drift_sensitivity", "threshold": 0.90, "direction": "higher_is_better", "test": "proportion_test", "category": "monitoring"},
+    {"id": "H41", "claim": "Memory bias detection sensitivity >= 90% for >10% domain skew in 100+ entries", "metric": "bias_detection_accuracy", "threshold": 0.90, "direction": "higher_is_better", "test": "proportion_test", "category": "monitoring"},
+    {"id": "H42", "claim": "Plateau detection identifies convergence within 5 epochs of <0.5% improvement", "metric": "plateau_detection_accuracy", "threshold": 0.90, "direction": "higher_is_better", "test": "proportion_test", "category": "monitoring"},
+    {"id": "H43", "claim": "ChimeraOracle fast-path outputs pass through Guardian 100% of the time", "metric": "guardian_enforcement_rate", "threshold": 1.0, "direction": "higher_is_better", "test": "exact_binomial", "category": "monitoring"},
 ]
 
 
@@ -219,6 +224,11 @@ RESULT_FILE_MAP = {
     "load": "technical/performance/benchmark_load_results.json",
     "chaos_cascade": "technical/resiliency/benchmark_chaos_cascade_results.json",
     "soak": "technical/performance/benchmark_soak_results.json",
+    # Monitoring
+    "monitoring_drift": "technical/monitoring/benchmark_drift_detection_results.json",
+    "monitoring_bias": "technical/monitoring/benchmark_bias_audit_results.json",
+    "monitoring_plateau": "technical/monitoring/benchmark_plateau_detection_results.json",
+    "monitoring_guardian": "technical/monitoring/benchmark_fast_path_guardian_results.json",
 }
 
 

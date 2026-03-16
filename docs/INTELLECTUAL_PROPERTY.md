@@ -1,7 +1,7 @@
 # CARF/CYNEPIC Intellectual Property Documentation
 
-**Version:** 1.0  
-**Date:** 2026-02-25  
+**Version:** 1.1
+**Date:** 2026-03-16
 **Owner:** Cisuregen  
 **License:** Business Source License 1.1 (BSL)  
 **Copyright:** © 2026 Cisuregen. All rights reserved.
@@ -321,7 +321,71 @@ All Cisuregen-authored source files carry:
 
 ---
 
-### 4.9 Insights Service — Persona-Specific Intelligence
+### 4.9 Causal World Model — Structural Causal Models (Phase 17)
+
+| Property | Value |
+|----------|-------|
+| **File** | [`src/services/causal_world_model.py`](../src/services/causal_world_model.py) |
+| **IP Classification** | 🟡 **Cisuregen Proprietary** |
+| **LOC** | ~600+ |
+
+**What Cisuregen owns:** The SCM evaluation engine with topological ordering, do-calculus intervention logic, forward simulation with noise injection, Pearl's 3-step counterfactual (Abduction → Action → Prediction), OLS learning from data + causal graph, and LLM-assisted probabilistic simulation fallback.
+
+**What Cisuregen does NOT own:** Pearl's causal inference theory (academic), OLS regression (standard statistics).
+
+---
+
+### 4.10 Counterfactual Engine — Pearl Level-3 Reasoning (Phase 17)
+
+| Property | Value |
+|----------|-------|
+| **File** | [`src/services/counterfactual_engine.py`](../src/services/counterfactual_engine.py) |
+| **IP Classification** | 🟡 **Cisuregen Proprietary** |
+| **LOC** | ~500+ |
+
+**What Cisuregen owns:** Natural language counterfactual parsing, SCM-based reasoning with LLM fallback, multi-scenario comparison with ranking, but-for causal attribution with importance scoring, and result caching architecture.
+
+---
+
+### 4.11 Neurosymbolic Engine — Neural-Symbolic Reasoning Loop (Phase 17)
+
+| Property | Value |
+|----------|-------|
+| **File** | [`src/services/neurosymbolic_engine.py`](../src/services/neurosymbolic_engine.py) |
+| **IP Classification** | 🟡 **Cisuregen Proprietary** |
+| **LOC** | ~700+ |
+
+**What Cisuregen owns:** The tight neural-symbolic integration loop (LLM fact extraction → symbolic forward-chaining → rule validation → shortcut detection), knowledge base with typed facts and confidence scoring, CSL policy rule import, Neo4j graph grounding, and violation correction workflow.
+
+---
+
+### 4.12 H-Neuron Sentinel — Hallucination Detection (Phase 17)
+
+| Property | Value |
+|----------|-------|
+| **File** | [`src/services/h_neuron_interceptor.py`](../src/services/h_neuron_interceptor.py) |
+| **IP Classification** | 🟡 **Cisuregen Proprietary** |
+| **LOC** | ~400+ |
+
+**What Cisuregen owns:** The weighted signal fusion architecture for hallucination risk assessment (8 signals with configurable weights), proxy mode implementation, Cynefin domain-aware activation, and environment-based feature flagging. The mechanistic mode placeholder (PyTorch hooks for open-weights models) is also Cisuregen IP once implemented.
+
+**What Cisuregen does NOT own:** The H-Neurons concept (THUNLP research), PyTorch hooks API (Meta, BSD-3).
+
+---
+
+### 4.13 Supervised Recursive Refinement (SRR) — Architectural Concept
+
+| Property | Value |
+|----------|-------|
+| **File** | [`docs/CARF_RSI_ANALYSIS.md`](CARF_RSI_ANALYSIS.md) |
+| **IP Classification** | 🟡 **Cisuregen Proprietary** |
+| **LOC** | ~380 |
+
+**What Cisuregen owns:** The Supervised Recursive Refinement (SRR) concept — a safety-first approach to system self-improvement where improvement cycles are bounded by formal invariants, policy enforcement, human oversight gates, and audit trails. This includes the RSI spectrum positioning analysis, the five independent containment mechanisms design, and the architectural principle that improvement components are structurally separate from safety enforcement components.
+
+---
+
+### 4.14 Insights Service — Persona-Specific Intelligence
 
 | Property | Value |
 |----------|-------|
@@ -670,6 +734,10 @@ src/
 │   ├── transparency.py                  🟡 Cisuregen
 │   ├── simulation.py                    🟡 Cisuregen
 │   ├── smart_reflector.py               🟡 Cisuregen
+│   ├── causal_world_model.py           🟡 Cisuregen (SCMs, do-calculus, Phase 17)
+│   ├── counterfactual_engine.py        🟡 Cisuregen (Pearl Level-3, Phase 17)
+│   ├── neurosymbolic_engine.py         🟡 Cisuregen (NeSy reasoning loop, Phase 17)
+│   ├── h_neuron_interceptor.py         🟡 Cisuregen (Hallucination sentinel, Phase 17)
 │   ├── governance_service.py            🟡 Cisuregen
 │   ├── governance_graph_service.py      🟡 Cisuregen
 │   ├── governance_board_service.py      🟡 Cisuregen
@@ -829,20 +897,23 @@ This section describes the complete system in sufficient detail to reconstruct t
 | Category | Count | IP Status |
 |----------|-------|-----------|
 | **Tier 1 Core Files** (Crown Jewels) | 4 files | 🔴 Cisuregen Proprietary |
-| **Tier 2 Differentiating Services** | 12 files | 🟡 Cisuregen Proprietary |
+| **Tier 2 Differentiating Services** | 17 files (+5 Phase 17) | 🟡 Cisuregen Proprietary |
 | **Tier 3 Supporting Services** | 24 files | 🟢 Cisuregen Proprietary |
 | **Integration Layer** | 3 files | 🔵 Adapter = Cisuregen; Core dependency = External |
-| **API Routers** | 14 files | 🟢 Cisuregen Proprietary |
+| **API Routers** | 16 files (+2 Phase 17) | 🟢 Cisuregen Proprietary |
 | **MCP Tools** | 7 files | 🟢 Cisuregen Proprietary |
-| **React Components** | 56 files | 🟢 Cisuregen Proprietary |
+| **React Components** | 58 files (+2 Phase 17) | 🟢 Cisuregen Proprietary |
 | **Frontend Tests** | 26 files | 🟢 Cisuregen Proprietary |
-| **Backend Tests** | 53 files | 🟢 Cisuregen Proprietary |
+| **Backend Tests** | 55+ files (+2 Phase 17) | 🟢 Cisuregen Proprietary |
 | **Configuration/Policy Files** | 24 files | 🟢 Cisuregen Proprietary |
 | **TLA+ Formal Specs** | 2 files | 🟡 Cisuregen Proprietary |
 | **Benchmark Files** | ~95 files | 🟢 Cisuregen Proprietary |
 | **Demo Scenarios** | ~32 files | 🟢 Cisuregen Proprietary |
-| **Documentation** | 30+ files | 🟢 Cisuregen Proprietary |
+| **Documentation** | 40+ files (+research analysis) | 🟢 Cisuregen Proprietary |
 | **Scripts** | 13 files | 🟢 Cisuregen Proprietary |
+| **Agent Skills** | 12 files | 🟢 Cisuregen Proprietary |
+| **Trained Models** | 6 models (1 DistilBERT + 5 CausalForest) | 🟢 Cisuregen Proprietary |
+| **Research Analysis** | 2 files (research.md, CARF_RSI_ANALYSIS.md) | 🟢 Cisuregen Proprietary |
 | **Third-Party Dependencies** | ~50 packages | ⬜ NOT Cisuregen IP |
 | **Runtime Services** | 3 services | ⬜ NOT Cisuregen IP |
 
@@ -850,13 +921,42 @@ This section describes the complete system in sufficient detail to reconstruct t
 
 | Metric | Approximate Count |
 |--------|-------------------|
-| Python source files (proprietary) | ~90+ files |
-| TypeScript/React source files | ~86 files |
-| Lines of proprietary Python logic | ~15,000+ LOC |
-| Lines of proprietary TypeScript | ~10,000+ LOC |
+| Python source files (proprietary) | ~95+ files |
+| TypeScript/React source files | ~90 files |
+| Lines of proprietary Python logic | ~18,000+ LOC |
+| Lines of proprietary TypeScript | ~12,000+ LOC |
 | Configuration/policy assets | ~24 files |
-| Documentation (architectural IP) | ~30 files |
+| Documentation (architectural IP) | ~40 files |
+| Trained model artifacts | 6 models |
+| Agent skill definitions | 12 skills |
+
+### Phase 18 IP Additions
+
+| New Asset | Type | Classification |
+|-----------|------|---------------|
+| Drift Detector (KL-divergence monitoring) | Service | 🟢 Tier 3 |
+| Bias Auditor (chi-squared fairness tests) | Service | 🟢 Tier 3 |
+| Plateau Detection (convergence monitoring) | Enhancement | 🟢 Tier 3 (upgrade to existing) |
+| ChimeraOracle StateGraph Integration | Enhancement | 🟡 Tier 2 (AP-7/AP-10 closure) |
+| Monitoring API (7 endpoints) | API | 🟢 Tier 3 |
+| MonitoringPanel (3-tab React component) | Frontend | 🟢 Tier 3 |
+| Monitoring Benchmarks H40-H43 | Benchmarks | 🟢 Tier 3 |
+
+### Phase 17 IP Additions
+
+| New Asset | Type | Classification |
+|-----------|------|---------------|
+| Causal World Model (SCMs, do-calculus) | Service | 🟡 Tier 2 |
+| Counterfactual Engine (Pearl Level-3) | Service | 🟡 Tier 2 |
+| Neurosymbolic Engine (NeSy loop) | Service | 🟡 Tier 2 |
+| H-Neuron Sentinel (hallucination detection) | Service | 🟡 Tier 2 |
+| SRR Concept (Supervised Recursive Refinement) | Architectural IP | 🟡 Tier 2 |
+| 3-layer NeSy-augmented RAG | Enhancement | 🟡 Tier 2 (upgrade to existing) |
+| Firebase Auth middleware | Service | 🟢 Tier 3 |
+| Cloud SQL connection factory | Service | 🟢 Tier 3 |
+| World Model API (10 endpoints) | API | 🟢 Tier 3 |
+| History API (3 endpoints) | API | 🟢 Tier 3 |
 
 ---
 
-*This document is maintained by Cisuregen and should be updated with each major release. Last updated: 2026-02-25.*
+*This document is maintained by Cisuregen and should be updated with each major release. Last updated: 2026-03-16.*
