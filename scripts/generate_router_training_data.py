@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Cisuregen
+# Licensed under the Business Source License 1.1
+# See LICENSE in project root. Production use requires commercial license.
+
 """Generate synthetic Cynefin router training data using DeepSeek.
 
 This script batches prompts to reduce cost and writes JSONL + JSON output.

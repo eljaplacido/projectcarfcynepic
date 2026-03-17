@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Cisuregen
+# Licensed under the Business Source License 1.1
+# See LICENSE in project root. Production use requires commercial license.
+
 """Router Retraining from Feedback — extract domain override feedback for DistilBERT fine-tuning.
 
 Reads domain_overrides from the CARF feedback SQLite database and exports

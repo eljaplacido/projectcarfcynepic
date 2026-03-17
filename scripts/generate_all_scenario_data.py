@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Cisuregen
+# Licensed under the Business Source License 1.1
+# See LICENSE in project root. Production use requires commercial license.
+
 """Generate comprehensive simulation data for all scenario types.
 
 Produces realistic datasets with known causal structures for end-to-end

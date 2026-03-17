@@ -2,6 +2,33 @@
 
 Thank you for your interest in contributing to CARF (Complex-Adaptive Reasoning Fabric)! This document provides guidelines for contributing to the project.
 
+## Developer Certificate of Origin
+
+All contributions to this project must be accompanied by a
+Developer Certificate of Origin (DCO) sign-off. By adding a
+`Signed-off-by` line to your commit messages, you certify that:
+
+1. The contribution is your original work, or you have the right
+   to submit it.
+2. You grant Cisuregen the rights described in the project LICENSE
+   (BSL 1.1 Section 5).
+3. You understand your contribution will be publicly available
+   under the BSL 1.1 terms.
+
+To sign off, add `-s` to your git commit:
+
+```bash
+git commit -s -m "Add feature X"
+```
+
+This produces:
+
+```
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+Pull requests without DCO sign-off will not be merged.
+
 ## Code of Conduct
 
 Be respectful, inclusive, and constructive. We welcome contributors of all backgrounds and experience levels.

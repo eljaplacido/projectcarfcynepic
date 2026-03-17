@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Cisuregen
+# Licensed under the Business Source License 1.1
+# See LICENSE in project root. Production use requires commercial license.
+
 """CARF Test Script - Run this to test the cognitive pipeline.
 
 Usage:

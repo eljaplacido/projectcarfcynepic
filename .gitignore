@@ -90,5 +90,20 @@ data/
 # Sensitive IP Documentation
 carf_benchmarking_strategy.md
 
+# Proprietary model artifacts — trade secrets
+*.pt
+*.pkl
+*.joblib
+*.onnx
+*.safetensors
+modeltraining/weights/
+modeltraining/checkpoints/
+modeltraining/calibration/
+
+# Production configurations
+config/production/
+config/*.prod.yaml
+config/*.prod.csl
+
 # Large binary reference documents
 *.pdf

@@ -1,9 +1,33 @@
 CARF - Complex-Adaptive Reasoning Fabric
-Copyright (c) 2026 Cisuregen
+Copyright (c) 2025-2026 Cisuregen
 
 Licensed under the Business Source License 1.1 (BSL).
 See LICENSE for details. On February 19, 2030, this software
 will automatically convert to the Apache License, Version 2.0.
+
+TRADEMARKS
+
+The following are trademarks of Cisuregen and may not be used
+without written permission:
+
+  - CARF (Complexity-Adaptive Reasoning Fabric)
+  - CYNEPIC (CYNefin-EPIstemic Cockpit)
+  - ChimeraOracle
+  - Guardian Policy Layer
+  - EpistemicState
+  - Supervised Recursive Refinement (SRR)
+
+Third parties building integrations or compatible systems should
+use the format "Compatible with CARF by Cisuregen" and may not
+imply endorsement.
+
+CONTACT
+
+Commercial licensing: licensing@cisuregen.com
+Security issues: security@cisuregen.com
+General inquiries: https://cisuregen.com
+
+========================================================================
 
 This product includes software developed by third parties.
 The following notices are provided in compliance with their

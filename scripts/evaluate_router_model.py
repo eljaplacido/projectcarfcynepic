@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Cisuregen
+# Licensed under the Business Source License 1.1
+# See LICENSE in project root. Production use requires commercial license.
+
 """Evaluate a trained DistilBERT router model on a JSONL dataset."""
 
 from __future__ import annotations

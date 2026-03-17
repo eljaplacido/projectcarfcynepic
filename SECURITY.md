@@ -164,4 +164,18 @@ CARF_CORS_ORIGINS=https://your-domain.com
 
 ---
 
+## Inadvertent Disclosure
+
+If you discover what appears to be proprietary information
+(trained model weights, calibration data, production threshold
+values, internal scoring matrices) that has been inadvertently
+committed to this repository, please report it to
+security@cisuregen.com rather than discussing it publicly.
+
+Cisuregen treats certain implementation details as trade secrets
+under EU Directive 2016/943. Responsible reporting of inadvertent
+disclosures is appreciated and will be acknowledged.
+
+---
+
 Thank you for helping keep CARF secure.

@@ -4,7 +4,7 @@
 and epistemic awareness. 
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-red.svg)](LICENSE)
+[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-red.svg)](https://mariadb.com/bsl11/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18.3+-61DAFB.svg)](https://react.dev/)
 
@@ -771,6 +771,31 @@ We welcome contributions! Please review the following guides based on your inter
 
 Business Source License 1.1 (BSL) - see [LICENSE](LICENSE) for details.
 For production use, see [COMMERCIAL_LICENSE](COMMERCIAL_LICENSE.md).
+
+## Commercial Use
+
+This software is source-available under BSL 1.1. You may freely
+use it for development, testing, academic research, and personal
+projects. Production use is permitted provided it is not competitive
+with Cisuregen's products (see LICENSE for exact terms).
+
+If your use case involves offering CARF-based functionality as a
+hosted service or embedding it in a commercial product, contact
+licensing@cisuregen.com for a commercial license.
+
+On February 19, 2030, this version converts to Apache License 2.0.
+
+## Intellectual Property
+
+The architectural innovations in this project -- including the
+entropy-aware Cynefin routing mechanism, the deterministic Guardian
+policy enforcement layer, the integrated causal-Bayesian-neurosymbolic
+pipeline, and the EpistemicState provenance schema -- are original
+works of Cisuregen. See [IP_CLASSIFICATION.md](IP_CLASSIFICATION.md)
+for the full IP tier mapping.
+
+"CARF", "CYNEPIC", and related marks are trademarks of Cisuregen.
+See [NOTICE](NOTICE) for trademark usage guidelines.
 
 
 ## Acknowledgments
