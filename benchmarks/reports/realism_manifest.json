@@ -15,7 +15,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 20,
     "automated_run": true,
-    "source_reference": "Labeled Cynefin query set + provider variance prompts"
+    "source_reference": "Labeled Cynefin query set + provider variance prompts",
+    "data_source": "benchmarks/technical/router/queries.jsonl + provider variance prompts",
+    "ground_truth_type": "expert_label",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 456,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/router/benchmark_router.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "causal",
@@ -32,7 +42,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 45,
     "automated_run": true,
-    "source_reference": "Synthetic DGPs + industry-shaped confounding"
+    "source_reference": "Synthetic DGPs + industry-shaped confounding",
+    "data_source": "benchmarks/technical/causal/benchmark_causal.py synthetic DGPs",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 8,
+    "confidence_interval": "paired-t-95",
+    "repro_command": "python benchmarks/technical/causal/benchmark_causal.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "bayesian",
@@ -49,7 +69,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 40,
     "automated_run": true,
-    "source_reference": "Known-distribution posterior calibration suite"
+    "source_reference": "Known-distribution posterior calibration suite",
+    "data_source": "benchmarks/technical/bayesian/benchmark_bayesian.py known-distribution suite",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 8,
+    "confidence_interval": "95% credible interval",
+    "repro_command": "python benchmarks/technical/bayesian/benchmark_bayesian.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "guardian",
@@ -67,7 +97,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 20,
     "automated_run": true,
-    "source_reference": "Rule violation corpus + repeated determinism runs"
+    "source_reference": "Rule violation corpus + repeated determinism runs",
+    "data_source": "benchmarks/technical/guardian/violation_corpus.json + 50x repeated runs",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 60,
+    "confidence_interval": "exact binomial 95%",
+    "repro_command": "python benchmarks/technical/guardian/benchmark_guardian.py",
+    "evidence_grade": "validated"
   },
   {
     "benchmark_id": "performance",
@@ -84,7 +124,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 30,
     "automated_run": true,
-    "source_reference": "Latency + memory profiling by Cynefin path"
+    "source_reference": "Latency + memory profiling by Cynefin path",
+    "data_source": "benchmarks/technical/performance/benchmark_latency.py + tracemalloc",
+    "ground_truth_type": "none",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 500,
+    "confidence_interval": "p50/p95/p99 percentile",
+    "repro_command": "python benchmarks/technical/performance/benchmark_latency.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "chimera",
@@ -101,7 +151,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 25,
     "automated_run": true,
-    "source_reference": "Trained CausalForest models vs DoWhy reference"
+    "source_reference": "Trained CausalForest models vs DoWhy reference",
+    "data_source": "benchmarks/technical/chimera/benchmark_oracle.py trained CausalForest vs DoWhy",
+    "ground_truth_type": "derived",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 3,
+    "confidence_interval": "speedup ratio (single-run)",
+    "repro_command": "python benchmarks/technical/chimera/benchmark_oracle.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "governance",
@@ -119,7 +179,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 35,
     "automated_run": true,
-    "source_reference": "MAP-PRICE-RESOLVE-AUDIT orchestration governance corpus"
+    "source_reference": "MAP-PRICE-RESOLVE-AUDIT orchestration governance corpus",
+    "data_source": "benchmarks/technical/governance/ corpora (MAP/PRICE/RESOLVE/AUDIT)",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 95,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/governance/benchmark_governance.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "e2e",
@@ -137,7 +207,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 60,
     "automated_run": true,
-    "source_reference": "Cross-industry gold scenarios with full pipeline checks"
+    "source_reference": "Cross-industry gold scenarios with full pipeline checks",
+    "data_source": "benchmarks/use_cases/benchmark_e2e.py gold scenario library",
+    "ground_truth_type": "expert_label",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 13,
+    "confidence_interval": "scenario-level pass/fail",
+    "repro_command": "python benchmarks/use_cases/benchmark_e2e.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "baseline",
@@ -155,7 +235,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 30,
     "automated_run": true,
-    "source_reference": "Raw LLM baseline on identical routed inputs"
+    "source_reference": "Raw LLM baseline on identical routed inputs",
+    "data_source": "benchmarks/baselines/baseline.py raw-LLM comparator over routed inputs",
+    "ground_truth_type": "derived",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 63,
+    "confidence_interval": "n/a (comparator)",
+    "repro_command": "python benchmarks/baselines/baseline.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "board_lifecycle",
@@ -172,7 +262,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 20,
     "automated_run": true,
-    "source_reference": "Board CRUD/template/member operations"
+    "source_reference": "Board CRUD/template/member operations",
+    "data_source": "benchmarks/technical/governance/benchmark_board_lifecycle.py CRUD matrix",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 40,
+    "confidence_interval": "exact binomial 95%",
+    "repro_command": "python benchmarks/technical/governance/benchmark_board_lifecycle.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "policy_roundtrip",
@@ -189,7 +289,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 15,
     "automated_run": true,
-    "source_reference": "JSON-LD/YAML/CSL export-import fidelity suite"
+    "source_reference": "JSON-LD/YAML/CSL export-import fidelity suite",
+    "data_source": "benchmarks/technical/governance/benchmark_policy_roundtrip.py JSON-LD/YAML/CSL fixtures",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 25,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/governance/benchmark_policy_roundtrip.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "owasp",
@@ -207,7 +317,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 25,
     "automated_run": true,
-    "source_reference": "OWASP LLM Top 10 derived prompt/PII corpus"
+    "source_reference": "OWASP LLM Top 10 derived prompt/PII corpus",
+    "data_source": "benchmarks/technical/security/owasp_corpus.json (OWASP LLM Top 10 derived)",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 45,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/security/benchmark_owasp.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "red_team",
@@ -225,7 +345,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 30,
     "automated_run": true,
-    "source_reference": "8 attack surfaces across prompt, tool, memory, policy channels"
+    "source_reference": "8 attack surfaces across prompt, tool, memory, policy channels",
+    "data_source": "benchmarks/technical/security/red_team_corpus.json (8-surface attack matrix)",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 40,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/security/benchmark_red_team.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "counterbench",
@@ -242,7 +372,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 45,
     "automated_run": true,
-    "source_reference": "Counterfactual benchmark with known structural equations"
+    "source_reference": "Counterfactual benchmark with known structural equations",
+    "data_source": "benchmarks/technical/causal/benchmark_counterbench.py SCM equations",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 120,
+    "confidence_interval": "paired-t-95",
+    "repro_command": "python benchmarks/technical/causal/benchmark_counterbench.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "adversarial_causal",
@@ -260,7 +400,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 50,
     "automated_run": true,
-    "source_reference": "Adversarial bias shifts + collider/confounder stress tests"
+    "source_reference": "Adversarial bias shifts + collider/confounder stress tests",
+    "data_source": "benchmarks/technical/causal/benchmark_adversarial_causal.py SCM stressors",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 80,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/causal/benchmark_adversarial_causal.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "tau_bench",
@@ -278,7 +428,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 25,
     "automated_run": true,
-    "source_reference": "Policy-constrained multi-step agentic tasks"
+    "source_reference": "Policy-constrained multi-step agentic tasks",
+    "data_source": "benchmarks/technical/governance/benchmark_tau_bench.py policy-constrained tasks",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 50,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/governance/benchmark_tau_bench.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "hallucination_scale",
@@ -296,7 +456,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 20,
     "automated_run": true,
-    "source_reference": "Fact-anchored hallucination stress corpus"
+    "source_reference": "Fact-anchored hallucination stress corpus",
+    "data_source": "benchmarks/baselines/benchmark_hallucination_scale.py fact-anchored corpus",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 200,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/baselines/benchmark_hallucination_scale.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "cross_llm",
@@ -314,7 +484,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 25,
     "automated_run": true,
-    "source_reference": "Cross-provider agreement validation prompts"
+    "source_reference": "Cross-provider agreement validation prompts",
+    "data_source": "benchmarks/technical/router/benchmark_cross_llm.py cross-provider prompts",
+    "ground_truth_type": "derived",
+    "llm_provider": "multi:deepseek+anthropic+openai",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 200,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/router/benchmark_cross_llm.py",
+    "evidence_grade": "validated"
   },
   {
     "benchmark_id": "clear",
@@ -331,7 +511,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 20,
     "automated_run": true,
-    "source_reference": "CLEAR composite (cost, latency, efficacy, alignment, robustness)"
+    "source_reference": "CLEAR composite (cost, latency, efficacy, alignment, robustness)",
+    "data_source": "benchmarks/reports/benchmark_clear.py CLEAR composite scoring",
+    "ground_truth_type": "derived",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 25,
+    "confidence_interval": "composite (no CI)",
+    "repro_command": "python benchmarks/reports/benchmark_clear.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "fairness",
@@ -348,7 +538,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 35,
     "automated_run": true,
-    "source_reference": "Demographic parity/equalized-odds variants"
+    "source_reference": "Demographic parity/equalized-odds variants",
+    "data_source": "benchmarks/technical/compliance/benchmark_fairness.py demographic variants",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 80,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/compliance/benchmark_fairness.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "xai",
@@ -365,7 +565,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 30,
     "automated_run": true,
-    "source_reference": "Explanation fidelity/stability/simplicity corpus"
+    "source_reference": "Explanation fidelity/stability/simplicity corpus",
+    "data_source": "benchmarks/technical/compliance/benchmark_xai.py fidelity/stability corpus",
+    "ground_truth_type": "derived",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 120,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/compliance/benchmark_xai.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "audit_trail",
@@ -382,7 +592,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 20,
     "automated_run": true,
-    "source_reference": "ALCOA+ traceability and integrity checks"
+    "source_reference": "ALCOA+ traceability and integrity checks",
+    "data_source": "benchmarks/technical/compliance/benchmark_audit_trail.py ALCOA+ checks",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 50,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/compliance/benchmark_audit_trail.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "energy",
@@ -400,7 +620,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 30,
     "automated_run": true,
-    "source_reference": "Domain-path energy proportionality profiling"
+    "source_reference": "Domain-path energy proportionality profiling",
+    "data_source": "benchmarks/technical/sustainability/benchmark_energy.py domain-path profiling",
+    "ground_truth_type": "derived",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 60,
+    "confidence_interval": "ordering test (no CI)",
+    "repro_command": "python benchmarks/technical/sustainability/benchmark_energy.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "scope3",
@@ -418,7 +648,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 40,
     "automated_run": true,
-    "source_reference": "Scope 3 attribution graphs and intervention realism"
+    "source_reference": "Scope 3 attribution graphs and intervention realism",
+    "data_source": "benchmarks/technical/sustainability/benchmark_scope3.py attribution graphs",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 80,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/sustainability/benchmark_scope3.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "sus",
@@ -435,7 +675,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 25,
     "automated_run": true,
-    "source_reference": "SUS survey protocol with controlled participant tasks"
+    "source_reference": "SUS survey protocol with controlled participant tasks",
+    "data_source": "benchmarks/technical/ux/benchmark_sus.py SUS survey responses",
+    "ground_truth_type": "expert_label",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 30,
+    "confidence_interval": "mean +/- SD",
+    "repro_command": "python benchmarks/technical/ux/benchmark_sus.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "task_completion",
@@ -452,7 +702,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 25,
     "automated_run": true,
-    "source_reference": "Task success and completion-time protocol"
+    "source_reference": "Task success and completion-time protocol",
+    "data_source": "benchmarks/technical/ux/benchmark_task_completion.py participant tasks",
+    "ground_truth_type": "expert_label",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 40,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/ux/benchmark_task_completion.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "wcag",
@@ -469,7 +729,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 20,
     "automated_run": true,
-    "source_reference": "Automated WCAG 2.2 audit + manual exception checks"
+    "source_reference": "Automated WCAG 2.2 audit + manual exception checks",
+    "data_source": "benchmarks/technical/ux/benchmark_wcag.py axe-core audit + manual exceptions",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 120,
+    "confidence_interval": "exact binomial 95%",
+    "repro_command": "python benchmarks/technical/ux/benchmark_wcag.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "supply_chain",
@@ -487,7 +757,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 45,
     "automated_run": true,
-    "source_reference": "Disruption lead-time and intervention policy scenarios"
+    "source_reference": "Disruption lead-time and intervention policy scenarios",
+    "data_source": "benchmarks/technical/industry/benchmark_supply_chain.py disruption scenarios",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 120,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/industry/benchmark_supply_chain.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "healthcare",
@@ -505,7 +785,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 50,
     "automated_run": true,
-    "source_reference": "CATE vs RCT approximation with covariate imbalance stress"
+    "source_reference": "CATE vs RCT approximation with covariate imbalance stress",
+    "data_source": "benchmarks/technical/industry/benchmark_healthcare.py simulated RCT comparison",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 100,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/industry/benchmark_healthcare.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "finance",
@@ -523,7 +813,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 45,
     "automated_run": true,
-    "source_reference": "VaR backtesting with regime-shift stress windows"
+    "source_reference": "VaR backtesting with regime-shift stress windows",
+    "data_source": "benchmarks/technical/industry/benchmark_finance.py VaR backtest with synthetic regimes",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 90,
+    "confidence_interval": "Kupiec p-value",
+    "repro_command": "python benchmarks/technical/industry/benchmark_finance.py",
+    "evidence_grade": "synthetic-only"
   },
   {
     "benchmark_id": "load",
@@ -540,7 +840,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 40,
     "automated_run": true,
-    "source_reference": "Concurrent-user load profile up to 25 sessions"
+    "source_reference": "Concurrent-user load profile up to 25 sessions",
+    "data_source": "benchmarks/technical/performance/benchmark_load.py concurrent-user profile",
+    "ground_truth_type": "none",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 25,
+    "confidence_interval": "p95 percentile",
+    "repro_command": "python benchmarks/technical/performance/benchmark_load.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "chaos_cascade",
@@ -558,7 +868,17 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 45,
     "automated_run": true,
-    "source_reference": "Fault-injection cascade containment test matrix"
+    "source_reference": "Fault-injection cascade containment test matrix",
+    "data_source": "benchmarks/technical/resiliency/benchmark_chaos_cascade.py fault-injection matrix",
+    "ground_truth_type": "rule_based",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 40,
+    "confidence_interval": "95% Wilson",
+    "repro_command": "python benchmarks/technical/resiliency/benchmark_chaos_cascade.py",
+    "evidence_grade": "needs-independent-replication"
   },
   {
     "benchmark_id": "soak",
@@ -576,6 +896,16 @@
     "production_proxy_validated": true,
     "runtime_budget_minutes": 120,
     "automated_run": true,
-    "source_reference": "Long-horizon memory and latency-drift stability test"
+    "source_reference": "Long-horizon memory and latency-drift stability test",
+    "data_source": "benchmarks/technical/performance/benchmark_soak.py 1000-query soak run",
+    "ground_truth_type": "none",
+    "llm_provider": "deepseek/v3.1",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 1000,
+    "confidence_interval": "memory-growth percentage",
+    "repro_command": "python benchmarks/technical/performance/benchmark_soak.py",
+    "evidence_grade": "needs-independent-replication"
   }
 ]

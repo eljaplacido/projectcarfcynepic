@@ -11,13 +11,62 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
 
+EvidenceGrade = Literal[
+    "validated",
+    "synthetic-only",
+    "stubbed",
+    "aspirational",
+    "needs-independent-replication",
+]
+
+GroundTruthType = Literal[
+    "empirical",
+    "synthetic",
+    "expert_label",
+    "derived",
+    "rule_based",
+    "none",
+]
+
+# Fields that benchmark_manifest.schema.json marks required and that the
+# --strict-manifest gate enforces. Kept as a tuple so the CLI and tests share
+# one source of truth.
+REQUIRED_MANIFEST_FIELDS: tuple[str, ...] = (
+    "benchmark_id",
+    "category",
+    "dataset_profile",
+    "rows",
+    "scenarios",
+    "seed_reproducible",
+    "baseline_comparator",
+    "automated_run",
+    "source_reference",
+    "data_source",
+    "ground_truth_type",
+    "llm_provider",
+    "seed",
+    "uses_mock",
+    "uses_fallback",
+    "sample_size",
+    "evidence_grade",
+    "repro_command",
+)
+
+
 class BenchmarkRealismSpec(BaseModel):
-    """Validation spec for one benchmark result source."""
+    """Validation spec for one benchmark result source.
+
+    The original realism fields (rows, scenarios, etc.) score how stress-tested
+    the benchmark is. The evidence-grading fields below — added with the SOTA
+    improvement roadmap — capture what kind of evidence each result counts as
+    so reports can distinguish a production-validated benchmark from a
+    synthetic sanity check or a stubbed/mock-driven happy path.
+    """
 
     benchmark_id: str = Field(..., description="Key used by generate_report.py result loading")
     category: str = Field(..., description="Benchmark category, e.g. core, security, ux")
@@ -61,6 +110,52 @@ class BenchmarkRealismSpec(BaseModel):
     )
     source_reference: str = Field(
         "", description="Dataset/protocol provenance note"
+    )
+
+    # Evidence-grading fields (SOTA improvement roadmap, P0).
+    data_source: str | None = Field(
+        default=None,
+        description="Concrete dataset origin: file path, generator script, URL, or production extract id.",
+    )
+    ground_truth_type: GroundTruthType | None = Field(
+        default=None,
+        description="How ground truth was established. 'none' is allowed only for descriptive benchmarks.",
+    )
+    llm_provider: str | None = Field(
+        default=None,
+        description="LLM(s) used in-loop, e.g. 'deepseek/v3.1', 'multi:deepseek+anthropic', 'n/a'.",
+    )
+    seed: int | None = Field(
+        default=None,
+        description="Concrete seed value. null only when randomisation is intentional and documented.",
+    )
+    uses_mock: bool | None = Field(
+        default=None,
+        description="True when any production dependency is replaced by a mock/stub during the run.",
+    )
+    uses_fallback: bool | None = Field(
+        default=None,
+        description="True when the headline metric counts results produced via documented fallback paths.",
+    )
+    sample_size: int | None = Field(
+        default=None,
+        ge=1,
+        description="Number of independent measurement units summarised by the headline metric.",
+    )
+    confidence_interval: str | None = Field(
+        default=None,
+        description="Method/width of CI reported with the headline metric, e.g. '95% Wilson', 'bootstrap-1000'.",
+    )
+    repro_command: str | None = Field(
+        default=None,
+        description="Exact command that reproduces the result file consumed by generate_report.py.",
+    )
+    evidence_grade: EvidenceGrade | None = Field(
+        default=None,
+        description=(
+            "Strength classification: validated | synthetic-only | stubbed | "
+            "aspirational | needs-independent-replication."
+        ),
     )
 
 
@@ -281,6 +376,107 @@ def load_realism_manifest(path: Path) -> list[BenchmarkRealismSpec]:
         except Exception:
             continue
     return specs
+
+
+def _is_meaningful_value(value: Any) -> bool:
+    """Treat None and empty strings as missing; 0/False count as present."""
+    if value is None:
+        return False
+    if isinstance(value, str) and not value.strip():
+        return False
+    return True
+
+
+def validate_manifest_completeness(
+    raw_entries: list[dict[str, Any]] | None,
+    required_fields: tuple[str, ...] | list[str] = REQUIRED_MANIFEST_FIELDS,
+) -> dict[str, Any]:
+    """Check that each manifest entry carries the required evidence-grading fields.
+
+    Operates on the *raw* JSON dicts (not parsed BenchmarkRealismSpec instances)
+    so that an entry missing a required field is reported as incomplete instead
+    of being silently dropped or filled with a default. Designed to back the
+    --strict-manifest CLI gate in check_result_evidence.py.
+    """
+    entries = raw_entries or []
+    incomplete: list[dict[str, Any]] = []
+    grade_counts: dict[str, int] = {}
+    unknown_grade_entries: list[str] = []
+    valid_grades: set[str] = {
+        "validated",
+        "synthetic-only",
+        "stubbed",
+        "aspirational",
+        "needs-independent-replication",
+    }
+
+    for entry in entries:
+        bid = str(entry.get("benchmark_id") or "<unknown>")
+        missing = [f for f in required_fields if not _is_meaningful_value(entry.get(f))]
+        if missing:
+            incomplete.append({"benchmark_id": bid, "missing_fields": missing})
+
+        grade = entry.get("evidence_grade")
+        if grade in valid_grades:
+            grade_counts[grade] = grade_counts.get(grade, 0) + 1
+        elif grade is not None:
+            unknown_grade_entries.append(bid)
+
+    total = len(entries)
+    completeness_ratio = round((total - len(incomplete)) / max(total, 1), 3)
+
+    return {
+        "total_entries": total,
+        "complete_entries": total - len(incomplete),
+        "incomplete_entries": incomplete,
+        "completeness_ratio": completeness_ratio,
+        "grade_counts": grade_counts,
+        "unknown_grade_entries": sorted(unknown_grade_entries),
+        "required_fields": list(required_fields),
+    }
+
+
+def evaluate_manifest_completeness_gate(
+    completeness: dict[str, Any],
+    min_completeness_ratio: float = 1.0,
+    forbid_unknown_grades: bool = True,
+) -> dict[str, Any]:
+    """Decide whether manifest completeness clears the strict gate."""
+    ratio = float(completeness.get("completeness_ratio", 0.0))
+    incomplete = completeness.get("incomplete_entries", [])
+    unknown_grades = completeness.get("unknown_grade_entries", [])
+
+    reasons: list[str] = []
+    if ratio < min_completeness_ratio:
+        reasons.append(
+            f"Manifest completeness {ratio:.3f} below threshold {min_completeness_ratio:.3f}."
+        )
+        for entry in incomplete[:10]:
+            reasons.append(
+                f"  - {entry['benchmark_id']} missing: {', '.join(entry['missing_fields'])}"
+            )
+        if len(incomplete) > 10:
+            reasons.append(f"  - ... and {len(incomplete) - 10} more incomplete entries")
+    if forbid_unknown_grades and unknown_grades:
+        reasons.append(
+            f"Manifest contains {len(unknown_grades)} entries with unrecognised evidence_grade values: "
+            f"{', '.join(unknown_grades[:5])}"
+        )
+
+    return {
+        "passed": len(reasons) == 0,
+        "reasons": reasons,
+        "thresholds": {
+            "min_completeness_ratio": min_completeness_ratio,
+            "forbid_unknown_grades": forbid_unknown_grades,
+        },
+        "observed": {
+            "completeness_ratio": ratio,
+            "incomplete_count": len(incomplete),
+            "unknown_grade_count": len(unknown_grades),
+            "grade_counts": completeness.get("grade_counts", {}),
+        },
+    }
 
 
 def summarize_realism(

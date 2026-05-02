@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cisuregen.local/schemas/benchmark_manifest.schema.json",
+  "title": "CARF Benchmark Manifest Entry",
+  "description": "Per-benchmark provenance and evidence-grading metadata. Loaded by benchmarks/reports/realism.py and gated by benchmarks/reports/check_result_evidence.py --strict-manifest.",
+  "type": "array",
+  "items": { "$ref": "#/$defs/manifestEntry" },
+  "$defs": {
+    "manifestEntry": {
+      "type": "object",
+      "required": [
+        "benchmark_id",
+        "category",
+        "dataset_profile",
+        "rows",
+        "scenarios",
+        "seed_reproducible",
+        "baseline_comparator",
+        "automated_run",
+        "source_reference",
+        "data_source",
+        "ground_truth_type",
+        "llm_provider",
+        "seed",
+        "uses_mock",
+        "uses_fallback",
+        "sample_size",
+        "evidence_grade",
+        "repro_command"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "benchmark_id": {
+          "type": "string",
+          "description": "Key matching benchmarks/reports/generate_report.py RESULT_FILE_MAP."
+        },
+        "category": {
+          "type": "string",
+          "description": "Benchmark category: core, governance, security, compliance, sustainability, ux, industry, performance, monitoring, competitive, causal."
+        },
+        "dataset_profile": {
+          "type": "string",
+          "enum": ["synthetic", "hybrid", "real"],
+          "description": "Origin of inputs. 'real' = production-derived; 'hybrid' = real seeds with synthetic perturbation; 'synthetic' = fully generated."
+        },
+        "rows": { "type": "integer", "minimum": 1 },
+        "scenarios": { "type": "integer", "minimum": 1 },
+        "temporal_slices": { "type": "integer", "minimum": 1, "default": 1 },
+        "stress_levels": { "type": "integer", "minimum": 1, "default": 1 },
+        "adversarial_cases": { "type": "integer", "minimum": 0, "default": 0 },
+        "confounding_strength": { "type": "number", "minimum": 0.0, "maximum": 1.0, "default": 0.0 },
+        "missingness_coverage": { "type": "boolean", "default": false },
+        "label_noise_coverage": { "type": "boolean", "default": false },
+        "seed_reproducible": { "type": "boolean", "default": true },
+        "baseline_comparator": { "type": "boolean", "default": true },
+        "production_proxy_validated": { "type": "boolean", "default": false },
+        "runtime_budget_minutes": { "type": "integer", "minimum": 1, "default": 60 },
+        "automated_run": { "type": "boolean", "default": true },
+        "source_reference": { "type": "string" },
+        "data_source": {
+          "type": "string",
+          "minLength": 4,
+          "description": "Concrete origin of the dataset: file path, generator script, dataset URL, or production extract identifier. Required for evidence gating."
+        },
+        "ground_truth_type": {
+          "type": "string",
+          "enum": ["empirical", "synthetic", "expert_label", "derived", "rule_based", "none"],
+          "description": "How ground truth was established. 'none' is allowed only for descriptive benchmarks (e.g., latency)."
+        },
+        "llm_provider": {
+          "type": "string",
+          "description": "LLM(s) used in-loop, e.g. 'deepseek/v3.1', 'openai/gpt-4o-mini', 'multi:deepseek+anthropic', or 'n/a' for non-LLM benchmarks."
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Concrete seed value used to drive deterministic execution. Must be set; seedless benchmarks should record the randomisation policy in source_reference and lower their evidence_grade accordingly."
+        },
+        "uses_mock": {
+          "type": "boolean",
+          "description": "True when any production dependency (LLM, retriever, Neo4j, governance, HumanLayer) is replaced by a mock or stub during the benchmark run."
+        },
+        "uses_fallback": {
+          "type": "boolean",
+          "description": "True when the benchmark's success metric counts results produced via documented fallback paths (e.g., TF-IDF RAG when LightRAG unavailable, statistical Bayesian fallback, mock HumanLayer approval)."
+        },
+        "sample_size": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of independent measurement units summarised by the headline metric. May differ from `rows` when multiple rows aggregate to one measurement."
+        },
+        "confidence_interval": {
+          "type": ["string", "null"],
+          "description": "Method/width of the confidence interval reported with the headline metric, e.g. '95% Wilson', 'bootstrap-1000', 'paired-t-95'. null only when the benchmark is purely descriptive."
+        },
+        "repro_command": {
+          "type": "string",
+          "minLength": 4,
+          "description": "Exact command (or command sequence) that reproduces the result file used by generate_report.py."
+        },
+        "evidence_grade": {
+          "type": "string",
+          "enum": [
+            "validated",
+            "synthetic-only",
+            "stubbed",
+            "aspirational",
+            "needs-independent-replication"
+          ],
+          "description": "Strength classification used in CARF reporting:\n  - validated: real or production-mirrored data, baseline comparator, no fallback masking, deterministic, replicated.\n  - synthetic-only: useful sanity check but ground truth is generator-defined; cannot stand as production evidence on its own.\n  - stubbed: relies on mocks or fallback paths that mask real-system behaviour.\n  - aspirational: claim with target threshold but no evaluation logic or no result file yet.\n  - needs-independent-replication: internally validated but never reproduced outside this repository."
+        }
+      }
+    }
+  }
+}
