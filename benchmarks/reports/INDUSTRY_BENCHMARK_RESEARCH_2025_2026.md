@@ -372,7 +372,7 @@ Complementary toolkit with constraint-based fairness optimization; useful for CA
 | Metric | What It Measures | CARF Relevance |
 |--------|-----------------|----------------|
 | **Energy per inference** | Joules per query processed | CARF adds layers (Cynefin, Guardian, Causal, Bayesian) -- each adds energy. Measure overhead |
-| **Performance per watt** | Queries per second per watt | CARF's ChimeraOracle (H8: 32.7x faster) significantly improves this for cached queries |
+| **Performance per watt** | Queries per second per watt | CARF's ChimeraOracle (H8: 40.7x faster) significantly improves this for cached queries |
 | **Carbon per query** | gCO2e per inference (requires grid carbon intensity) | Calculate and report for different cloud regions |
 | **Accuracy-energy tradeoff** | Energy cost of going from 99% to 99.9% accuracy | Quantization and reduced precision can narrow the gap by up to 50% |
 
@@ -386,7 +386,7 @@ Complementary toolkit with constraint-based fairness optimization; useful for CA
 | Test | Method | Target |
 |------|--------|--------|
 | Pipeline energy overhead | Compare energy per query: raw LLM vs. full CARF pipeline | Document overhead; justify with quality improvement |
-| ChimeraOracle energy savings | Measure energy savings from 32.7x speedup on cached queries | Quantify carbon savings from caching layer |
+| ChimeraOracle energy savings | Measure energy savings from 40.7x speedup on cached queries | Quantify carbon savings from caching layer |
 | Right-sizing by Cynefin | Measure energy savings from routing simple queries to simpler models | Document energy proportional to problem complexity |
 | Cloud region carbon impact | Test across AWS/Azure/GCP regions with different grid carbon intensity | Report range; recommend low-carbon regions |
 

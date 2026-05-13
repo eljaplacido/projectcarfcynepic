@@ -28,7 +28,7 @@ Capability-level work (P1+) builds on top of that evidence floor.
 | P0.4 | Grade and enrich every entry in `realism_manifest.json` (33 sources) | DONE — initial pass; grades open to challenge |
 | P0.5 | Tests for completeness gate, schema/constant parity, real-manifest grading | DONE — `tests/unit/test_benchmark_manifest_completeness.py` |
 | P0.6 | Wire H40–H43 (monitoring) into `evaluate_hypotheses()` so the unified report stops silently dropping them | PLANNED |
-| P0.7 | Reconcile the 32.7x vs 40.7x ChimeraOracle speedup numbers | PLANNED |
+| P0.7 | Reconcile the 32.7x vs 40.7x ChimeraOracle speedup numbers | DONE — canonical value is 40.72x from `benchmark_oracle_results.json`; all docs updated |
 | P0.8 | Verify and write the *actual* seed used by each benchmark script into the manifest (currently a placeholder of `42` for entries with `seed_reproducible=true`) | PLANNED |
 | P0.9 | Re-run `benchmarks/reports/generate_report.py` so `benchmark_report.json` reflects 43 hypotheses (and the realism gate state with current data) | PLANNED |
 
@@ -60,8 +60,10 @@ README, and `benchmark_report.json` against each other:
 - **H20 missing.** The README hypothesis table jumps from H19 to H21. The
   source `HYPOTHESES` list also has no H20 entry. Decide whether to renumber
   or document the gap.
-- **ChimeraOracle speedup published as both 32.7x and 40.7x.** README H8 says
-  40.7x; CYNEPIC and BENCHMARK_RE_EVALUATION say 32.7x. Tracked as P0.7.
+- **ChimeraOracle speedup published as both 32.7x and 40.7x.** RESOLVED: canonical
+  value is **40.72x** from `benchmarks/technical/chimera/benchmark_oracle_results.json`
+  (DoWhy mean 3,154ms / Oracle mean 77ms = 40.72x). The 32.7x figure was from an
+  older calculation method and has been corrected in all docs. Tracked as P0.7 (DONE).
 - **Realism quality gate `false` in `benchmark_report.json`.** Once the
   manifest enrichment in this PR is consumed by a fresh report run, the gate
   reasons should be readable in `realism_validation.quality_gate_reasons`.

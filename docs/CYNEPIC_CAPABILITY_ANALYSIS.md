@@ -57,7 +57,7 @@ The CYNEPIC 0.75 architecture has achieved **Phase 16 (Orchestration Governance)
 ### System Maturity
 *   **Testing Resilience:** 1,158 passing tests (923 backend, 235 frontend), TLA+ formal verification of state graphs, and strict OWASP LLM Top 10 defenses.
 *   **Compliance Readiness:** The Guardian and Governance layers are built specifically to adhere to the incoming EU AI Act (Arts. 9-15), GDPR, and SOC 2 Type II audit requirements.
-*   **Performance:** The new `ChimeraOracle` enables sub-second predictions (32.7x speedup on cached queries) using CausalForestDML, transitioning the platform from a theoretical tool to a production-scale API.
+*   **Performance:** The new `ChimeraOracle` enables sub-second predictions (40.7x speedup on cached queries) using CausalForestDML, transitioning the platform from a theoretical tool to a production-scale API.
 
 ### Industry Feasibility Profiles
 

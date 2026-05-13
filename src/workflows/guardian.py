@@ -843,6 +843,59 @@ class Guardian:
                             f"Financial limit adjusted for {state.cynefin_domain.value} domain"
                         )
 
+        # Check 5: Causal robustness gate (PR Tier-1 §2)
+        # Causal evidence on the state must clear refutation and minimum
+        # E-value before the action it supports can be auto-approved.
+        if state.causal_evidence is not None:
+            policies_checked += 1
+            ev = state.causal_evidence
+            from src.core.deployment_profile import get_profile
+            profile = get_profile()
+            min_e = profile.causal_min_e_value
+            require_full = profile.causal_require_full_refutation
+
+            failures: list[str] = []
+            if ev.refutation_status == "skipped":
+                failures.append("refutation tests were not executed")
+            elif ev.refutation_status == "failed":
+                failures.append("all refutation tests failed")
+            elif ev.refutation_status == "partial" and require_full:
+                failures.append(
+                    "partial refutation rejected by profile "
+                    f"({profile.mode.value}: full refutation required)"
+                )
+            if ev.e_value is None:
+                failures.append("E-value could not be computed")
+            elif ev.e_value < min_e:
+                failures.append(
+                    f"E-value {ev.e_value:.2f} below profile minimum {min_e:.2f}"
+                )
+            # Also propagate any reasons captured by the sensitivity scorer.
+            for reason in ev.sensitivity_reasons:
+                if reason and reason not in failures:
+                    failures.append(reason)
+
+            if failures:
+                severity = "high" if profile.mode.value == "production" else "medium"
+                violations.append(PolicyViolation(
+                    policy_name="causal_robustness_below_threshold",
+                    policy_category="risk",
+                    description=(
+                        "Causal claim failed the robustness gate: "
+                        + "; ".join(failures)
+                    ),
+                    severity=severity,
+                    suggested_fix=(
+                        "Add measured confounders, gather more data, or escalate "
+                        "the claim for human causal review."
+                    ),
+                    user_overridable=False,
+                ))
+                context_adjustments.append(
+                    "Causal robustness gate triggered for "
+                    f"{ev.treatment or 'treatment'} → {ev.outcome or 'outcome'}"
+                )
+
         # Compute risk breakdown
         risk_score, risk_breakdown = self._compute_risk_breakdown(state, violations)
 

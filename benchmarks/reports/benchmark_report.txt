@@ -1,23 +1,23 @@
 CARF UNIFIED BENCHMARK REPORT
 ============================================================
-Generated: 2026-02-25T18:06:06.602216
-Data sources: router, causal, bayesian, guardian, performance, chimera, governance, e2e, baseline, board_lifecycle, policy_roundtrip, owasp, red_team, counterbench, adversarial_causal, tau_bench, hallucination_scale, cross_llm, clear, fairness, xai, audit_trail, energy, scope3, sus, task_completion, wcag, supply_chain, healthcare, finance, load, chaos_cascade, soak
+Generated: 2026-05-13T10:45:18.046745
+Data sources: router, causal, bayesian, guardian, performance, chimera, governance, e2e, baseline, board_lifecycle, policy_roundtrip, owasp, red_team, counterbench, adversarial_causal, tau_bench, hallucination_scale, cross_llm, clear, fairness, xai, audit_trail, energy, scope3, sus, task_completion, wcag, supply_chain, healthcare, finance, load, chaos_cascade, soak, monitoring_guardian
 Grade: A+
 
 SUMMARY
 ------------------------------------------------------------
-  Hypotheses evaluated: 39/39
-  Hypotheses passed:    39/39
-  Pass rate:            100.0%
-  Pass rate (95% LCB):  91.0%
-  Data coverage:        33 benchmark categories loaded
+  Hypotheses evaluated: 40/43
+  Hypotheses passed:    39/40
+  Pass rate:            97.5%
+  Pass rate (95% LCB):  87.1%
+  Data coverage:        34 benchmark categories loaded
   Realism gate:         FAIL
   Realism score:        55.15/100
   Reliability score:    81.18/100
   Feasibility score:    88.70/100
   Evidence score:       100.00/100
   Strong evidence:      100.0%
-  Readiness index:      75.46/100
+  Readiness index:      75.17/100
 
 HYPOTHESIS RESULTS
 ------------------------------------------------------------
@@ -186,6 +186,22 @@ HYPOTHESIS RESULTS
          Measured: -1.5147  |  Threshold: 5.0
          latency_drift: 6.9704
 
+  [ N/A] H40: Drift detection detects >5% routing shift within 100 queries with >=90% sensitivity
+         Measured: —  |  Threshold: 0.9
+
+  [ N/A] H41: Memory bias detection sensitivity >= 90% for >10% domain skew in 100+ entries
+         Measured: —  |  Threshold: 0.9
+
+  [ N/A] H42: Plateau detection identifies convergence within 5 epochs of <0.5% improvement
+         Measured: —  |  Threshold: 0.9
+
+  [FAIL] H43: ChimeraOracle fast-path outputs pass through Guardian 100% of the time
+         Measured: 0.0000  |  Threshold: 1.0
+         fast_path_availability_rate: 0.0
+         fallback_rate: 0.0
+         passed_tests: 0
+         total_tests: 5
+
 REALISM VALIDATION
 ------------------------------------------------------------
   Benchmarks are accepted only when realism/reliability/feasibility evidence is present.
@@ -193,13 +209,13 @@ REALISM VALIDATION
   - Realism: dataset profile, scenario diversity, temporal/adversarial coverage.
   - Reliability: deterministic seeds, comparator baselines, stress rigor.
   - Feasibility: automation maturity and runtime budget for continuous validation.
-  - Coverage ratio: 100.0%
+  - Coverage ratio: 97.1%
   - Provenance ratio: 100.0%
   - Production proxy ratio: 100.0%
   - Synthetic profile ratio: 21.2%
   - Evidence score avg: 100.00/100
   - Strong evidence ratio: 100.0%
-  - Absolute readiness index: 75.46/100
+  - Absolute readiness index: 75.17/100
 
   Category scores:
     - core: realism=46.76, reliability=79.55, feasibility=85.45, count=7

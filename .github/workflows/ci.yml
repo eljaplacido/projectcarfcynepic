@@ -7,12 +7,12 @@ on:
     branches: [main]
 
 env:
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.12"
   NODE_VERSION: "18"
   CARF_TEST_MODE: "1"
 
 jobs:
-  # Backend Python Tests
+  # ── Backend Python Tests ────────────────────────────────────────────────
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
@@ -36,11 +36,7 @@ jobs:
         run: |
           pip install ruff
           ruff check src/ tests/
-
-      - name: Run type checking
-        run: |
-          pip install mypy
-          mypy src/ --ignore-missing-imports --no-error-summary || true
+          ruff format --check src/ tests/
 
       - name: Run tests with coverage
         run: |
@@ -54,7 +50,33 @@ jobs:
           name: backend-coverage
           fail_ci_if_error: false
 
-  # Frontend React Tests
+  # ── Type Checking (informational, non-blocking) ─────────────────────────
+  type-check:
+    name: Type Check (mypy)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run mypy strict
+        run: |
+          pip install mypy
+          mypy src/ --strict --ignore-missing-imports --no-error-summary
+
+  # ── Frontend React Tests ────────────────────────────────────────────────
   frontend-tests:
     name: Frontend Tests
     runs-on: ubuntu-latest
@@ -82,7 +104,7 @@ jobs:
         working-directory: carf-cockpit
         run: npm run build
 
-  # Security Scan
+  # ── Security Scan ───────────────────────────────────────────────────────
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
@@ -109,7 +131,31 @@ jobs:
           pip install -e ".[dev]"
           safety check || true
 
-  # Docker Build Test
+  # ── Benchmark Evidence Gate ─────────────────────────────────────────────
+  benchmark-evidence-gate:
+    name: Benchmark Evidence Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run benchmark evidence gate
+        run: |
+          python benchmarks/reports/check_result_evidence.py --strict-manifest
+
+  # ── Docker Build Test ───────────────────────────────────────────────────
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest
@@ -130,22 +176,21 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # All checks pass gate
+  # ── All checks pass gate ────────────────────────────────────────────────
   ci-success:
     name: CI Success
-    needs: [backend-tests, frontend-tests, security-scan]
+    needs: [backend-tests, frontend-tests, security-scan, benchmark-evidence-gate]
     runs-on: ubuntu-latest
     if: always()
 
     steps:
       - name: Check all jobs passed
         run: |
-          if [[ "${{ needs.backend-tests.result }}" != "success" ]]; then
-            echo "Backend tests failed"
-            exit 1
-          fi
-          if [[ "${{ needs.frontend-tests.result }}" != "success" ]]; then
-            echo "Frontend tests failed"
-            exit 1
-          fi
+          for job in backend-tests frontend-tests security-scan benchmark-evidence-gate; do
+            result="${{ needs[job].result }}"
+            if [[ "$result" != "success" ]]; then
+              echo "$job failed ($result)"
+              exit 1
+            fi
+          done
           echo "All CI checks passed!"

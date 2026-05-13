@@ -26,8 +26,10 @@ import json
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
+from src.core.deployment_profile import get_profile, InferenceMode
 from src.core.llm import get_explorer_model
 from src.core.state import BayesianEvidence, ConfidenceLevel, EpistemicState
+from src.utils.posterior_cache import get_posterior_cache
 from src.utils.resiliency import async_retry_with_backoff, retry_with_backoff
 from src.utils.cache import async_lru_cache
 
@@ -274,16 +276,161 @@ Respond with a JSON object:
             uncertainty=uncertainty,
         )
 
-    @retry_with_backoff(max_attempts=2, exceptions=(Exception,))
+    def _config_to_dict(self, config: BayesianInferenceConfig) -> dict[str, Any]:
+        """Serialize config into a hashable dict for cache key generation."""
+        return {
+            "mode": config.mode(),
+            "observations": config.observations,
+            "successes": config.successes,
+            "trials": config.trials,
+            "draws": config.draws,
+            "tune": config.tune,
+            "chains": config.chains,
+            "target_accept": config.target_accept,
+            "seed": config.seed,
+        }
+
+    def _run_approximate_inference(
+        self,
+        config: BayesianInferenceConfig,
+    ) -> BayesianInferenceResult:
+        """Run fast analytical / variational approximation (Phase 18E).
+
+        For ``binomial``: Beta posterior with analytical solution.
+        For ``normal``: Conjugate normal-inverse-gamma with analytical
+        posterior mean and variance.
+        """
+        mode = config.mode()
+        if mode == "binomial":
+            successes = int(config.successes) if config.successes is not None else 0
+            trials = int(config.trials) if config.trials is not None else 1
+            # Beta(1,1) prior + binomial likelihood → Beta(1+s, 1+n-s) posterior
+            alpha_post = 1.0 + successes
+            beta_post = 1.0 + (trials - successes)
+            posterior_mean = alpha_post / (alpha_post + beta_post)
+            posterior_var = (alpha_post * beta_post) / (
+                (alpha_post + beta_post) ** 2 * (alpha_post + beta_post + 1)
+            )
+            posterior_std = posterior_var ** 0.5
+            lower = max(0.0, posterior_mean - 1.645 * posterior_std)
+            upper = min(1.0, posterior_mean + 1.645 * posterior_std)
+            uncertainty = max(0.0, min(1.0, posterior_std / (abs(posterior_mean) + posterior_std + 1e-6)))
+
+            # Generate approximate samples for cache compatibility
+            n_samples = 1000
+            # Simple rejection-free Beta approximation via Gamma ratios
+            samples = []
+            import math
+            for _ in range(n_samples):
+                # Use Beta mean ± std as normal approximation for samples
+                s = posterior_mean + posterior_std * (2.0 * (_ / n_samples) - 1.0)
+                samples.append(max(0.0, min(1.0, s)))
+
+            return BayesianInferenceResult(
+                posterior_mean=posterior_mean,
+                credible_interval=(lower, upper),
+                uncertainty=uncertainty,
+                epistemic_uncertainty=posterior_std,
+                aleatoric_uncertainty=posterior_mean * (1 - posterior_mean),
+            )
+
+        if mode == "normal":
+            observations = [float(value) for value in config.observations or []]
+            if not observations:
+                raise ValueError("No observations provided for normal model")
+
+            n = len(observations)
+            obs_mean = sum(observations) / n
+            obs_variance = sum((x - obs_mean) ** 2 for x in observations) / max(n - 1, 1)
+            obs_std = max(obs_variance ** 0.5, 1e-3)
+
+            # Conjugate prior: Normal-Inverse-Gamma with weak prior (mu0=obs_mean, k0=1, alpha0=1, beta0=obs_variance)
+            k0 = 1.0
+            alpha0 = 1.0
+            beta0 = obs_variance
+            posterior_mean = (k0 * obs_mean + n * obs_mean) / (k0 + n)
+            posterior_var = (2 * beta0 + (n - 1) * obs_variance) / (2 * alpha0 + n - 2) / (k0 + n)
+            if posterior_var <= 0 or posterior_var != posterior_var:  # NaN guard
+                posterior_var = obs_variance / max(n, 1)
+            posterior_std = posterior_var ** 0.5
+            lower = posterior_mean - 1.645 * posterior_std
+            upper = posterior_mean + 1.645 * posterior_std
+            uncertainty = max(0.0, min(1.0, posterior_std / (abs(posterior_mean) + posterior_std + 1e-6)))
+
+            n_samples = 1000
+            samples = []
+            for i in range(n_samples):
+                s = posterior_mean + posterior_std * (2.0 * (i / n_samples) - 1.0)
+                samples.append(s)
+
+            return BayesianInferenceResult(
+                posterior_mean=posterior_mean,
+                credible_interval=(lower, upper),
+                uncertainty=uncertainty,
+                epistemic_uncertainty=posterior_std,
+                aleatoric_uncertainty=obs_std,
+            )
+
+        raise ValueError("Inference config missing observations")
+
     def _run_pymc_inference(
         self,
         config: BayesianInferenceConfig,
     ) -> BayesianInferenceResult:
-        """Run PyMC inference and summarize posterior."""
+        """Run PyMC inference and summarize posterior.
+
+        Phase 18E: Respects ``inference_mode`` from the deployment profile:
+        - ``cached``: check posterior cache first; miss → fall through to profile preset mode
+        - ``approximate``: analytical conjugate posterior (no PyMC required)
+        - ``full``: standard MCMC via PyMC
+        """
+        profile = get_profile()
+        cache = get_posterior_cache()
+        config_dict = self._config_to_dict(config)
+
+        # --- CACHED mode: try cache first ---
+        if profile.inference_mode == InferenceMode.CACHED:
+            cached = cache.get(config_dict)
+            if cached is not None:
+                logger.info("Posterior cache hit — skipping MCMC")
+                return BayesianInferenceResult(
+                    posterior_mean=cached.posterior_mean,
+                    credible_interval=cached.credible_interval,
+                    uncertainty=max(0.0, min(1.0, cached.epistemic_uncertainty / (abs(cached.posterior_mean) + cached.epistemic_uncertainty + 1e-6))),
+                    epistemic_uncertainty=cached.epistemic_uncertainty,
+                    aleatoric_uncertainty=cached.aleatoric_uncertainty,
+                )
+            logger.info("Posterior cache miss — running inference")
+
+        # --- APPROXIMATE mode: analytical fallback ---
+        if profile.inference_mode == InferenceMode.APPROXIMATE:
+            logger.info("Using approximate (analytical) Bayesian inference")
+            result = self._run_approximate_inference(config)
+            cache.put(
+                config_dict,
+                samples=[],  # approximate mode does not generate full samples
+                epistemic_uncertainty=result.epistemic_uncertainty,
+                aleatoric_uncertainty=result.aleatoric_uncertainty,
+                credible_interval=result.credible_interval,
+                posterior_mean=result.posterior_mean,
+            )
+            return result
+
+        # --- FULL mode: PyMC MCMC ---
         try:
             import pymc as pm  # type: ignore
         except ImportError as exc:
-            raise RuntimeError("PyMC is required for Bayesian inference") from exc
+            logger.warning("PyMC not available; falling back to approximate inference")
+            result = self._run_approximate_inference(config)
+            cache.put(
+                config_dict,
+                samples=[],
+                epistemic_uncertainty=result.epistemic_uncertainty,
+                aleatoric_uncertainty=result.aleatoric_uncertainty,
+                credible_interval=result.credible_interval,
+                posterior_mean=result.posterior_mean,
+            )
+            return result
 
         mode = config.mode()
         if mode == "binomial":
@@ -306,11 +453,17 @@ Respond with a JSON object:
 
             p_samples = trace.posterior["p"].values.ravel().tolist()
             result = self._summarize_samples(p_samples)
-            # Epistemic: uncertainty about the true rate (std of posterior)
             p_mean = sum(p_samples) / len(p_samples)
             result.epistemic_uncertainty = (sum((x - p_mean) ** 2 for x in p_samples) / max(len(p_samples) - 1, 1)) ** 0.5
-            # Aleatoric: inherent Bernoulli variance mean(p*(1-p))
             result.aleatoric_uncertainty = sum(x * (1 - x) for x in p_samples) / len(p_samples)
+            cache.put(
+                config_dict,
+                samples=p_samples,
+                epistemic_uncertainty=result.epistemic_uncertainty,
+                aleatoric_uncertainty=result.aleatoric_uncertainty,
+                credible_interval=result.credible_interval,
+                posterior_mean=result.posterior_mean,
+            )
             return result
 
         if mode == "normal":
@@ -341,11 +494,17 @@ Respond with a JSON object:
             mu_samples = trace.posterior["mu"].values.ravel().tolist()
             sigma_samples = trace.posterior["sigma"].values.ravel().tolist()
             result = self._summarize_samples(mu_samples)
-            # Epistemic: uncertainty about the true mean (std of mu posterior)
             mu_mean = sum(mu_samples) / len(mu_samples)
             result.epistemic_uncertainty = (sum((x - mu_mean) ** 2 for x in mu_samples) / max(len(mu_samples) - 1, 1)) ** 0.5
-            # Aleatoric: estimated data noise (mean of sigma posterior)
             result.aleatoric_uncertainty = sum(sigma_samples) / len(sigma_samples)
+            cache.put(
+                config_dict,
+                samples=mu_samples,
+                epistemic_uncertainty=result.epistemic_uncertainty,
+                aleatoric_uncertainty=result.aleatoric_uncertainty,
+                credible_interval=result.credible_interval,
+                posterior_mean=result.posterior_mean,
+            )
             return result
 
         raise ValueError("Inference config missing observations")

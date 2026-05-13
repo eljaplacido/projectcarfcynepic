@@ -73,6 +73,27 @@ class CausalEvidence(BaseModel):
     refutation_results: dict[str, bool] = Field(
         default_factory=dict, description="Individual refutation test results"
     )
+    # --- Quantified sensitivity (PR Tier-1 §1) ---
+    e_value: float | None = Field(
+        default=None,
+        description=(
+            "VanderWeele-Ding E-value: minimum strength on each association "
+            "scale that an unobserved confounder must have to fully explain "
+            "the observed effect. Higher = more robust."
+        ),
+    )
+    e_value_ci: float | None = Field(
+        default=None,
+        description="E-value applied to the CI bound nearest the null.",
+    )
+    refutation_status: str = Field(
+        default="skipped",
+        description="passed / partial / failed / skipped",
+    )
+    sensitivity_reasons: list[str] = Field(
+        default_factory=list,
+        description="Human-readable reasons the robustness gate accepted/rejected.",
+    )
     interpretation: str = Field(default="", description="Human-readable interpretation")
     treatment: str = Field(default="", description="Treatment variable name")
     outcome: str = Field(default="", description="Outcome variable name")

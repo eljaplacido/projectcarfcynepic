@@ -2,11 +2,17 @@
 """Generate CARF vs Raw LLM Comparison Report.
 
 Aggregates results from all benchmark runs and produces a unified comparison
-report with statistical tests for 39 falsifiable hypotheses across 9 categories:
+report with statistical tests for 43 falsifiable hypotheses across 11 categories.
+
+Hypothesis numbering (intentional gaps documented):
   Core (H0-H9), Governance (H10-H16), Causal (H17, H24),
-  Competitive (H18-H22), Security (H23, H25), Compliance (H26-H28),
-  Sustainability (H29-H30), UX (H31-H33), Industry (H34-H36),
-  Performance (H37-H39)
+  Competitive (H18-H19, H21-H22), Security (H23, H25),
+  Compliance (H26-H28), Sustainability (H29-H30), UX (H31-H33),
+  Industry (H34-H36), Performance (H37-H39), Monitoring (H40-H43)
+
+Note: H20 is intentionally absent. It was reserved for a competitive benchmark
+that was merged into H19 (hallucination at scale) during Phase 14 consolidation.
+The gap is preserved to avoid renumbering downstream references.
 
 Usage:
     python benchmarks/reports/generate_report.py
@@ -761,6 +767,65 @@ def evaluate_hypotheses(results: dict[str, Any]) -> list[dict[str, Any]]:
                     "latency_drift": _metric(sk, "latency_drift_pct", "latency_drift")
                 }
 
+        # H40: Drift detection sensitivity (Phase 18A)
+        elif h["id"] == "H40" and "monitoring_drift" in results:
+            md = results["monitoring_drift"]
+            sensitivity = _metric(md, "sensitivity", "drift_sensitivity")
+            if sensitivity is not None:
+                evaluation["metric_value"] = sensitivity
+                evaluation["passed"] = sensitivity >= h["threshold"]
+                evaluation["status"] = "evaluated"
+                evaluation["details"] = {
+                    "specificity": _metric(md, "specificity"),
+                    "true_positives": _metric(md, "true_positives"),
+                    "true_negatives": _metric(md, "true_negatives"),
+                    "total_scenarios": _metric(md, "total_scenarios"),
+                }
+
+        # H41: Memory bias detection sensitivity (Phase 18B)
+        elif h["id"] == "H41" and "monitoring_bias" in results:
+            mb = results["monitoring_bias"]
+            accuracy = _metric(mb, "bias_detection_accuracy")
+            if accuracy is not None:
+                evaluation["metric_value"] = accuracy
+                evaluation["passed"] = accuracy >= h["threshold"]
+                evaluation["status"] = "evaluated"
+                evaluation["details"] = {
+                    "sensitivity": _metric(mb, "sensitivity"),
+                    "false_alarm_rate": _metric(mb, "false_alarm_rate"),
+                    "detection_specificity": _metric(mb, "detection_specificity"),
+                    "total_scenarios": _metric(mb, "total_scenarios"),
+                }
+
+        # H42: Plateau detection accuracy (Phase 18C)
+        elif h["id"] == "H42" and "monitoring_plateau" in results:
+            mp = results["monitoring_plateau"]
+            accuracy = _metric(mp, "plateau_detection_accuracy")
+            if accuracy is not None:
+                evaluation["metric_value"] = accuracy
+                evaluation["passed"] = accuracy >= h["threshold"]
+                evaluation["status"] = "evaluated"
+                evaluation["details"] = {
+                    "regression_detection_accuracy": _metric(mp, "regression_detection_accuracy"),
+                    "false_plateau_rate": _metric(mp, "false_plateau_rate"),
+                    "total_scenarios": _metric(mp, "total_scenarios"),
+                }
+
+        # H43: ChimeraOracle fast-path Guardian enforcement (Phase 18D)
+        elif h["id"] == "H43" and "monitoring_guardian" in results:
+            mg = results["monitoring_guardian"]
+            rate = _metric(mg, "guardian_enforcement_rate")
+            if rate is not None:
+                evaluation["metric_value"] = rate
+                evaluation["passed"] = rate >= h["threshold"]
+                evaluation["status"] = "evaluated"
+                evaluation["details"] = {
+                    "fast_path_availability_rate": _metric(mg, "fast_path_availability_rate"),
+                    "fallback_rate": _metric(mg, "fallback_rate"),
+                    "passed_tests": _metric(mg, "passed_tests"),
+                    "total_tests": _metric(mg, "total_tests"),
+                }
+
         evaluations.append(evaluation)
 
     return evaluations
@@ -769,7 +834,7 @@ def evaluate_hypotheses(results: dict[str, Any]) -> list[dict[str, Any]]:
 def compute_grade(passed: int, evaluated: int, total: int) -> str:
     """Compute a summary grade from hypothesis pass rates.
 
-    Grade scale (updated for 39-hypothesis suite):
+    Grade scale (43-hypothesis suite, monitoring H40-H43 included):
         A+: >= 80% passed with >= 15 evaluated
         A:  >= 80% passed with >= 10 evaluated
         B:  >= 60% passed with >= 7 evaluated

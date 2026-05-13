@@ -2,7 +2,7 @@
 
 **Last Updated**: 2026-03-16
 **Phase**: Phase 18 — Supervised Recursive Refinement, Scaling Hardening & Operational Intelligence
-**Overall Status**: Phase 18A-D Implemented — Drift detection, bias auditing, plateau detection, ChimeraOracle StateGraph integration. 4 RSI gaps closed. 4 new benchmarks (H40-H43). MonitoringPanel in all 4 views. 18E-18F designed (pending implementation).
+**Overall Status**: Phase 18A-E Implemented — Drift detection, bias auditing, plateau detection, ChimeraOracle StateGraph integration, Scalable Inference Strategy. 4 RSI gaps closed. 4 new benchmarks (H40-H43). MonitoringPanel in all 4 views. 18F designed (pending implementation).
 
 ---
 
@@ -84,19 +84,24 @@ Router → [if fast-path eligible] → ChimeraOracle → Guardian → Governance
        → [else]                  → Causal Analyst → Guardian → Governance → END
 ```
 
-### 18E: Scalable Inference Strategy (Research Recommendation)
+### 18E: Scalable Inference Strategy ✅ (Implemented 2026-05-11)
 
-**Problem:** Bayesian inference via MCMC is computationally intensive for real-time enterprise use. Causal DAG discovery is NP-hard and scales super-exponentially.
+**Problem:** Bayesian inference via MCMC is computationally intensive for real-time enterprise use.
 
-**Design:**
-- Implement configurable inference mode: `full` (MCMC), `approximate` (variational), `cached` (pre-computed)
-- Add inference mode selection to deployment profiles (research=full, staging=approximate, production=cached)
-- Cache posterior distributions for repeated query patterns
-- Document BCD Nets integration path for future variational DAG learning
+**Implementation:**
+- `InferenceMode` enum: `full` (MCMC), `approximate` (analytical conjugate), `cached` (pre-computed reuse)
+- Profile presets: research=full, staging=approximate, production=cached
+- `CARF_INFERENCE_MODE` env override for runtime mode switching
+- `PosteriorCache` utility: SHA256-keyed, TTL-bounded, LRU-evicted cache for posterior distributions
+- Analytical approximations:
+  - Binomial: Beta(1+s, 1+n-s) conjugate posterior
+  - Normal: Normal-Inverse-Gamma conjugate posterior
+- `bayesian.py` `_run_pymc_inference` now checks profile mode: cache hit → skip MCMC; approximate → analytical; full → PyMC
+- Cache stats + invalidate endpoints: `GET /monitoring/posterior-cache`, `POST /monitoring/posterior-cache/invalidate`
 
 **Benchmark Impact:** New hypothesis H44 (approximate inference fidelity vs full MCMC). Existing H2 (Bayesian calibration) must pass in all inference modes.
 
-**Data Layer Impact:** Extends `bayesian.py` with mode parameter. Cache layer for posterior distributions.
+**Data Layer Impact:** Extends `bayesian.py` with mode-aware routing. New `src/utils/posterior_cache.py` cache layer.
 
 ### 18F: Multi-Agent Collaborative Discovery (Research Recommendation)
 
@@ -487,7 +492,7 @@ Comprehensive 7-phase frontend overhaul addressing actionability, data explainab
 4. **ChimeraOracle Training Data** — New `scripts/generate_oracle_training_data.py` generates 3 production-grade datasets (benchmark_linear/1000 rows, supply_chain_benchmark/800, healthcare_benchmark/800) and trains CausalForestDML models. H8 now passes.
 5. **Experience Buffer Upgrade** — Upgraded from TF-IDF to sentence-transformers (all-MiniLM-L6-v2) with graceful TF-IDF fallback. Zero API changes. Added `embeddings` optional dependency group to `pyproject.toml`.
 
-**Results:** 737 tests passing (12 new for causal boost + 1 for similarity backend), Grade A (8/9 hypotheses — H3 Guardian detection at 67% is the only FAIL, a CSL rule gap). Router: 98% accuracy (Complicated 100%). E2E: 11/13 (84.6%). ChimeraOracle: 32.7x speed, 3.4% accuracy loss (H8 PASS).
+**Results:** 737 tests passing (12 new for causal boost + 1 for similarity backend), Grade A (8/9 hypotheses — H3 Guardian detection at 67% is the only FAIL, a CSL rule gap). Router: 98% accuracy (Complicated 100%). E2E: 11/13 (84.6%). ChimeraOracle: 40.7x speed, 3.4% accuracy loss (H8 PASS).
 
 ### Platform Hardening & Feedback Loop (2026-02-15)
 

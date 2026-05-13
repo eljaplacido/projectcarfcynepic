@@ -83,6 +83,8 @@ CARF_API_KEY=                   # API key for staging/production auth
 CARF_CORS_ORIGINS=              # Comma-separated CORS origins (overrides profile default)
 CARF_MEMORY_DIR=data/memory     # Persistent agent memory storage
 CARF_EMBEDDINGS_DIR=data/embeddings  # Numpy embedding cache
+CARF_INFERENCE_MODE=full        # Bayesian inference: full | approximate | cached
+CARF_INFERENCE_CACHE_TTL=3600   # Posterior cache TTL in seconds (0 = disable)
 ```
 
 Phase 3/4 (optional):
@@ -291,16 +293,16 @@ Entry → Memory Augmentation → Router (+ memory hints) → RAG Context →
 [Domain Agent] → Guardian → [Governance (+ RAG triple feed)] → END
 ```
 
-### Implemented (Phase 18A-D):
+### Implemented (Phase 18A-E):
 - **ChimeraOracle LangGraph Integration** ✅ — `chimera_fast_path_node` in StateGraph with Guardian enforcement (AP-7/AP-10 closed)
 - **Drift Detection Service** ✅ — KL-divergence monitoring, `/monitoring/drift` API, Developer View integration
 - **Plateau Detection** ✅ — Convergence monitoring with regression alerts, `/monitoring/convergence` API
 - **Bias Auditing** ✅ — Chi-squared fairness tests, `/monitoring/bias-audit` API, Governance View integration
 - **Monitoring Panel** ✅ — 3-tab React component in Developer + Governance views, 3 Executive KPI cards
 - **Benchmarks H40-H43** ✅ — Drift sensitivity, bias accuracy, plateau detection, Guardian enforcement
+- **Scalable Inference Strategy** ✅ — `full`/`approximate`/`cached` inference modes, `PosteriorCache` with TTL/LRU, env overrides, analytical conjugate approximations, cache monitoring endpoints
 
-### Remaining Work (Phase 18E-F):
-- **Scalable Inference** (P2) — Configurable inference modes (full MCMC / approximate / cached)
+### Remaining Work (Phase 18F):
 - **Multi-Agent Discovery** (P3) — Collaborative causal discovery for high-dimensional variables
 - **CI/CD** — GitHub Actions workflow for automated testing
 

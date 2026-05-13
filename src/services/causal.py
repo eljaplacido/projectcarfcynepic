@@ -83,6 +83,27 @@ class CausalAnalysisResult(BaseModel):
         default=False,
         description="Whether the causal claim passed refutation"
     )
+    # Quantified sensitivity (PR Tier-1 §2)
+    e_value: float | None = Field(
+        default=None,
+        description="Point E-value (VanderWeele & Ding 2017).",
+    )
+    e_value_ci: float | None = Field(
+        default=None,
+        description="E-value at the CI bound nearest the null.",
+    )
+    refutation_status: str = Field(
+        default="skipped",
+        description="passed | partial | failed | skipped",
+    )
+    robust: bool = Field(
+        default=False,
+        description="True iff every robustness check (refutation + E-value) passed.",
+    )
+    sensitivity_reasons: list[str] = Field(
+        default_factory=list,
+        description="Human-readable reasons summarising the robustness verdict.",
+    )
     interpretation: str = Field(..., description="Human-readable interpretation")
 
 
@@ -517,15 +538,46 @@ Respond with a JSON object:
         p_value = getattr(estimate, "p_value", None)
 
         refutation_results: dict[str, bool] = {}
-        for method in ("placebo_treatment_refuter", "random_common_cause"):
+        # Mandatory battery (PR Tier-1 §2): three orthogonal refuters every
+        # causal claim must clear. ``add_unobserved_common_cause`` is offered
+        # via DoWhy but is parameter-sensitive across versions, so we keep the
+        # core three as the gating set and let the sensitivity scorer reflect
+        # robustness quantitatively via the E-value.
+        for method, kwargs in (
+            ("placebo_treatment_refuter", {"placebo_type": "permute"}),
+            ("random_common_cause", {}),
+            ("data_subset_refuter", {"subset_fraction": 0.8}),
+        ):
             try:
-                refute = model.refute_estimate(estimand, estimate, method_name=method)
+                refute = model.refute_estimate(
+                    estimand, estimate, method_name=method, **kwargs
+                )
                 refutation_results[method] = self._refutation_passed(refute)
             except Exception as exc:
                 logger.warning(f"Refutation {method} failed: {exc}")
                 refutation_results[method] = False
 
         passed_refutation = all(refutation_results.values()) if refutation_results else False
+
+        # Quantified sensitivity — E-value + robustness verdict.
+        try:
+            outcome_sd = float(df[outcome].std())
+        except Exception:  # pragma: no cover - defensive
+            outcome_sd = None
+
+        from src.core.deployment_profile import get_profile
+        from src.services.causal_sensitivity import assess_robustness
+
+        profile = get_profile()
+        report = assess_robustness(
+            effect=effect_value,
+            confidence_interval=confidence_interval,
+            refutation_results=refutation_results,
+            outcome_sd=outcome_sd,
+            scale="continuous",
+            min_e_value=profile.causal_min_e_value,
+            require_all_refutations=profile.causal_require_full_refutation,
+        )
 
         interpretation = (
             f"Estimated causal effect of {treatment} on {outcome}: {effect_value:.3f}"
@@ -538,6 +590,11 @@ Respond with a JSON object:
             p_value=float(p_value) if p_value is not None else None,
             refutation_results=refutation_results,
             passed_refutation=passed_refutation,
+            e_value=report.e_value,
+            e_value_ci=report.e_value_ci,
+            refutation_status=report.refutation_status,
+            robust=report.robust,
+            sensitivity_reasons=list(report.reasons),
             interpretation=interpretation,
         )
 
@@ -1016,6 +1073,10 @@ async def run_causal_analysis(
         confounders_checked=result.hypothesis.confounders,
         p_value=result.p_value,
         refutation_results=result.refutation_results,
+        e_value=result.e_value,
+        e_value_ci=result.e_value_ci,
+        refutation_status=result.refutation_status,
+        sensitivity_reasons=list(result.sensitivity_reasons),
         interpretation=result.interpretation,
         treatment=result.hypothesis.treatment,
         outcome=result.hypothesis.outcome,
@@ -1024,8 +1085,28 @@ async def run_causal_analysis(
 
     state.current_hypothesis = result.interpretation
 
-    # Determine confidence level
-    if result.passed_refutation and result.effect_estimate > 0.3:
+    # Robustness gate (PR Tier-1 §2): claims that fail the gate are flagged
+    # for Guardian as a policy violation; Guardian decides escalation.
+    if not result.robust:
+        violation = "causal_robustness_below_threshold"
+        if violation not in state.policy_violations:
+            state.policy_violations.append(violation)
+        for reason in result.sensitivity_reasons:
+            tag = f"causal_sensitivity:{reason}"
+            if tag not in state.policy_violations:
+                state.policy_violations.append(tag)
+        logger.warning(
+            "Causal robustness gate failed (status=%s, e_value=%s): %s",
+            result.refutation_status,
+            result.e_value,
+            "; ".join(result.sensitivity_reasons) or "no reasons",
+        )
+
+    # Determine confidence level — robust passes still need refutation success
+    # to claim HIGH; robust=False forces LOW regardless of effect magnitude.
+    if not result.robust:
+        state.overall_confidence = ConfidenceLevel.LOW
+    elif result.passed_refutation and result.effect_estimate > 0.3:
         state.overall_confidence = ConfidenceLevel.HIGH
     elif result.passed_refutation:
         state.overall_confidence = ConfidenceLevel.MEDIUM

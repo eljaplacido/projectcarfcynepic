@@ -42,7 +42,7 @@ from src.services.explanation_builder import enrich_state_explanation
 from src.services.human_layer import human_escalation_node
 from src.services.kafka_audit import log_state_to_kafka
 from src.services.policy_scaffold_service import get_scaffold_service
-from src.utils.telemetry import traced
+from src.utils.telemetry import traced, traced_node
 from src.workflows.guardian import guardian_node
 from src.workflows.router import cynefin_router_node
 
@@ -201,7 +201,7 @@ async def csl_guardian_node(state: EpistemicState) -> EpistemicState:
 # =============================================================================
 
 
-@traced(name="carf.node.csl_precheck", attributes={"layer": "policy"})
+@traced_node(node_name="carf.node.csl_precheck", node_type="policy")
 async def csl_precheck_node(state: EpistemicState) -> EpistemicState:
     """Pre-check CSL constraints before domain agents process.
 
@@ -326,7 +326,7 @@ def _apply_financial_cap(state: EpistemicState) -> None:
 # =============================================================================
 
 
-@traced(name="carf.node.chimera_fast_path", attributes={"layer": "mesh"})
+@traced_node(node_name="carf.node.chimera_fast_path", node_type="mesh")
 async def chimera_fast_path_node(state: EpistemicState) -> EpistemicState:
     """ChimeraOracle fast-path node — Guardian-enforced fast causal predictions.
 
@@ -513,7 +513,7 @@ def _should_use_chimera_fast_path(state: EpistemicState) -> bool:
 # =============================================================================
 
 
-@traced(name="carf.node.deterministic_runner", attributes={"layer": "mesh"})
+@traced_node(node_name="carf.node.deterministic_runner", node_type="mesh")
 async def deterministic_runner_node(state: EpistemicState) -> EpistemicState:
     """Clear domain handler - executes deterministic operations.
 
@@ -591,7 +591,7 @@ async def _data_grounded_fallback(state: EpistemicState) -> EpistemicState:
     return state
 
 
-@traced(name="carf.node.causal_analyst", attributes={"layer": "mesh"})
+@traced_node(node_name="carf.node.causal_analyst", node_type="mesh")
 async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     """Complicated domain handler - performs causal analysis.
 
@@ -653,7 +653,7 @@ async def causal_analyst_node(state: EpistemicState) -> EpistemicState:
     return state
 
 
-@traced(name="carf.node.bayesian_explorer", attributes={"layer": "mesh"})
+@traced_node(node_name="carf.node.bayesian_explorer", node_type="mesh")
 async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
     """Complex domain handler - navigates uncertainty via Active Inference.
 
@@ -702,7 +702,7 @@ async def bayesian_explorer_node(state: EpistemicState) -> EpistemicState:
     return state
 
 
-@traced(name="carf.node.circuit_breaker", attributes={"layer": "mesh"})
+@traced_node(node_name="carf.node.circuit_breaker", node_type="mesh")
 async def circuit_breaker_node(state: EpistemicState) -> EpistemicState:
     """Chaotic domain handler - emergency stabilization.
 
@@ -730,10 +730,22 @@ async def circuit_breaker_node(state: EpistemicState) -> EpistemicState:
         duration_ms=int((time.perf_counter() - _t0) * 1000),
     )
 
+    # Trace-to-eval: chaotic domain activation is a high-signal regression case
+    try:
+        from src.utils.trace_eval_loop import get_trace_eval_loop
+        loop = get_trace_eval_loop()
+        loop.capture(
+            trace_id=str(state.session_id),
+            trigger="chaotic_domain_activation",
+            state=state,
+        )
+    except Exception:
+        pass
+
     return state
 
 
-@traced(name="carf.node.reflector", attributes={"layer": "mesh"})
+@traced_node(node_name="carf.node.reflector", node_type="mesh")
 async def reflector_node(state: EpistemicState) -> EpistemicState:
     """Self-correction node - attempts to fix rejected actions.
 
@@ -818,6 +830,18 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
         state.proposed_action = None
     state.guardian_verdict = None
 
+    # Trace-to-eval: capture Guardian rejections for regression analysis
+    try:
+        from src.utils.trace_eval_loop import get_trace_eval_loop
+        loop = get_trace_eval_loop()
+        loop.capture(
+            trace_id=str(state.session_id),
+            trigger="guardian_rejection",
+            state=state,
+        )
+    except Exception:
+        pass
+
     return state
 
 
@@ -826,7 +850,7 @@ async def reflector_node(state: EpistemicState) -> EpistemicState:
 # =============================================================================
 
 
-@traced(name="carf.node.governance", attributes={"layer": "governance"})
+@traced_node(node_name="carf.node.governance", node_type="governance")
 async def governance_node(state: EpistemicState) -> EpistemicState:
     """Orchestration Governance node — MAP-PRICE-RESOLVE.
 
@@ -1028,7 +1052,7 @@ _RAG_TOP_K = {
 }
 
 
-@traced(name="carf.node.rag_context", attributes={"layer": "retrieval"})
+@traced_node(node_name="carf.node.rag_context", node_type="retrieval")
 async def rag_context_node(state: EpistemicState) -> EpistemicState:
     """Inject RAG context between router and domain agents.
 

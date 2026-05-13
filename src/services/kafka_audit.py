@@ -185,6 +185,23 @@ def get_kafka_audit_service() -> KafkaAuditService:
 
 
 async def log_state_to_kafka(state: EpistemicState) -> None:
-    """Convenience wrapper to log state if Kafka is configured."""
+    """Convenience wrapper to log state if Kafka is configured.
+
+    Also emits a PROV-AGENT JSON-LD bundle when ``CARF_PROV_ENABLED=true``.
+    The two emissions are independent — failures in one must not block the
+    other or the workflow.
+    """
     service = get_kafka_audit_service()
-    await service.log_state(state)
+    try:
+        await service.log_state(state)
+    except Exception as exc:  # pragma: no cover - defensive logging
+        logger.warning("Kafka audit emission failed: %s", exc)
+
+    try:
+        from src.services.prov_agent import get_prov_emitter
+
+        emitter = get_prov_emitter()
+        if emitter.config.enabled:
+            await asyncio.to_thread(emitter.write_state, state)
+    except Exception as exc:  # pragma: no cover - defensive logging
+        logger.warning("PROV-AGENT emission failed: %s", exc)

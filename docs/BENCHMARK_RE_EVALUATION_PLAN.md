@@ -40,7 +40,7 @@
 | H5 | EU AI Act Compliance (100%, 6 articles) | PASS | Self-assessed; needs external audit framework |
 | H6 | Latency Overhead (3.5x) | PASS | No concurrent load testing |
 | H7 | Hallucination Reduction (100%) | PASS | Only 5 claims tested; needs FActScore/HaluEval scale |
-| H8 | ChimeraOracle Speed (32.7x, 3.4% loss) | PASS | Single scenario; no drift testing |
+| H8 | ChimeraOracle Speed (40.7x, 3.4% loss) | PASS | Single scenario; no drift testing |
 | H9 | Memory Stability (0.21% growth) | PASS | 50 queries only; needs long-running soak test |
 | H10 | Reflector Self-Correction (80%) | PASS | 5 scenarios; unknown violation handling weak |
 | H11 | Resiliency (6/6 tests) | PASS | No multi-component cascade failures |
@@ -637,7 +637,7 @@ rule low_confidence_escalation:
 | H5 | EU AI Act (add Art. 10, 11, 15) | 100% | >= 90% | Broader article coverage |
 | H6 | Latency under concurrent load | 3.5x | < 5x | Add concurrency dimension |
 | H7 | Hallucination on 200 claims (was 5) | 100% | < 2% | **Statistical significance** |
-| H8 | ChimeraOracle multi-scenario | 32.7x | >= 10x | Test drift resilience |
+| H8 | ChimeraOracle multi-scenario | 40.7x | >= 10x | Test drift resilience |
 | H9 | Memory over 24h soak (was 50 queries) | 0.21% | < 5% | Real-world duration |
 | H10 | Reflector (add unknown-type handling) | 80% | >= 80% | Fix test artifact |
 | H11 | Resiliency cascade failures | 100% | >= 95% | Multi-component failures |

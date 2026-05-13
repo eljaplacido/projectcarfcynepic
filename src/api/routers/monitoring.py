@@ -146,3 +146,117 @@ async def get_monitoring_status():
         },
         "convergence": retraining.get_convergence_status(),
     }
+
+
+# ---------------------------------------------------------------------------
+# Posterior Cache (Phase 18E)
+# ---------------------------------------------------------------------------
+
+
+@router.get("/posterior-cache")
+async def get_posterior_cache_stats():
+    """Get posterior distribution cache statistics.
+
+    Shows cache hit rate, utilization, and TTL configuration.
+    """
+    from src.utils.posterior_cache import get_posterior_cache
+    from src.core.deployment_profile import get_profile
+
+    cache = get_posterior_cache()
+    profile = get_profile()
+    return {
+        "cache_stats": cache.stats(),
+        "inference_mode": profile.inference_mode.value,
+        "inference_cache_ttl_seconds": profile.inference_cache_ttl_seconds,
+        "inference_cache_max_entries": profile.inference_cache_max_entries,
+    }
+
+
+@router.post("/posterior-cache/invalidate")
+async def invalidate_posterior_cache():
+    """Invalidate all cached posterior distributions."""
+    from src.utils.posterior_cache import get_posterior_cache
+
+    cache = get_posterior_cache()
+    cache.invalidate()
+    return {"status": "invalidated", "cache_stats": cache.stats()}
+
+
+# ---------------------------------------------------------------------------
+# Workflow Tracing (OpenTelemetry)
+# ---------------------------------------------------------------------------
+
+
+@router.get("/trace/status")
+async def get_trace_status():
+    """Get OpenTelemetry tracing status and configuration."""
+    from src.utils.telemetry import _initialized, _tracer
+
+    return {
+        "tracing_enabled": _initialized,
+        "tracer_available": _tracer is not None,
+        "otel_sdk_installed": _tracer is not None,
+    }
+
+
+@router.post("/trace/init")
+async def init_tracing_endpoint(
+    exporter_endpoint: str | None = None,
+):
+    """Initialize or re-initialize OpenTelemetry tracing.
+
+    Optionally provide an OTLP endpoint for remote collection.
+    """
+    from src.utils.telemetry import init_telemetry
+
+    if exporter_endpoint:
+        import os
+        os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = exporter_endpoint
+
+    init_telemetry()
+    return {"status": "initialized"}
+
+
+# ---------------------------------------------------------------------------
+# Trace-to-Eval Loop
+# ---------------------------------------------------------------------------
+
+
+@router.get("/trace-eval/cases")
+async def get_trace_eval_cases(
+    trigger: str | None = None,
+    domain: str | None = None,
+    limit: int = 50,
+):
+    """Get captured trace-to-eval regression cases.
+
+    Filter by trigger type (guardian_rejection, chaotic_domain_activation, etc.)
+    or Cynefin domain.
+    """
+    from src.utils.trace_eval_loop import get_trace_eval_loop
+
+    loop = get_trace_eval_loop()
+    cases = loop.get_cases(trigger=trigger, domain=domain, limit=limit)
+    return {
+        "cases": [c.to_dict() for c in cases],
+        "stats": loop.stats(),
+    }
+
+
+@router.get("/trace-eval/stats")
+async def get_trace_eval_stats():
+    """Get trace-to-eval loop statistics."""
+    from src.utils.trace_eval_loop import get_trace_eval_loop
+
+    loop = get_trace_eval_loop()
+    return loop.stats()
+
+
+@router.post("/trace-eval/export")
+async def export_trace_eval_cases():
+    """Export captured cases as a pytest fixture file."""
+    from src.utils.trace_eval_loop import get_trace_eval_loop
+
+    loop = get_trace_eval_loop()
+    path = loop.export_for_tests()
+    return {"status": "exported", "path": str(path), "stats": loop.stats()}

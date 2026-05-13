@@ -45,7 +45,7 @@ While Phase 16 solidifies CARF as an enterprise-grade governed platform, several
 *   **Future Capability:** Advancing the `SmartReflectorService` to automatically negotiate and resolve these conflicts using game-theoretic or utility-based mathematical weighting, minimizing the need for Human-in-the-Loop interventions entirely.
 
 ### 3. ChimeraOracle Workflow Integration
-*   **Current State:** The `ChimeraOracle` delivers blazingly fast (32.7x speedup) causal predictions using `CausalForestDML`, but currently operates as a standalone API.
+*   **Current State:** The `ChimeraOracle` delivers blazingly fast (40.7x speedup) causal predictions using `CausalForestDML`, but currently operates as a standalone API.
 *   **Future Capability:** Wiring ChimeraOracle directly into the StateGraph LangGraph workflow. This would allow the Cynefin Router to automatically route Complicated queries to the fast Oracle instead of the slower DoWhy LLM engine, creating massive reductions in latency and processing cost.
 
 ### 4. Continuous Closed-Loop Feedback Retraining

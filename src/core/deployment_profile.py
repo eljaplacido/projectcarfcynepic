@@ -35,6 +35,18 @@ class DeploymentMode(str, Enum):
     PRODUCTION = "production"
 
 
+class InferenceMode(str, Enum):
+    """Bayesian inference strategy.
+
+    - ``full``: MCMC sampling (most rigorous, slowest)
+    - ``approximate``: Variational/ADVI or analytical approximation (faster)
+    - ``cached``: Reuse pre-computed posterior when config hash matches (fastest)
+    """
+    FULL = "full"
+    APPROXIMATE = "approximate"
+    CACHED = "cached"
+
+
 class ProfileConfig(BaseModel):
     """Resolved deployment profile with concrete settings."""
 
@@ -59,6 +71,41 @@ class ProfileConfig(BaseModel):
     # Observability
     structured_logging: bool = False
 
+    # Bayesian inference strategy (Phase 18E)
+    inference_mode: InferenceMode = Field(
+        default=InferenceMode.FULL,
+        description=(
+            "Bayesian inference strategy: full (MCMC), approximate (variational/analytical), "
+            "or cached (pre-computed posterior reuse)."
+        ),
+    )
+    inference_cache_ttl_seconds: int = Field(
+        default=3600,
+        ge=0,
+        description="Time-to-live for cached posterior distributions in seconds.",
+    )
+    inference_cache_max_entries: int = Field(
+        default=128,
+        ge=0,
+        description="Maximum number of cached posterior distributions.",
+    )
+
+    # Causal robustness gate (PR Tier-1 §2 — quantified refutation/sensitivity)
+    causal_min_e_value: float = Field(
+        default=1.25,
+        description=(
+            "Minimum E-value (VanderWeele-Ding) required for a causal claim "
+            "to pass the robustness gate. Lower thresholds are permissive."
+        ),
+    )
+    causal_require_full_refutation: bool = Field(
+        default=False,
+        description=(
+            "When True, partial refutation results count as failure. "
+            "Recommended for production profiles."
+        ),
+    )
+
 
 # ---------------------------------------------------------------------------
 # Profile presets
@@ -73,6 +120,8 @@ _PROFILE_PRESETS: dict[DeploymentMode, dict[str, Any]] = {
         "auth_enabled": False,
         "rate_limiting_enabled": False,
         "structured_logging": False,
+        "inference_mode": InferenceMode.FULL,
+        "inference_cache_ttl_seconds": 0,
     },
     DeploymentMode.STAGING: {
         "cors_origins": ["*"],
@@ -83,6 +132,10 @@ _PROFILE_PRESETS: dict[DeploymentMode, dict[str, Any]] = {
         "firebase_auth_enabled": True,
         "rate_limiting_enabled": True,
         "structured_logging": True,
+        "inference_mode": InferenceMode.APPROXIMATE,
+        "inference_cache_ttl_seconds": 1800,
+        "causal_min_e_value": 1.4,
+        "causal_require_full_refutation": False,
     },
     DeploymentMode.PRODUCTION: {
         "cors_origins": [],  # Must be set via CARF_CORS_ORIGINS
@@ -93,6 +146,11 @@ _PROFILE_PRESETS: dict[DeploymentMode, dict[str, Any]] = {
         "rate_limiting_enabled": True,
         "max_request_size_mb": 50,
         "structured_logging": True,
+        "inference_mode": InferenceMode.CACHED,
+        "inference_cache_ttl_seconds": 3600,
+        "inference_cache_max_entries": 256,
+        "causal_min_e_value": 1.5,
+        "causal_require_full_refutation": True,
     },
 }
 
@@ -150,6 +208,26 @@ def resolve_profile(mode: DeploymentMode | None = None) -> ProfileConfig:
     gov_env = os.environ.get("GOVERNANCE_ENABLED", "").lower()
     if gov_env == "true":
         config.governance_enabled = True
+
+    # Allow inference mode override (Phase 18E)
+    inference_env = os.environ.get("CARF_INFERENCE_MODE", "").strip().lower()
+    if inference_env:
+        try:
+            config.inference_mode = InferenceMode(inference_env)
+        except ValueError:
+            logger.warning(
+                "Unknown CARF_INFERENCE_MODE '%s'; keeping preset '%s'. "
+                "Valid: full, approximate, cached",
+                inference_env,
+                config.inference_mode.value,
+            )
+
+    cache_ttl_env = os.environ.get("CARF_INFERENCE_CACHE_TTL")
+    if cache_ttl_env is not None:
+        try:
+            config.inference_cache_ttl_seconds = int(cache_ttl_env)
+        except ValueError:
+            logger.warning("Invalid CARF_INFERENCE_CACHE_TTL '%s'; using preset", cache_ttl_env)
 
     return config
 
