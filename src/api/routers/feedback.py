@@ -12,6 +12,7 @@ import json
 import logging
 import os
 import sqlite3
+import asyncio
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
@@ -69,6 +70,18 @@ class FeedbackSummary(BaseModel):
     avg_rating: float | None
     domain_overrides: list[dict[str, Any]]
     recent_items: list[dict[str, Any]]
+
+
+class RouterHintAutoApplyRequest(BaseModel):
+    """Request model for automated router hint application."""
+
+    min_samples: int = Field(default=5, ge=1, le=1000)
+    top_k: int = Field(default=10, ge=1, le=100)
+    apply_to_router: bool = Field(default=True)
+    persist_hints: bool = Field(default=True)
+    max_new_per_domain: int = Field(default=5, ge=1, le=50)
+    max_indicators_per_domain: int = Field(default=40, ge=5, le=200)
+    max_persisted_keywords_per_domain: int = Field(default=200, ge=10, le=1000)
 
 
 # ============================================================================
@@ -237,12 +250,26 @@ async def submit_feedback(item: FeedbackItem):
     - **quality_rating**: Rate analysis quality (1-5)
     """
     store = get_feedback_store()
-    feedback_id = store.add(item.model_dump())
+    feedback_id = await asyncio.to_thread(store.add, item.model_dump())
+
+    auto_refresh_status = None
+    if item.type == "domain_override" and item.correct_domain:
+        try:
+            from src.services.router_retraining_service import get_router_retraining_service
+
+            retraining = get_router_retraining_service()
+            auto_refresh_status = await asyncio.to_thread(
+                retraining.maybe_auto_refresh_router_hints,
+            )
+        except Exception as exc:
+            logger.warning("Router hint auto-refresh check failed: %s", exc)
 
     logger.info(
         f"Feedback received: type={item.type} id={feedback_id} "
         f"session={item.context.get('sessionId', 'unknown')}"
     )
+    if auto_refresh_status is not None:
+        logger.info("Router hint auto-refresh status: %s", auto_refresh_status.get("status"))
 
     return FeedbackResponse(
         feedback_id=feedback_id,
@@ -317,7 +344,7 @@ async def check_retraining_readiness():
 
 
 @router.post("/feedback/retrain-router")
-async def retrain_router():
+async def retrain_router(request: RouterHintAutoApplyRequest | None = None):
     """Trigger keyword hint extraction from domain override feedback.
 
     Reads domain overrides, extracts frequent terms per corrected domain,
@@ -327,27 +354,51 @@ async def retrain_router():
     from src.services.router_retraining_service import get_router_retraining_service
 
     service = get_router_retraining_service()
+    req = request or RouterHintAutoApplyRequest()
 
-    if not service.should_retrain(min_samples=5):
+    if not service.should_retrain(min_samples=req.min_samples):
         overrides = service.get_training_data()
         return {
             "status": "insufficient_data",
             "total_overrides": len(overrides),
-            "min_required": 5,
+            "min_required": req.min_samples,
             "message": "Not enough domain overrides for meaningful retraining.",
         }
 
-    hints = service.retrain_keyword_hints()
+    hints = service.retrain_keyword_hints(top_k=req.top_k)
 
-    return {
+    result = {
         "status": "hints_extracted",
         "keyword_hints": hints,
         "total_domains": len(hints),
+        "applied_to_router": False,
         "message": (
             "Keyword hints extracted from domain overrides. "
             "Apply these to DATA_STRUCTURE_HINTS in the router configuration."
         ),
     }
+
+    if req.apply_to_router and hints:
+        applied = service.apply_keyword_hints_to_router(
+            hints,
+            max_new_per_domain=req.max_new_per_domain,
+            max_indicators_per_domain=req.max_indicators_per_domain,
+        )
+        result["applied_to_router"] = True
+        result["application_summary"] = applied
+        result["message"] = (
+            "Keyword hints extracted and applied to router DATA_STRUCTURE_HINTS "
+            "for this running instance."
+        )
+
+    if req.persist_hints and hints:
+        persistence = service.persist_keyword_hints(
+            hints,
+            max_keywords_per_domain=req.max_persisted_keywords_per_domain,
+        )
+        result["persisted_hints"] = persistence
+
+    return result
 
 
 @router.get("/feedback/export")

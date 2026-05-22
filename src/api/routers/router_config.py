@@ -47,3 +47,15 @@ async def get_router_hints():
         "data_structure_hints": DATA_STRUCTURE_HINTS,
         "description": "Patterns used to detect domain from data structure and query text"
     }
+
+
+@router.get("/router/hints/persisted")
+async def get_persisted_router_hints():
+    """Get persisted router hint overrides and persistence metadata."""
+    from src.services.router_retraining_service import get_router_retraining_service
+
+    service = get_router_retraining_service()
+    return {
+        "status": service.get_persisted_hint_status(),
+        "overrides": service.load_persisted_hint_overrides(),
+    }

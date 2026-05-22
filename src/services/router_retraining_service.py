@@ -12,8 +12,11 @@ does not modify the running router directly.
 from __future__ import annotations
 
 import logging
+import json
+import os
 from collections import Counter
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -43,10 +46,34 @@ class RouterRetrainingService:
         check_convergence() — Phase 18C plateau detection
     """
 
-    def __init__(self) -> None:
+    def __init__(self, hint_store_path: Path | None = None) -> None:
         self._accuracy_history: list[dict[str, Any]] = []
         self._convergence_epsilon: float = 0.005  # 0.5% improvement threshold
         self._max_plateau_epochs: int = 3  # consecutive epochs below epsilon
+        self._last_auto_refresh_count: int = 0
+        if hint_store_path is None:
+            data_dir = Path(
+                os.getenv(
+                    "CARF_DATA_DIR",
+                    str(Path(__file__).resolve().parents[2] / "var"),
+                )
+            )
+            self._hint_store_path = Path(
+                os.getenv(
+                    "CARF_ROUTER_HINTS_PATH",
+                    str(data_dir / "router_hint_overrides.json"),
+                )
+            )
+        else:
+            self._hint_store_path = hint_store_path
+
+    _DOMAIN_ALIAS_TO_CANONICAL: dict[str, str] = {
+        "clear": "Clear",
+        "complicated": "Complicated",
+        "complex": "Complex",
+        "chaotic": "Chaotic",
+        "disorder": "Disorder",
+    }
 
     def get_training_data(self) -> list[dict[str, Any]]:
         """Fetch all domain override records from the feedback store."""
@@ -70,7 +97,7 @@ class RouterRetrainingService:
         overrides = self.get_training_data()
         return len(overrides) >= min_samples
 
-    def retrain_keyword_hints(self) -> dict[str, list[str]]:
+    def retrain_keyword_hints(self, top_k: int = 10) -> dict[str, list[str]]:
         """Extract frequent terms per corrected domain from override feedback.
 
         Returns a dict mapping domain → list of top keywords discovered
@@ -109,10 +136,10 @@ class RouterRetrainingService:
             ]
             domain_terms[domain].update(words)
 
-        # Extract top-10 keywords per domain
+        # Extract top-k keywords per domain
         hints: dict[str, list[str]] = {}
         for domain, counter in domain_terms.items():
-            top_words = [word for word, _ in counter.most_common(10)]
+            top_words = [word for word, _ in counter.most_common(max(1, top_k))]
             if top_words:
                 hints[domain] = top_words
 
@@ -123,6 +150,223 @@ class RouterRetrainingService:
         )
 
         return hints
+
+    def apply_keyword_hints_to_router(
+        self,
+        hints: dict[str, list[str]],
+        *,
+        max_new_per_domain: int = 5,
+        max_indicators_per_domain: int = 40,
+    ) -> dict[str, Any]:
+        """Apply extracted hint keywords directly to router indicator hints.
+
+        This operationalizes feedback-to-router adaptation while preserving
+        bounded growth and explicit reporting.
+        """
+        from src.workflows.router import DATA_STRUCTURE_HINTS
+
+        applied: dict[str, list[str]] = {}
+        skipped: dict[str, str] = {}
+
+        for raw_domain, keywords in hints.items():
+            canonical_domain = self._DOMAIN_ALIAS_TO_CANONICAL.get(raw_domain.lower().strip())
+            if not canonical_domain or canonical_domain not in DATA_STRUCTURE_HINTS:
+                skipped[raw_domain] = "unknown_domain"
+                continue
+
+            domain_hints = DATA_STRUCTURE_HINTS[canonical_domain]
+            existing_indicators = list(domain_hints.get("indicators", []))
+            existing_lower = {str(i).lower() for i in existing_indicators}
+
+            additions: list[str] = []
+            for keyword in keywords:
+                if len(additions) >= max_new_per_domain:
+                    break
+                if len(existing_indicators) >= max_indicators_per_domain:
+                    break
+
+                normalized = str(keyword).strip().lower()
+                if len(normalized) < 3:
+                    continue
+                if normalized in existing_lower:
+                    continue
+
+                existing_indicators.append(normalized)
+                existing_lower.add(normalized)
+                additions.append(normalized)
+
+            domain_hints["indicators"] = existing_indicators
+            if additions:
+                applied[canonical_domain] = additions
+
+        result = {
+            "applied_domains": len(applied),
+            "applied_hints": applied,
+            "skipped_domains": skipped,
+            "max_new_per_domain": max_new_per_domain,
+            "max_indicators_per_domain": max_indicators_per_domain,
+        }
+        logger.info("Applied router keyword hints: %s", result)
+        return result
+
+    def load_persisted_hint_overrides(self) -> dict[str, list[str]]:
+        """Load persisted router hint overrides from disk."""
+        if not self._hint_store_path.exists():
+            return {}
+        try:
+            data = json.loads(self._hint_store_path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            logger.warning("Failed to load router hint overrides: %s", exc)
+            return {}
+
+        if not isinstance(data, dict):
+            return {}
+
+        normalized: dict[str, list[str]] = {}
+        for domain, values in data.items():
+            if not isinstance(domain, str) or not isinstance(values, list):
+                continue
+            cleaned = [
+                str(v).strip().lower()
+                for v in values
+                if isinstance(v, str) and str(v).strip()
+            ]
+            if cleaned:
+                normalized[domain.lower().strip()] = cleaned
+
+        return normalized
+
+    def get_persisted_hint_status(self) -> dict[str, Any]:
+        """Get persisted hint file status and high-level stats."""
+        if not self._hint_store_path.exists():
+            return {
+                "exists": False,
+                "path": str(self._hint_store_path),
+                "domains": 0,
+                "total_keywords": 0,
+                "last_modified": None,
+                "last_auto_refresh_count": self._last_auto_refresh_count,
+            }
+
+        hints = self.load_persisted_hint_overrides()
+        total_keywords = sum(len(values) for values in hints.values())
+        stat = self._hint_store_path.stat()
+        return {
+            "exists": True,
+            "path": str(self._hint_store_path),
+            "domains": len(hints),
+            "total_keywords": total_keywords,
+            "last_modified": datetime.fromtimestamp(
+                stat.st_mtime,
+                tz=timezone.utc,
+            ).isoformat(),
+            "last_auto_refresh_count": self._last_auto_refresh_count,
+        }
+
+    def persist_keyword_hints(
+        self,
+        hints: dict[str, list[str]],
+        *,
+        max_keywords_per_domain: int = 200,
+    ) -> dict[str, Any]:
+        """Persist keyword hints for automatic router loading on restart."""
+        existing = self.load_persisted_hint_overrides()
+        merged: dict[str, list[str]] = {
+            domain: list(values) for domain, values in existing.items()
+        }
+
+        added_count = 0
+        for domain, values in hints.items():
+            canonical = domain.lower().strip()
+            bucket = merged.setdefault(canonical, [])
+            current_set = {v.lower() for v in bucket}
+
+            for value in values:
+                normalized = str(value).strip().lower()
+                if len(normalized) < 3:
+                    continue
+                if normalized in current_set:
+                    continue
+                if len(bucket) >= max_keywords_per_domain:
+                    break
+                bucket.append(normalized)
+                current_set.add(normalized)
+                added_count += 1
+
+        self._hint_store_path.parent.mkdir(parents=True, exist_ok=True)
+        self._hint_store_path.write_text(
+            json.dumps(merged, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+
+        return {
+            "path": str(self._hint_store_path),
+            "domains": len(merged),
+            "added_keywords": added_count,
+            "max_keywords_per_domain": max_keywords_per_domain,
+        }
+
+    def maybe_auto_refresh_router_hints(
+        self,
+        *,
+        min_samples: int = 10,
+        min_new_overrides: int = 5,
+        top_k: int = 10,
+        max_new_per_domain: int = 5,
+        max_indicators_per_domain: int = 40,
+        max_persisted_keywords_per_domain: int = 200,
+    ) -> dict[str, Any]:
+        """Auto-refresh router hints when sufficient new feedback arrives."""
+        overrides = self.get_training_data()
+        total_overrides = len(overrides)
+
+        if total_overrides < min_samples:
+            return {
+                "status": "skipped_insufficient_samples",
+                "total_overrides": total_overrides,
+                "min_samples": min_samples,
+                "last_auto_refresh_count": self._last_auto_refresh_count,
+            }
+
+        new_since_last = total_overrides - self._last_auto_refresh_count
+        if new_since_last < min_new_overrides:
+            return {
+                "status": "skipped_not_enough_new_overrides",
+                "total_overrides": total_overrides,
+                "new_since_last": new_since_last,
+                "min_new_overrides": min_new_overrides,
+                "last_auto_refresh_count": self._last_auto_refresh_count,
+            }
+
+        hints = self.retrain_keyword_hints(top_k=top_k)
+        if not hints:
+            self._last_auto_refresh_count = total_overrides
+            return {
+                "status": "skipped_no_hints",
+                "total_overrides": total_overrides,
+                "last_auto_refresh_count": self._last_auto_refresh_count,
+            }
+
+        applied = self.apply_keyword_hints_to_router(
+            hints,
+            max_new_per_domain=max_new_per_domain,
+            max_indicators_per_domain=max_indicators_per_domain,
+        )
+        persisted = self.persist_keyword_hints(
+            hints,
+            max_keywords_per_domain=max_persisted_keywords_per_domain,
+        )
+        self._last_auto_refresh_count = total_overrides
+
+        return {
+            "status": "auto_refreshed",
+            "total_overrides": total_overrides,
+            "new_since_last": new_since_last,
+            "keyword_hints": hints,
+            "application_summary": applied,
+            "persisted_hints": persisted,
+            "last_auto_refresh_count": self._last_auto_refresh_count,
+        }
 
 
     def record_accuracy(self, accuracy: float, epoch: int | None = None) -> None:

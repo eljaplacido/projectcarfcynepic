@@ -1,6 +1,8 @@
 # Copyright (c) 2026 Cisuregen. Licensed under BSL 1.1 — see LICENSE.
 """Tests for src/services/router_retraining_service.py."""
 
+import json
+from pathlib import Path
 from unittest.mock import patch
 
 from src.services.router_retraining_service import RouterRetrainingService
@@ -98,3 +100,131 @@ class TestRouterRetrainingService:
             assert "of" not in hints["complicated"]
             # "causal" should appear
             assert "causal" in hints["complicated"]
+
+    def test_apply_keyword_hints_to_router(self):
+        service = RouterRetrainingService()
+        hints = {
+            "complicated": ["causality", "uplift_modeling", "propensity"],
+            "complex": ["posterior_shift"],
+        }
+
+        result = service.apply_keyword_hints_to_router(
+            hints,
+            max_new_per_domain=3,
+            max_indicators_per_domain=100,
+        )
+
+        assert result["applied_domains"] >= 1
+        assert "Complicated" in result["applied_hints"]
+        assert "causality" in result["applied_hints"]["Complicated"]
+
+    def test_apply_keyword_hints_skips_unknown_domain(self):
+        service = RouterRetrainingService()
+        result = service.apply_keyword_hints_to_router(
+            {"not_a_domain": ["foo", "bar"]}
+        )
+
+        assert result["applied_domains"] == 0
+        assert result["skipped_domains"]["not_a_domain"] == "unknown_domain"
+
+    def test_persist_and_load_keyword_hints(self, tmp_path: Path):
+        hint_path = tmp_path / "router_hints.json"
+        service = RouterRetrainingService(hint_store_path=hint_path)
+
+        persist_result = service.persist_keyword_hints(
+            {
+                "complicated": ["causal_lift", "uplift_modeling"],
+                "complex": ["posterior_shift"],
+            }
+        )
+        assert persist_result["added_keywords"] >= 3
+        assert hint_path.exists()
+
+        loaded = service.load_persisted_hint_overrides()
+        assert "complicated" in loaded
+        assert "causal_lift" in loaded["complicated"]
+        assert "complex" in loaded
+
+        raw = json.loads(hint_path.read_text(encoding="utf-8"))
+        assert "complicated" in raw
+
+    def test_persist_keyword_hints_merges_without_duplicates(self, tmp_path: Path):
+        hint_path = tmp_path / "router_hints.json"
+        service = RouterRetrainingService(hint_store_path=hint_path)
+
+        service.persist_keyword_hints({"complicated": ["causal_lift"]})
+        service.persist_keyword_hints({"complicated": ["causal_lift", "instrumental"]})
+
+        loaded = service.load_persisted_hint_overrides()
+        assert loaded["complicated"].count("causal_lift") == 1
+        assert "instrumental" in loaded["complicated"]
+
+    def test_router_module_loads_persisted_hints(self, tmp_path: Path, monkeypatch):
+        import importlib
+        import src.services.router_retraining_service as retrain_mod
+        import src.workflows.router as router_mod
+
+        hint_path = tmp_path / "router_hints.json"
+        unique_hint = "persisted_hint_unit_test_marker"
+        hint_path.write_text(
+            json.dumps({"complicated": [unique_hint]}),
+            encoding="utf-8",
+        )
+        monkeypatch.setenv("CARF_ROUTER_HINTS_PATH", str(hint_path))
+        retrain_mod._router_retraining_service = None
+
+        reloaded = importlib.reload(router_mod)
+        assert unique_hint in reloaded.DATA_STRUCTURE_HINTS["Complicated"]["indicators"]
+
+    def test_get_persisted_hint_status_missing_file(self, tmp_path: Path):
+        hint_path = tmp_path / "missing_router_hints.json"
+        service = RouterRetrainingService(hint_store_path=hint_path)
+
+        status = service.get_persisted_hint_status()
+        assert status["exists"] is False
+        assert status["domains"] == 0
+
+    def test_maybe_auto_refresh_skips_when_insufficient_samples(self):
+        service = RouterRetrainingService()
+        with patch.object(service, "get_training_data", return_value=self._make_overrides(3)):
+            result = service.maybe_auto_refresh_router_hints(
+                min_samples=10,
+                min_new_overrides=2,
+            )
+
+        assert result["status"] == "skipped_insufficient_samples"
+
+    def test_maybe_auto_refresh_runs_when_threshold_reached(self):
+        service = RouterRetrainingService()
+        with patch.object(service, "get_training_data", return_value=self._make_overrides(15)), patch.object(
+            service,
+            "retrain_keyword_hints",
+            return_value={"complicated": ["causal_lift"]},
+        ), patch.object(
+            service,
+            "apply_keyword_hints_to_router",
+            return_value={"applied_domains": 1, "applied_hints": {"Complicated": ["causal_lift"]}},
+        ), patch.object(
+            service,
+            "persist_keyword_hints",
+            return_value={"path": "/tmp/x", "domains": 1, "added_keywords": 1},
+        ):
+            result = service.maybe_auto_refresh_router_hints(
+                min_samples=10,
+                min_new_overrides=5,
+                top_k=3,
+            )
+
+        assert result["status"] == "auto_refreshed"
+        assert result["last_auto_refresh_count"] == 15
+
+    def test_maybe_auto_refresh_skips_when_not_enough_new_overrides(self):
+        service = RouterRetrainingService()
+        service._last_auto_refresh_count = 14
+        with patch.object(service, "get_training_data", return_value=self._make_overrides(15)):
+            result = service.maybe_auto_refresh_router_hints(
+                min_samples=10,
+                min_new_overrides=5,
+            )
+
+        assert result["status"] == "skipped_not_enough_new_overrides"

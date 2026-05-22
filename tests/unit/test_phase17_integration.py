@@ -203,6 +203,23 @@ class TestHNeuronSentinelProxyMode:
         assert "Complex" in status["active_domains"]
         assert "mechanistic_available" in status
 
+    def test_mechanistic_requested_without_classifier_falls_back(self):
+        config = HNeuronConfig(
+            enabled=True,
+            mode="mechanistic",
+            classifier_path="/tmp/does-not-exist/h_neuron.pt",
+        )
+        sentinel = HNeuronSentinel(config=config)
+        status = sentinel.get_status()
+
+        assert status["requested_mode"] == "mechanistic"
+        assert status["mode"] == "proxy"
+        assert status["classifier_present"] is False
+        assert status["fallback_reason"] in {
+            "classifier_missing",
+            "mechanistic_runtime_unavailable",
+        }
+
 
 # =============================================================================
 # 2. H-Neuron + EpistemicState Integration

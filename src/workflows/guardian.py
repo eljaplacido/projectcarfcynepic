@@ -134,6 +134,22 @@ class ContextualPolicyConfig(BaseModel):
         True, description="Log all decisions to audit trail"
     )
 
+    # Causal recommendation robustness gates
+    causal_min_abs_effect_size: float = Field(
+        0.05,
+        ge=0.0,
+        description="Minimum absolute causal effect size for auto-approval",
+    )
+    causal_max_ci_width: float = Field(
+        2.0,
+        ge=0.0,
+        description="Maximum acceptable confidence-interval width for causal claims",
+    )
+    causal_requires_nonzero_ci: bool = Field(
+        True,
+        description="Require causal confidence interval to exclude zero",
+    )
+
 
 class PolicyEngine:
     """Engine for loading and evaluating policies from YAML configuration.
@@ -740,6 +756,88 @@ class Guardian:
         total_risk = min(1.0, sum(c.weighted_score for c in components))
         return total_risk, components
 
+    def _check_causal_recommendation(self, action: dict[str, Any]) -> list[PolicyViolation]:
+        """Validate robustness of causal recommendations before approval."""
+        if action.get("action_type") != "causal_recommendation":
+            return []
+
+        violations: list[PolicyViolation] = []
+        params = action.get("parameters", {}) if isinstance(action.get("parameters"), dict) else {}
+
+        effect_size = params.get("effect_size")
+        if isinstance(effect_size, (int, float)):
+            min_effect = self.contextual_config.causal_min_abs_effect_size
+            if abs(float(effect_size)) < min_effect:
+                violations.append(PolicyViolation(
+                    policy_name="causal_effect_too_small",
+                    policy_category="risk",
+                    description=(
+                        f"Causal effect size ({float(effect_size):.4f}) is below minimum "
+                        f"robustness threshold ({min_effect:.4f})"
+                    ),
+                    severity="medium",
+                    suggested_fix=(
+                        "Collect more data or refine confounder controls before "
+                        "acting on this recommendation."
+                    ),
+                    user_overridable=False,
+                ))
+
+        confidence_interval = params.get("confidence_interval")
+        ci_low: float | None = None
+        ci_high: float | None = None
+        if isinstance(confidence_interval, (list, tuple)) and len(confidence_interval) == 2:
+            if all(isinstance(v, (int, float)) for v in confidence_interval):
+                ci_low = float(confidence_interval[0])
+                ci_high = float(confidence_interval[1])
+                if ci_low > ci_high:
+                    ci_low, ci_high = ci_high, ci_low
+
+        if ci_low is not None and ci_high is not None:
+            ci_width = ci_high - ci_low
+            max_width = self.contextual_config.causal_max_ci_width
+            if ci_width > max_width:
+                violations.append(PolicyViolation(
+                    policy_name="causal_confidence_interval_too_wide",
+                    policy_category="risk",
+                    description=(
+                        f"Causal confidence interval width ({ci_width:.4f}) exceeds "
+                        f"maximum ({max_width:.4f})"
+                    ),
+                    severity="high",
+                    suggested_fix=(
+                        "Increase sample size, improve model specification, or request "
+                        "human review for high-uncertainty recommendation."
+                    ),
+                    user_overridable=False,
+                ))
+
+            if self.contextual_config.causal_requires_nonzero_ci and ci_low <= 0.0 <= ci_high:
+                violations.append(PolicyViolation(
+                    policy_name="causal_confidence_interval_crosses_zero",
+                    policy_category="risk",
+                    description=(
+                        f"Causal confidence interval [{ci_low:.4f}, {ci_high:.4f}] "
+                        "includes zero; effect direction is not robust"
+                    ),
+                    severity="high",
+                    suggested_fix="Do not auto-act on this claim; escalate for expert review.",
+                    user_overridable=False,
+                ))
+
+        passed_refutation = params.get("passed_refutation")
+        if passed_refutation is False:
+            violations.append(PolicyViolation(
+                policy_name="causal_refutation_failed",
+                policy_category="risk",
+                description="Causal recommendation did not pass refutation checks",
+                severity="high",
+                suggested_fix="Re-run refutation tests or escalate to human review.",
+                user_overridable=False,
+            ))
+
+        return violations
+
     async def evaluate(self, state: EpistemicState) -> GuardianDecision:
         """Evaluate the current state against all policies.
 
@@ -843,6 +941,15 @@ class Guardian:
                             f"Financial limit adjusted for {state.cynefin_domain.value} domain"
                         )
 
+            # Check causal recommendation robustness
+            policies_checked += 1
+            causal_action_violations = self._check_causal_recommendation(action)
+            if causal_action_violations:
+                violations.extend(causal_action_violations)
+                context_adjustments.append(
+                    "Causal recommendation robustness checks triggered"
+                )
+
         # Check 5: Causal robustness gate (PR Tier-1 §2)
         # Causal evidence on the state must clear refutation and minimum
         # E-value before the action it supports can be auto-approved.
@@ -914,7 +1021,7 @@ class Guardian:
             verdict = self._determine_verdict(violations, risk_level)
 
         # Build explanation
-        policies_passed = policies_checked - len(violations)
+        policies_passed = max(0, policies_checked - len(violations))
         if not violations:
             explanation = f"All {policies_checked} policy checks passed. Action approved."
         else:

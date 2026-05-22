@@ -1,8 +1,10 @@
 # CYNEPIC Architecture 0.5 - Current Status
 
-**Last Updated**: 2026-03-16
+**Last Updated**: 2026-05-19
 **Phase**: Phase 18 — Supervised Recursive Refinement, Scaling Hardening & Operational Intelligence
 **Overall Status**: Phase 18A-E Implemented — Drift detection, bias auditing, plateau detection, ChimeraOracle StateGraph integration, Scalable Inference Strategy. 4 RSI gaps closed. 4 new benchmarks (H40-H43). MonitoringPanel in all 4 views. 18F designed (pending implementation).
+
+**Active Workstream**: Phase 18F remediation sprint in progress — Guardian robustness hardening (H3), automated Router feedback-to-hint loop, and H-Neuron mechanistic-readiness uplift.
 
 ---
 

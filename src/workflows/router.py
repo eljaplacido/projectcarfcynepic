@@ -105,6 +105,47 @@ DATA_STRUCTURE_HINTS = {
 }
 
 
+def _load_persisted_router_hints() -> None:
+    """Load persisted router hint overrides and merge into in-memory hints."""
+    try:
+        from src.services.router_retraining_service import get_router_retraining_service
+
+        service = get_router_retraining_service()
+        overrides = service.load_persisted_hint_overrides()
+        if not overrides:
+            return
+
+        for raw_domain, values in overrides.items():
+            canonical = raw_domain.capitalize()
+            if canonical not in DATA_STRUCTURE_HINTS:
+                continue
+            domain_hints = DATA_STRUCTURE_HINTS[canonical]
+            indicators = list(domain_hints.get("indicators", []))
+            existing = {str(v).lower() for v in indicators}
+
+            additions = 0
+            for value in values:
+                normalized = str(value).strip().lower()
+                if not normalized or normalized in existing:
+                    continue
+                indicators.append(normalized)
+                existing.add(normalized)
+                additions += 1
+
+            domain_hints["indicators"] = indicators
+            if additions:
+                logger.info(
+                    "Loaded %d persisted router hint(s) for %s",
+                    additions,
+                    canonical,
+                )
+    except Exception as exc:
+        logger.debug("Persisted router hints not loaded: %s", exc)
+
+
+_load_persisted_router_hints()
+
+
 class CynefinRouter:
     """The Sense-Making Gateway for CARF.
 
@@ -695,4 +736,3 @@ async def cynefin_router_node(state: EpistemicState) -> EpistemicState:
     """
     router = get_router()
     return await router.classify(state)
-

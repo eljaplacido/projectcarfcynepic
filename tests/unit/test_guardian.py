@@ -81,7 +81,7 @@ class TestGuardian:
         """Create a Guardian instance."""
         return Guardian()
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_approve_clean_state(self, guardian, monkeypatch):
         """Test clean state gets approved."""
         monkeypatch.setenv("CSL_ENABLED", "false")
@@ -98,7 +98,7 @@ class TestGuardian:
         assert len(decision.violations) == 0
         assert decision.risk_level == "low"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_reject_low_confidence(self, guardian):
         """Test low confidence triggers rejection/escalation.
 
@@ -120,7 +120,7 @@ class TestGuardian:
         ]
         assert len(decision.violations) > 0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_escalate_high_amount(self, guardian):
         """Test high transaction amount requires escalation."""
         state = EpistemicState(
@@ -136,7 +136,7 @@ class TestGuardian:
         assert decision.verdict == GuardianVerdict.REQUIRES_ESCALATION
         assert any("auto_approval_limit" in v.policy_name for v in decision.violations)
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_escalate_dangerous_action(self, guardian):
         """Test dangerous action types require escalation."""
         state = EpistemicState(
@@ -149,7 +149,7 @@ class TestGuardian:
         decision = await guardian.evaluate(state)
         assert decision.verdict == GuardianVerdict.REQUIRES_ESCALATION
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_escalate_max_reflections(self, guardian):
         """Test max reflections triggers escalation."""
         state = EpistemicState(
@@ -160,7 +160,7 @@ class TestGuardian:
         decision = await guardian.evaluate(state)
         assert decision.verdict == GuardianVerdict.REQUIRES_ESCALATION
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_check_updates_state(self, guardian):
         """Test check method updates the epistemic state."""
         state = EpistemicState(
@@ -173,3 +173,58 @@ class TestGuardian:
         assert result.guardian_verdict is not None
         assert len(result.reasoning_chain) > 0
         assert result.reasoning_chain[-1].node_name == "guardian"
+
+    @pytest.mark.anyio
+    async def test_escalate_weak_causal_recommendation(self, guardian, monkeypatch):
+        """Weak causal recommendation should trigger risk violations."""
+        monkeypatch.setenv("CSL_ENABLED", "false")
+        import src.services.csl_policy_service as csl_mod
+        csl_mod._csl_service = None
+
+        state = EpistemicState(
+            cynefin_domain=CynefinDomain.COMPLICATED,
+            domain_confidence=0.9,
+            proposed_action={
+                "action_type": "causal_recommendation",
+                "parameters": {
+                    "effect_size": 0.01,
+                    "confidence_interval": [-2.0, 2.5],
+                    "passed_refutation": False,
+                },
+            },
+        )
+
+        decision = await guardian.evaluate(state)
+        assert decision.verdict == GuardianVerdict.REQUIRES_ESCALATION
+        violation_names = {v.policy_name for v in decision.violations}
+        assert "causal_effect_too_small" in violation_names
+        assert "causal_confidence_interval_too_wide" in violation_names
+        assert "causal_confidence_interval_crosses_zero" in violation_names
+        assert "causal_refutation_failed" in violation_names
+
+    @pytest.mark.anyio
+    async def test_approve_robust_causal_recommendation(self, guardian, monkeypatch):
+        """Robust causal recommendation should pass Guardian checks."""
+        monkeypatch.setenv("CSL_ENABLED", "false")
+        import src.services.csl_policy_service as csl_mod
+        csl_mod._csl_service = None
+
+        state = EpistemicState(
+            cynefin_domain=CynefinDomain.COMPLICATED,
+            domain_confidence=0.95,
+            proposed_action={
+                "action_type": "causal_recommendation",
+                "parameters": {
+                    "effect_size": 0.4,
+                    "confidence_interval": [0.2, 0.6],
+                    "passed_refutation": True,
+                },
+            },
+        )
+
+        decision = await guardian.evaluate(state)
+        assert decision.verdict == GuardianVerdict.APPROVED
+        assert all(
+            not v.policy_name.startswith("causal_")
+            for v in decision.violations
+        )

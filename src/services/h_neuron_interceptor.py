@@ -20,6 +20,7 @@ from __future__ import annotations
 import logging
 import os
 import time
+from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -255,6 +256,16 @@ class HNeuronSentinel:
         try:
             import torch  # noqa: F401
 
+            classifier_exists = Path(self._config.classifier_path).exists()
+            if not classifier_exists:
+                logger.warning(
+                    "Mechanistic mode requested but classifier is missing at %s; "
+                    "falling back to proxy mode",
+                    self._config.classifier_path,
+                )
+                self._mechanistic_available = False
+                return
+
             logger.info(
                 "PyTorch available — mechanistic H-Neuron mode could be enabled"
             )
@@ -271,13 +282,27 @@ class HNeuronSentinel:
 
     def get_status(self) -> dict[str, Any]:
         """Return sentinel status for health checks."""
+        requested_mode = self._config.mode
+        fallback_reason = None
+        if requested_mode == "mechanistic" and not self._mechanistic_available:
+            classifier_exists = Path(self._config.classifier_path).exists()
+            fallback_reason = (
+                "classifier_missing"
+                if not classifier_exists
+                else "mechanistic_runtime_unavailable"
+            )
+
         return {
             "enabled": self._config.enabled,
             "mode": self.mode,
+            "requested_mode": requested_mode,
             "hallucination_threshold": self._config.hallucination_threshold,
             "intervention_threshold": self._config.intervention_threshold,
             "active_domains": self._config.active_domains,
             "mechanistic_available": self._mechanistic_available,
+            "classifier_path": self._config.classifier_path,
+            "classifier_present": Path(self._config.classifier_path).exists(),
+            "fallback_reason": fallback_reason,
         }
 
 
