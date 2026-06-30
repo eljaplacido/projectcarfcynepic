@@ -1081,5 +1081,32 @@
     "confidence_interval": "DoWhy linear-regression 95%",
     "repro_command": "python -m benchmarks.technical.realworld.benchmark_lalonde",
     "evidence_grade": "validated"
+  },
+  {
+    "benchmark_id": "ihdp_realworld",
+    "category": "realworld",
+    "dataset_profile": "hybrid",
+    "rows": 747,
+    "scenarios": 1,
+    "adversarial_cases": 0,
+    "confounding_strength": 0.5,
+    "missingness_coverage": false,
+    "label_noise_coverage": false,
+    "seed_reproducible": true,
+    "baseline_comparator": true,
+    "production_proxy_validated": true,
+    "runtime_budget_minutes": 2,
+    "automated_run": true,
+    "source_reference": "Hill 2011 IHDP semi-synthetic (real covariates, simulated effects); NPCI realization 1 via CEVAE mirror; fetched+cached under var/ (not vendored)",
+    "data_source": "https://raw.githubusercontent.com/AMLab-Amsterdam/CEVAE/master/datasets/IHDP/csv/ihdp_npci_1.csv",
+    "ground_truth_type": "synthetic",
+    "llm_provider": "n/a",
+    "seed": 42,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 747,
+    "confidence_interval": "PEHE = RMSE of ITE; DoWhy linear 95% for ATE",
+    "repro_command": "python -m benchmarks.technical.realworld.benchmark_ihdp",
+    "evidence_grade": "needs-independent-replication"
   }
 ]

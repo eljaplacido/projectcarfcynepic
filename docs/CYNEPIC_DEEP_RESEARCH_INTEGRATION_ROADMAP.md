@@ -201,7 +201,15 @@ Pairs naturally with the LUT-dissertation electricity-market alignment.
   reduction** toward the experimental truth. First `validated` real-ground-truth entry;
   graceful `aspirational`/skipped path if the dataset is ever absent (no fabrication).
   7 tests (pure metrics + real-data recovery).
-- IHDP / EPEX-ENTSO-E / Wikidata / cross-lingual — PENDING (same harness pattern).
+- **IHDP NPCI — ✅ DONE (H52).** `benchmark_ihdp.py` runs CARF's engine + the
+  ChimeraOracle estimator (`CausalForestDML`) on the real-covariate semi-synthetic
+  Hill (2011) benchmark (fetched from the public NPCI mirror, cached under `var/`, not
+  vendored). True ATE **4.016**, CARF recovers **3.93 (2.2% rel error)**; CATE **PEHE
+  0.66 vs 0.86** constant-effect baseline (**23.5% improvement** — captures the real
+  heterogeneity). Replaces the old "IHDP-*inspired*" synthetic proxy. Graded
+  `needs-independent-replication` (real covariates, *simulated* effects). 8 tests.
+  Shared `realworld/_engine.py` helper now backs the engine call (DRY).
+- EPEX-ENTSO-E / Wikidata / cross-lingual — PENDING (same harness pattern).
 
 **Exit:** realism manifest median grade moves off "synthetic-only"; H1/H35/H36
 gain real-data variants with CIs.

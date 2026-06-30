@@ -1,0 +1,65 @@
+{
+  "hypothesis": "H52",
+  "claim": "On real-covariate IHDP data, CARF recovers the true ATE within 25% and its CausalForestDML CATE estimator beats a constant-effect baseline on PEHE by >=10%",
+  "metric": "ate_rel_error + pehe_improvement",
+  "replicate": 1,
+  "true_ate": 4.0161,
+  "carf_ate": 3.9287,
+  "ate_abs_error": 0.0874,
+  "ate_rel_error": 0.0218,
+  "pehe_causal_forest": 0.6607,
+  "pehe_constant_baseline": 0.8636,
+  "pehe_improvement": 0.235,
+  "passed": true,
+  "experimental_engine": {
+    "effect": 3.9286717508727156,
+    "confidence_interval": [
+      3.7071774141869285,
+      4.150166087558503
+    ],
+    "robust": true,
+    "e_value": 9.78323529252572,
+    "refutation_status": "passed"
+  },
+  "causal_forest": {
+    "cate_mean": 3.667543319309949,
+    "pehe": 0.6606831591347336
+  },
+  "dataset_profile": "hybrid",
+  "ground_truth_type": "synthetic",
+  "data_source": "https://raw.githubusercontent.com/AMLab-Amsterdam/CEVAE/master/datasets/IHDP/csv/ihdp_npci_1.csv",
+  "n_units": 747,
+  "n_covariates": 25,
+  "samples": 747,
+  "evidence_grade": "needs-independent-replication",
+  "thresholds": {
+    "ate_rel_error_max": 0.25,
+    "pehe_improvement_min": 0.1
+  },
+  "generated_at": "2026-06-30T11:41:06.722754+00:00",
+  "benchmark_id": "ihdp_realworld",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "llm_provider": "deepseek",
+    "llm_model": "unknown",
+    "git_hash": "ba863b3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "hybrid",
+    "ground_truth_type": "synthetic",
+    "data_source": "https://raw.githubusercontent.com/AMLab-Amsterdam/CEVAE/master/datasets/IHDP/csv/ihdp_npci_1.csv"
+  },
+  "sample_context": {
+    "n_units": 747,
+    "samples": 747
+  },
+  "source_reference": "Hill (2011) IHDP semi-synthetic benchmark, NPCI realization (CEVAE mirror)",
+  "provenance": {
+    "source_reference": "Hill (2011) IHDP semi-synthetic benchmark, NPCI realization (CEVAE mirror)",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}
