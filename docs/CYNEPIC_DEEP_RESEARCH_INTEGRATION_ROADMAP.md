@@ -209,7 +209,14 @@ Pairs naturally with the LUT-dissertation electricity-market alignment.
   heterogeneity). Replaces the old "IHDP-*inspired*" synthetic proxy. Graded
   `needs-independent-replication` (real covariates, *simulated* effects). 8 tests.
   Shared `realworld/_engine.py` helper now backs the engine call (DRY).
-- EPEX-ENTSO-E / Wikidata / cross-lingual — PENDING (same harness pattern).
+- **Real-data conformal coverage — ✅ DONE (H53).** Extends G2/H46 from synthetic to a
+  **real** dataset and to regression: `benchmark_conformal_realdata.py` validates
+  split-conformal interval coverage on sklearn's bundled diabetes data (442 real
+  patients, fully offline). Coverage **0.946/0.919/0.802** vs nominal 0.95/0.90/0.80.
+  New `conformal_regression_quantile`/`regression_coverage` in `utils/conformal.py`.
+  Graded `validated` (real data, empirical coverage). 7 tests.
+- EPEX-ENTSO-E (token-gated API), Wikidata/DBpedia OG-RAG, FI/PT cross-lingual —
+  PENDING (need external data access / the RAG pipeline; same harness pattern).
 
 **Exit:** realism manifest median grade moves off "synthetic-only"; H1/H35/H36
 gain real-data variants with CIs.

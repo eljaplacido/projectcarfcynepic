@@ -1,0 +1,76 @@
+{
+  "hypothesis": "H53",
+  "claim": "Split-conformal regression intervals achieve >= 1-alpha marginal coverage on the real sklearn diabetes dataset",
+  "metric": "conformal_coverage",
+  "conformal_coverage": 0.9189,
+  "nominal_coverage": 0.9,
+  "interval_half_width": 109.9352,
+  "threshold": 0.85,
+  "coverage_tolerance": 0.05,
+  "per_alpha": [
+    {
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "empirical_coverage": 0.9459,
+      "interval_half_width": 124.0267,
+      "passed": true
+    },
+    {
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "empirical_coverage": 0.9189,
+      "interval_half_width": 109.9352,
+      "passed": true
+    },
+    {
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "empirical_coverage": 0.8018,
+      "interval_half_width": 81.3501,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "method": "split-conformal regression (absolute-residual quantile)",
+  "dataset_profile": "real",
+  "ground_truth_type": "empirical",
+  "data_source": "sklearn.datasets.load_diabetes (442 real patients)",
+  "n_train": 221,
+  "n_calibration": 110,
+  "n_test": 111,
+  "samples": 111,
+  "seed": 53,
+  "evidence_grade": "validated",
+  "generated_at": "2026-06-30T11:56:24.785213+00:00",
+  "benchmark_id": "conformal_realdata",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "alphas": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "seed": 53,
+    "llm_provider": "deepseek",
+    "llm_model": "unknown",
+    "git_hash": "5f2dc13",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "real",
+    "ground_truth_type": "empirical",
+    "data_source": "sklearn.datasets.load_diabetes (442 real patients)"
+  },
+  "sample_context": {
+    "n_test": 111,
+    "samples": 111
+  },
+  "source_reference": "sklearn diabetes (Efron et al. 2004); split-conformal regression coverage",
+  "provenance": {
+    "source_reference": "sklearn diabetes (Efron et al. 2004); split-conformal regression coverage",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

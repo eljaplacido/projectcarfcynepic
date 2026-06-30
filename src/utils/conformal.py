@@ -24,6 +24,7 @@ from __future__ import annotations
 import logging
 import math
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 from pydantic import BaseModel, Field
@@ -121,6 +122,28 @@ def average_set_size(
     if not scores:
         return 0.0
     return sum(len(prediction_set(s, calibration)) for s in scores) / len(scores)
+
+
+def conformal_regression_quantile(abs_residuals: Any, alpha: float = 0.1) -> float:
+    """Split-conformal regression threshold: the finite-sample corrected (1-alpha)
+    quantile of the calibration absolute residuals. The two-sided prediction interval
+    for a new point is then ``y_pred ± qhat``, giving marginal coverage >= 1 - alpha.
+    """
+    r = np.sort(np.asarray(abs_residuals, dtype=float))
+    n = int(r.size)
+    if n == 0:
+        raise ValueError("at least one calibration residual is required")
+    k = math.ceil((n + 1) * (1.0 - alpha))
+    return float("inf") if k > n else float(r[k - 1])
+
+
+def regression_coverage(y_true: Any, y_pred: Any, qhat: float) -> float:
+    """Empirical coverage of the symmetric conformal interval ``y_pred ± qhat``."""
+    yt = np.asarray(y_true, dtype=float)
+    yp = np.asarray(y_pred, dtype=float)
+    if yt.size == 0:
+        return 0.0
+    return float(np.mean(np.abs(yt - yp) <= qhat))
 
 
 def save_calibration(calibration: ConformalCalibration, path: str | Path) -> None:

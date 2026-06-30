@@ -1108,5 +1108,32 @@
     "confidence_interval": "PEHE = RMSE of ITE; DoWhy linear 95% for ATE",
     "repro_command": "python -m benchmarks.technical.realworld.benchmark_ihdp",
     "evidence_grade": "needs-independent-replication"
+  },
+  {
+    "benchmark_id": "conformal_realdata",
+    "category": "calibration",
+    "dataset_profile": "real",
+    "rows": 442,
+    "scenarios": 3,
+    "adversarial_cases": 0,
+    "confounding_strength": 0.0,
+    "missingness_coverage": false,
+    "label_noise_coverage": false,
+    "seed_reproducible": true,
+    "baseline_comparator": true,
+    "production_proxy_validated": true,
+    "runtime_budget_minutes": 1,
+    "automated_run": true,
+    "source_reference": "sklearn diabetes (Efron et al. 2004); split-conformal regression coverage; bundled offline",
+    "data_source": "sklearn.datasets.load_diabetes",
+    "ground_truth_type": "empirical",
+    "llm_provider": "n/a",
+    "seed": 53,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 111,
+    "confidence_interval": "split-conformal marginal coverage vs nominal 1-alpha, tol 0.05",
+    "repro_command": "python -m benchmarks.technical.realworld.benchmark_conformal_realdata",
+    "evidence_grade": "validated"
   }
 ]
