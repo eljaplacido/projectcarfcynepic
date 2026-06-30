@@ -1,0 +1,72 @@
+{
+  "hypothesis": "H51",
+  "claim": "On real RCT data (LaLonde NSW), CARF recovers the experimental ATE within 15% and reduces observational confounding bias by >=50% vs the naive baseline",
+  "metric": "experimental_rel_error + bias_reduction",
+  "ground_truth_ate": 1794.34,
+  "experimental_estimate": 1676.34,
+  "experimental_abs_error": 118.0,
+  "experimental_rel_error": 0.0658,
+  "observational_naive": -15204.78,
+  "observational_adjusted": 751.95,
+  "observational_naive_error": 16999.12,
+  "observational_adjusted_error": 1042.4,
+  "bias_reduction": 0.9387,
+  "passed": true,
+  "experimental_engine": {
+    "effect": 1676.3426437678072,
+    "confidence_interval": [
+      421.0562974151833,
+      2931.628990120429
+    ],
+    "robust": true,
+    "e_value": 1.829204403687917,
+    "refutation_status": "passed"
+  },
+  "observational_rows": 2675,
+  "observational_engine": {
+    "effect": 751.9464318958235,
+    "confidence_interval": [
+      -1042.7398553120017,
+      2546.6327191036526
+    ],
+    "robust": false,
+    "e_value": 1.260953817374125,
+    "refutation_status": "passed"
+  },
+  "dataset_profile": "real",
+  "ground_truth_type": "empirical",
+  "data_source": "dowhy.datasets.lalonde_dataset + psid_dataset (Dehejia-Wahba NSW/PSID)",
+  "n_experimental": 445,
+  "samples": 445,
+  "evidence_grade": "validated",
+  "thresholds": {
+    "experimental_rel_error_max": 0.15,
+    "bias_reduction_min": 0.5
+  },
+  "generated_at": "2026-06-30T07:58:53.525825+00:00",
+  "benchmark_id": "lalonde_realworld",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "llm_provider": "deepseek",
+    "llm_model": "unknown",
+    "git_hash": "76c4838",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "real",
+    "ground_truth_type": "empirical",
+    "data_source": "dowhy.datasets.lalonde_dataset + psid_dataset (Dehejia-Wahba NSW/PSID)"
+  },
+  "sample_context": {
+    "n_experimental": 445,
+    "samples": 445
+  },
+  "source_reference": "LaLonde (1986) / Dehejia-Wahba (1999) NSW RCT + PSID controls",
+  "provenance": {
+    "source_reference": "LaLonde (1986) / Dehejia-Wahba (1999) NSW RCT + PSID controls",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

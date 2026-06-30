@@ -1054,5 +1054,32 @@
     "confidence_interval": "marginal coverage vs nominal 1-alpha, finite-sample tol 0.03",
     "repro_command": "python -m benchmarks.technical.calibration.benchmark_conformal_router",
     "evidence_grade": "synthetic-only"
+  },
+  {
+    "benchmark_id": "lalonde_realworld",
+    "category": "realworld",
+    "dataset_profile": "real",
+    "rows": 2675,
+    "scenarios": 2,
+    "adversarial_cases": 0,
+    "confounding_strength": 0.9,
+    "missingness_coverage": false,
+    "label_noise_coverage": false,
+    "seed_reproducible": true,
+    "baseline_comparator": true,
+    "production_proxy_validated": true,
+    "runtime_budget_minutes": 3,
+    "automated_run": true,
+    "source_reference": "LaLonde 1986 / Dehejia-Wahba 1999 NSW RCT + PSID controls; engine point estimates deterministic (refuters use internal RNG, not gating)",
+    "data_source": "dowhy.datasets.lalonde_dataset + psid_dataset",
+    "ground_truth_type": "empirical",
+    "llm_provider": "n/a",
+    "seed": 0,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 445,
+    "confidence_interval": "DoWhy linear-regression 95%",
+    "repro_command": "python -m benchmarks.technical.realworld.benchmark_lalonde",
+    "evidence_grade": "validated"
   }
 ]

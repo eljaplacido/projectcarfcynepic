@@ -192,6 +192,17 @@ The highest-leverage credibility work. Each dataset ships as a benchmark with an
 
 Pairs naturally with the LUT-dissertation electricity-market alignment.
 
+**Status: IN PROGRESS** (branch `feat/r2-real-data-realism`).
+- **LaLonde NSW/PSID — ✅ DONE (H51).** `benchmarks/technical/realworld/benchmark_lalonde.py`
+  runs CARF's actual causal engine on the real Dehejia-Wahba RCT (bundled via
+  `dowhy.datasets`, no network). Results: experimental ground-truth ATE **$1,794**,
+  CARF recovers **$1,676 (6.6% rel error)**; on the confounded NSW+PSID set the naive
+  estimate is **−$15,205** while CARF's adjusted estimate is **$752**, a **93.9% bias
+  reduction** toward the experimental truth. First `validated` real-ground-truth entry;
+  graceful `aspirational`/skipped path if the dataset is ever absent (no fabrication).
+  7 tests (pure metrics + real-data recovery).
+- IHDP / EPEX-ENTSO-E / Wikidata / cross-lingual — PENDING (same harness pattern).
+
 **Exit:** realism manifest median grade moves off "synthetic-only"; H1/H35/H36
 gain real-data variants with CIs.
 
