@@ -1,0 +1,84 @@
+{
+  "hypothesis": "H46",
+  "claim": "Conformal router prediction sets achieve >= 1-alpha marginal coverage",
+  "metric": "conformal_coverage",
+  "conformal_coverage": 0.8975,
+  "nominal_coverage": 0.9,
+  "avg_set_size": 2.38,
+  "threshold": 0.87,
+  "coverage_tolerance": 0.03,
+  "per_alpha": [
+    {
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "empirical_coverage": 0.9487,
+      "avg_set_size": 2.7612,
+      "qhat": 0.8165782172282194,
+      "passed": true
+    },
+    {
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "empirical_coverage": 0.8975,
+      "avg_set_size": 2.38,
+      "qhat": 0.7975509826651335,
+      "passed": true
+    },
+    {
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "empirical_coverage": 0.8063,
+      "avg_set_size": 1.7975,
+      "qhat": 0.7646614950638195,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "method": "split-conformal LAC (Sadinle et al. 2019)",
+  "dataset_profile": "synthetic",
+  "data_source": "benchmarks/technical/calibration/benchmark_conformal_router.py (seeded generator)",
+  "n_calibration": 800,
+  "n_test": 800,
+  "samples": 800,
+  "seed": 46,
+  "generated_at": "2026-06-29T07:33:29.931615+00:00",
+  "benchmark_id": "conformal_router",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "alphas": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "sharpness": 0.45,
+    "seed": 46,
+    "llm_provider": "deepseek",
+    "llm_model": "unknown",
+    "git_hash": "3869274",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "synthetic",
+    "domains": [
+      "Clear",
+      "Complicated",
+      "Complex",
+      "Chaotic",
+      "Disorder"
+    ],
+    "data_source": "benchmarks/technical/calibration/benchmark_conformal_router.py (seeded generator)"
+  },
+  "sample_context": {
+    "n_calibration": 800,
+    "n_test": 800,
+    "samples": 800
+  },
+  "source_reference": "R1/G2 conformal router coverage (deep-research integration roadmap)",
+  "provenance": {
+    "source_reference": "R1/G2 conformal router coverage (deep-research integration roadmap)",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

@@ -19,7 +19,7 @@ import json
 import logging
 import math
 import os
-from collections import Counter
+from collections import Counter, deque
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +52,13 @@ class DomainClassification(BaseModel):
     key_indicators: list[str] = Field(
         default_factory=list, description="Indicators that led to this classification"
     )
+    domain_distribution: dict[str, float] | None = Field(
+        default=None,
+        description=(
+            "Full probability distribution over Cynefin domains when available "
+            "(e.g. DistilBERT softmax). None for point-estimate classifiers (LLM)."
+        ),
+    )
 
 
 class RouterConfig(BaseModel):
@@ -75,6 +82,40 @@ class RouterConfig(BaseModel):
     use_data_hints: bool = Field(True, description="Use data structure hints for domain detection")
     use_pattern_matching: bool = Field(True, description="Use pattern matching for domain hints")
     allow_user_override: bool = Field(True, description="Allow user-specified domain hints")
+
+    # Principled Chaotic gate over the domain-probability distribution (R1/G5).
+    # Opt-in: when disabled (default) entropy stays informational metadata only,
+    # preserving the existing "entropy is not a hard gate" contract. Calibrate the
+    # thresholds against the H0 router benchmark before enabling in a profile.
+    enable_chaotic_distribution_gate: bool = Field(
+        False,
+        description=(
+            "When True, route to Chaotic (circuit breaker) on high domain-distribution "
+            "entropy combined with a rapid distribution shift over the rolling window."
+        ),
+    )
+    chaotic_change_threshold: float = Field(
+        0.35,
+        ge=0.0,
+        le=1.0,
+        description=(
+            "Minimum Jensen-Shannon distance between the current domain distribution "
+            "and the rolling-window mean to qualify as a 'rapid shift' for the Chaotic gate."
+        ),
+    )
+    chaotic_window_size: int = Field(
+        20,
+        ge=1,
+        description="Length of the rolling window of recent domain distributions (AP-4 bounded).",
+    )
+
+    # Conformal prediction-set escalation (R1/G2). Opt-in: when enabled, a borderline
+    # query (prediction set cardinality > 1) is pushed to Disorder/human escalation.
+    # Default off → the prediction set is recorded as metadata only, no routing change.
+    conformal_escalate_on_ambiguous: bool = Field(
+        False,
+        description="Route ambiguous (multi-domain prediction set) queries to human escalation.",
+    )
 
 
 # Data structure patterns that hint at specific domains
@@ -217,7 +258,32 @@ class CynefinRouter:
         self.confidence_threshold = self.config.confidence_threshold
         self.entropy_threshold_chaotic = self.config.entropy_threshold_chaotic
 
+        # Rolling window of recent domain distributions for the Chaotic gate (AP-4 bounded).
+        self._recent_distributions: deque[dict[str, float]] = deque(
+            maxlen=self.config.chaotic_window_size
+        )
+
+        # Optional split-conformal calibration artifact (R1/G2). Absent → no-op.
+        self._conformal = self._load_conformal_calibration()
+
         self.system_prompt = self._build_system_prompt()
+
+    def _load_conformal_calibration(self):
+        """Load a conformal calibration artifact if one is configured (graceful)."""
+        try:
+            from src.utils.conformal import load_calibration
+
+            path = os.getenv("CARF_CONFORMAL_PATH", "models/router_conformal.json")
+            calibration = load_calibration(path)
+            if calibration is not None:
+                logger.info(
+                    "Loaded conformal router calibration (alpha=%.2f, n=%d) from %s",
+                    calibration.alpha, calibration.n_calibration, path,
+                )
+            return calibration
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning("Conformal calibration unavailable: %s", exc)
+            return None
 
     def _load_distilbert(self) -> bool:
         """Load a DistilBERT model for local routing."""
@@ -461,6 +527,84 @@ Respond with a JSON object only, no other text:
 
         return max(0.0, min(1.0, shannon))
 
+    def _domain_distribution(self, classification: DomainClassification) -> dict[str, float]:
+        """Return a probability distribution over all Cynefin domains.
+
+        Prefers the classifier's real distribution (DistilBERT softmax). For
+        point-estimate classifiers (LLM) it synthesises the same confidence-derived
+        shape used for ``state.domain_scores`` so the metric is always defined.
+        """
+        if classification.domain_distribution:
+            return dict(classification.domain_distribution)
+
+        conf = classification.confidence
+        remaining = max(0.0, 1.0 - conf)
+        others = [d for d in CynefinDomain if d != classification.domain]
+        per = remaining / len(others) if others else 0.0
+        return {
+            d.value: (conf if d == classification.domain else per)
+            for d in CynefinDomain
+        }
+
+    def _distribution_entropy(self, distribution: dict[str, float]) -> float:
+        """Normalized Shannon entropy over the domain probability distribution.
+
+        H(X) = -sum p_i log2 p_i, normalized by log2(K) to lie in [0, 1] where K is
+        the number of domains. Low entropy → concentrated mass (Clear/Complicated);
+        high entropy → diffuse mass (Complex/Disorder). This is the principled
+        epistemic-regime signal recommended by the deep-research brief, distinct from
+        the lexical token entropy in ``_calculate_entropy``.
+        """
+        total = sum(v for v in distribution.values() if v > 0)
+        if total <= 0 or len(distribution) <= 1:
+            return 0.0
+        probs = [v / total for v in distribution.values() if v > 0]
+        raw = -sum(p * math.log2(p) for p in probs)
+        return raw / math.log2(len(distribution))
+
+    @staticmethod
+    def _js_distance(p: dict[str, float], q: dict[str, float]) -> float:
+        """Jensen-Shannon distance (sqrt of base-2 JSD) between two distributions, in [0, 1]."""
+        keys = set(p) | set(q)
+        sp = sum(p.values()) or 1.0
+        sq = sum(q.values()) or 1.0
+        pn = {k: p.get(k, 0.0) / sp for k in keys}
+        qn = {k: q.get(k, 0.0) / sq for k in keys}
+        m = {k: 0.5 * (pn[k] + qn[k]) for k in keys}
+
+        def _kl(a: dict[str, float], b: dict[str, float]) -> float:
+            return sum(a[k] * math.log2(a[k] / b[k]) for k in keys if a[k] > 0 and b[k] > 0)
+
+        jsd = 0.5 * _kl(pn, m) + 0.5 * _kl(qn, m)
+        return math.sqrt(max(0.0, jsd))
+
+    def _track_distribution_change(self, current: dict[str, float]) -> float:
+        """Measure the shift of ``current`` vs the rolling-window mean, then record it."""
+        window = list(self._recent_distributions)
+        change = 0.0
+        if window:
+            keys = set().union(*[set(d) for d in window], set(current))
+            mean = {k: sum(d.get(k, 0.0) for d in window) / len(window) for k in keys}
+            change = self._js_distance(current, mean)
+        self._recent_distributions.append(dict(current))
+        return change
+
+    def _is_chaotic_by_distribution(
+        self, dist_entropy: float, dist_change: float, has_explicit_hint: bool
+    ) -> bool:
+        """Decide whether the principled Chaotic gate should fire.
+
+        Fail-safe: fires only when explicitly enabled, no expert domain hint is present,
+        AND both the domain-distribution entropy and the rolling-window shift exceed their
+        calibrated thresholds. It can only escalate to Chaotic (circuit breaker), never relax.
+        """
+        return (
+            self.config.enable_chaotic_distribution_gate
+            and not has_explicit_hint
+            and dist_entropy >= self.entropy_threshold_chaotic
+            and dist_change >= self.config.chaotic_change_threshold
+        )
+
     @async_retry_with_backoff(max_attempts=3, exceptions=(Exception,))
     async def _classify_with_llm(self, text: str) -> DomainClassification:
         """Call LLM to classify the domain.
@@ -526,11 +670,20 @@ Respond with a JSON object only, no other text:
             for idx in topk.indices
         ]
 
+        # Preserve the full softmax distribution over domains so the router can
+        # compute principled domain-distribution entropy (R1/G5) rather than only
+        # a confidence-derived approximation.
+        distribution = {
+            self._id_to_label.get(i, str(i)): float(probs[i].item())
+            for i in range(int(probs.shape[0]))
+        }
+
         return DomainClassification(
             domain=domain,
             confidence=confidence,
             reasoning=f"DistilBERT classification: {domain_label}",
             key_indicators=indicators,
+            domain_distribution=distribution,
         )
 
     def _determine_confidence_level(self, confidence: float) -> ConfidenceLevel:
@@ -633,8 +786,63 @@ Respond with a JSON object only, no other text:
             except ValueError:
                 logger.warning(f"Invalid domain_hint value: {domain_hint}")
 
-        # Step 5: Apply confidence threshold
-        if classification.confidence < self.confidence_threshold:
+        # Step 4b: Principled domain-distribution entropy + rolling-window change (R1/G5).
+        # Always computed as additive metadata; only drives routing when the opt-in gate
+        # is enabled, preserving the existing "entropy is metadata" contract by default.
+        domain_distribution = self._domain_distribution(classification)
+        distribution_entropy = self._distribution_entropy(domain_distribution)
+        distribution_change = self._track_distribution_change(domain_distribution)
+        state.context["domain_distribution_entropy"] = round(distribution_entropy, 4)
+        state.context["domain_distribution_change"] = round(distribution_change, 4)
+        chaotic_by_gate = self._is_chaotic_by_distribution(
+            distribution_entropy, distribution_change, has_explicit_hint=bool(domain_hint)
+        )
+        if chaotic_by_gate:
+            logger.warning(
+                "Chaotic distribution gate fired (entropy=%.3f >= %.2f, change=%.3f >= %.2f) "
+                "- routing to circuit breaker",
+                distribution_entropy,
+                self.entropy_threshold_chaotic,
+                distribution_change,
+                self.config.chaotic_change_threshold,
+            )
+
+        # Step 4c: Conformal prediction set (R1/G2). Distribution-free calibrated set;
+        # cardinality > 1 flags a borderline query. Recorded as metadata always; only
+        # forces escalation when the opt-in flag is set and no explicit hint applies.
+        conformal_force_disorder = False
+        if self._conformal is not None:
+            from src.utils.conformal import prediction_set
+
+            pset = prediction_set(domain_distribution, self._conformal)
+            state.context["router_prediction_set"] = pset
+            state.context["router_ambiguous"] = len(pset) > 1
+            if (
+                len(pset) > 1
+                and self.config.conformal_escalate_on_ambiguous
+                and not domain_hint
+                and not chaotic_by_gate
+            ):
+                conformal_force_disorder = True
+                logger.info(
+                    "Conformal prediction set %s is ambiguous - escalating to human review", pset
+                )
+
+        # Step 5: Apply Chaotic gate (fail-safe), conformal escalation, then confidence threshold
+        if chaotic_by_gate:
+            final_domain = CynefinDomain.CHAOTIC
+            final_confidence = classification.confidence
+            classification.key_indicators.append(
+                f"chaotic_distribution_gate(H={distribution_entropy:.2f},"
+                f"JS={distribution_change:.2f})"
+            )
+        elif conformal_force_disorder:
+            final_domain = CynefinDomain.DISORDER
+            final_confidence = classification.confidence
+            classification.key_indicators.append(
+                f"conformal_ambiguous{state.context.get('router_prediction_set', [])}"
+            )
+        elif classification.confidence < self.confidence_threshold:
             logger.info(
                 f"Low confidence ({classification.confidence:.2f}) - "
                 f"overriding {classification.domain} to Disorder"
@@ -689,6 +897,7 @@ Respond with a JSON object only, no other text:
                 f"Domain: {final_domain.value}, "
                 f"Confidence: {final_confidence:.2f}, "
                 f"Entropy: {entropy:.2f}, "
+                f"DistEntropy: {distribution_entropy:.2f}, "
                 f"Indicators: {classification.key_indicators}"
             ),
             confidence=state.overall_confidence,

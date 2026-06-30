@@ -538,6 +538,97 @@ class TestDomainHintOverride:
         assert "domain_hint" in indicators.lower()
 
 
+class TestDomainDistributionEntropy:
+    """Tests for the principled domain-distribution entropy + Chaotic gate (R1/G5)."""
+
+    @pytest.fixture
+    def router(self):
+        return CynefinRouter()
+
+    def test_uniform_distribution_high_entropy(self, router):
+        """A flat distribution over 5 domains → normalized entropy ~1.0."""
+        uniform = {d.value: 0.2 for d in CynefinDomain}
+        assert router._distribution_entropy(uniform) > 0.99
+
+    def test_peaked_distribution_low_entropy(self, router):
+        """A concentrated distribution → low normalized entropy."""
+        peaked = {d.value: 0.0 for d in CynefinDomain}
+        peaked[CynefinDomain.CLEAR.value] = 0.96
+        peaked[CynefinDomain.COMPLICATED.value] = 0.04
+        assert router._distribution_entropy(peaked) < 0.2
+
+    def test_distribution_entropy_degenerate_inputs(self, router):
+        """Empty / single-key distributions are defined and return 0.0."""
+        assert router._distribution_entropy({}) == 0.0
+        assert router._distribution_entropy({"Clear": 1.0}) == 0.0
+
+    def test_js_distance_identical_is_zero(self, router):
+        """JS distance of a distribution with itself is 0."""
+        p = {d.value: 0.2 for d in CynefinDomain}
+        assert router._js_distance(p, p) == pytest.approx(0.0, abs=1e-9)
+
+    def test_js_distance_disjoint_is_one(self, router):
+        """JS distance between disjoint point masses is maximal (1.0)."""
+        a = {"Clear": 1.0}
+        b = {"Chaotic": 1.0}
+        assert router._js_distance(a, b) == pytest.approx(1.0, abs=1e-6)
+
+    def test_track_change_first_observation_zero(self, router):
+        """The first observation has no history → change 0, and is recorded."""
+        dist = {d.value: 0.2 for d in CynefinDomain}
+        assert router._track_distribution_change(dist) == 0.0
+        assert len(router._recent_distributions) == 1
+
+    def test_track_change_detects_shift(self, router):
+        """A shift away from a stable history yields a positive change score."""
+        stable = {"Clear": 0.9, "Complicated": 0.025, "Complex": 0.025,
+                  "Chaotic": 0.025, "Disorder": 0.025}
+        for _ in range(5):
+            router._track_distribution_change(stable)
+        shifted = {"Clear": 0.05, "Complicated": 0.05, "Complex": 0.05,
+                   "Chaotic": 0.8, "Disorder": 0.05}
+        assert router._track_distribution_change(shifted) > 0.3
+
+    def test_gate_disabled_by_default(self, router):
+        """With the gate disabled, even max entropy + max change never forces Chaotic."""
+        assert router.config.enable_chaotic_distribution_gate is False
+        assert router._is_chaotic_by_distribution(1.0, 1.0, has_explicit_hint=False) is False
+
+    def test_gate_fires_only_on_both_thresholds(self):
+        """When enabled, the gate requires BOTH high entropy and rapid change, and no hint."""
+        from src.workflows.router import RouterConfig
+
+        router = CynefinRouter(
+            config=RouterConfig(
+                entropy_threshold_chaotic=0.9,
+                enable_chaotic_distribution_gate=True,
+                chaotic_change_threshold=0.35,
+            )
+        )
+        # Both thresholds exceeded, no explicit hint → fires
+        assert router._is_chaotic_by_distribution(0.95, 0.5, has_explicit_hint=False) is True
+        # High entropy but no rapid change → does not fire
+        assert router._is_chaotic_by_distribution(0.95, 0.1, has_explicit_hint=False) is False
+        # An explicit expert domain hint is never overridden
+        assert router._is_chaotic_by_distribution(0.95, 0.5, has_explicit_hint=True) is False
+
+    @pytest.mark.asyncio
+    async def test_classify_records_distribution_entropy_metadata(self, router):
+        """classify() always records distribution entropy as additive context metadata."""
+        state = EpistemicState(user_input="What is the effect of discount on churn?")
+        result = await router.classify(state)
+        assert "domain_distribution_entropy" in result.context
+        assert 0.0 <= result.context["domain_distribution_entropy"] <= 1.0
+
+    @pytest.mark.asyncio
+    async def test_default_classify_unaffected_by_gate(self, router):
+        """Default router (gate off) classifies normally; no forced Chaotic."""
+        state = EpistemicState(user_input="What is the current stock price for AAPL?")
+        result = await router.classify(state)
+        # Test stub routes this to Clear; the gate must not interfere.
+        assert result.cynefin_domain == CynefinDomain.CLEAR
+
+
 class TestEntropyReductionWithContext:
     """Tests for entropy reduction based on context signals."""
 
