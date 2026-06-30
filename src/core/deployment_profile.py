@@ -106,6 +106,35 @@ class ProfileConfig(BaseModel):
         ),
     )
 
+    # CATE subgroup-differential policy (R1/G4 — heterogeneity-aware gating)
+    cate_subgroup_analysis: bool = Field(
+        default=False,
+        description=(
+            "When True, the causal engine computes per-subgroup CATE intervals on the "
+            "main estimation path so the Guardian can enforce sign-consistency. Off by "
+            "default to keep the hot path cheap; enable for high-stakes deployments."
+        ),
+    )
+    cate_require_consistent_sign: bool = Field(
+        default=False,
+        description=(
+            "When True, the Guardian escalates a causal recommendation whose subgroup "
+            "effects flip sign (helps one segment, harms another) — a single averaged "
+            "recommendation is unsafe under that heterogeneity."
+        ),
+    )
+
+    # Conformal router calibration (R1/G2 — distribution-free coverage)
+    conformal_alpha: float = Field(
+        default=0.1,
+        ge=0.0,
+        le=1.0,
+        description=(
+            "Target miscoverage for split-conformal router prediction sets "
+            "(coverage = 1 - alpha). Used when a calibration artifact is loaded."
+        ),
+    )
+
 
 # ---------------------------------------------------------------------------
 # Profile presets
