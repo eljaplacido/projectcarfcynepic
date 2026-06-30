@@ -33,6 +33,7 @@ class ConvergenceResult(BaseModel):
     regressed: bool = False
     plateau_detected: bool = False
     recommendation: str = ""
+    accuracy_volatility: str | None = None  # R1/G6: 'stable' | 'elevated' | 'breach'
     history: list[dict[str, Any]] = []
 
 
@@ -454,6 +455,19 @@ class RouterRetrainingService:
                 f"Improvement detected ({result.accuracy_delta:.4f}). "
                 "Retraining is productive."
             )
+
+        # Volatility regime of the accuracy curve (R1/G6): collapsing variance is
+        # consistent with convergence; persistently high variance signals instability.
+        # Additive/informational — does not alter the plateau/regression verdict.
+        try:
+            from src.utils.timeseries_monitor import volatility_regime
+
+            series = [h["accuracy"] for h in history if "accuracy" in h]
+            regime = volatility_regime(series)
+            if regime is not None:
+                result.accuracy_volatility = regime.regime
+        except Exception:  # pragma: no cover - defensive
+            pass
 
         return result
 

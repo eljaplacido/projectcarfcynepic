@@ -119,13 +119,20 @@ embeddings = [
     # Sentence embeddings for Experience Buffer
     "sentence-transformers>=2.2.0",
 ]
+forecasting = [
+    # Time-series operational monitors (R1/G6): ARIMA drift suppression + GARCH
+    # latency volatility. statsmodels powers ARIMA/SARIMAX; arch enables true
+    # GARCH conditional variance (a rolling-std fallback is used when absent).
+    "statsmodels>=0.14.0",
+    "arch>=6.0.0",
+]
 providers = [
     # Additional LLM provider integrations (Anthropic, Google)
     "langchain-anthropic>=0.3.0",
     "langchain-google-genai>=2.0.0",
 ]
 all = [
-    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation,csl,mcp,providers,embeddings]",
+    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation,csl,mcp,providers,embeddings,forecasting]",
 ]
 
 [project.scripts]

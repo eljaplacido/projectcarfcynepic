@@ -39,6 +39,8 @@ class DriftSnapshot(BaseModel):
     shifted_domain: str = ""
     drift_detected: bool = False
     alert_reason: str = ""
+    seasonally_expected: bool = False
+    forecast_upper: float | None = None
 
 
 class DriftDetector:
@@ -62,11 +64,26 @@ class DriftDetector:
         kl_threshold: float = 0.15,
         domain_shift_threshold: float = 0.10,
         max_history: int = 500,
+        seasonal_suppression: bool = False,
+        seasonal_alpha: float = 0.05,
+        seasonal_period: int | None = None,
+        min_series_for_suppression: int = 8,
     ) -> None:
         self._baseline_window = baseline_window
         self._detection_window = detection_window
         self._kl_threshold = kl_threshold
         self._domain_shift_threshold = domain_shift_threshold
+
+        # ARIMA-based seasonal false-positive suppression (R1/G6). Opt-in: when off
+        # (default) the KL/shift gates behave exactly as before — no regression.
+        # SAFETY (AP-9): suppression only ever *removes* a KL alert when the value is
+        # statistically consistent with the modelled temporal pattern, and only when a
+        # model could be fitted; an unfittable series never silences an alert.
+        self._seasonal_suppression = seasonal_suppression
+        self._seasonal_alpha = seasonal_alpha
+        self._seasonal_period = seasonal_period
+        self._min_series_for_suppression = min_series_for_suppression
+        self._kl_series: deque[float] = deque(maxlen=max_history)
 
         self._observations: deque[str] = deque(maxlen=max_history)
         self._baseline: dict[str, float] | None = None
@@ -74,6 +91,7 @@ class DriftDetector:
         self._snapshots: deque[DriftSnapshot] = deque(maxlen=200)
         self._total_observations: int = 0
         self._alert_count: int = 0
+        self._suppressed_count: int = 0
 
     def record_routing(self, domain: str) -> DriftSnapshot | None:
         """Record a domain routing decision and check for drift.
@@ -130,6 +148,30 @@ class DriftDetector:
             kl += p_val * math.log(p_val / q_val)
         return kl
 
+    def _seasonal_check(self, kl: float) -> tuple[bool, float | None]:
+        """Decide whether a KL value is explainable by the historical KL pattern.
+
+        Returns ``(seasonally_expected, forecast_upper)``. Fail-safe: returns
+        ``(False, None)`` whenever suppression is disabled, the series is too short, or
+        no ARIMA model can be fitted — so a real alert is never silenced by default.
+        """
+        if not (
+            self._seasonal_suppression
+            and len(self._kl_series) >= self._min_series_for_suppression
+        ):
+            return False, None
+
+        from src.utils.timeseries_monitor import forecast_interval
+
+        fc = forecast_interval(
+            list(self._kl_series),
+            alpha=self._seasonal_alpha,
+            seasonal_period=self._seasonal_period,
+        )
+        if fc is None:
+            return False, None
+        return kl <= fc.upper, round(fc.upper, 6)
+
     def _check_drift(self) -> DriftSnapshot:
         """Check current window against baseline for drift."""
         recent = list(self._observations)[-self._detection_window:]
@@ -150,11 +192,23 @@ class DriftDetector:
         drift_detected = False
         alert_reason = ""
 
-        if kl > self._kl_threshold:
+        # ARIMA seasonal false-positive suppression (R1/G6, opt-in). A KL value within
+        # the forecast interval of the historical KL series is "expected variation".
+        seasonally_expected, forecast_upper = self._seasonal_check(kl)
+
+        if kl > self._kl_threshold and not seasonally_expected:
             drift_detected = True
             alert_reason = f"KL divergence {kl:.4f} exceeds threshold {self._kl_threshold}"
             self._alert_count += 1
             logger.warning("DRIFT DETECTED: %s", alert_reason)
+        elif kl > self._kl_threshold and seasonally_expected:
+            self._suppressed_count += 1
+            logger.info(
+                "Drift KL %.4f exceeds static threshold but is within ARIMA forecast "
+                "upper %.4f (seasonally expected) - suppressed",
+                kl,
+                forecast_upper if forecast_upper is not None else 0.0,
+            )
 
         if max_shift > self._domain_shift_threshold:
             drift_detected = True
@@ -178,8 +232,12 @@ class DriftDetector:
             shifted_domain=shifted_domain,
             drift_detected=drift_detected,
             alert_reason=alert_reason,
+            seasonally_expected=seasonally_expected,
+            forecast_upper=forecast_upper,
         )
         self._snapshots.append(snapshot)
+        # Record the KL value AFTER the forecast (history must exclude the current point).
+        self._kl_series.append(round(kl, 6))
         return snapshot
 
     def get_status(self) -> dict[str, Any]:
@@ -195,6 +253,7 @@ class DriftDetector:
             "baseline_distribution": self._baseline or {},
             "current_distribution": recent_dist,
             "alert_count": self._alert_count,
+            "suppressed_count": self._suppressed_count,
             "snapshot_count": len(self._snapshots),
             "last_snapshot": self._snapshots[-1].model_dump() if self._snapshots else None,
             "config": {
@@ -202,6 +261,7 @@ class DriftDetector:
                 "detection_window": self._detection_window,
                 "kl_threshold": self._kl_threshold,
                 "domain_shift_threshold": self._domain_shift_threshold,
+                "seasonal_suppression": self._seasonal_suppression,
             },
         }
 
