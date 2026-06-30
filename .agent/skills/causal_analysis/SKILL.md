@@ -137,6 +137,15 @@ Available methods:
 - `backdoor.propensity_score_matching`
 - `backdoor.propensity_score_weighting`
 - `iv.instrumental_variable`
+- `frontdoor.two_stage_regression`
+
+**Identification auto-select (R1/G3):** the engine calls
+`identify_effect(proceed_when_unidentifiable=True)` and inspects which strategies the
+DAG actually supports. If the requested family (default back-door) is *not*
+identifiable, it falls back automatically — front-door when a mediator exists, IV when a
+valid instrument exists. An explicitly requested, identifiable method is always
+respected; the back-door case is unchanged. The chosen method is recorded in the result
+`interpretation`.
 
 Configure via:
 ```json
@@ -147,6 +156,14 @@ Configure via:
   }
 }
 ```
+
+**Subgroup CATE + Guardian heterogeneity gate (R1/G4):** when
+`profile.cate_subgroup_analysis` is enabled, the engine computes per-subgroup CATE
+intervals (`CausalAnalysisResult.subgroup_intervals`, also surfaced on the
+`causal_recommendation` action as `cate_subgroups`). If
+`profile.cate_require_consistent_sign` is enabled, the Guardian escalates any
+recommendation whose effect flips sign across subgroups (helps one segment, harms
+another) — see `assess_cate_consistency` in `causal_sensitivity.py`.
 
 ## Neo4j Persistence (Optional)
 

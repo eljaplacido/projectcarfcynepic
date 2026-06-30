@@ -118,6 +118,21 @@ curl -X POST http://localhost:8000/query \
 | Chaotic | Any | > 0.9 | `circuit_breaker` |
 | Disorder | < 0.85 | Any | `human_escalation` |
 
+### Calibrated routing signals (R1)
+
+Recorded as additive metadata in `state.context` (and the router reasoning step):
+- **`domain_distribution_entropy` (G5)** — normalized Shannon entropy over the
+  classifier's *domain* probability distribution (distinct from the lexical token
+  entropy in `domain_entropy`). With `RouterConfig.enable_chaotic_distribution_gate`
+  (opt-in), high distribution entropy + a rapid rolling-window shift routes to Chaotic.
+- **`router_prediction_set` / `router_ambiguous` (G2)** — a split-conformal prediction
+  set over domains when a calibration artifact (`CARF_CONFORMAL_PATH`) is loaded.
+  Cardinality > 1 marks a borderline query; with `conformal_escalate_on_ambiguous`
+  (opt-in) it routes to human escalation. Coverage benchmark: H46.
+
+Both gates default **off** — entropy and prediction sets are informational until a
+profile deliberately enables them, preserving baseline routing behaviour.
+
 ## Python API
 
 For direct invocation:

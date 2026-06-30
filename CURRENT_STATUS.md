@@ -267,6 +267,42 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 
 ## Recent Improvements
 
+### R1: Calibration & Honest-Routing Quick Wins (2026-06-29)
+
+First slice of the deep-research integration roadmap
+([`docs/CYNEPIC_DEEP_RESEARCH_INTEGRATION_ROADMAP.md`](docs/CYNEPIC_DEEP_RESEARCH_INTEGRATION_ROADMAP.md)),
+on branch `feat/r1-calibration-quick-wins`. All additions are additive/opt-in and
+fail-safe; no existing benchmark behavior changes by default.
+
+1. **Domain-distribution entropy + Chaotic gate (G5)** — `router.py` captures the real
+   DistilBERT softmax (`DomainClassification.domain_distribution`), computes normalized
+   Shannon entropy over the domain distribution, and adds a bounded rolling-window
+   Jensen-Shannon change detector. Opt-in `enable_chaotic_distribution_gate` (default off).
+2. **Conformal router + H46 (G2)** — new `src/utils/conformal.py` (pure-NumPy split-conformal
+   LAC) yields distribution-free prediction sets with marginal-coverage guarantee. New
+   `benchmark_conformal_router.py` (H46) + graded manifest entry; coverage 0.949/0.897/0.806
+   vs nominal 0.95/0.90/0.80. `ProfileConfig.conformal_alpha` added.
+3. **Identification auto-select: front-door/IV (G3)** — `causal.py` selects the estimation
+   method from the DAG's realisable strategies, falling back from back-door only when it is
+   unidentifiable. Backward-compatible.
+4. **ARIMA/GARCH operational monitors (G6)** — new `src/utils/timeseries_monitor.py`
+   (ARIMA/SARIMAX forecast intervals + GARCH/rolling-std volatility regimes). Wired into
+   `drift_detector.py` as opt-in ARIMA seasonal false-positive suppression
+   (`seasonal_suppression`, default off, fail-safe) and into `RouterRetrainingService.
+   check_convergence` as an accuracy-curve volatility signal (H42). New `forecasting`
+   pyproject extra.
+5. **CATE subgroup-differential Guardian policy (G4)** — shared `_compute_subgroup_cate`
+   helper (also backs `run_deep_analysis` with CIs) produces per-subgroup CATE intervals
+   (opt-in `cate_subgroup_analysis`); they flow `CausalAnalysisResult.subgroup_intervals →
+   proposed_action.cate_subgroups`; Guardian escalates sign-conflicting recommendations
+   (opt-in `cate_require_consistent_sign`) via pure `assess_cate_consistency`.
+
+**Testing:** 57 new tests (router, conformal, causal, time-series, sensitivity, guardian),
+all passing; new files ruff- and mypy-clean; `check_result_evidence.py --strict-manifest`
+PASS (38 manifest entries); full `tests/unit` = 1280 passed (only the optional `mcp`-extra
+import test is unavailable). **R1 calibration slice complete.** Next: R2 real-data realism
+track (LaLonde/IHDP/EPEX).
+
 ### Phase 18: SRR Hardening & Operational Intelligence (2026-03-16)
 
 Closes all 4 RSI safety gaps identified by architecture review. Implements operational monitoring across all platform views.

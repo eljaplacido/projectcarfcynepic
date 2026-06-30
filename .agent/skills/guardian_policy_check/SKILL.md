@@ -43,6 +43,21 @@ Uses the Guardian layer (Layer 4) for governance enforcement.
 | `confidence_threshold` | 0.85 | `escalate` |
 | `entropy_alert` | 0.9 | `circuit_break` |
 
+### Causal Recommendation Gates (`action_type == "causal_recommendation"`)
+Applied by `Guardian._check_causal_recommendation` to analytical (non-financial) actions:
+
+| Gate | Trigger | Source |
+|------|---------|--------|
+| `causal_effect_too_small` | `|effect| < causal_min_abs_effect_size` | profile |
+| `causal_confidence_interval_too_wide` | CI width > `causal_max_ci_width` | profile |
+| `causal_confidence_interval_crosses_zero` | CI includes 0 (when `causal_requires_nonzero_ci`) | profile |
+| `causal_refutation_failed` | refutation battery failed | causal engine |
+| Causal robustness gate | E-value < `causal_min_e_value` or refutation skipped/failed | `causal_sensitivity.py` |
+| `causal_cate_sign_conflict` (R1/G4) | subgroup effects flip sign (when `cate_require_consistent_sign`) | `assess_cate_consistency` |
+
+These gates are tuned per deployment profile (`research` < `staging` < `production`) in
+`src/core/deployment_profile.py`; production is strictest.
+
 ### Always Escalate Actions
 The following actions **always** require human approval:
 - `delete_data`
