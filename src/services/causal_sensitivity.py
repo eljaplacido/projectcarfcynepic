@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Iterable, Mapping
+from typing import Any, Iterable, Mapping
 
 # Threshold below which an E-value is considered "weak evidence" — a confounder
 # with strength ≤ 1.25 on each association is plausible in most observational
@@ -250,3 +250,99 @@ def aggregate_pass_rate(reports: Iterable[SensitivityReport]) -> float:
     if not reports:
         return 0.0
     return sum(1 for r in reports if r.robust) / len(reports)
+
+
+def _subgroup_sign(sub: Mapping[str, Any], min_abs_effect: float) -> str:
+    """Classify a subgroup's effect direction: 'positive' | 'negative' | 'uncertain'.
+
+    Uses the CI when present (positive iff the whole interval is above the null,
+    negative iff entirely below); otherwise falls back to the point effect against
+    ``min_abs_effect``.
+    """
+    ci_low = sub.get("ci_low")
+    ci_high = sub.get("ci_high")
+    if (
+        ci_low is not None
+        and ci_high is not None
+        and math.isfinite(ci_low)
+        and math.isfinite(ci_high)
+    ):
+        if ci_low > 0:
+            return "positive"
+        if ci_high < 0:
+            return "negative"
+        return "uncertain"  # interval crosses the null
+
+    effect = sub.get("effect")
+    if effect is None or not math.isfinite(effect):
+        return "uncertain"
+    if effect >= min_abs_effect:
+        return "positive"
+    if effect <= -min_abs_effect:
+        return "negative"
+    return "uncertain"
+
+
+def assess_cate_consistency(
+    subgroups: Iterable[Mapping[str, Any]],
+    min_abs_effect: float = 0.0,
+) -> dict[str, Any]:
+    """Assess whether subgroup CATEs support a single averaged recommendation.
+
+    A treatment whose effect flips sign across subgroups (helps one segment, harms
+    another) cannot be safely acted on as one average number — the Guardian should
+    escalate. This is the heterogeneity analogue of the CI-crosses-zero check.
+
+    Args:
+        subgroups: iterable of ``{label, effect, ci_low?, ci_high?}`` mappings.
+        min_abs_effect: point-effect magnitude (used only when a subgroup has no CI)
+            below which a subgroup is treated as directionally uncertain.
+
+    Returns a dict: ``n_subgroups``, ``sign_conflict`` (bool — material +/- disagreement),
+    ``crosses_zero_subgroups`` (labels whose CI includes the null), ``consistent`` (bool),
+    and a human-readable ``reason``.
+    """
+    subs = list(subgroups)
+    n = len(subs)
+    if n == 0:
+        return {
+            "n_subgroups": 0,
+            "sign_conflict": False,
+            "crosses_zero_subgroups": [],
+            "consistent": True,
+            "reason": "no subgroups provided",
+        }
+
+    signs: dict[str, str] = {}
+    crosses_zero: list[str] = []
+    for i, sub in enumerate(subs):
+        label = str(sub.get("label") or sub.get("subgroup") or f"subgroup_{i}")
+        sign = _subgroup_sign(sub, min_abs_effect)
+        signs[label] = sign
+        if sign == "uncertain" and ("ci_low" in sub and "ci_high" in sub):
+            crosses_zero.append(label)
+
+    has_positive = any(s == "positive" for s in signs.values())
+    has_negative = any(s == "negative" for s in signs.values())
+    sign_conflict = has_positive and has_negative
+    consistent = not sign_conflict
+
+    if sign_conflict:
+        pos = [k for k, v in signs.items() if v == "positive"]
+        neg = [k for k, v in signs.items() if v == "negative"]
+        reason = (
+            f"effect sign flips across subgroups: positive in {pos}, negative in {neg} — "
+            "a single averaged recommendation is unsafe; escalate for segmented review"
+        )
+    elif crosses_zero:
+        reason = f"{len(crosses_zero)} subgroup(s) have effects indistinguishable from zero: {crosses_zero}"
+    else:
+        reason = f"all {n} subgroup effects share a consistent direction"
+
+    return {
+        "n_subgroups": n,
+        "sign_conflict": sign_conflict,
+        "crosses_zero_subgroups": crosses_zero,
+        "consistent": consistent,
+        "reason": reason,
+    }

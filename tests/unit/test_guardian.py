@@ -7,6 +7,63 @@ from src.core.state import CynefinDomain, EpistemicState, GuardianVerdict
 from src.workflows.guardian import Guardian, PolicyEngine
 
 
+class TestCausalCateGate:
+    """Tests for the CATE subgroup sign-consistency Guardian gate (R1/G4)."""
+
+    @pytest.fixture
+    def guardian(self):
+        return Guardian()
+
+    @staticmethod
+    def _action(subgroups):
+        return {
+            "action_type": "causal_recommendation",
+            "description": "test",
+            "parameters": {"effect_size": 0.5, "cate_subgroups": subgroups},
+        }
+
+    _CONFLICT = [
+        {"label": "young", "effect": 0.5, "ci_low": 0.3, "ci_high": 0.7},
+        {"label": "old", "effect": -0.5, "ci_low": -0.7, "ci_high": -0.3},
+    ]
+    _CONSISTENT = [
+        {"label": "young", "effect": 0.5, "ci_low": 0.3, "ci_high": 0.7},
+        {"label": "old", "effect": 0.4, "ci_low": 0.2, "ci_high": 0.6},
+    ]
+
+    def _set_flag(self, monkeypatch, enabled: bool):
+        from src.core.deployment_profile import ProfileConfig
+
+        monkeypatch.setattr(
+            "src.core.deployment_profile.get_profile",
+            lambda: ProfileConfig(cate_require_consistent_sign=enabled),
+        )
+
+    def test_no_violation_when_flag_off(self, guardian, monkeypatch):
+        self._set_flag(monkeypatch, False)
+        violations = guardian._check_causal_recommendation(self._action(self._CONFLICT))
+        assert not any(v.policy_name == "causal_cate_sign_conflict" for v in violations)
+
+    def test_violation_on_sign_conflict_when_flag_on(self, guardian, monkeypatch):
+        self._set_flag(monkeypatch, True)
+        violations = guardian._check_causal_recommendation(self._action(self._CONFLICT))
+        flagged = [v for v in violations if v.policy_name == "causal_cate_sign_conflict"]
+        assert len(flagged) == 1
+        assert flagged[0].severity == "high"
+        assert flagged[0].user_overridable is False
+
+    def test_no_violation_when_consistent(self, guardian, monkeypatch):
+        self._set_flag(monkeypatch, True)
+        violations = guardian._check_causal_recommendation(self._action(self._CONSISTENT))
+        assert not any(v.policy_name == "causal_cate_sign_conflict" for v in violations)
+
+    def test_no_subgroups_no_violation(self, guardian, monkeypatch):
+        self._set_flag(monkeypatch, True)
+        action = {"action_type": "causal_recommendation", "parameters": {"effect_size": 0.5}}
+        violations = guardian._check_causal_recommendation(action)
+        assert not any(v.policy_name == "causal_cate_sign_conflict" for v in violations)
+
+
 class TestPolicyEngine:
     """Tests for the PolicyEngine."""
 

@@ -836,6 +836,31 @@ class Guardian:
                 user_overridable=False,
             ))
 
+        # CATE subgroup heterogeneity gate (R1/G4): a treatment whose effect flips sign
+        # across subgroups cannot be acted on as a single averaged recommendation.
+        subgroups = params.get("cate_subgroups")
+        if isinstance(subgroups, list) and subgroups:
+            from src.core.deployment_profile import get_profile
+            from src.services.causal_sensitivity import assess_cate_consistency
+
+            if get_profile().cate_require_consistent_sign:
+                consistency = assess_cate_consistency(subgroups)
+                if consistency["sign_conflict"]:
+                    violations.append(PolicyViolation(
+                        policy_name="causal_cate_sign_conflict",
+                        policy_category="risk",
+                        description=(
+                            "Causal effect direction is not consistent across subgroups: "
+                            f"{consistency['reason']}"
+                        ),
+                        severity="high",
+                        suggested_fix=(
+                            "Do not auto-act on the averaged effect; escalate for "
+                            "segmented (per-subgroup) review."
+                        ),
+                        user_overridable=False,
+                    ))
+
         return violations
 
     async def evaluate(self, state: EpistemicState) -> GuardianDecision:

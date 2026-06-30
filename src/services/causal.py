@@ -104,6 +104,14 @@ class CausalAnalysisResult(BaseModel):
         default_factory=list,
         description="Human-readable reasons summarising the robustness verdict.",
     )
+    subgroup_intervals: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description=(
+            "Per-subgroup CATE estimates with CIs (R1/G4): "
+            "[{label, n_samples, effect, ci_low, ci_high}]. Empty unless subgroup "
+            "analysis ran (profile.cate_subgroup_analysis or deep analysis)."
+        ),
+    )
     interpretation: str = Field(..., description="Human-readable interpretation")
 
 
@@ -438,6 +446,76 @@ Respond with a JSON object:
 
         return df
 
+    @staticmethod
+    def _identifiable_strategies(estimand: Any) -> set[str]:
+        """Return the set of identification strategies DoWhy can actually realise.
+
+        Cross-checks the estimand's ``estimands`` map and the variable-list helpers
+        (``get_backdoor_variables`` / ``get_instrumental_variables`` /
+        ``get_frontdoor_variables``). Defensive across DoWhy versions: any probe that
+        raises is simply skipped.
+        """
+        strategies: set[str] = set()
+        estimands = getattr(estimand, "estimands", {}) or {}
+        for key in ("backdoor", "iv", "frontdoor"):
+            val = estimands.get(key)
+            if isinstance(val, dict):
+                # DoWhy marks an unidentifiable strategy with a None realization.
+                if val.get("estimand") is not None or val.get("realized_estimand_expr"):
+                    strategies.add(key)
+            elif val is not None:
+                strategies.add(key)
+
+        probes = (
+            ("backdoor", "get_backdoor_variables"),
+            ("iv", "get_instrumental_variables"),
+            ("frontdoor", "get_frontdoor_variables"),
+        )
+        for family, method in probes:
+            getter = getattr(estimand, method, None)
+            if getter is None:
+                continue
+            try:
+                if getter():
+                    strategies.add(family)
+            except Exception:  # pragma: no cover - version-defensive
+                pass
+        return strategies
+
+    def _select_estimation_method(
+        self, estimand: Any, requested_method: str
+    ) -> tuple[str, str]:
+        """Auto-select the identification/estimation method based on the DAG.
+
+        Respects the requested method whenever its identification family is realisable
+        (so the common back-door case is unchanged). Only when the requested family is
+        *not* identifiable does it fall back to another available strategy — front-door
+        when a mediator is present, instrumental-variable when a valid instrument exists.
+        Any detection failure preserves the requested method (no regression).
+        """
+        try:
+            family = requested_method.split(".", 1)[0].lower()
+            available = self._identifiable_strategies(estimand)
+            if not available or family in available:
+                return requested_method, ""
+
+            preference = (
+                ("backdoor", "backdoor.linear_regression"),
+                ("frontdoor", "frontdoor.two_stage_regression"),
+                ("iv", "iv.instrumental_variable"),
+            )
+            for cand_family, cand_method in preference:
+                if cand_family in available:
+                    note = (
+                        f"identification auto-select: '{family}' not identifiable from the "
+                        f"DAG; using {cand_method}"
+                    )
+                    logger.info(note)
+                    return cand_method, note
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning(f"Identification auto-select skipped: {exc}")
+        return requested_method, ""
+
     def _extract_confidence_interval(
         self,
         estimate: Any,
@@ -530,8 +608,11 @@ Respond with a JSON object:
             effect_modifiers=use_effect_modifiers,
         )
 
-        estimand = model.identify_effect()
-        estimate = model.estimate_effect(estimand, method_name=config.method_name)
+        estimand = model.identify_effect(proceed_when_unidentifiable=True)
+        selected_method, selection_note = self._select_estimation_method(
+            estimand, config.method_name
+        )
+        estimate = model.estimate_effect(estimand, method_name=selected_method)
 
         effect_value = float(getattr(estimate, "value", estimate))
         confidence_interval = self._extract_confidence_interval(estimate, effect_value)
@@ -582,6 +663,18 @@ Respond with a JSON object:
         interpretation = (
             f"Estimated causal effect of {treatment} on {outcome}: {effect_value:.3f}"
         )
+        if selection_note:
+            interpretation += f" [{selection_note}]"
+
+        # Subgroup CATE intervals for the Guardian's heterogeneity gate (R1/G4).
+        # Opt-in via the deployment profile so the hot path is unaffected by default.
+        subgroup_intervals: list[dict[str, Any]] = []
+        if profile.cate_subgroup_analysis and all_common_causes:
+            subgroup_intervals = self._compute_subgroup_cate(
+                df, treatment, outcome, all_common_causes
+            )
+            if subgroup_intervals:
+                interpretation += f" [{len(subgroup_intervals)} subgroup CATE estimates]"
 
         return CausalAnalysisResult(
             hypothesis=hypothesis,
@@ -595,6 +688,7 @@ Respond with a JSON object:
             refutation_status=report.refutation_status,
             robust=report.robust,
             sensitivity_reasons=list(report.reasons),
+            subgroup_intervals=subgroup_intervals,
             interpretation=interpretation,
         )
 
@@ -851,6 +945,73 @@ Respond with a JSON object:
             "overall_robust": passed >= total * 0.66,
         }
 
+    def _compute_subgroup_cate(
+        self,
+        data: "pd.DataFrame",
+        treatment: str,
+        outcome: str,
+        confounders: list[str],
+        *,
+        min_subset: int = 20,
+        max_confounders: int = 3,
+        method_name: str = "backdoor.linear_regression",
+    ) -> list[dict[str, Any]]:
+        """Estimate per-subgroup CATE with confidence intervals (R1/G4).
+
+        Shared by the main estimation path (when ``profile.cate_subgroup_analysis`` is
+        on) and ``run_deep_analysis``. Splits on categorical levels or a median split of
+        each top confounder, estimating the effect within each subset. Returns ``[]``
+        gracefully if DoWhy is unavailable or the data is too small — never raises.
+        """
+        results: list[dict[str, Any]] = []
+        try:
+            import dowhy
+        except Exception:
+            return results
+        if not confounders or len(data) <= 50:
+            return results
+
+        for confounder in confounders[:max_confounders]:
+            try:
+                col = data[confounder]
+                subsets: list[tuple[str, Any]] = []
+                if col.dtype in ("object", "category", "bool"):
+                    for group in list(col.unique())[:5]:
+                        subsets.append((f"{confounder}={group}", data[data[confounder] == group]))
+                else:
+                    median_val = col.median()
+                    subsets.append((f"{confounder} below median", data[col <= median_val]))
+                    subsets.append((f"{confounder} above median", data[col > median_val]))
+
+                # The split confounder is constant within each subset, so drop it.
+                other = [c for c in confounders if c != confounder]
+                for label, subset in subsets:
+                    if len(subset) <= min_subset:
+                        continue
+                    sub_model = dowhy.CausalModel(
+                        data=subset,
+                        treatment=treatment,
+                        outcome=outcome,
+                        common_causes=other or None,
+                    )
+                    sub_id = sub_model.identify_effect(proceed_when_unidentifiable=True)
+                    sub_est = sub_model.estimate_effect(sub_id, method_name=method_name)
+                    eff = float(sub_est.value)
+                    ci_low, ci_high = self._extract_confidence_interval(sub_est, eff)
+                    results.append(
+                        {
+                            "label": label,
+                            "subgroup": label,  # backward-compat alias for /analyze-deep
+                            "n_samples": int(len(subset)),
+                            "effect": eff,
+                            "ci_low": float(ci_low),
+                            "ci_high": float(ci_high),
+                        }
+                    )
+            except Exception as exc:
+                logger.debug(f"Subgroup CATE for {confounder} failed: {exc}")
+        return results
+
     def run_deep_analysis(
         self,
         data: "pd.DataFrame",
@@ -920,44 +1081,11 @@ Respond with a JSON object:
             except Exception as e:
                 logger.debug(f"PS stratification failed: {e}")
 
-            # Heterogeneous effects: compute CATE by subgroups
-            if confounders and len(data) > 50:
-                for confounder in confounders[:3]:  # Top 3 confounders
-                    try:
-                        col = data[confounder]
-                        if col.dtype in ('object', 'category', 'bool'):
-                            groups = col.unique()[:5]
-                            for group in groups:
-                                subset = data[data[confounder] == group]
-                                if len(subset) > 20:
-                                    sub_model = dowhy.CausalModel(
-                                        data=subset, treatment=treatment,
-                                        outcome=outcome, graph=graph_dot,
-                                    )
-                                    sub_id = sub_model.identify_effect(proceed_when_unidentifiable=True)
-                                    sub_est = sub_model.estimate_effect(sub_id, method_name="backdoor.linear_regression")
-                                    deep_results["heterogeneous_effects"].append({
-                                        "subgroup": f"{confounder}={group}",
-                                        "n_samples": len(subset),
-                                        "effect": float(sub_est.value),
-                                    })
-                        else:
-                            median_val = col.median()
-                            for label, subset in [("below median", data[col <= median_val]), ("above median", data[col > median_val])]:
-                                if len(subset) > 20:
-                                    sub_model = dowhy.CausalModel(
-                                        data=subset, treatment=treatment,
-                                        outcome=outcome, graph=graph_dot,
-                                    )
-                                    sub_id = sub_model.identify_effect(proceed_when_unidentifiable=True)
-                                    sub_est = sub_model.estimate_effect(sub_id, method_name="backdoor.linear_regression")
-                                    deep_results["heterogeneous_effects"].append({
-                                        "subgroup": f"{confounder} {label}",
-                                        "n_samples": len(subset),
-                                        "effect": float(sub_est.value),
-                                    })
-                    except Exception as e:
-                        logger.debug(f"CATE for {confounder} failed: {e}")
+            # Heterogeneous effects: per-subgroup CATE with CIs (shared with the main
+            # path's R1/G4 gate via _compute_subgroup_cate — single source of truth).
+            deep_results["heterogeneous_effects"] = self._compute_subgroup_cate(
+                data, treatment, outcome, confounders
+            )
 
             # Generate summary
             estimates = [e["estimate"] for e in deep_results["alternative_estimates"]]
@@ -1114,14 +1242,18 @@ async def run_causal_analysis(
         state.overall_confidence = ConfidenceLevel.LOW
 
     # Set proposed action
+    causal_params: dict[str, Any] = {
+        "effect_size": result.effect_estimate,
+        "confidence_interval": result.confidence_interval,
+        "passed_refutation": result.passed_refutation,
+    }
+    # Surface subgroup CATE intervals so the Guardian can enforce sign-consistency (R1/G4).
+    if result.subgroup_intervals:
+        causal_params["cate_subgroups"] = result.subgroup_intervals
     state.proposed_action = {
         "action_type": "causal_recommendation",
         "description": f"Causal analysis: {result.hypothesis.treatment} -> {result.hypothesis.outcome}",
-        "parameters": {
-            "effect_size": result.effect_estimate,
-            "confidence_interval": result.confidence_interval,
-            "passed_refutation": result.passed_refutation,
-        },
+        "parameters": causal_params,
     }
 
     state.final_response = (

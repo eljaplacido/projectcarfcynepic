@@ -9,11 +9,56 @@ import pytest
 
 from src.services.causal_sensitivity import (
     DEFAULT_MIN_E_VALUE,
+    assess_cate_consistency,
     assess_robustness,
     compute_e_value,
     e_value_from_rr,
     summarize_refutations,
 )
+
+
+class TestCateConsistency:
+    """Tests for the subgroup CATE sign-consistency helper (R1/G4)."""
+
+    def test_empty_is_consistent(self):
+        result = assess_cate_consistency([])
+        assert result["consistent"] is True
+        assert result["n_subgroups"] == 0
+        assert result["sign_conflict"] is False
+
+    def test_all_positive_is_consistent(self):
+        subs = [
+            {"label": "a", "effect": 0.4, "ci_low": 0.2, "ci_high": 0.6},
+            {"label": "b", "effect": 0.3, "ci_low": 0.1, "ci_high": 0.5},
+        ]
+        result = assess_cate_consistency(subs)
+        assert result["consistent"] is True
+        assert result["sign_conflict"] is False
+
+    def test_sign_flip_is_flagged(self):
+        subs = [
+            {"label": "young", "effect": 0.5, "ci_low": 0.3, "ci_high": 0.7},
+            {"label": "old", "effect": -0.4, "ci_low": -0.6, "ci_high": -0.2},
+        ]
+        result = assess_cate_consistency(subs)
+        assert result["sign_conflict"] is True
+        assert result["consistent"] is False
+        assert "sign flips" in result["reason"]
+
+    def test_ci_crossing_zero_is_uncertain_not_conflict(self):
+        subs = [
+            {"label": "a", "effect": 0.4, "ci_low": 0.2, "ci_high": 0.6},
+            {"label": "b", "effect": -0.1, "ci_low": -0.5, "ci_high": 0.3},
+        ]
+        result = assess_cate_consistency(subs)
+        # 'b' crosses zero (uncertain), so there is no *material* sign conflict.
+        assert result["sign_conflict"] is False
+        assert "b" in result["crosses_zero_subgroups"]
+
+    def test_point_effects_without_ci_use_threshold(self):
+        subs = [{"label": "a", "effect": 0.5}, {"label": "b", "effect": -0.5}]
+        result = assess_cate_consistency(subs, min_abs_effect=0.1)
+        assert result["sign_conflict"] is True
 
 
 class TestEValueFromRR:

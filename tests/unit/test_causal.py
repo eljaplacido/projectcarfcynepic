@@ -13,7 +13,138 @@ from src.services.causal import (
     CausalAnalysisResult,
     CausalEstimationConfig,
     CausalGraph,
+    CausalInferenceEngine,
 )
+
+
+class _MockEstimand:
+    """Minimal stand-in for a DoWhy IdentifiedEstimand for selector tests."""
+
+    def __init__(self, backdoor=None, iv=None, frontdoor=None):
+        self._backdoor = backdoor or []
+        self._iv = iv or []
+        self._frontdoor = frontdoor or []
+        self.estimands = {
+            "backdoor": {"estimand": object()} if backdoor else {"estimand": None},
+            "iv": {"estimand": object()} if iv else {"estimand": None},
+            "frontdoor": {"estimand": object()} if frontdoor else {"estimand": None},
+        }
+
+    def get_backdoor_variables(self):
+        return self._backdoor
+
+    def get_instrumental_variables(self):
+        return self._iv
+
+    def get_frontdoor_variables(self):
+        return self._frontdoor
+
+
+class TestIdentificationAutoSelect:
+    """Tests for front-door / IV identification auto-selection (R1/G3)."""
+
+    @pytest.fixture
+    def engine(self):
+        return CausalInferenceEngine()
+
+    def test_strategies_detected(self, engine):
+        est = _MockEstimand(backdoor=["age"], iv=["coupon_lottery"])
+        strategies = engine._identifiable_strategies(est)
+        assert "backdoor" in strategies
+        assert "iv" in strategies
+        assert "frontdoor" not in strategies
+
+    def test_backdoor_request_respected_when_identifiable(self, engine):
+        """The common case: backdoor identifiable → requested method unchanged."""
+        est = _MockEstimand(backdoor=["age", "income"])
+        method, note = engine._select_estimation_method(est, "backdoor.linear_regression")
+        assert method == "backdoor.linear_regression"
+        assert note == ""
+
+    def test_falls_back_to_iv_when_no_backdoor(self, engine):
+        """No observed confounders for backdoor but a valid instrument exists → IV."""
+        est = _MockEstimand(backdoor=[], iv=["regulatory_shock"])
+        method, note = engine._select_estimation_method(est, "backdoor.linear_regression")
+        assert method == "iv.instrumental_variable"
+        assert "not identifiable" in note
+
+    def test_falls_back_to_frontdoor_when_mediator(self, engine):
+        est = _MockEstimand(backdoor=[], frontdoor=["perception"])
+        method, note = engine._select_estimation_method(est, "backdoor.linear_regression")
+        assert method == "frontdoor.two_stage_regression"
+
+    def test_explicit_iv_request_respected(self, engine):
+        """A user explicitly choosing IV is honoured when IV is identifiable."""
+        est = _MockEstimand(backdoor=["age"], iv=["instrument"])
+        method, note = engine._select_estimation_method(est, "iv.instrumental_variable")
+        assert method == "iv.instrumental_variable"
+        assert note == ""
+
+    def test_no_identifiable_strategy_keeps_request(self, engine):
+        """When nothing is identifiable, preserve the requested method (no surprise switch)."""
+        est = _MockEstimand()
+        method, note = engine._select_estimation_method(est, "backdoor.linear_regression")
+        assert method == "backdoor.linear_regression"
+        assert note == ""
+
+
+class TestSubgroupCate:
+    """End-to-end test for the subgroup CATE producer (R1/G4)."""
+
+    def _heterogeneous_data(self):
+        import numpy as np
+        import pandas as pd
+
+        rng = np.random.default_rng(42)
+        n = 200
+        segment = rng.choice(["A", "B"], size=n)
+        treatment = rng.integers(0, 2, size=n)
+        # Opposite-sign effect by segment: +3 in A, -3 in B.
+        effect = np.where(segment == "A", 3.0, -3.0)
+        outcome = effect * treatment + rng.normal(0, 0.5, size=n)
+        return pd.DataFrame(
+            {"segment": segment, "treatment": treatment, "outcome": outcome}
+        )
+
+    def test_compute_subgroup_cate_recovers_opposite_signs(self):
+        pytest.importorskip("dowhy")
+        engine = CausalInferenceEngine()
+        df = self._heterogeneous_data()
+        subgroups = engine._compute_subgroup_cate(
+            df, "treatment", "outcome", ["segment"]
+        )
+        assert len(subgroups) == 2
+        for s in subgroups:
+            assert "ci_low" in s and "ci_high" in s and "effect" in s
+        by_label = {s["label"]: s["effect"] for s in subgroups}
+        a = next(v for k, v in by_label.items() if "A" in k)
+        b = next(v for k, v in by_label.items() if "B" in k)
+        assert a > 1.0  # positive in segment A
+        assert b < -1.0  # negative in segment B
+
+        # The consistency helper should flag this as a sign conflict.
+        from src.services.causal_sensitivity import assess_cate_consistency
+
+        assert assess_cate_consistency(subgroups)["sign_conflict"] is True
+
+    def test_compute_subgroup_cate_graceful_on_small_data(self):
+        import pandas as pd
+
+        engine = CausalInferenceEngine()
+        tiny = pd.DataFrame({"x": [1, 2, 3], "treatment": [0, 1, 0], "outcome": [1, 2, 3]})
+        assert engine._compute_subgroup_cate(tiny, "treatment", "outcome", ["x"]) == []
+
+    def test_result_model_carries_subgroup_intervals(self):
+        from src.services.causal import CausalAnalysisResult, CausalHypothesis
+
+        result = CausalAnalysisResult(
+            hypothesis=CausalHypothesis(treatment="t", outcome="y", mechanism="m"),
+            effect_estimate=0.5,
+            confidence_interval=(0.3, 0.7),
+            interpretation="test",
+            subgroup_intervals=[{"label": "a", "effect": 0.5, "ci_low": 0.3, "ci_high": 0.7}],
+        )
+        assert len(result.subgroup_intervals) == 1
 
 
 class TestCausalVariable:
