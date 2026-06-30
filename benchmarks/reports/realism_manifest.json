@@ -1135,5 +1135,32 @@
     "confidence_interval": "split-conformal marginal coverage vs nominal 1-alpha, tol 0.05",
     "repro_command": "python -m benchmarks.technical.realworld.benchmark_conformal_realdata",
     "evidence_grade": "validated"
+  },
+  {
+    "benchmark_id": "energy_realworld",
+    "category": "realworld",
+    "dataset_profile": "real",
+    "rows": 1,
+    "scenarios": 1,
+    "adversarial_cases": 0,
+    "confounding_strength": 0.0,
+    "missingness_coverage": false,
+    "label_noise_coverage": false,
+    "seed_reproducible": true,
+    "baseline_comparator": true,
+    "production_proxy_validated": false,
+    "runtime_budget_minutes": 3,
+    "automated_run": true,
+    "source_reference": "ENTSO-E Transparency Platform day-ahead prices; conformal forecasting. HARNESS READY \u2014 pending free ENTSOE_API_TOKEN + carf[realworld]",
+    "data_source": "ENTSO-E Transparency Platform via entsoe-py (query_day_ahead_prices)",
+    "ground_truth_type": "empirical",
+    "llm_provider": "n/a",
+    "seed": 54,
+    "uses_mock": false,
+    "uses_fallback": false,
+    "sample_size": 1,
+    "confidence_interval": "split-conformal coverage (pending live data)",
+    "repro_command": "ENTSOE_API_TOKEN=... python -m benchmarks.technical.realworld.benchmark_energy",
+    "evidence_grade": "aspirational"
   }
 ]

@@ -126,13 +126,18 @@ forecasting = [
     "statsmodels>=0.14.0",
     "arch>=6.0.0",
 ]
+realworld = [
+    # Real-data benchmark connectors (R2). entsoe-py is the ENTSO-E Transparency
+    # Platform client; a free API token (ENTSOE_API_TOKEN) is required at run time.
+    "entsoe-py>=0.6.0",
+]
 providers = [
     # Additional LLM provider integrations (Anthropic, Google)
     "langchain-anthropic>=0.3.0",
     "langchain-google-genai>=2.0.0",
 ]
 all = [
-    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation,csl,mcp,providers,embeddings,forecasting]",
+    "carf[dev,causal,bayesian,files,kafka,router,databases,observability,evaluation,csl,mcp,providers,embeddings,forecasting,realworld]",
 ]
 
 [project.scripts]

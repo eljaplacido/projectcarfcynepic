@@ -215,8 +215,15 @@ Pairs naturally with the LUT-dissertation electricity-market alignment.
   patients, fully offline). Coverage **0.946/0.919/0.802** vs nominal 0.95/0.90/0.80.
   New `conformal_regression_quantile`/`regression_coverage` in `utils/conformal.py`.
   Graded `validated` (real data, empirical coverage). 7 tests.
-- EPEX-ENTSO-E (token-gated API), Wikidata/DBpedia OG-RAG, FI/PT cross-lingual —
-  PENDING (need external data access / the RAG pipeline; same harness pattern).
+- **ENTSO-E energy — ✅ HARNESS READY (H54).** `benchmark_energy.py` forecasts real
+  European day-ahead prices (`entsoe-py` client) and wraps the forecaster with the
+  conformal layer — point accuracy vs a naive seasonal baseline + interval coverage on
+  realized prices. Aligns with the LUT dissertation. All pure logic (features, baseline,
+  conformal coverage, metrics, skip path) is unit-tested offline; the live fetch awaits a
+  free `ENTSOE_API_TOKEN` + `carf[realworld]`. Manifest entry `energy_realworld` graded
+  `aspirational` until a real run upgrades it. 7 tests.
+- Wikidata/DBpedia OG-RAG (H7/H10) + FI/PT cross-lingual (H50) — PENDING; depend on the
+  OG-RAG ontology pipeline (R5/G13) for the full vs-vector comparison.
 
 **Exit:** realism manifest median grade moves off "synthetic-only"; H1/H35/H36
 gain real-data variants with CIs.

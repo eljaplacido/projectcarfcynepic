@@ -1,0 +1,32 @@
+{
+  "hypothesis": "H54",
+  "claim": "On real ENTSO-E day-ahead prices, CARF's forecaster beats a naive seasonal baseline and its conformal intervals achieve nominal coverage",
+  "status": "skipped",
+  "passed": false,
+  "evidence_grade": "aspirational",
+  "reason": "ENTSO-E data unavailable (set ENTSOE_API_TOKEN and install carf[realworld])",
+  "data_source": "ENTSO-E Transparency Platform via entsoe-py (query_day_ahead_prices)",
+  "zone": "FI",
+  "generated_at": "2026-06-30T16:42:45.523306+00:00",
+  "benchmark_id": "energy_realworld",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "llm_provider": "deepseek",
+    "llm_model": "unknown",
+    "git_hash": "47893cf",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "ENTSO-E Transparency Platform via entsoe-py (query_day_ahead_prices)"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:energy_realworld",
+  "provenance": {
+    "source_reference": "benchmark:energy_realworld",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}
