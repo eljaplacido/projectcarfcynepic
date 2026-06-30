@@ -192,7 +192,12 @@ The highest-leverage credibility work. Each dataset ships as a benchmark with an
 
 Pairs naturally with the LUT-dissertation electricity-market alignment.
 
-**Status: IN PROGRESS** (branch `feat/r2-real-data-realism`).
+**Status: CORE COMPLETE** (branch `feat/r2-real-data-realism`). The offline-tractable
+causal + calibration + energy benchmarks are done (H51–H54). The two remaining items
+(Wikidata OG-RAG, cross-lingual) are **re-scoped to R5/G13** because they require the
+ontology-grounded retrieval pipeline to be meaningful — and Wikidata's SPARQL endpoint is
+additionally unreachable from the current environment (TLS trust failure). Building them
+now would yield synthetic or trivial results, which defeats R2's purpose.
 - **LaLonde NSW/PSID — ✅ DONE (H51).** `benchmarks/technical/realworld/benchmark_lalonde.py`
   runs CARF's actual causal engine on the real Dehejia-Wahba RCT (bundled via
   `dowhy.datasets`, no network). Results: experimental ground-truth ATE **$1,794**,
@@ -222,8 +227,11 @@ Pairs naturally with the LUT-dissertation electricity-market alignment.
   conformal coverage, metrics, skip path) is unit-tested offline; the live fetch awaits a
   free `ENTSOE_API_TOKEN` + `carf[realworld]`. Manifest entry `energy_realworld` graded
   `aspirational` until a real run upgrades it. 7 tests.
-- Wikidata/DBpedia OG-RAG (H7/H10) + FI/PT cross-lingual (H50) — PENDING; depend on the
-  OG-RAG ontology pipeline (R5/G13) for the full vs-vector comparison.
+- Wikidata/DBpedia OG-RAG (H7/H10) + FI/PT cross-lingual (H50) — **moved to R5/G13.**
+  These are not drop-in datasets: the OG-RAG vs vector-RAG comparison only has meaning
+  once the OWL/SHACL ontology-grounded retrieval (G13) exists, so the dataset work and
+  the capability ship together there. (Wikidata SPARQL is also TLS-blocked in the current
+  sandbox, so even the data fetch must wait for an environment with access.)
 
 **Exit:** realism manifest median grade moves off "synthetic-only"; H1/H35/H36
 gain real-data variants with CIs.
@@ -273,7 +281,9 @@ gain real-data variants with CIs.
 - **G13 OG-RAG / OWL ontology** for the symbolic RAG tier (sustainability ESRS,
   supply-chain, medical SNOMED/RxNorm ontologies). Drives H7/H10 and **H50
   (cross-lingual ontology gain)**. Microsoft's OG-RAG is open source — integrate,
-  don't re-derive.
+  don't re-derive. **Absorbs the R2 Wikidata/DBpedia + FI/PT cross-lingual datasets**:
+  the real-data grounding benchmark ships here alongside the capability it measures
+  (the OG-RAG-vs-vector comparison is only meaningful once G13 exists).
 - **G14 LLM+ASP Disorder resolution** with an escalation-reduction metric.
 - **G17 PINN + DeepOPF electricity-market** use case (physics-as-Guardian-policy,
   differentiable DC-OPF) — the deepest dissertation-aligned capability.
