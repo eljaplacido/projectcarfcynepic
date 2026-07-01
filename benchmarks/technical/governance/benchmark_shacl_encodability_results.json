@@ -1,0 +1,373 @@
+{
+  "benchmark_id": "shacl_encodability",
+  "hypothesis": "H49",
+  "hypothesis_text": "SHACL safety completeness \u2014 % of Guardian policies SHACL-encodable",
+  "timestamp": "2026-07-01T09:38:12.745458",
+  "encodability": {
+    "ratio": 0.4642857142857143,
+    "total_policies": 56,
+    "encodable_policies": 26,
+    "yaml_policies_encodable": 12,
+    "csl_policies_encodable": 14,
+    "grade": "synthetic-only"
+  },
+  "validation": {
+    "total_tests": 8,
+    "correct": 3,
+    "false_positives": 0,
+    "false_negatives": 10,
+    "accuracy": 0.375,
+    "grade": "synthetic-only",
+    "test_results": [
+      {
+        "name": "transfer_within_limit",
+        "description": "Junior transfer of $500 \u2014 within $1,000 limit",
+        "expected_violations": 0,
+        "actual_violations": 0,
+        "matched": true,
+        "violation_details": []
+      },
+      {
+        "name": "transfer_exceeds_limit",
+        "description": "Junior transfer of $1,500 \u2014 exceeds $1,000 limit",
+        "expected_violations": 1,
+        "actual_violations": 0,
+        "matched": false,
+        "violation_details": []
+      },
+      {
+        "name": "large_amount_clear_domain",
+        "description": "$50,000 transfer in Clear domain \u2014 within $100,000 limit",
+        "expected_violations": 0,
+        "actual_violations": 0,
+        "matched": true,
+        "violation_details": []
+      },
+      {
+        "name": "large_amount_chaotic_domain",
+        "description": "$50,000 transfer in Chaotic domain \u2014 exceeds $10,000 limit",
+        "expected_violations": 1,
+        "actual_violations": 0,
+        "matched": false,
+        "violation_details": []
+      },
+      {
+        "name": "low_confidence_complex",
+        "description": "Confidence 0.55 in Complex domain \u2014 below 0.70 threshold",
+        "expected_violations": 1,
+        "actual_violations": 0,
+        "matched": false,
+        "violation_details": []
+      },
+      {
+        "name": "high_entropy_alert",
+        "description": "Entropy 0.95 \u2014 exceeds 0.90 alert threshold",
+        "expected_violations": 1,
+        "actual_violations": 0,
+        "matched": false,
+        "violation_details": []
+      },
+      {
+        "name": "data_region_invalid",
+        "description": "Data in ap-southeast-1 \u2014 not an approved region",
+        "expected_violations": 1,
+        "actual_violations": 0,
+        "matched": false,
+        "violation_details": []
+      },
+      {
+        "name": "all_clean",
+        "description": "All values within policy bounds",
+        "expected_violations": 0,
+        "actual_violations": 0,
+        "matched": true,
+        "violation_details": []
+      }
+    ]
+  },
+  "non_encodable_rules": [
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_delete_data",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_modify_policy",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_external_api_write",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_production_deployment",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_budget_transfer",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_contract_sign",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_data_anonymize",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_data_transfer",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "escalation",
+      "rule_name": "always_escalate_data_export",
+      "reason": "Escalation rules require external system (HumanLayer) interaction \u2014 not expressible as SHACL shape"
+    },
+    {
+      "policy_name": "action_gates",
+      "rule_name": "high_risk_requires_approval",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "action_gates",
+      "rule_name": "critical_risk_blocked",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "action_gates",
+      "rule_name": "chaotic_domain_blocks",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "action_gates",
+      "rule_name": "disorder_domain_blocks",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "action_gates",
+      "rule_name": "delete_data_requires_approval",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "action_gates",
+      "rule_name": "modify_policy_requires_approval",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "action_gates",
+      "rule_name": "external_api_write_gate",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "chimera_guards",
+      "rule_name": "drift_detection_gate",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "chimera_guards",
+      "rule_name": "refutation_required",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "chimera_guards",
+      "rule_name": "prediction_staleness",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "chimera_guards",
+      "rule_name": "concurrent_prediction_limit",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "cross_cutting",
+      "rule_name": "low_confidence_causal_gate",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "cross_cutting",
+      "rule_name": "complex_domain_export_limit",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "cross_cutting",
+      "rule_name": "high_uncertainty_action_block",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "cross_cutting",
+      "rule_name": "multi_violation_escalation",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "data_access",
+      "rule_name": "pii_must_be_masked",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "data_access",
+      "rule_name": "ssn_never_exposed",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "data_access",
+      "rule_name": "data_residency_us",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "data_access",
+      "rule_name": "retention_limit",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "data_access",
+      "rule_name": "sensitive_export_blocked",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    },
+    {
+      "policy_name": "data_access",
+      "rule_name": "audit_log_immutable",
+      "reason": "Complex condition or constraint not expressible as atomic SHACL shape"
+    }
+  ],
+  "encodable_rules": [
+    {
+      "policy_name": "financial",
+      "rule_name": "auto_approval_limit",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_AutoApprovalLimit"
+    },
+    {
+      "policy_name": "financial",
+      "rule_name": "daily_limit",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_DailyLimit"
+    },
+    {
+      "policy_name": "financial",
+      "rule_name": "approved_vendors",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_ApprovedVendors"
+    },
+    {
+      "policy_name": "data",
+      "rule_name": "pii_email",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_PII_email"
+    },
+    {
+      "policy_name": "data",
+      "rule_name": "pii_phone",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_PII_phone"
+    },
+    {
+      "policy_name": "data",
+      "rule_name": "pii_ssn",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_PII_ssn"
+    },
+    {
+      "policy_name": "data",
+      "rule_name": "pii_address",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_PII_address"
+    },
+    {
+      "policy_name": "data",
+      "rule_name": "data_residency",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_DataResidency"
+    },
+    {
+      "policy_name": "operational",
+      "rule_name": "max_reflection_attempts",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_MaxReflections"
+    },
+    {
+      "policy_name": "operational",
+      "rule_name": "timeout",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_Timeout"
+    },
+    {
+      "policy_name": "risk",
+      "rule_name": "confidence_threshold",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_ConfidenceThreshold"
+    },
+    {
+      "policy_name": "risk",
+      "rule_name": "entropy_alert",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_EntropyAlert"
+    },
+    {
+      "policy_name": "action_gates",
+      "rule_name": "production_deployment_gate",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_action_gates_production_deployment_gate"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "junior_transfer_limit",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_junior_transfer_limit"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "senior_transfer_limit",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_senior_transfer_limit"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "admin_transfer_limit",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_admin_transfer_limit"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "chimera_prediction_bounds",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_chimera_prediction_bounds"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "daily_spend_cap",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_daily_spend_cap"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "domain_financial_limit_clear",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_domain_financial_limit_clear"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "domain_financial_limit_complicated",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_domain_financial_limit_complicated"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "domain_financial_limit_complex",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_domain_financial_limit_complex"
+    },
+    {
+      "policy_name": "budget_limits",
+      "rule_name": "domain_financial_limit_chaotic",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_budget_limits_domain_financial_limit_chaotic"
+    },
+    {
+      "policy_name": "chimera_guards",
+      "rule_name": "effect_size_bounds",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_chimera_guards_effect_size_bounds"
+    },
+    {
+      "policy_name": "chimera_guards",
+      "rule_name": "confidence_minimum",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_chimera_guards_confidence_minimum"
+    },
+    {
+      "policy_name": "chimera_guards",
+      "rule_name": "bayesian_uncertainty_gate",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_chimera_guards_bayesian_uncertainty_gate"
+    },
+    {
+      "policy_name": "cross_cutting",
+      "rule_name": "chaotic_drift_financial_limit",
+      "shape_id": "https://carf.cisuregen.com/ontology/Shape_cross_cutting_chaotic_drift_financial_limit"
+    }
+  ],
+  "grade": "synthetic-only"
+}

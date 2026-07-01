@@ -131,6 +131,12 @@ realworld = [
     # Platform client; a free API token (ENTSOE_API_TOKEN) is required at run time.
     "entsoe-py>=0.6.0",
 ]
+shacl = [
+    # SHACL governance validation (R3). pyshacl validates RDF graphs against
+    # SHACL shapes; rdflib provides RDF graph construction and serialization.
+    "pyshacl>=0.25.0",
+    "rdflib>=7.0.0",
+]
 providers = [
     # Additional LLM provider integrations (Anthropic, Google)
     "langchain-anthropic>=0.3.0",

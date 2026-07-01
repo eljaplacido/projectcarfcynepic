@@ -1,0 +1,146 @@
+{
+  "benchmark_id": "nesy_hallucination_precision",
+  "hypothesis": "H47",
+  "hypothesis_text": "NeSy hallucination precision \u2014 PR curve over KG-verifiable claims",
+  "timestamp": "2026-07-01T09:37:39.347781",
+  "pr_curve": {
+    "auprc": 0.6845,
+    "best_f1": 0.7234,
+    "precision_at_recall_0.5": 0.7619,
+    "recall_at_precision_0.7": 0.68,
+    "num_claims": 50,
+    "num_positive": 25,
+    "kg_coverage": 0.94
+  },
+  "score_distribution": {
+    "factual_mean_score": 0.2629,
+    "hallucinated_mean_score": 0.071,
+    "separation_ratio": 3.6997
+  },
+  "category_breakdown": {
+    "entity_substitution": {
+      "count": 6,
+      "positives": 0,
+      "negatives": 6,
+      "mean_verification_score": 0.0,
+      "accuracy_at_0.5": 1.0
+    },
+    "value_error": {
+      "count": 9,
+      "positives": 0,
+      "negatives": 9,
+      "mean_verification_score": 0.0529,
+      "accuracy_at_0.5": 1.0
+    },
+    "entity_fact": {
+      "count": 23,
+      "positives": 23,
+      "negatives": 0,
+      "mean_verification_score": 0.2752,
+      "accuracy_at_0.5": 0.3043
+    },
+    "relation": {
+      "count": 2,
+      "positives": 2,
+      "negatives": 0,
+      "mean_verification_score": 0.1214,
+      "accuracy_at_0.5": 0.0
+    },
+    "fabricated_entity": {
+      "count": 4,
+      "positives": 0,
+      "negatives": 4,
+      "mean_verification_score": 0.2,
+      "accuracy_at_0.5": 0.75
+    },
+    "unverifiable_comparison": {
+      "count": 1,
+      "positives": 0,
+      "negatives": 1,
+      "mean_verification_score": 0.0,
+      "accuracy_at_0.5": 1.0
+    },
+    "fabricated_attribute": {
+      "count": 2,
+      "positives": 0,
+      "negatives": 2,
+      "mean_verification_score": 0.0,
+      "accuracy_at_0.5": 1.0
+    },
+    "speculative": {
+      "count": 3,
+      "positives": 0,
+      "negatives": 3,
+      "mean_verification_score": 0.1667,
+      "accuracy_at_0.5": 0.6667
+    }
+  },
+  "verification_time_ms": 0.52,
+  "pr_points": [
+    {
+      "threshold": 1.0,
+      "precision": 1.0,
+      "recall": 0.08,
+      "tp": 2,
+      "fp": 0,
+      "fn": 23
+    },
+    {
+      "threshold": 0.5,
+      "precision": 0.7777777777777778,
+      "recall": 0.28,
+      "tp": 7,
+      "fp": 2,
+      "fn": 18
+    },
+    {
+      "threshold": 0.3333333333333333,
+      "precision": 0.7692307692307693,
+      "recall": 0.4,
+      "tp": 10,
+      "fp": 3,
+      "fn": 15
+    },
+    {
+      "threshold": 0.3,
+      "precision": 0.7142857142857143,
+      "recall": 0.4,
+      "tp": 10,
+      "fp": 4,
+      "fn": 15
+    },
+    {
+      "threshold": 0.2,
+      "precision": 0.75,
+      "recall": 0.48,
+      "tp": 12,
+      "fp": 4,
+      "fn": 13
+    },
+    {
+      "threshold": 0.14285714285714285,
+      "precision": 0.7619047619047619,
+      "recall": 0.64,
+      "tp": 16,
+      "fp": 5,
+      "fn": 9
+    },
+    {
+      "threshold": 0.1,
+      "precision": 0.7727272727272727,
+      "recall": 0.68,
+      "tp": 17,
+      "fp": 5,
+      "fn": 8
+    },
+    {
+      "threshold": 0.0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "tp": 25,
+      "fp": 25,
+      "fn": 0
+    }
+  ],
+  "grade": "needs-independent-replication"
+}

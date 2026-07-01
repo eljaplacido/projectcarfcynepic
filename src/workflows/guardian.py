@@ -600,6 +600,117 @@ class Guardian:
             context_adjustments=adjustments,
         )
 
+    async def _apply_shacl(
+        self,
+        state: EpistemicState,
+        decision: GuardianDecision,
+    ) -> GuardianDecision:
+        """Apply SHACL formal governance validation as fail-closed defence-in-depth.
+
+        SHACL (Shapes Constraint Language) provides W3C-standardised shape-based
+        validation of the governance data graph. It sits between CSL-Core and OPA
+        as an additional provable enforcement layer.
+
+        Fail-closed: if SHACL is unavailable or errors, escalate to human.
+        """
+        try:
+            from src.services.shacl_service import get_shacl_service
+
+            service = get_shacl_service()
+            if not service.available:
+                return decision
+
+        except ImportError:
+            return decision
+
+        if not service.initialized or service._shapes_graph is None:
+            return decision
+
+        try:
+            shacl_result = service.validate_state(state)
+        except Exception as exc:
+            logger.error(f"SHACL evaluation error: {exc}")
+            violations = list(decision.violations)
+            violations.append(
+                PolicyViolation(
+                    policy_name="shacl_evaluation_error",
+                    policy_category="shacl",
+                    description=f"SHACL validation failed: {exc}",
+                    severity="high",
+                    suggested_fix="Check SHACL shape definitions and data graph construction",
+                )
+            )
+            risk_level = self._assess_risk_level(violations)
+            return GuardianDecision(
+                verdict=GuardianVerdict.REQUIRES_ESCALATION,
+                violations=violations,
+                risk_level=risk_level,
+                explanation="SHACL validation failed; human escalation required.",
+                requires_human_override=True,
+                risk_score=decision.risk_score,
+                risk_breakdown=decision.risk_breakdown,
+                policies_checked=decision.policies_checked,
+                policies_passed=decision.policies_passed,
+                context_adjustments=decision.context_adjustments,
+            )
+
+        if shacl_result.conforms:
+            adjustments = list(decision.context_adjustments)
+            adjustments.append(
+                f"SHACL: {shacl_result.shapes_checked} shapes validated, "
+                f"{shacl_result.encodability_ratio:.0%} encodable"
+            )
+            return GuardianDecision(
+                verdict=decision.verdict,
+                violations=decision.violations,
+                risk_level=decision.risk_level,
+                explanation=decision.explanation,
+                requires_human_override=decision.requires_human_override,
+                modified_action=decision.modified_action,
+                risk_score=decision.risk_score,
+                risk_breakdown=decision.risk_breakdown,
+                policies_checked=decision.policies_checked + shacl_result.shapes_checked,
+                policies_passed=decision.policies_passed + shacl_result.shapes_checked,
+                context_adjustments=adjustments,
+            )
+
+        violations = list(decision.violations)
+        shapes_violated = set()
+        for v in shacl_result.violations:
+            shapes_violated.add(v.source_shape)
+            violations.append(
+                PolicyViolation(
+                    policy_name=f"shacl:{v.source_shape.split('#')[-1] if '#' in v.source_shape else v.source_shape}",
+                    policy_category="shacl",
+                    description=v.result_message or f"SHACL shape violation on {v.focus_node}",
+                    severity="high",
+                    suggested_fix=f"Adjust data to comply with {v.source_constraint or 'SHACL constraint'}",
+                )
+            )
+
+        risk_level = self._assess_risk_level(violations)
+        verdict = self._determine_verdict(violations, risk_level)
+
+        adjustments = list(decision.context_adjustments)
+        adjustments.append(
+            f"SHACL: {len(shacl_result.violations)} violation(s) in "
+            f"{len(shapes_violated)} shape(s); "
+            f"{shacl_result.encodability_ratio:.0%} encodable"
+        )
+
+        return GuardianDecision(
+            verdict=verdict,
+            violations=violations,
+            risk_level=risk_level,
+            explanation=f"SHACL violations: {'; '.join(v.result_message or 'unknown' for v in shacl_result.violations[:3])}",
+            requires_human_override=(verdict == GuardianVerdict.REQUIRES_ESCALATION),
+            risk_score=decision.risk_score,
+            risk_breakdown=decision.risk_breakdown,
+            policies_checked=decision.policies_checked + shacl_result.shapes_checked,
+            policies_passed=decision.policies_passed + (shacl_result.shapes_checked - len(shapes_violated)),
+            context_adjustments=adjustments,
+        )
+
     async def _apply_opa(
         self,
         state: EpistemicState,
@@ -1068,6 +1179,9 @@ class Guardian:
 
         # Apply CSL-Core as primary enforcement layer
         decision = await self._apply_csl(state, decision)
+
+        # Apply SHACL as defence-in-depth formal verification layer (R3)
+        decision = await self._apply_shacl(state, decision)
 
         # Apply OPA as secondary enforcement layer
         return await self._apply_opa(state, decision)
