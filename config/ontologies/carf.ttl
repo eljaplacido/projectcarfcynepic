@@ -1,0 +1,556 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@prefix carf: <https://carf.cisuregen.com/ontology/> .
+
+<https://carf.cisuregen.com/ontology>
+    a owl:Ontology ;
+    dcterms:title "CARF Ontology — Complex-Adaptive Reasoning Fabric" ;
+    dcterms:description "Formal OWL2 ontology for CARF's neuro-symbolic-causal agentic system. Covers cognitive architecture, governance, causal inference, and domain modelling." ;
+    dcterms:created "2026-07-01"^^xsd:date ;
+    dcterms:creator "Cisuregen" ;
+    owl:versionInfo "0.5.0" .
+
+# =============================================================================
+# 1. CORE CONCEPTS — Cognitive Architecture
+# =============================================================================
+
+carf:Session a owl:Class ;
+    rdfs:label "Session"@en ;
+    rdfs:comment "A single CARF analysis session." .
+
+carf:sessionId a owl:DatatypeProperty ;
+    rdfs:domain carf:Session ;
+    rdfs:range xsd:string .
+
+carf:confidence a owl:DatatypeProperty ;
+    rdfs:domain carf:Session ;
+    rdfs:range xsd:float ;
+    rdfs:comment "Epistemic confidence score [0, 1]." .
+
+carf:entropy a owl:DatatypeProperty ;
+    rdfs:domain carf:Session ;
+    rdfs:range xsd:float ;
+    rdfs:comment "Shannon entropy of domain signal [0, 1]." .
+
+carf:reflectionCount a owl:DatatypeProperty ;
+    rdfs:domain carf:Session ;
+    rdfs:range xsd:integer .
+
+carf:durationSeconds a owl:DatatypeProperty ;
+    rdfs:domain carf:Session ;
+    rdfs:range xsd:float .
+
+# Domain classification
+carf:CynefinDomain a owl:Class ;
+    rdfs:label "Cynefin Domain"@en ;
+    rdfs:comment "Cynefin complexity domain classification." .
+
+carf:ClearDomain a owl:Class ;
+    rdfs:subClassOf carf:CynefinDomain ;
+    rdfs:label "Clear"@en .
+
+carf:ComplicatedDomain a owl:Class ;
+    rdfs:subClassOf carf:CynefinDomain ;
+    rdfs:label "Complicated"@en .
+
+carf:ComplexDomain a owl:Class ;
+    rdfs:subClassOf carf:CynefinDomain ;
+    rdfs:label "Complex"@en .
+
+carf:ChaoticDomain a owl:Class ;
+    rdfs:subClassOf carf:CynefinDomain ;
+    rdfs:label "Chaotic"@en .
+
+carf:DisorderDomain a owl:Class ;
+    rdfs:subClassOf carf:CynefinDomain ;
+    rdfs:label "Disorder"@en .
+
+carf:domain a owl:ObjectProperty ;
+    rdfs:domain carf:Session ;
+    rdfs:range carf:CynefinDomain .
+
+carf:domainConfidence a owl:DatatypeProperty ;
+    rdfs:domain carf:CynefinDomain ;
+    rdfs:range xsd:float .
+
+# =============================================================================
+# 2. ACTION CONCEPTS
+# =============================================================================
+
+carf:Action a owl:Class ;
+    rdfs:label "Action"@en ;
+    rdfs:comment "A proposed or executed action within CARF." .
+
+carf:actionType a owl:DatatypeProperty ;
+    rdfs:domain carf:Action ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Type: transfer, spend, delete_data, modify_policy, deploy, etc." .
+
+carf:amount a owl:DatatypeProperty ;
+    rdfs:domain carf:Action ;
+    rdfs:range xsd:float ;
+    rdfs:comment "Financial amount of the action." .
+
+carf:currency a owl:DatatypeProperty ;
+    rdfs:domain carf:Action ;
+    rdfs:range xsd:string .
+
+carf:dailyTotal a owl:DatatypeProperty ;
+    rdfs:domain carf:Action ;
+    rdfs:range xsd:float .
+
+carf:vendor a owl:DatatypeProperty ;
+    rdfs:domain carf:Action ;
+    rdfs:range xsd:string .
+
+carf:region a owl:DatatypeProperty ;
+    rdfs:domain carf:Action ;
+    rdfs:range xsd:string .
+
+carf:executed a owl:ObjectProperty ;
+    rdfs:domain carf:Session ;
+    rdfs:range carf:Action .
+
+# =============================================================================
+# 3. AGENT CONCEPTS
+# =============================================================================
+
+carf:Agent a owl:Class ;
+    rdfs:label "CARF Agent"@en ;
+    rdfs:comment "An agent node in the CARF cognitive mesh." .
+
+carf:CynefinRouter a owl:Class ;
+    rdfs:subClassOf carf:Agent ;
+    rdfs:label "Cynefin Router"@en .
+
+carf:CausalAnalyst a owl:Class ;
+    rdfs:subClassOf carf:Agent ;
+    rdfs:label "Causal Analyst"@en .
+
+carf:BayesianAnalyst a owl:Class ;
+    rdfs:subClassOf carf:Agent ;
+    rdfs:label "Bayesian Analyst"@en .
+
+carf:Guardian a owl:Class ;
+    rdfs:subClassOf carf:Agent ;
+    rdfs:label "Guardian"@en .
+
+carf:ChimeraOracle a owl:Class ;
+    rdfs:subClassOf carf:Agent ;
+    rdfs:label "Chimera Oracle"@en .
+
+carf:NeurosymbolicAgent a owl:Class ;
+    rdfs:subClassOf carf:Agent ;
+    rdfs:label "Neurosymbolic Agent"@en .
+
+carf:CounterfactualAgent a owl:Class ;
+    rdfs:subClassOf carf:Agent ;
+    rdfs:label "Counterfactual Agent"@en .
+
+carf:nodeName a owl:DatatypeProperty ;
+    rdfs:domain carf:Agent ;
+    rdfs:range xsd:string .
+
+# =============================================================================
+# 4. EVIDENCE CONCEPTS
+# =============================================================================
+
+carf:Evidence a owl:Class ;
+    rdfs:label "Evidence"@en ;
+    rdfs:comment "Analytical evidence produced by a CARF agent." .
+
+carf:CausalEvidence a owl:Class ;
+    rdfs:subClassOf carf:Evidence ;
+    rdfs:label "Causal Evidence"@en .
+
+carf:BayesianEvidence a owl:Class ;
+    rdfs:subClassOf carf:Evidence ;
+    rdfs:label "Bayesian Evidence"@en .
+
+carf:CounterfactualEvidence a owl:Class ;
+    rdfs:subClassOf carf:Evidence ;
+    rdfs:label "Counterfactual Evidence"@en .
+
+carf:NeurosymbolicEvidence a owl:Class ;
+    rdfs:subClassOf carf:Evidence ;
+    rdfs:label "Neurosymbolic Evidence"@en .
+
+carf:effectSize a owl:DatatypeProperty ;
+    rdfs:domain carf:CausalEvidence ;
+    rdfs:range xsd:float .
+
+carf:treatment a owl:DatatypeProperty ;
+    rdfs:domain carf:CausalEvidence ;
+    rdfs:range xsd:string .
+
+carf:outcome a owl:DatatypeProperty ;
+    rdfs:domain carf:CausalEvidence ;
+    rdfs:range xsd:string .
+
+carf:posteriorMean a owl:DatatypeProperty ;
+    rdfs:domain carf:BayesianEvidence ;
+    rdfs:range xsd:float .
+
+carf:hasEvidence a owl:ObjectProperty ;
+    rdfs:domain carf:Session ;
+    rdfs:range carf:Evidence .
+
+# =============================================================================
+# 5. GOVERNANCE CONCEPTS
+# =============================================================================
+
+carf:Policy a owl:Class ;
+    rdfs:label "Policy"@en ;
+    rdfs:comment "A Guardian policy rule." .
+
+carf:PolicyCategory a owl:Class ;
+    rdfs:label "Policy Category"@en ;
+    owl:oneOf (carf:FinancialPolicy carf:DataPolicy carf:OperationalPolicy carf:RiskPolicy carf:EscalationPolicy) .
+
+carf:FinancialPolicy a owl:NamedIndividual, carf:PolicyCategory ;
+    rdfs:label "Financial"@en .
+
+carf:DataPolicy a owl:NamedIndividual, carf:PolicyCategory ;
+    rdfs:label "Data"@en .
+
+carf:OperationalPolicy a owl:NamedIndividual, carf:PolicyCategory ;
+    rdfs:label "Operational"@en .
+
+carf:RiskPolicy a owl:NamedIndividual, carf:PolicyCategory ;
+    rdfs:label "Risk"@en .
+
+carf:EscalationPolicy a owl:NamedIndividual, carf:PolicyCategory ;
+    rdfs:label "Escalation"@en .
+
+carf:PolicyViolation a owl:Class ;
+    rdfs:label "Policy Violation"@en ;
+    rdfs:comment "A violation of a Guardian policy constraint." .
+
+carf:violationDescription a owl:DatatypeProperty ;
+    rdfs:domain carf:PolicyViolation ;
+    rdfs:range xsd:string .
+
+carf:severity a owl:DatatypeProperty ;
+    rdfs:domain carf:PolicyViolation ;
+    rdfs:range xsd:string .
+
+carf:GuardianVerdict a owl:Class ;
+    rdfs:label "Guardian Verdict"@en ;
+    owl:oneOf (carf:Approved carf:Rejected carf:RequiresEscalation) .
+
+carf:Approved a owl:NamedIndividual, carf:GuardianVerdict .
+carf:Rejected a owl:NamedIndividual, carf:GuardianVerdict .
+carf:RequiresEscalation a owl:NamedIndividual, carf:GuardianVerdict .
+
+# =============================================================================
+# 6. CAUSAL CONCEPTS
+# =============================================================================
+
+carf:CausalVariable a owl:Class ;
+    rdfs:label "Causal Variable"@en .
+
+carf:Treatment a owl:Class ;
+    rdfs:subClassOf carf:CausalVariable ;
+    rdfs:label "Treatment"@en .
+
+carf:Outcome a owl:Class ;
+    rdfs:subClassOf carf:CausalVariable ;
+    rdfs:label "Outcome"@en .
+
+carf:Confounder a owl:Class ;
+    rdfs:subClassOf carf:CausalVariable ;
+    rdfs:label "Confounder"@en .
+
+carf:Mediator a owl:Class ;
+    rdfs:subClassOf carf:CausalVariable ;
+    rdfs:label "Mediator"@en .
+
+carf:causes a owl:ObjectProperty ;
+    rdfs:domain carf:CausalVariable ;
+    rdfs:range carf:CausalVariable ;
+    rdfs:comment "Direct causal relationship." .
+
+carf:confounds a owl:ObjectProperty ;
+    rdfs:domain carf:Confounder ;
+    rdfs:range carf:CausalVariable .
+
+# =============================================================================
+# 7. DOMAIN-SPECIFIC CONCEPTS — Sustainability / ESRS
+# =============================================================================
+
+carf:SustainabilityDomain a owl:Class ;
+    rdfs:label "Sustainability Domain"@en ;
+    rdfs:comment "ESRS-aligned sustainability concepts." .
+
+carf:Organization a owl:Class ;
+    rdfs:subClassOf carf:SustainabilityDomain ;
+    rdfs:label "Organization"@en .
+
+carf:Supplier a owl:Class ;
+    rdfs:subClassOf carf:Organization ;
+    rdfs:label "Supplier"@en ;
+    rdfs:label "Toimittaja"@fi ;
+    rdfs:label "Fornecedor"@pt .
+
+carf:Facility a owl:Class ;
+    rdfs:subClassOf carf:SustainabilityDomain ;
+    rdfs:label "Facility"@en ;
+    rdfs:label "Laitos"@fi ;
+    rdfs:label "Instalação"@pt .
+
+carf:locatedIn a owl:ObjectProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:string .
+
+carf:industry a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:string .
+
+carf:annualRevenue a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:string .
+
+carf:scope1Emissions a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:float ;
+    rdfs:comment "Scope 1 direct GHG emissions in tons CO2e." .
+
+carf:scope2Emissions a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:float ;
+    rdfs:comment "Scope 2 indirect GHG emissions from purchased energy." .
+
+carf:scope3Emissions a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:float ;
+    rdfs:comment "Scope 3 value chain GHG emissions." .
+
+carf:carbonEmissionsTons a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:float .
+
+carf:usesRenewableEnergy a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:boolean .
+
+carf:isCertified a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:string .
+
+carf:energySource a owl:DatatypeProperty ;
+    rdfs:domain carf:Facility ;
+    rdfs:range xsd:string .
+
+carf:capacityUnitsPerDay a owl:DatatypeProperty ;
+    rdfs:domain carf:Facility ;
+    rdfs:range xsd:float .
+
+# Supply chain
+carf:SupplyChain a owl:Class ;
+    rdfs:subClassOf carf:SustainabilityDomain ;
+    rdfs:label "Supply Chain"@en .
+
+carf:LogisticsRoute a owl:Class ;
+    rdfs:subClassOf carf:SupplyChain ;
+    rdfs:label "Logistics Route"@en ;
+    rdfs:label "Logistiikkareitti"@fi ;
+    rdfs:label "Rota logística"@pt .
+
+carf:avgTransitDays a owl:DatatypeProperty ;
+    rdfs:domain carf:LogisticsRoute ;
+    rdfs:range xsd:float .
+
+carf:carbonPerTonKm a owl:DatatypeProperty ;
+    rdfs:domain carf:LogisticsRoute ;
+    rdfs:range xsd:float .
+
+carf:carbonIntensity a owl:DatatypeProperty ;
+    rdfs:domain carf:Organization ;
+    rdfs:range xsd:float .
+
+# Contract / Finance
+carf:Contract a owl:Class ;
+    rdfs:subClassOf carf:SustainabilityDomain ;
+    rdfs:label "Contract"@en ;
+    rdfs:label "Sopimus"@fi ;
+    rdfs:label "Contrato"@pt .
+
+carf:value a owl:DatatypeProperty ;
+    rdfs:domain carf:Contract ;
+    rdfs:range xsd:string .
+
+carf:contractVendor a owl:ObjectProperty ;
+    rdfs:domain carf:Contract ;
+    rdfs:range carf:Supplier .
+
+carf:status a owl:DatatypeProperty ;
+    rdfs:domain carf:Contract ;
+    rdfs:range xsd:string .
+
+# Budget
+carf:Budget a owl:Class ;
+    rdfs:subClassOf carf:SustainabilityDomain ;
+    rdfs:label "Budget"@en ;
+    rdfs:label "Budjetti"@fi ;
+    rdfs:label "Orçamento"@pt .
+
+carf:procurementBudget a owl:DatatypeProperty ;
+    rdfs:domain carf:Budget ;
+    rdfs:range xsd:float .
+
+carf:sustainabilityBudget a owl:DatatypeProperty ;
+    rdfs:domain carf:Budget ;
+    rdfs:range xsd:float .
+
+# Economic region
+carf:EconomicRegion a owl:Class ;
+    rdfs:subClassOf carf:SustainabilityDomain ;
+    rdfs:label "Economic Region"@en .
+
+carf:avgCarbonIntensity a owl:DatatypeProperty ;
+    rdfs:domain carf:EconomicRegion ;
+    rdfs:range xsd:float .
+
+# =============================================================================
+# 8. DOMAIN-SPECIFIC CONCEPTS — Financial / Risk
+# =============================================================================
+
+carf:FinancialDomain a owl:Class ;
+    rdfs:label "Financial Domain"@en .
+
+carf:Transaction a owl:Class ;
+    rdfs:subClassOf carf:FinancialDomain ;
+    rdfs:label "Transaction"@en .
+
+carf:transactionAmount a owl:DatatypeProperty ;
+    rdfs:domain carf:Transaction ;
+    rdfs:range xsd:float .
+
+carf:transactionCurrency a owl:DatatypeProperty ;
+    rdfs:domain carf:Transaction ;
+    rdfs:range xsd:string .
+
+carf:transactionType a owl:DatatypeProperty ;
+    rdfs:domain carf:Transaction ;
+    rdfs:range xsd:string .
+
+carf:RiskLevel a owl:Class ;
+    owl:oneOf (carf:LowRisk carf:MediumRisk carf:HighRisk carf:CriticalRisk) .
+
+carf:LowRisk a owl:NamedIndividual, carf:RiskLevel .
+carf:MediumRisk a owl:NamedIndividual, carf:RiskLevel .
+carf:HighRisk a owl:NamedIndividual, carf:RiskLevel .
+carf:CriticalRisk a owl:NamedIndividual, carf:RiskLevel .
+
+# =============================================================================
+# 9. USER / ROLE CONCEPTS
+# =============================================================================
+
+carf:User a owl:Class ;
+    rdfs:label "User"@en .
+
+carf:UserRole a owl:Class ;
+    owl:oneOf (carf:JuniorRole carf:SeniorRole carf:AdminRole) .
+
+carf:JuniorRole a owl:NamedIndividual, carf:UserRole .
+carf:SeniorRole a owl:NamedIndividual, carf:UserRole .
+carf:AdminRole a owl:NamedIndividual, carf:UserRole .
+
+carf:role a owl:DatatypeProperty ;
+    rdfs:domain carf:User ;
+    rdfs:range xsd:string .
+
+# =============================================================================
+# 10. DATA / PAYLOAD CONCEPTS
+# =============================================================================
+
+carf:DataPayload a owl:Class ;
+    rdfs:label "Data Payload"@en ;
+    rdfs:comment "Data being processed or transferred." .
+
+carf:hasPII a owl:DatatypeProperty ;
+    rdfs:domain carf:DataPayload ;
+    rdfs:range xsd:boolean .
+
+carf:dataSource a owl:DatatypeProperty ;
+    rdfs:domain carf:DataPayload ;
+    rdfs:range xsd:string .
+
+# =============================================================================
+# 11. PROVENANCE CONCEPTS
+# =============================================================================
+
+carf:ReasoningStep a owl:Class ;
+    rdfs:label "Reasoning Step"@en ;
+    rdfs:subClassOf prov:Activity .
+
+carf:FinalResponse a owl:Class ;
+    rdfs:label "Final Response"@en ;
+    rdfs:subClassOf prov:Entity .
+
+# =============================================================================
+# 12. SKOS CONCEPT SCHEME — Domain Ontology Index
+# =============================================================================
+
+carf:DomainConceptScheme a skos:ConceptScheme ;
+    skos:prefLabel "CARF Domain Concepts"@en .
+
+carf:SustainabilityConcept a skos:Concept ;
+    skos:prefLabel "Sustainability"@en ;
+    skos:prefLabel "Kestävä kehitys"@fi ;
+    skos:prefLabel "Sustentabilidade"@pt ;
+    skos:inScheme carf:DomainConceptScheme ;
+    skos:narrower carf:EmissionConcept, carf:EnergyConcept, carf:SupplyChainConcept .
+
+carf:EmissionConcept a skos:Concept ;
+    skos:prefLabel "Emissions"@en ;
+    skos:prefLabel "Päästöt"@fi ;
+    skos:prefLabel "Emissões"@pt ;
+    skos:altLabel "GHG"@en, "Greenhouse Gas"@en, "Carbon"@en ;
+    skos:altLabel "Hiilidioksidi"@fi, "Kasvihuonekaasu"@fi ;
+    skos:altLabel "Carbono"@pt, "Gás de efeito estufa"@pt ;
+    skos:inScheme carf:DomainConceptScheme .
+
+carf:EnergyConcept a skos:Concept ;
+    skos:prefLabel "Energy"@en ;
+    skos:prefLabel "Energia"@fi ;
+    skos:prefLabel "Energia"@pt ;
+    skos:altLabel "Renewable Energy"@en, "Power"@en ;
+    skos:altLabel "Uusiutuva energia"@fi ;
+    skos:altLabel "Energia renovável"@pt ;
+    skos:inScheme carf:DomainConceptScheme .
+
+carf:SupplyChainConcept a skos:Concept ;
+    skos:prefLabel "Supply Chain"@en ;
+    skos:prefLabel "Toimitusketju"@fi ;
+    skos:prefLabel "Cadeia de suprimentos"@pt ;
+    skos:altLabel "Logistics"@en, "Procurement"@en, "Sourcing"@en ;
+    skos:altLabel "Logistiikka"@fi, "Hankinta"@fi ;
+    skos:altLabel "Logística"@pt, "Aquisição"@pt ;
+    skos:inScheme carf:DomainConceptScheme .
+
+carf:FinancialConcept a skos:Concept ;
+    skos:prefLabel "Finance"@en ;
+    skos:prefLabel "Talous"@fi ;
+    skos:prefLabel "Finanças"@pt ;
+    skos:altLabel "Budget"@en, "Cost"@en, "Spend"@en, "Revenue"@en ;
+    skos:altLabel "Budjetti"@fi, "Kustannus"@fi ;
+    skos:altLabel "Orçamento"@pt, "Custo"@pt ;
+    skos:inScheme carf:DomainConceptScheme .
+
+carf:RiskConcept a skos:Concept ;
+    skos:prefLabel "Risk"@en ;
+    skos:altLabel "Uncertainty"@en, "Volatility"@en ;
+    skos:inScheme carf:DomainConceptScheme .
+
+carf:CausalConcept a skos:Concept ;
+    skos:prefLabel "Causal Inference"@en ;
+    skos:altLabel "Cause"@en, "Effect"@en, "Treatment"@en, "Confounding"@en ;
+    skos:inScheme carf:DomainConceptScheme .

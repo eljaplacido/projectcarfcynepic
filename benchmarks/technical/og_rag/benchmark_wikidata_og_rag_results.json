@@ -1,0 +1,73 @@
+{
+  "benchmark_id": "wikidata_og_rag",
+  "hypothesis": "H7/H10",
+  "hypothesis_text": "OG-RAG vs Vector-RAG on Wikidata subgraphs with class-hierarchy expansion",
+  "status": "aspirational",
+  "reason": "Wikidata SPARQL unreachable (TLS/cert). Set WIKIDATA_SPARQL_URL env var if available.",
+  "timestamp": "2026-07-01T16:49:18.730057",
+  "queries_defined": 10,
+  "queries_executed": 0,
+  "harness_valid": true,
+  "per_query_sparql": [
+    {
+      "id": "wd1",
+      "text": "Which companies are in the Fortune Global 500?",
+      "category": "entity_lookup",
+      "sparql_size": 251
+    },
+    {
+      "id": "wd2",
+      "text": "What are the greenhouse gas emissions of major tech companies?",
+      "category": "property_query",
+      "sparql_size": 306
+    },
+    {
+      "id": "wd3",
+      "text": "Which energy companies have renewable energy subsidiaries?",
+      "category": "hierarchy_query",
+      "sparql_size": 365
+    },
+    {
+      "id": "wd4",
+      "text": "List supply chain companies with ISO 14001 certification",
+      "category": "property_query",
+      "sparql_size": 339
+    },
+    {
+      "id": "wd5",
+      "text": "What European countries have the highest renewable energy percentage?",
+      "category": "entity_property_hybrid",
+      "sparql_size": 334
+    },
+    {
+      "id": "wd6",
+      "text": "Find pharmaceutical companies and their carbon footprint",
+      "category": "cross_domain",
+      "sparql_size": 306
+    },
+    {
+      "id": "wd7",
+      "text": "What are the Scope 3 emission reporting standards?",
+      "category": "concept_query",
+      "sparql_size": 252
+    },
+    {
+      "id": "wd8",
+      "text": "Which companies have published CSRD compliance reports?",
+      "category": "entity_property_hybrid",
+      "sparql_size": 345
+    },
+    {
+      "id": "wd9",
+      "text": "Show all ESG rating agencies and their methodology",
+      "category": "entity_lookup",
+      "sparql_size": 245
+    },
+    {
+      "id": "wd10",
+      "text": "What manufacturing industries have the highest water consumption?",
+      "category": "aggregate_query",
+      "sparql_size": 313
+    }
+  ]
+}

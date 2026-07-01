@@ -1,0 +1,632 @@
+{
+  "benchmark_id": "og_rag_g13",
+  "hypothesis": "G13",
+  "hypothesis_text": "OG-RAG vs Vector-RAG \u2014 ontology-grounded retrieval improves precision on structured domain queries",
+  "timestamp": "2026-07-01T16:53:37.518816",
+  "ontology": {
+    "path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\config\\ontologies\\carf.ttl",
+    "total_concepts": 55
+  },
+  "retrieval": {
+    "num_queries": 20,
+    "structured_queries": 18,
+    "unstructured_queries": 2,
+    "avg_concept_recall": 0.1917,
+    "avg_term_precision": 0.0856,
+    "avg_term_recall": 0.3033,
+    "avg_structured_recall": 0.213,
+    "avg_unstructured_recall": 0.0,
+    "structured_concept_gain": 0.213,
+    "concept_match_rate": 0.9,
+    "total_retrieval_time_ms": 8.77,
+    "avg_query_time_ms": 0.44
+  },
+  "per_query": [
+    {
+      "id": "q1",
+      "query": "What are the Scope 1 emissions of our Vietnam supplier?",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 4,
+      "concept_recall": 0.5,
+      "ground_truth_concepts": [
+        "Supplier",
+        "scope1Emissions"
+      ],
+      "matched_concepts": [
+        "Fornecedor",
+        "Emissions",
+        "Sustainability",
+        "Organization"
+      ],
+      "term_precision": 0.0588,
+      "term_recall": 0.25,
+      "expansion_terms": [
+        "sustainability",
+        "estufa",
+        "fornecedor",
+        "carbono",
+        "ghg",
+        "g",
+        "greenhouse",
+        "gas",
+        "emissions",
+        "carbon"
+      ],
+      "retrieval_time_ms": 0.37
+    },
+    {
+      "id": "q2",
+      "query": "Does our logistics route from Asia to Europe use renewable energy?",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 5,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "LogisticsRoute",
+        "usesRenewableEnergy"
+      ],
+      "matched_concepts": [
+        "Rota log\u00edstica",
+        "Supply Chain",
+        "Energy",
+        "Supply Chain",
+        "Sustainability"
+      ],
+      "term_precision": 0.1429,
+      "term_recall": 0.6,
+      "expansion_terms": [
+        "power",
+        "vel",
+        "o",
+        "renewable",
+        "aquisi",
+        "energy",
+        "domain",
+        "log",
+        "supply",
+        "energia"
+      ],
+      "retrieval_time_ms": 0.28
+    },
+    {
+      "id": "q3",
+      "query": "What is the carbon intensity in the EU region?",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 4,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "EconomicRegion",
+        "avgCarbonIntensity"
+      ],
+      "matched_concepts": [
+        "Emissions",
+        "Economic Region",
+        "Sustainability",
+        "Sustainability Domain"
+      ],
+      "term_precision": 0.1176,
+      "term_recall": 0.5,
+      "expansion_terms": [
+        "sustainability",
+        "estufa",
+        "carbono",
+        "economic",
+        "ghg",
+        "g",
+        "greenhouse",
+        "gas",
+        "carbon",
+        "emissions"
+      ],
+      "retrieval_time_ms": 0.23
+    },
+    {
+      "id": "q4",
+      "query": "Show me supplier contracts worth over $500K",
+      "domain": "procurement",
+      "is_structured": true,
+      "concepts_matched": 2,
+      "concept_recall": 0.5,
+      "ground_truth_concepts": [
+        "Contract",
+        "Supplier"
+      ],
+      "matched_concepts": [
+        "Fornecedor",
+        "Organization"
+      ],
+      "term_precision": 0.0,
+      "term_recall": 0.0,
+      "expansion_terms": [
+        "sustainability",
+        "domain",
+        "organization",
+        "fornecedor"
+      ],
+      "retrieval_time_ms": 0.2
+    },
+    {
+      "id": "q5",
+      "query": "Which facilities run on renewable energy sources?",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 2,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "Facility",
+        "energySource",
+        "usesRenewableEnergy"
+      ],
+      "matched_concepts": [
+        "Energy",
+        "Sustainability"
+      ],
+      "term_precision": 0.25,
+      "term_recall": 0.5,
+      "expansion_terms": [
+        "power",
+        "sustainability",
+        "vel",
+        "energia",
+        "uusiutuva",
+        "renewable",
+        "renov",
+        "energy"
+      ],
+      "retrieval_time_ms": 0.21
+    },
+    {
+      "id": "q6",
+      "query": "What is the procurement budget for 2024?",
+      "domain": "finance",
+      "is_structured": true,
+      "concepts_matched": 5,
+      "concept_recall": 0.5,
+      "ground_truth_concepts": [
+        "Budget",
+        "procurementBudget"
+      ],
+      "matched_concepts": [
+        "Or\u00e7amento",
+        "Supply Chain",
+        "Finance",
+        "Sustainability",
+        "Sustainability Domain"
+      ],
+      "term_precision": 0.087,
+      "term_recall": 0.6667,
+      "expansion_terms": [
+        "revenue",
+        "custo",
+        "o",
+        "aquisi",
+        "kustannus",
+        "amento",
+        "domain",
+        "cost",
+        "spend",
+        "log"
+      ],
+      "retrieval_time_ms": 0.22
+    },
+    {
+      "id": "q7",
+      "query": "Compare the sustainability spend between Germany and Vietnam suppliers",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 5,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "Supplier",
+        "locatedIn"
+      ],
+      "matched_concepts": [
+        "Finance",
+        "Sustainability",
+        "Sustainability Domain",
+        "Organization",
+        "Instala\u00e7\u00e3o"
+      ],
+      "term_precision": 0.0667,
+      "term_recall": 0.25,
+      "expansion_terms": [
+        "sustainability",
+        "or",
+        "revenue",
+        "custo",
+        "budget",
+        "o",
+        "finance",
+        "domain",
+        "cost",
+        "spend"
+      ],
+      "retrieval_time_ms": 0.38
+    },
+    {
+      "id": "q8",
+      "query": "What carbon reduction certification does our automotive supplier hold?",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 4,
+      "concept_recall": 0.3333,
+      "ground_truth_concepts": [
+        "Supplier",
+        "isCertified",
+        "industry"
+      ],
+      "matched_concepts": [
+        "Emissions",
+        "Fornecedor",
+        "Sustainability",
+        "Organization"
+      ],
+      "term_precision": 0.0588,
+      "term_recall": 0.25,
+      "expansion_terms": [
+        "sustainability",
+        "estufa",
+        "fornecedor",
+        "carbono",
+        "ghg",
+        "g",
+        "greenhouse",
+        "gas",
+        "carbon",
+        "emissions"
+      ],
+      "retrieval_time_ms": 0.28
+    },
+    {
+      "id": "q9",
+      "query": "How many transit days for the Asia-Europe logistics route?",
+      "domain": "procurement",
+      "is_structured": true,
+      "concepts_matched": 4,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "LogisticsRoute",
+        "avgTransitDays"
+      ],
+      "matched_concepts": [
+        "Rota log\u00edstica",
+        "Supply Chain",
+        "Sustainability",
+        "Supply Chain"
+      ],
+      "term_precision": 0.0714,
+      "term_recall": 0.2,
+      "expansion_terms": [
+        "sourcing",
+        "sustainability",
+        "supply",
+        "procurement",
+        "logistiikka",
+        "o",
+        "chain",
+        "hankinta",
+        "aquisi",
+        "domain"
+      ],
+      "retrieval_time_ms": 0.3
+    },
+    {
+      "id": "q10",
+      "query": "What is the average carbon per ton-kilometer in our supply chain?",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 5,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "LogisticsRoute",
+        "carbonPerTonKm"
+      ],
+      "matched_concepts": [
+        "Supply Chain",
+        "Supply Chain",
+        "Rota log\u00edstica",
+        "Emissions",
+        "Sustainability"
+      ],
+      "term_precision": 0.1111,
+      "term_recall": 0.6,
+      "expansion_terms": [
+        "estufa",
+        "o",
+        "aquisi",
+        "carbono",
+        "g",
+        "gas",
+        "carbon",
+        "domain",
+        "efeito",
+        "log"
+      ],
+      "retrieval_time_ms": 0.34
+    },
+    {
+      "id": "q11",
+      "query": "Tell me about climate transition risks",
+      "domain": "sustainability",
+      "is_structured": false,
+      "concepts_matched": 0,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "EmissionConcept",
+        "RiskConcept"
+      ],
+      "matched_concepts": [],
+      "term_precision": 0.0,
+      "term_recall": 0.0,
+      "expansion_terms": [],
+      "retrieval_time_ms": 0.17
+    },
+    {
+      "id": "q12",
+      "query": "What is the annual revenue for Supplier C?",
+      "domain": "finance",
+      "is_structured": true,
+      "concepts_matched": 3,
+      "concept_recall": 0.5,
+      "ground_truth_concepts": [
+        "Supplier",
+        "annualRevenue"
+      ],
+      "matched_concepts": [
+        "Finance",
+        "Fornecedor",
+        "Organization"
+      ],
+      "term_precision": 0.0714,
+      "term_recall": 0.3333,
+      "expansion_terms": [
+        "sustainability",
+        "or",
+        "fornecedor",
+        "revenue",
+        "custo",
+        "budget",
+        "finance",
+        "domain",
+        "cost",
+        "spend"
+      ],
+      "retrieval_time_ms": 0.22
+    },
+    {
+      "id": "q13",
+      "query": "List all Scope 3 emissions data for our supply base",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 5,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "Supplier",
+        "scope3Emissions"
+      ],
+      "matched_concepts": [
+        "Emissions",
+        "Supply Chain",
+        "Data Payload",
+        "Supply Chain",
+        "Sustainability"
+      ],
+      "term_precision": 0.0714,
+      "term_recall": 0.5,
+      "expansion_terms": [
+        "estufa",
+        "o",
+        "aquisi",
+        "carbono",
+        "g",
+        "gas",
+        "carbon",
+        "domain",
+        "efeito",
+        "log"
+      ],
+      "retrieval_time_ms": 0.42
+    },
+    {
+      "id": "q14",
+      "query": "What energy source does the Hanoi factory use?",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 2,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "Facility",
+        "energySource"
+      ],
+      "matched_concepts": [
+        "Energy",
+        "Sustainability"
+      ],
+      "term_precision": 0.125,
+      "term_recall": 0.25,
+      "expansion_terms": [
+        "power",
+        "sustainability",
+        "vel",
+        "energia",
+        "uusiutuva",
+        "renewable",
+        "renov",
+        "energy"
+      ],
+      "retrieval_time_ms": 0.36
+    },
+    {
+      "id": "q15",
+      "query": "What's our total sustainability budget allocation?",
+      "domain": "finance",
+      "is_structured": true,
+      "concepts_matched": 5,
+      "concept_recall": 0.5,
+      "ground_truth_concepts": [
+        "Budget",
+        "sustainabilityBudget"
+      ],
+      "matched_concepts": [
+        "Or\u00e7amento",
+        "Finance",
+        "Sustainability",
+        "Sustainability Domain",
+        "Emissions"
+      ],
+      "term_precision": 0.08,
+      "term_recall": 0.6667,
+      "expansion_terms": [
+        "estufa",
+        "revenue",
+        "custo",
+        "kustannus",
+        "amento",
+        "carbono",
+        "g",
+        "gas",
+        "carbon",
+        "domain"
+      ],
+      "retrieval_time_ms": 0.37
+    },
+    {
+      "id": "q16",
+      "query": "What is the policy for data residency in our cloud operations?",
+      "domain": "governance",
+      "is_structured": false,
+      "concepts_matched": 4,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "DataPolicy",
+        "DataPayload"
+      ],
+      "matched_concepts": [
+        "Policy",
+        "Data Payload",
+        "Policy Category",
+        "Policy Violation"
+      ],
+      "term_precision": 0.4,
+      "term_recall": 0.5,
+      "expansion_terms": [
+        "payload",
+        "data",
+        "violation",
+        "category",
+        "policy"
+      ],
+      "retrieval_time_ms": 0.36
+    },
+    {
+      "id": "q17",
+      "query": "Compare contract values between Supplier A and Supplier B",
+      "domain": "procurement",
+      "is_structured": true,
+      "concepts_matched": 4,
+      "concept_recall": 0.6667,
+      "ground_truth_concepts": [
+        "Contract",
+        "Supplier",
+        "value"
+      ],
+      "matched_concepts": [
+        "Fornecedor",
+        "Contrato",
+        "Organization",
+        "Sustainability Domain"
+      ],
+      "term_precision": 0.0,
+      "term_recall": 0.0,
+      "expansion_terms": [
+        "sustainability",
+        "fornecedor",
+        "domain",
+        "contrato",
+        "organization"
+      ],
+      "retrieval_time_ms": 0.36
+    },
+    {
+      "id": "q18",
+      "query": "What financial auto-approval limits apply to a junior user transfer?",
+      "domain": "governance",
+      "is_structured": true,
+      "concepts_matched": 3,
+      "concept_recall": 0.3333,
+      "ground_truth_concepts": [
+        "FinancialPolicy",
+        "Transaction",
+        "Action"
+      ],
+      "matched_concepts": [
+        "User",
+        "Financial Domain",
+        "Transaction"
+      ],
+      "term_precision": 0.0,
+      "term_recall": 0.0,
+      "expansion_terms": [
+        "user",
+        "financial",
+        "transaction",
+        "domain"
+      ],
+      "retrieval_time_ms": 0.37
+    },
+    {
+      "id": "q19",
+      "query": "Which suppliers have ISO 14001 or equivalent environmental certification?",
+      "domain": "sustainability",
+      "is_structured": true,
+      "concepts_matched": 3,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "Supplier",
+        "isCertified"
+      ],
+      "matched_concepts": [
+        "Finance",
+        "Or\u00e7amento",
+        "Sustainability Domain"
+      ],
+      "term_precision": 0.0,
+      "term_recall": 0.0,
+      "expansion_terms": [
+        "sustainability",
+        "or",
+        "revenue",
+        "custo",
+        "budget",
+        "finance",
+        "domain",
+        "cost",
+        "spend",
+        "kustannus"
+      ],
+      "retrieval_time_ms": 0.35
+    },
+    {
+      "id": "q20",
+      "query": "Show all active contracts with their vendor and value",
+      "domain": "procurement",
+      "is_structured": true,
+      "concepts_matched": 0,
+      "concept_recall": 0.0,
+      "ground_truth_concepts": [
+        "Contract",
+        "Supplier",
+        "value",
+        "status"
+      ],
+      "matched_concepts": [],
+      "term_precision": 0.0,
+      "term_recall": 0.0,
+      "expansion_terms": [],
+      "retrieval_time_ms": 0.29
+    }
+  ],
+  "grade": "aspirational"
+}

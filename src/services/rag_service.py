@@ -635,20 +635,23 @@ class RAGService:
         domain_id: str | None = None,
         include_causal_context: bool = True,
         include_symbolic_facts: bool = True,
+        include_ontology_context: bool = True,
     ) -> RAGQueryResponse:
         """Neurosymbolic-augmented retrieval — highest contextual reliability.
 
-        Combines three retrieval layers for maximum epistemic grounding:
+        Combines four retrieval layers for maximum epistemic grounding:
         1. Vector similarity (TF-IDF / dense embeddings)
         2. Graph-structural traversal (Neo4j causal + governance graphs)
         3. Symbolic knowledge base facts (neurosymbolic engine grounding)
+        4. Ontology-grounded concept retrieval (OWL/SHACL class hierarchy)
 
         This method implements the research insight that combining vector-based
-        RAG with GraphRAG and symbolic grounding achieves the highest
-        contextual memory reliability (refs: [30][31] Knowledge Graphs for NeSy).
+        RAG with GraphRAG, symbolic grounding, and ontology-grounded retrieval
+        achieves the highest contextual memory reliability (refs: [30][31]
+        Knowledge Graphs for NeSy, Microsoft OG-RAG).
 
-        Falls back gracefully: if NeSy or graph layers are unavailable,
-        returns vector-only results.
+        Falls back gracefully: if NeSy, graph, or ontology layers are
+        unavailable, returns vector-only results.
         """
         # Layer 1: Hybrid vector + graph retrieval
         hybrid_response = await self.retrieve_hybrid(
@@ -768,6 +771,55 @@ class RAGService:
             except Exception as exc:
                 logger.debug("Symbolic KB grounding skipped: %s", exc)
 
+        # Layer 4: Ontology-grounded concept retrieval (OG-RAG)
+        ontology_concepts_added = 0
+        if include_ontology_context:
+            try:
+                from src.services.og_rag_service import get_og_rag_service
+
+                og_rag = get_og_rag_service()
+                if og_rag.loaded:
+                    og_response = og_rag.retrieve_ontology_grounded(
+                        query, top_k=top_k, expand_hierarchy=True,
+                    )
+                    for og_result in og_response.concepts_matched:
+                        concept = og_result.concept
+                        ctx = (
+                            f"Ontology concept '{concept.label}' "
+                            f"({concept.uri.split('#')[-1] if '#' in concept.uri else concept.uri.split('/')[-1]}): "
+                            f"class at depth {concept.depth}"
+                        )
+                        if concept.parent_uris:
+                            parent_labels = [
+                                og_rag._index.by_uri[p].label
+                                for p in concept.parent_uris[:3]
+                                if p in og_rag._index.by_uri
+                            ]
+                            if parent_labels:
+                                ctx += f", parent(s): {', '.join(parent_labels)}"
+                        if concept.alt_labels:
+                            ctx += f", also known as: {', '.join(concept.alt_labels[:5])}"
+                        if concept.properties:
+                            ctx += f", has properties: {', '.join(concept.properties[:5])}"
+
+                        results.append(RAGResult(
+                            doc_id=f"og_rag_{concept.uri.split('#')[-1] if '#' in concept.uri else concept.uri.split('/')[-1]}",
+                            content=ctx,
+                            source="ontology_grounded",
+                            score=og_result.relevance_score * 0.55,
+                            retrieval_mode="symbolic",
+                            metadata={
+                                "concept_uri": concept.uri,
+                                "concept_label": concept.label,
+                                "depth": concept.depth,
+                                "match_type": og_result.match_type,
+                                "type": "ontology_concept",
+                            },
+                        ))
+                        ontology_concepts_added += 1
+            except Exception as exc:
+                logger.debug("Ontology-grounded retrieval skipped: %s", exc)
+
         # Deduplicate and sort by score
         seen: set[str] = set()
         unique: list[RAGResult] = []
@@ -779,7 +831,9 @@ class RAGService:
 
         # Determine retrieval mode label
         modes_used = {r.retrieval_mode for r in unique}
-        if len(modes_used) >= 3:
+        if len(modes_used) >= 4:
+            mode = "ontology_augmented"
+        elif len(modes_used) >= 3:
             mode = "neurosymbolic_augmented"
         elif "graph" in modes_used or "hybrid" in modes_used:
             mode = "hybrid_graphrag"
@@ -788,8 +842,9 @@ class RAGService:
 
         logger.info(
             "NeSy-augmented retrieval: %d results "
-            "(causal: %d, symbolic: %d, mode: %s)",
-            len(unique[:top_k]), causal_context_added, symbolic_facts_added, mode,
+            "(causal: %d, symbolic: %d, ontology: %d, mode: %s)",
+            len(unique[:top_k]), causal_context_added, symbolic_facts_added,
+            ontology_concepts_added, mode,
         )
 
         return RAGQueryResponse(
