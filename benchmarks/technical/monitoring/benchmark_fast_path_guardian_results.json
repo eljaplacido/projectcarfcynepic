@@ -2,65 +2,65 @@
   "benchmark": "carf_fast_path_guardian",
   "hypothesis": "H43",
   "claim": "ChimeraOracle fast-path outputs pass through Guardian 100% of the time",
-  "timestamp": "2026-05-11T12:24:16.997470+00:00",
+  "timestamp": "2026-09-25T15:28:28.502712+00:00",
   "total_tests": 5,
-  "passed_tests": 0,
-  "guardian_enforcement_rate": 0.0,
-  "fast_path_availability_rate": 0.0,
-  "fallback_rate": 0.0,
+  "passed_tests": 5,
+  "guardian_enforcement_rate": 1.0,
+  "fast_path_availability_rate": 1.0,
+  "fallback_rate": 1.0,
   "test_results": [
     {
       "test_id": "T1",
       "name": "chimera_fast_path node exists in graph",
       "description": "Verify that build_carf_graph() produces a StateGraph that contains a 'chimera_fast_path' node.",
-      "passed": false,
-      "reason": "Exception: No module named 'langgraph'",
-      "elapsed_ms": 7.8
+      "passed": true,
+      "reason": "chimera_fast_path found among 11 nodes",
+      "elapsed_ms": 5663.44
     },
     {
       "test_id": "T2",
       "name": "chimera_fast_path has edge to guardian",
       "description": "Verify that chimera_fast_path has a direct edge to the 'guardian' node and does NOT have a direct edge to END.",
-      "passed": false,
-      "reason": "Exception: No module named 'langgraph'",
-      "elapsed_ms": 0.44
+      "passed": true,
+      "reason": "chimera_fast_path -> guardian edge exists, no direct edge to END",
+      "elapsed_ms": 0.49
     },
     {
       "test_id": "T3",
       "name": "route_by_domain can return chimera_fast_path",
       "description": "Verify that route_by_domain includes 'chimera_fast_path' as one of its possible routing targets.",
-      "passed": false,
-      "reason": "Exception: No module named 'langgraph'",
-      "elapsed_ms": 0.37
+      "passed": true,
+      "reason": "route_by_domain contains chimera_fast_path as routing target",
+      "elapsed_ms": 0.23
     },
     {
       "test_id": "T4",
       "name": "chimera_fast_path routes through guardian on success",
       "description": "Verify that the chimera_fast_path node function, upon successful prediction, always returns state that flows to guardian via the graph edge (not skipping it).",
-      "passed": false,
-      "reason": "Exception: No module named 'langgraph'",
-      "elapsed_ms": 0.33
+      "passed": true,
+      "reason": "chimera_fast_path_node returns state without guardian bypass; graph edge enforces guardian routing",
+      "elapsed_ms": 0.95
     },
     {
       "test_id": "T5",
       "name": "chimera_fast_path falls back to causal_analyst on failure",
       "description": "Verify that causal_analyst also has an edge to guardian, so the fallback path is also guardian-enforced.",
-      "passed": false,
-      "reason": "Exception: No module named 'langgraph'",
-      "elapsed_ms": 0.29
+      "passed": true,
+      "reason": "causal_analyst -> guardian edge exists AND chimera_fast_path_node falls back to causal_analyst_node",
+      "elapsed_ms": 1.2
     }
   ],
-  "pass": false,
-  "generated_at": "2026-05-11T12:24:17.001528+00:00",
+  "pass": true,
+  "generated_at": "2026-09-25T15:28:28.544998+00:00",
   "benchmark_id": "fast_path_guardian",
   "methodology": "scripted_benchmark_v1",
   "benchmark_config": {
-    "script": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/monitoring/benchmark_fast_path_guardian.py",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_fast_path_guardian.py",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "git_hash": "1644f21",
-    "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
-    "python_version": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]"
+    "git_hash": "eb0c72d",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
   },
   "dataset_context": {
     "dataset_profile": "graph_structure_verification",
@@ -74,6 +74,6 @@
     "source_reference": "benchmark:fast_path_guardian",
     "generated_by": "carf_benchmark_runner",
     "result_schema": "benchmark_result_v2",
-    "script": "/home/eljaplacido/Desktop/projectcarf/benchmarks/__init__.py"
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
   }
 }

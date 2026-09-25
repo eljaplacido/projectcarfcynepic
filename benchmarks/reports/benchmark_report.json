@@ -1,13 +1,13 @@
 {
   "title": "CARF Unified Benchmark Report",
-  "generated_at": "2026-05-13T10:45:18.046745",
+  "generated_at": "2026-09-25T18:28:41.249724",
   "metadata": {
-    "git_hash": "1644f21",
-    "python_version": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
-    "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
+    "git_hash": "eb0c72d",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
     "llm_provider": "unknown",
     "llm_model": "unknown",
-    "timestamp": "2026-05-13T07:45:18.046714+00:00",
+    "timestamp": "2026-09-25T15:28:41.249708+00:00",
     "seed": null
   },
   "data_sources": [
@@ -44,21 +44,24 @@
     "load",
     "chaos_cascade",
     "soak",
+    "monitoring_drift",
+    "monitoring_bias",
+    "monitoring_plateau",
     "monitoring_guardian"
   ],
   "summary": {
     "grade": "A+",
-    "hypotheses_evaluated": 40,
-    "hypotheses_passed": 39,
+    "hypotheses_evaluated": 43,
+    "hypotheses_passed": 43,
     "hypotheses_total": 43,
-    "pass_rate": 0.975,
-    "pass_rate_lower_95ci": 0.871,
-    "data_coverage": "34 benchmark categories loaded",
+    "pass_rate": 1.0,
+    "pass_rate_lower_95ci": 0.918,
+    "data_coverage": "37 benchmark categories loaded",
     "realism_quality_gate": false,
-    "realism_score_avg": 55.15,
-    "reliability_score_avg": 81.18,
-    "feasibility_score_avg": 88.7,
-    "absolute_readiness_index": 75.17,
+    "realism_score_avg": 52.59,
+    "reliability_score_avg": 78.69,
+    "feasibility_score_avg": 88.03,
+    "absolute_readiness_index": 73.28,
     "evidence_score_avg": 100.0,
     "strong_evidence_ratio": 1.0
   },
@@ -549,41 +552,55 @@
     {
       "id": "H40",
       "claim": "Drift detection detects >5% routing shift within 100 queries with >=90% sensitivity",
-      "status": "no_data",
-      "metric_value": null,
+      "status": "evaluated",
+      "metric_value": 1.0,
       "threshold": 0.9,
-      "passed": null,
-      "details": {}
+      "passed": true,
+      "details": {
+        "specificity": 1.0,
+        "true_positives": 3,
+        "true_negatives": 2,
+        "total_scenarios": 5
+      }
     },
     {
       "id": "H41",
       "claim": "Memory bias detection sensitivity >= 90% for >10% domain skew in 100+ entries",
-      "status": "no_data",
-      "metric_value": null,
+      "status": "evaluated",
+      "metric_value": 1.0,
       "threshold": 0.9,
-      "passed": null,
-      "details": {}
+      "passed": true,
+      "details": {
+        "sensitivity": 1.0,
+        "false_alarm_rate": 0.0,
+        "detection_specificity": 1.0,
+        "total_scenarios": 5
+      }
     },
     {
       "id": "H42",
       "claim": "Plateau detection identifies convergence within 5 epochs of <0.5% improvement",
-      "status": "no_data",
-      "metric_value": null,
+      "status": "evaluated",
+      "metric_value": 1.0,
       "threshold": 0.9,
-      "passed": null,
-      "details": {}
+      "passed": true,
+      "details": {
+        "regression_detection_accuracy": 1.0,
+        "false_plateau_rate": 0.0,
+        "total_scenarios": 5
+      }
     },
     {
       "id": "H43",
       "claim": "ChimeraOracle fast-path outputs pass through Guardian 100% of the time",
       "status": "evaluated",
-      "metric_value": 0.0,
+      "metric_value": 1.0,
       "threshold": 1.0,
-      "passed": false,
+      "passed": true,
       "details": {
-        "fast_path_availability_rate": 0.0,
-        "fallback_rate": 0.0,
-        "passed_tests": 0,
+        "fast_path_availability_rate": 1.0,
+        "fallback_rate": 1.0,
+        "passed_tests": 5,
         "total_tests": 5
       }
     }
@@ -5452,7 +5469,7 @@
     },
     "guardian": {
       "benchmark": "carf_guardian",
-      "timestamp": "2026-02-22T17:37:31.613328+00:00",
+      "timestamp": "2026-05-19T11:49:36.188713+00:00",
       "detection_rate": 1.0,
       "false_positive_rate": 0.0,
       "determinism_rate": 1.0,
@@ -5462,9 +5479,9 @@
           "name": "budget_exceeded",
           "type": "violation",
           "expected": "REJECTED",
-          "actual": "requires_escalation",
+          "actual": "rejected",
           "correct": true,
-          "latency_ms": 8.54
+          "latency_ms": 4.94
         },
         {
           "name": "unauthorized_high_risk",
@@ -5472,7 +5489,7 @@
           "expected": "REQUIRES_ESCALATION",
           "actual": "requires_escalation",
           "correct": true,
-          "latency_ms": 0.72
+          "latency_ms": 0.39
         },
         {
           "name": "low_confidence_action",
@@ -5480,7 +5497,7 @@
           "expected": "REQUIRES_ESCALATION",
           "actual": "requires_escalation",
           "correct": true,
-          "latency_ms": 0.63
+          "latency_ms": 0.35
         },
         {
           "name": "safe_lookup",
@@ -5488,7 +5505,7 @@
           "expected": "APPROVED",
           "actual": "approved",
           "correct": true,
-          "latency_ms": 0.7
+          "latency_ms": 0.28
         },
         {
           "name": "authorized_causal",
@@ -5496,63 +5513,63 @@
           "expected": "APPROVED",
           "actual": "approved",
           "correct": true,
-          "latency_ms": 0.87
+          "latency_ms": 0.26
         }
       ],
       "determinism_results": [
         {
           "name": "budget_exceeded",
           "verdicts": [
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation",
-            "requires_escalation"
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected",
+            "rejected"
           ],
           "deterministic": true
         },
@@ -5781,16 +5798,16 @@
           "deterministic": true
         }
       ],
-      "generated_at": "2026-02-22T17:37:31.685862+00:00",
+      "generated_at": "2026-05-19T11:49:36.193959+00:00",
       "benchmark_id": "guardian",
       "methodology": "scripted_benchmark_v1",
       "benchmark_config": {
-        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\guardian\\benchmark_guardian.py",
+        "script": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/guardian/benchmark_guardian.py",
         "llm_provider": "unknown",
         "llm_model": "unknown",
-        "git_hash": "4f2accf",
-        "platform": "Windows-11-10.0.26200-SP0",
-        "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]"
+        "git_hash": "cb985a3",
+        "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
+        "python_version": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]"
       },
       "dataset_context": {
         "dataset_profile": "unknown",
@@ -5802,7 +5819,7 @@
         "source_reference": "benchmark:guardian",
         "generated_by": "carf_benchmark_runner",
         "result_schema": "benchmark_result_v2",
-        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+        "script": "/home/eljaplacido/Desktop/projectcarf/benchmarks/__init__.py"
       }
     },
     "performance": {
@@ -7813,7 +7830,7 @@
         },
         {
           "name": "reverse_causality_trap",
-          "llm_response_preview": "The data shows a positive correlation, but more firefighters are dispatched to larger fires \u2014 reverse causality.",
+          "llm_response_preview": "The data shows a positive correlation, but more firefighters are dispatched to larger fires \u00e2\u20ac\u201d reverse causality.",
           "carf_response_preview": "Based solely on the provided data, the relationship is likely reverse causal: more firefighters are dispatched to larger fires."
         },
         {
@@ -34187,69 +34204,779 @@
         "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
       }
     },
+    "monitoring_drift": {
+      "benchmark": "carf_drift_detection",
+      "hypothesis": "H40",
+      "claim": "Drift detection detects >5% routing shift within 100 queries with >=90% sensitivity",
+      "timestamp": "2026-09-25T15:26:38.722762+00:00",
+      "total_scenarios": 5,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "true_positives": 3,
+      "true_negatives": 2,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "avg_detection_latency_queries": 50.0,
+      "detection_latencies": [
+        50,
+        50
+      ],
+      "scenario_results": [
+        {
+          "scenario": "Stable Enterprise Operations",
+          "description": "200 queries drawn from the stable enterprise baseline. Drift detector must NOT trigger any alert.",
+          "expected_drift": false,
+          "detected_drift": false,
+          "correct": true,
+          "elapsed_ms": 7945.59,
+          "details": {
+            "total_queries": 200,
+            "alerts_fired": 0,
+            "drift_detected": false
+          }
+        },
+        {
+          "scenario": "Gradual Market Shift",
+          "description": "100 baseline queries, then 100 queries where Complicated gradually drops from 40% to 25% and Complex rises from 30% to 45%. Drift must be detected.",
+          "expected_drift": true,
+          "detected_drift": true,
+          "correct": true,
+          "elapsed_ms": 0.96,
+          "details": {
+            "total_queries": 200,
+            "alerts_fired": 2,
+            "drift_detected": true,
+            "first_alert_at_query": 150,
+            "detection_latency": 50
+          }
+        },
+        {
+          "scenario": "Sudden Crisis",
+          "description": "100 baseline queries, then an abrupt shift where 80% of routing becomes Chaotic. Drift must be detected within 50 queries.",
+          "expected_drift": true,
+          "detected_drift": true,
+          "correct": true,
+          "elapsed_ms": 0.39,
+          "details": {
+            "total_queries": 200,
+            "alerts_fired": 2,
+            "drift_detected": true,
+            "first_alert_at_query": 150,
+            "detection_latency": 50,
+            "within_50_queries": true
+          }
+        },
+        {
+          "scenario": "Seasonal Pattern Return",
+          "description": "100 baseline, then 100 shifted (Complex-heavy), then 100 queries that return to baseline. Alert should fire during shift and clear after return.",
+          "expected_drift": true,
+          "detected_drift": true,
+          "correct": true,
+          "elapsed_ms": 0.58,
+          "details": {
+            "total_queries": 300,
+            "alerted_during_shift": true,
+            "drift_detected": true,
+            "alerts_by_phase": {
+              "baseline": 0,
+              "shifted": 2,
+              "returned": 0
+            }
+          }
+        },
+        {
+          "scenario": "Noise Resilience",
+          "description": "200 queries from baseline + 3% random perturbation per query. Must NOT trigger false alarm.",
+          "expected_drift": false,
+          "detected_drift": false,
+          "correct": true,
+          "elapsed_ms": 0.87,
+          "details": {
+            "total_queries": 300,
+            "alerts_fired": 0,
+            "drift_detected": false
+          }
+        }
+      ],
+      "pass": true,
+      "generated_at": "2026-09-25T15:26:38.766636+00:00",
+      "benchmark_id": "drift_detection",
+      "methodology": "scripted_benchmark_v1",
+      "benchmark_config": {
+        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_drift_detection.py",
+        "llm_provider": "unknown",
+        "llm_model": "unknown",
+        "git_hash": "eb0c72d",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+      },
+      "dataset_context": {
+        "dataset_profile": "synthetic_enterprise_routing",
+        "data_source": "generated_cynefin_distributions",
+        "baseline": {
+          "clear": 0.15,
+          "complicated": 0.4,
+          "complex": 0.3,
+          "chaotic": 0.1,
+          "disorder": 0.05
+        },
+        "total_queries_across_scenarios": 1200
+      },
+      "sample_context": {
+        "total_scenarios": 5
+      },
+      "source_reference": "benchmark:drift_detection",
+      "provenance": {
+        "source_reference": "benchmark:drift_detection",
+        "generated_by": "carf_benchmark_runner",
+        "result_schema": "benchmark_result_v2",
+        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+      }
+    },
+    "monitoring_bias": {
+      "benchmark": "carf_bias_audit",
+      "hypothesis": "H41",
+      "claim": "Memory bias detection sensitivity >= 90% for >10% domain skew in 100+ entries",
+      "timestamp": "2026-09-25T15:26:45.151006+00:00",
+      "total_scenarios": 5,
+      "bias_detection_accuracy": 1.0,
+      "sensitivity": 1.0,
+      "false_alarm_rate": 0.0,
+      "detection_specificity": 1.0,
+      "true_positives": 3,
+      "true_negatives": 2,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "scenario_results": [
+        {
+          "scenario": "Balanced Research Lab",
+          "description": "100 entries, ~20% per domain, quality 0.6-0.9. No systematic bias should be detected.",
+          "expected_bias": false,
+          "detected_bias": false,
+          "correct": true,
+          "elapsed_ms": 4.24,
+          "bias_report": {
+            "total_entries": 100,
+            "distribution_biased": false,
+            "quality_biased": false,
+            "approval_rate_disparity": 0.0,
+            "quality_disparity": 0.0466,
+            "chi_squared_statistic": 4.3,
+            "chi_squared_p_value": 0.367221,
+            "findings": []
+          }
+        },
+        {
+          "scenario": "Finance-Heavy Deployment",
+          "description": "200 entries, 65% Complicated (causal analysis dominates), rest distributed. Distribution bias expected.",
+          "expected_bias": true,
+          "detected_bias": true,
+          "correct": true,
+          "elapsed_ms": 0.58,
+          "bias_report": {
+            "total_entries": 200,
+            "distribution_biased": true,
+            "quality_biased": false,
+            "approval_rate_disparity": 0.0,
+            "quality_disparity": 0.0422,
+            "chi_squared_statistic": 205.55,
+            "chi_squared_p_value": 0.0,
+            "findings": [
+              "Domain distribution biased (chi\u00b2=205.55, p=0.0000): over-represented=['complicated'], under-represented=['disorder']"
+            ]
+          }
+        },
+        {
+          "scenario": "Quality Gap",
+          "description": "150 entries, balanced domain distribution, but Complex domain avg quality 0.35-0.45 vs others 0.75-0.90. Quality bias expected.",
+          "expected_bias": true,
+          "detected_bias": true,
+          "correct": true,
+          "elapsed_ms": 0.37,
+          "bias_report": {
+            "total_entries": 150,
+            "distribution_biased": false,
+            "quality_biased": true,
+            "approval_rate_disparity": 0.0,
+            "quality_disparity": 0.4481,
+            "chi_squared_statistic": 3.2,
+            "chi_squared_p_value": 0.527274,
+            "findings": [
+              "Quality disparity 44.81% between best (chaotic: 0.83) and worst (complex: 0.38)"
+            ]
+          }
+        },
+        {
+          "scenario": "Approval Disparity",
+          "description": "120 entries with Guardian verdicts. Chaotic domain 30% approval vs others 85%+. Verdict bias expected.",
+          "expected_bias": true,
+          "detected_bias": true,
+          "correct": true,
+          "elapsed_ms": 0.36,
+          "bias_report": {
+            "total_entries": 120,
+            "distribution_biased": false,
+            "quality_biased": false,
+            "approval_rate_disparity": 0.6522,
+            "quality_disparity": 0.0514,
+            "chi_squared_statistic": 1.0,
+            "chi_squared_p_value": 0.908938,
+            "findings": [
+              "Approval rate disparity 65.22%: clear (91%) vs chaotic (26%)"
+            ]
+          }
+        },
+        {
+          "scenario": "Clean Production System",
+          "description": "500 entries with realistic but non-systematic variation. No bias should be detected.",
+          "expected_bias": false,
+          "detected_bias": false,
+          "correct": true,
+          "elapsed_ms": 1.13,
+          "bias_report": {
+            "total_entries": 500,
+            "distribution_biased": false,
+            "quality_biased": false,
+            "approval_rate_disparity": 0.0,
+            "quality_disparity": 0.0605,
+            "chi_squared_statistic": 1.34,
+            "chi_squared_p_value": 0.85551,
+            "findings": []
+          }
+        }
+      ],
+      "pass": true,
+      "generated_at": "2026-09-25T15:26:45.192952+00:00",
+      "benchmark_id": "bias_audit",
+      "methodology": "scripted_benchmark_v1",
+      "benchmark_config": {
+        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_bias_audit.py",
+        "llm_provider": "unknown",
+        "llm_model": "unknown",
+        "git_hash": "eb0c72d",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+      },
+      "dataset_context": {
+        "dataset_profile": "synthetic_agent_memory_corpus",
+        "data_source": "generated_memory_entries",
+        "domains": [
+          "clear",
+          "complicated",
+          "complex",
+          "chaotic",
+          "disorder"
+        ],
+        "total_entries_across_scenarios": 1070
+      },
+      "sample_context": {
+        "total_scenarios": 5
+      },
+      "source_reference": "benchmark:bias_audit",
+      "provenance": {
+        "source_reference": "benchmark:bias_audit",
+        "generated_by": "carf_benchmark_runner",
+        "result_schema": "benchmark_result_v2",
+        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+      }
+    },
+    "monitoring_plateau": {
+      "benchmark": "carf_plateau_detection",
+      "hypothesis": "H42",
+      "claim": "Plateau detection identifies convergence within 5 epochs of <0.5% improvement",
+      "timestamp": "2026-09-25T15:26:51.467433+00:00",
+      "total_scenarios": 5,
+      "plateau_detection_accuracy": 1.0,
+      "regression_detection_accuracy": 1.0,
+      "false_plateau_rate": 0.0,
+      "plateau_correct": 2,
+      "plateau_total": 2,
+      "regression_correct": 1,
+      "regression_total": 1,
+      "false_plateau_count": 0,
+      "scenario_results": [
+        {
+          "scenario": "Normal Training Curve",
+          "description": "Classic DistilBERT fine-tuning on domain classification: rapid early gains tapering to <0.5% improvement by epoch 8. Plateau detection should fire at epoch 8.",
+          "accuracy_curve": [
+            0.6,
+            0.72,
+            0.81,
+            0.86,
+            0.89,
+            0.91,
+            0.92,
+            0.924,
+            0.926,
+            0.927
+          ],
+          "expected_plateau": true,
+          "expected_regression": false,
+          "detected_plateau": true,
+          "detected_plateau_at": 10,
+          "detected_regression": false,
+          "detected_regression_at": null,
+          "correct": true,
+          "elapsed_ms": 5447.72,
+          "epoch_details": [
+            {
+              "epoch": 1,
+              "accuracy": 0.6,
+              "accuracy_delta": 0.0,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Insufficient data (need 2+ epochs)"
+            },
+            {
+              "epoch": 2,
+              "accuracy": 0.72,
+              "accuracy_delta": 0.12,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.1200). Retraining is productive."
+            },
+            {
+              "epoch": 3,
+              "accuracy": 0.81,
+              "accuracy_delta": 0.09,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0900). Retraining is productive."
+            },
+            {
+              "epoch": 4,
+              "accuracy": 0.86,
+              "accuracy_delta": 0.05,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0500). Retraining is productive."
+            },
+            {
+              "epoch": 5,
+              "accuracy": 0.89,
+              "accuracy_delta": 0.03,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0300). Retraining is productive."
+            },
+            {
+              "epoch": 6,
+              "accuracy": 0.91,
+              "accuracy_delta": 0.02,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0200). Retraining is productive."
+            },
+            {
+              "epoch": 7,
+              "accuracy": 0.92,
+              "accuracy_delta": 0.01,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0100). Retraining is productive."
+            },
+            {
+              "epoch": 8,
+              "accuracy": 0.924,
+              "accuracy_delta": 0.004,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Marginal improvement (0.0040). Plateau count: 1/3."
+            },
+            {
+              "epoch": 9,
+              "accuracy": 0.926,
+              "accuracy_delta": 0.002,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Marginal improvement (0.0020). Plateau count: 2/3."
+            },
+            {
+              "epoch": 10,
+              "accuracy": 0.927,
+              "accuracy_delta": 0.001,
+              "plateau_detected": true,
+              "regressed": false,
+              "converged": true,
+              "recommendation": "PLATEAU detected: 3 consecutive epochs with <0.50% improvement. Further retraining unlikely to improve accuracy. Consider: (1) new training data, (2) model architecture change, or (3) accepting current performance."
+            }
+          ]
+        },
+        {
+          "scenario": "Quick Convergence",
+          "description": "Pre-trained model already near optimal: converges by epoch 5. Three consecutive sub-0.5% epochs trigger plateau detection.",
+          "accuracy_curve": [
+            0.85,
+            0.89,
+            0.91,
+            0.912,
+            0.913,
+            0.9135
+          ],
+          "expected_plateau": true,
+          "expected_regression": false,
+          "detected_plateau": true,
+          "detected_plateau_at": 6,
+          "detected_regression": false,
+          "detected_regression_at": null,
+          "correct": true,
+          "elapsed_ms": 0.73,
+          "epoch_details": [
+            {
+              "epoch": 1,
+              "accuracy": 0.85,
+              "accuracy_delta": 0.0,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Insufficient data (need 2+ epochs)"
+            },
+            {
+              "epoch": 2,
+              "accuracy": 0.89,
+              "accuracy_delta": 0.04,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0400). Retraining is productive."
+            },
+            {
+              "epoch": 3,
+              "accuracy": 0.91,
+              "accuracy_delta": 0.02,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0200). Retraining is productive."
+            },
+            {
+              "epoch": 4,
+              "accuracy": 0.912,
+              "accuracy_delta": 0.002,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Marginal improvement (0.0020). Plateau count: 1/3."
+            },
+            {
+              "epoch": 5,
+              "accuracy": 0.913,
+              "accuracy_delta": 0.001,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Marginal improvement (0.0010). Plateau count: 2/3."
+            },
+            {
+              "epoch": 6,
+              "accuracy": 0.9135,
+              "accuracy_delta": 0.0005,
+              "plateau_detected": true,
+              "regressed": false,
+              "converged": true,
+              "recommendation": "PLATEAU detected: 3 consecutive epochs with <0.50% improvement. Further retraining unlikely to improve accuracy. Consider: (1) new training data, (2) model architecture change, or (3) accepting current performance."
+            }
+          ]
+        },
+        {
+          "scenario": "Regression",
+          "description": "Overfitting scenario: accuracy rises then drops at epoch 4. Regression should be detected, not plateau.",
+          "accuracy_curve": [
+            0.85,
+            0.88,
+            0.91,
+            0.87
+          ],
+          "expected_plateau": false,
+          "expected_regression": true,
+          "detected_plateau": false,
+          "detected_plateau_at": null,
+          "detected_regression": true,
+          "detected_regression_at": 4,
+          "correct": true,
+          "elapsed_ms": 0.5,
+          "epoch_details": [
+            {
+              "epoch": 1,
+              "accuracy": 0.85,
+              "accuracy_delta": 0.0,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Insufficient data (need 2+ epochs)"
+            },
+            {
+              "epoch": 2,
+              "accuracy": 0.88,
+              "accuracy_delta": 0.03,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0300). Retraining is productive."
+            },
+            {
+              "epoch": 3,
+              "accuracy": 0.91,
+              "accuracy_delta": 0.03,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0300). Retraining is productive."
+            },
+            {
+              "epoch": 4,
+              "accuracy": 0.87,
+              "accuracy_delta": -0.04,
+              "plateau_detected": false,
+              "regressed": true,
+              "converged": false,
+              "recommendation": "REGRESSION detected: accuracy dropped by 0.0400 (from 0.9100 to 0.8700). Investigate data quality or revert to previous model."
+            }
+          ]
+        },
+        {
+          "scenario": "Oscillating",
+          "description": "Unstable training with learning rate too high: accuracy oscillates without converging. No plateau should be reported.",
+          "accuracy_curve": [
+            0.8,
+            0.85,
+            0.83,
+            0.86,
+            0.84,
+            0.87
+          ],
+          "expected_plateau": false,
+          "expected_regression": false,
+          "detected_plateau": false,
+          "detected_plateau_at": null,
+          "detected_regression": true,
+          "detected_regression_at": 3,
+          "correct": true,
+          "elapsed_ms": 0.63,
+          "epoch_details": [
+            {
+              "epoch": 1,
+              "accuracy": 0.8,
+              "accuracy_delta": 0.0,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Insufficient data (need 2+ epochs)"
+            },
+            {
+              "epoch": 2,
+              "accuracy": 0.85,
+              "accuracy_delta": 0.05,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0500). Retraining is productive."
+            },
+            {
+              "epoch": 3,
+              "accuracy": 0.83,
+              "accuracy_delta": -0.02,
+              "plateau_detected": false,
+              "regressed": true,
+              "converged": false,
+              "recommendation": "REGRESSION detected: accuracy dropped by 0.0200 (from 0.8500 to 0.8300). Investigate data quality or revert to previous model."
+            },
+            {
+              "epoch": 4,
+              "accuracy": 0.86,
+              "accuracy_delta": 0.03,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0300). Retraining is productive."
+            },
+            {
+              "epoch": 5,
+              "accuracy": 0.84,
+              "accuracy_delta": -0.02,
+              "plateau_detected": false,
+              "regressed": true,
+              "converged": false,
+              "recommendation": "REGRESSION detected: accuracy dropped by 0.0200 (from 0.8600 to 0.8400). Investigate data quality or revert to previous model."
+            },
+            {
+              "epoch": 6,
+              "accuracy": 0.87,
+              "accuracy_delta": 0.03,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0300). Retraining is productive."
+            }
+          ]
+        },
+        {
+          "scenario": "Steady Improvement",
+          "description": "Consistently improving model (data augmentation expanding the training set). No plateau detected.",
+          "accuracy_curve": [
+            0.7,
+            0.75,
+            0.8,
+            0.85,
+            0.9
+          ],
+          "expected_plateau": false,
+          "expected_regression": false,
+          "detected_plateau": false,
+          "detected_plateau_at": null,
+          "detected_regression": false,
+          "detected_regression_at": null,
+          "correct": true,
+          "elapsed_ms": 0.51,
+          "epoch_details": [
+            {
+              "epoch": 1,
+              "accuracy": 0.7,
+              "accuracy_delta": 0.0,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Insufficient data (need 2+ epochs)"
+            },
+            {
+              "epoch": 2,
+              "accuracy": 0.75,
+              "accuracy_delta": 0.05,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0500). Retraining is productive."
+            },
+            {
+              "epoch": 3,
+              "accuracy": 0.8,
+              "accuracy_delta": 0.05,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0500). Retraining is productive."
+            },
+            {
+              "epoch": 4,
+              "accuracy": 0.85,
+              "accuracy_delta": 0.05,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0500). Retraining is productive."
+            },
+            {
+              "epoch": 5,
+              "accuracy": 0.9,
+              "accuracy_delta": 0.05,
+              "plateau_detected": false,
+              "regressed": false,
+              "converged": false,
+              "recommendation": "Improvement detected (0.0500). Retraining is productive."
+            }
+          ]
+        }
+      ],
+      "pass": true,
+      "generated_at": "2026-09-25T15:26:51.504090+00:00",
+      "benchmark_id": "plateau_detection",
+      "methodology": "scripted_benchmark_v1",
+      "benchmark_config": {
+        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_plateau_detection.py",
+        "llm_provider": "unknown",
+        "llm_model": "unknown",
+        "git_hash": "eb0c72d",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+      },
+      "dataset_context": {
+        "dataset_profile": "synthetic_distilbert_training_curves",
+        "data_source": "modeled_finetuning_accuracy",
+        "total_epochs_across_scenarios": 31
+      },
+      "sample_context": {
+        "total_scenarios": 5
+      },
+      "source_reference": "benchmark:plateau_detection",
+      "provenance": {
+        "source_reference": "benchmark:plateau_detection",
+        "generated_by": "carf_benchmark_runner",
+        "result_schema": "benchmark_result_v2",
+        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+      }
+    },
     "monitoring_guardian": {
       "benchmark": "carf_fast_path_guardian",
       "hypothesis": "H43",
       "claim": "ChimeraOracle fast-path outputs pass through Guardian 100% of the time",
-      "timestamp": "2026-05-11T12:24:16.997470+00:00",
+      "timestamp": "2026-09-25T15:28:28.502712+00:00",
       "total_tests": 5,
-      "passed_tests": 0,
-      "guardian_enforcement_rate": 0.0,
-      "fast_path_availability_rate": 0.0,
-      "fallback_rate": 0.0,
+      "passed_tests": 5,
+      "guardian_enforcement_rate": 1.0,
+      "fast_path_availability_rate": 1.0,
+      "fallback_rate": 1.0,
       "test_results": [
         {
           "test_id": "T1",
           "name": "chimera_fast_path node exists in graph",
           "description": "Verify that build_carf_graph() produces a StateGraph that contains a 'chimera_fast_path' node.",
-          "passed": false,
-          "reason": "Exception: No module named 'langgraph'",
-          "elapsed_ms": 7.8
+          "passed": true,
+          "reason": "chimera_fast_path found among 11 nodes",
+          "elapsed_ms": 5663.44
         },
         {
           "test_id": "T2",
           "name": "chimera_fast_path has edge to guardian",
           "description": "Verify that chimera_fast_path has a direct edge to the 'guardian' node and does NOT have a direct edge to END.",
-          "passed": false,
-          "reason": "Exception: No module named 'langgraph'",
-          "elapsed_ms": 0.44
+          "passed": true,
+          "reason": "chimera_fast_path -> guardian edge exists, no direct edge to END",
+          "elapsed_ms": 0.49
         },
         {
           "test_id": "T3",
           "name": "route_by_domain can return chimera_fast_path",
           "description": "Verify that route_by_domain includes 'chimera_fast_path' as one of its possible routing targets.",
-          "passed": false,
-          "reason": "Exception: No module named 'langgraph'",
-          "elapsed_ms": 0.37
+          "passed": true,
+          "reason": "route_by_domain contains chimera_fast_path as routing target",
+          "elapsed_ms": 0.23
         },
         {
           "test_id": "T4",
           "name": "chimera_fast_path routes through guardian on success",
           "description": "Verify that the chimera_fast_path node function, upon successful prediction, always returns state that flows to guardian via the graph edge (not skipping it).",
-          "passed": false,
-          "reason": "Exception: No module named 'langgraph'",
-          "elapsed_ms": 0.33
+          "passed": true,
+          "reason": "chimera_fast_path_node returns state without guardian bypass; graph edge enforces guardian routing",
+          "elapsed_ms": 0.95
         },
         {
           "test_id": "T5",
           "name": "chimera_fast_path falls back to causal_analyst on failure",
           "description": "Verify that causal_analyst also has an edge to guardian, so the fallback path is also guardian-enforced.",
-          "passed": false,
-          "reason": "Exception: No module named 'langgraph'",
-          "elapsed_ms": 0.29
+          "passed": true,
+          "reason": "causal_analyst -> guardian edge exists AND chimera_fast_path_node falls back to causal_analyst_node",
+          "elapsed_ms": 1.2
         }
       ],
-      "pass": false,
-      "generated_at": "2026-05-11T12:24:17.001528+00:00",
+      "pass": true,
+      "generated_at": "2026-09-25T15:28:28.544998+00:00",
       "benchmark_id": "fast_path_guardian",
       "methodology": "scripted_benchmark_v1",
       "benchmark_config": {
-        "script": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/monitoring/benchmark_fast_path_guardian.py",
+        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_fast_path_guardian.py",
         "llm_provider": "unknown",
         "llm_model": "unknown",
-        "git_hash": "1644f21",
-        "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
-        "python_version": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]"
+        "git_hash": "eb0c72d",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
       },
       "dataset_context": {
         "dataset_profile": "graph_structure_verification",
@@ -34263,22 +34990,22 @@
         "source_reference": "benchmark:fast_path_guardian",
         "generated_by": "carf_benchmark_runner",
         "result_schema": "benchmark_result_v2",
-        "script": "/home/eljaplacido/Desktop/projectcarf/benchmarks/__init__.py"
+        "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
       }
     }
   },
   "e2e_summary": 13,
   "realism_validation": {
     "status": "ok",
-    "coverage_ratio": 0.971,
-    "realism_score_avg": 55.15,
-    "reliability_score_avg": 81.18,
-    "feasibility_score_avg": 88.7,
-    "absolute_readiness_index": 75.17,
+    "coverage_ratio": 0.973,
+    "realism_score_avg": 52.59,
+    "reliability_score_avg": 78.69,
+    "feasibility_score_avg": 88.03,
+    "absolute_readiness_index": 73.28,
     "production_proxy_ratio": 1.0,
     "provenance_ratio": 1.0,
-    "baseline_comparator_ratio": 0.727,
-    "synthetic_profile_ratio": 0.212,
+    "baseline_comparator_ratio": 0.667,
+    "synthetic_profile_ratio": 0.278,
     "evidence_score_avg": 100.0,
     "strong_evidence_ratio": 1.0,
     "low_evidence_sources": [],
@@ -34286,15 +35013,18 @@
     "quality_gate_reasons": [
       "Realism score below 65/100."
     ],
-    "covered_specs": 33,
-    "loaded_result_sources": 34,
+    "covered_specs": 36,
+    "loaded_result_sources": 37,
     "missing_manifest_for_results": [
       "monitoring_guardian"
     ],
     "missing_results_for_manifest": [
-      "monitoring_bias",
-      "monitoring_drift",
-      "monitoring_plateau"
+      "conformal_realdata",
+      "conformal_router",
+      "energy_realworld",
+      "ihdp_realworld",
+      "lalonde_realworld",
+      "wikidata_og_rag"
     ],
     "category_scores": {
       "core": {
@@ -34356,6 +35086,12 @@
         "reliability": 73.44,
         "feasibility": 85.78,
         "count": 3
+      },
+      "monitoring": {
+        "realism": 24.43,
+        "reliability": 51.33,
+        "feasibility": 80.67,
+        "count": 3
       }
     }
   },
@@ -34367,7 +35103,7 @@
     "entries": [
       {
         "benchmark_id": "router",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/router/benchmark_router_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\router\\benchmark_router_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34378,7 +35114,7 @@
       },
       {
         "benchmark_id": "causal",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/causal/benchmark_causal_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\causal\\benchmark_causal_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34389,7 +35125,7 @@
       },
       {
         "benchmark_id": "bayesian",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/bayesian/benchmark_bayesian_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\bayesian\\benchmark_bayesian_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34400,7 +35136,7 @@
       },
       {
         "benchmark_id": "guardian",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/guardian/benchmark_guardian_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\guardian\\benchmark_guardian_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34411,7 +35147,7 @@
       },
       {
         "benchmark_id": "performance",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/performance/benchmark_latency_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\performance\\benchmark_latency_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34422,7 +35158,7 @@
       },
       {
         "benchmark_id": "chimera",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/chimera/benchmark_oracle_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\chimera\\benchmark_oracle_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34433,7 +35169,7 @@
       },
       {
         "benchmark_id": "governance",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/governance/benchmark_governance_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_governance_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34444,7 +35180,7 @@
       },
       {
         "benchmark_id": "e2e",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/use_cases/e2e_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\use_cases\\e2e_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34455,7 +35191,7 @@
       },
       {
         "benchmark_id": "baseline",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/baselines/baseline_results.summary.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\baselines\\baseline_results.summary.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34466,7 +35202,7 @@
       },
       {
         "benchmark_id": "board_lifecycle",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/governance/benchmark_board_lifecycle_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_board_lifecycle_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34477,7 +35213,7 @@
       },
       {
         "benchmark_id": "policy_roundtrip",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/governance/benchmark_policy_roundtrip_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_policy_roundtrip_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34488,7 +35224,7 @@
       },
       {
         "benchmark_id": "owasp",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/security/benchmark_owasp_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\security\\benchmark_owasp_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34499,7 +35235,7 @@
       },
       {
         "benchmark_id": "red_team",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/security/benchmark_red_team_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\security\\benchmark_red_team_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34510,7 +35246,7 @@
       },
       {
         "benchmark_id": "counterbench",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/causal/benchmark_counterbench_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\causal\\benchmark_counterbench_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34521,7 +35257,7 @@
       },
       {
         "benchmark_id": "adversarial_causal",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/causal/benchmark_adversarial_causal_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\causal\\benchmark_adversarial_causal_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34532,7 +35268,7 @@
       },
       {
         "benchmark_id": "tau_bench",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/governance/benchmark_tau_bench_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\governance\\benchmark_tau_bench_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34543,7 +35279,7 @@
       },
       {
         "benchmark_id": "hallucination_scale",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/baselines/benchmark_hallucination_scale_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\baselines\\benchmark_hallucination_scale_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34554,7 +35290,7 @@
       },
       {
         "benchmark_id": "cross_llm",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/router/benchmark_cross_llm_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\router\\benchmark_cross_llm_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34565,7 +35301,7 @@
       },
       {
         "benchmark_id": "clear",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/reports/benchmark_clear_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\reports\\benchmark_clear_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34576,7 +35312,7 @@
       },
       {
         "benchmark_id": "fairness",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/compliance/benchmark_fairness_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\compliance\\benchmark_fairness_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34587,7 +35323,7 @@
       },
       {
         "benchmark_id": "xai",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/compliance/benchmark_xai_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\compliance\\benchmark_xai_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34598,7 +35334,7 @@
       },
       {
         "benchmark_id": "audit_trail",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/compliance/benchmark_audit_trail_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\compliance\\benchmark_audit_trail_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34609,7 +35345,7 @@
       },
       {
         "benchmark_id": "energy",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/sustainability/benchmark_energy_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\sustainability\\benchmark_energy_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34620,7 +35356,7 @@
       },
       {
         "benchmark_id": "scope3",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/sustainability/benchmark_scope3_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\sustainability\\benchmark_scope3_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34631,7 +35367,7 @@
       },
       {
         "benchmark_id": "sus",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/ux/benchmark_sus_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\ux\\benchmark_sus_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34642,7 +35378,7 @@
       },
       {
         "benchmark_id": "task_completion",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/ux/benchmark_task_completion_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\ux\\benchmark_task_completion_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34653,7 +35389,7 @@
       },
       {
         "benchmark_id": "wcag",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/ux/benchmark_wcag_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\ux\\benchmark_wcag_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34664,7 +35400,7 @@
       },
       {
         "benchmark_id": "supply_chain",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/industry/benchmark_supply_chain_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\industry\\benchmark_supply_chain_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34675,7 +35411,7 @@
       },
       {
         "benchmark_id": "healthcare",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/industry/benchmark_healthcare_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\industry\\benchmark_healthcare_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34686,7 +35422,7 @@
       },
       {
         "benchmark_id": "finance",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/industry/benchmark_finance_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\industry\\benchmark_finance_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34697,7 +35433,7 @@
       },
       {
         "benchmark_id": "load",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/performance/benchmark_load_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\performance\\benchmark_load_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34708,7 +35444,7 @@
       },
       {
         "benchmark_id": "chaos_cascade",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/resiliency/benchmark_chaos_cascade_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\resiliency\\benchmark_chaos_cascade_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34719,7 +35455,40 @@
       },
       {
         "benchmark_id": "soak",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/performance/benchmark_soak_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\performance\\benchmark_soak_results.json",
+        "has_timestamp": true,
+        "has_config": true,
+        "has_dataset_context": true,
+        "has_sample_context": true,
+        "has_provenance": true,
+        "evidence_score": 100.0,
+        "missing_signals": []
+      },
+      {
+        "benchmark_id": "monitoring_drift",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_drift_detection_results.json",
+        "has_timestamp": true,
+        "has_config": true,
+        "has_dataset_context": true,
+        "has_sample_context": true,
+        "has_provenance": true,
+        "evidence_score": 100.0,
+        "missing_signals": []
+      },
+      {
+        "benchmark_id": "monitoring_bias",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_bias_audit_results.json",
+        "has_timestamp": true,
+        "has_config": true,
+        "has_dataset_context": true,
+        "has_sample_context": true,
+        "has_provenance": true,
+        "evidence_score": 100.0,
+        "missing_signals": []
+      },
+      {
+        "benchmark_id": "monitoring_plateau",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_plateau_detection_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
@@ -34730,7 +35499,7 @@
       },
       {
         "benchmark_id": "monitoring_guardian",
-        "file_path": "/home/eljaplacido/Desktop/projectcarf/benchmarks/technical/monitoring/benchmark_fast_path_guardian_results.json",
+        "file_path": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\monitoring\\benchmark_fast_path_guardian_results.json",
         "has_timestamp": true,
         "has_config": true,
         "has_dataset_context": true,
