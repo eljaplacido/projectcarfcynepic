@@ -38,6 +38,27 @@ blindness SE5 is about. Quoting the ceiling as "S1" would flatter the predictive
 layer; quoting only the fitted one would blame estimation for a failure that is
 actually structural.
 
+THE RESULT THAT NEEDS A CAVEAT BEFORE IT NEEDS A HEADLINE
+=========================================================
+
+The cheap linear T-learner beats the expensive boosted one -- 0.0562 against
+0.0664 mean regret, at a twentieth of the cost. Read as "simpler causal models
+win", that would be a claim about causal inference. It is not one.
+
+C2 generates individual effects as `segment_ate + 0.05 * x4`: a per-segment
+constant plus one linear term. **A linear T-learner is therefore close to
+correctly specified on this corpus, and the boosted one is not.** The comparison
+measures specification match against a known DGP, not the merits of the two
+estimator families in general.
+
+What it does license is narrower and still useful: on a corpus where the cheap
+model is adequate, escalating to the expensive one *increases* regret, and no
+confidence signal tells you that. That is a real failure mode for a tiered
+architecture -- the expensive tier is assumed better and here it is worse -- and
+it is why `SE6_cheap_base` sweeps the default action rather than assuming S1 is
+the floor. Whether it survives a non-linear effect surface is an open question
+and wants a second corpus, which is recorded rather than answered here.
+
 HYPOTHESES AND THEIR FALSIFIERS
 ===============================
 
@@ -83,6 +104,7 @@ from typing import Any
 
 import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold
 
 from benchmarks import finalize_benchmark_report
@@ -135,6 +157,7 @@ def cross_fitted_layers(
     n = len(records)
     s1_pred = np.full(n, np.nan)
     s2_cate = np.full(n, np.nan)
+    cheap_cate = np.full(n, np.nan)
 
     kf = KFold(n_splits=N_FOLDS, shuffle=True, random_state=seed)
     for train_idx, test_idx in kf.split(x):
@@ -155,6 +178,19 @@ def cross_fitted_layers(
         mc.fit(x[ct], y[ct])
         s2_cate[test_idx] = mt.predict(x[test_idx]) - mc.predict(x[test_idx])
 
+        # ── S1.5: a DELIBERATELY cheap causal estimate. Linear T-learner, no
+        # boosting, no depth. It exists to answer the question SE6 raised: the
+        # oracle leaves most of the available regret on the table and no trigger
+        # tested reaches it, but `s2_margin` is not a trigger at all -- it
+        # requires paying for S2 to decide whether to pay for S2. A cheap CATE
+        # margin is deployable, because it is computed before the expensive
+        # layer runs.
+        lt = LinearRegression()
+        lc = LinearRegression()
+        lt.fit(x[tr], y[tr])
+        lc.fit(x[ct], y[ct])
+        cheap_cate[test_idx] = lt.predict(x[test_idx]) - lc.predict(x[test_idx])
+
     # S1's action: treat the half that looks worst. A ranker's threshold is a
     # budget decision and only exists relative to a population.
     threshold = float(np.nanmedian(s1_pred))
@@ -169,6 +205,9 @@ def cross_fitted_layers(
     # S2's margin: how far the estimated effect sits from the decision boundary.
     s2_margin = np.abs(s2_cate - treatment_cost)
 
+    cheap_action = np.where(cheap_cate > treatment_cost, 1, 0)
+    cheap_margin = np.abs(cheap_cate - treatment_cost)
+
     return {
         "s1_pred": s1_pred,
         "s1_action": s1_action,
@@ -176,6 +215,9 @@ def cross_fitted_layers(
         "s2_cate": s2_cate,
         "s2_action": s2_action,
         "s2_margin": s2_margin,
+        "cheap_cate": cheap_cate,
+        "cheap_action": cheap_action,
+        "cheap_margin": cheap_margin,
     }
 
 
@@ -220,7 +262,11 @@ def se7_by_task(records: list[dict[str, Any]], layers: dict[str, np.ndarray]) ->
 
 
 def se6_frontier(
-    records: list[dict[str, Any]], layers: dict[str, np.ndarray], seed: int = SEED
+    records: list[dict[str, Any]],
+    layers: dict[str, np.ndarray],
+    base_action: np.ndarray,
+    base_name: str,
+    seed: int = SEED,
 ) -> dict[str, Any]:
     """Regret against cost, swept over escalation rate, for several triggers.
 
@@ -232,20 +278,25 @@ def se6_frontier(
     """
     rng = np.random.default_rng(seed)
     n = len(records)
-    r1 = regret_of(records, layers["s1_action"])
+    r_base = regret_of(records, base_action)
     r2 = regret_of(records, layers["s2_action"])
 
     triggers: dict[str, np.ndarray] = {
         # Escalate where S1 is LEAST confident -> smallest confidence first.
         "s1_confidence": layers["s1_confidence"],
-        # Escalate where S2's own estimate is closest to the boundary. Only
-        # computable after paying for S2, so it is an upper reference for a
-        # margin gate rather than a deployable trigger on its own.
+        # The deployable margin gate: a cheap linear CATE is computed for every
+        # item anyway, and its distance from the decision boundary is known
+        # BEFORE the expensive layer runs. This is the trigger the programme's
+        # decision list proposes, and the only one here that could be shipped.
+        "cheap_margin": layers["cheap_margin"],
+        # Escalate where S2's own estimate is closest to the boundary. NOT
+        # deployable -- it requires paying for S2 to decide whether to pay for
+        # S2 -- and reported only as a reference for what a margin gate can see.
         "s2_margin": layers["s2_margin"],
         "random": rng.random(n),
         # Escalate exactly where doing so helps most. Not deployable: it needs
         # the answer. Reported as the ceiling.
-        "oracle": -(r1 - r2),
+        "oracle": -(r_base - r2),
     }
 
     curves: dict[str, list[dict[str, float]]] = {}
@@ -256,13 +307,13 @@ def se6_frontier(
             k = int(round(rate * n))
             escalated = np.zeros(n, dtype=bool)
             escalated[order[:k]] = True
-            regret = float(np.mean(np.where(escalated, r2, r1)))
+            regret = float(np.mean(np.where(escalated, r2, r_base)))
             cost = float(np.mean(np.where(escalated, COST_S1 + COST_S2, COST_S1)))
             rows.append({"rate": rate, "mean_regret": round(regret, 5), "mean_cost": round(cost, 3)})
         curves[name] = rows
 
     # Is the frontier flat? Measured as the spread of regret across the sweep
-    # for the best deployable trigger, relative to the S1-only baseline.
+    # for the best deployable trigger, relative to the no-escalation baseline.
     base = curves["s1_confidence"][0]["mean_regret"]
     best_span = max(
         max(r["mean_regret"] for r in rows) - min(r["mean_regret"] for r in rows)
@@ -271,8 +322,25 @@ def se6_frontier(
     )
     relative_span = best_span / base if base else 0.0
 
+    # The interior minimum is the whole point of an escalation policy: if the
+    # best rate is 0 or 1 there is no policy to tune, only a choice of layer.
+    deployable = {k: v for k, v in curves.items() if k in ("s1_confidence", "cheap_margin", "random")}
+    best_deployable = min(
+        ((k, r["rate"], r["mean_regret"]) for k, rows in deployable.items() for r in rows),
+        key=lambda z: z[2],
+    )
+    oracle_best = min(curves["oracle"], key=lambda r: r["mean_regret"])
+
     return {
         "curves": curves,
+        "base_policy": base_name,
+        "best_deployable": {
+            "trigger": best_deployable[0],
+            "rate": best_deployable[1],
+            "mean_regret": round(best_deployable[2], 5),
+        },
+        "oracle_best": {"rate": oracle_best["rate"], "mean_regret": oracle_best["mean_regret"]},
+        "gap_to_oracle": round(best_deployable[2] - oracle_best["mean_regret"], 5),
         "s1_only_regret": round(base, 5),
         "s2_everywhere_regret": round(curves["random"][-1]["mean_regret"], 5),
         "largest_deployable_span": round(best_span, 5),
@@ -320,7 +388,8 @@ def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
         logger.warning("%d items left unscored by S2", unscored)
 
     se7 = se7_by_task(records, layers)
-    se6 = se6_frontier(records, layers)
+    se6 = se6_frontier(records, layers, layers["s1_action"], "S1 predictive ranker")
+    se6_cheap = se6_frontier(records, layers, layers["cheap_action"], "cheap linear CATE")
     ci7 = ci7_regret_reduction(records, layers)
 
     logger.info("")
@@ -357,6 +426,20 @@ def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
                 ci7["absolute_reduction"], 100 * (ci7["relative_reduction"] or 0),
                 ci7["paired_t"], ci7["p_value"], ci7["cost_multiple"])
 
+    logger.info("")
+    logger.info("SE6b - same sweep, but the DEFAULT action comes from the cheap")
+    logger.info("       causal estimate instead of the predictive ranker")
+    header_b = "  {:>6} " + " ".join(f"{k:>14}" for k in se6_cheap["curves"])
+    logger.info(header_b.format("rate", *se6_cheap["curves"].keys()))
+    for i, rate in enumerate(RATES):
+        vals = [se6_cheap["curves"][k][i]["mean_regret"] for k in se6_cheap["curves"]]
+        logger.info("  {:>6.2f} ".format(rate) + " ".join(f"{v:>14.5f}" for v in vals))
+    logger.info("  best deployable: %s at rate %.2f -> %.5f (oracle %.5f at %.2f, gap %.5f)",
+                se6_cheap["best_deployable"]["trigger"], se6_cheap["best_deployable"]["rate"],
+                se6_cheap["best_deployable"]["mean_regret"],
+                se6_cheap["oracle_best"]["mean_regret"], se6_cheap["oracle_best"]["rate"],
+                se6_cheap["gap_to_oracle"])
+
     report: dict[str, Any] = {
         "benchmark": "escalation_frontier",
         "hypotheses": ["SE6", "SE7", "CI7"],
@@ -366,8 +449,16 @@ def run_benchmark(output_path: str | None = None) -> dict[str, Any]:
         "treatment_cost": cost,
         "cost_model": {"s1": COST_S1, "s2": COST_S2, "note": "abstract units; the ratio is what the frontier reads"},
         "s2_is_estimated_not_oracle": True,
+        "specification_caveat": (
+            "C2 generates effects as segment_ate + 0.05*x4, which is linear. The "
+            "cheap linear T-learner is therefore close to correctly specified and "
+            "the boosted one is not, so the cheap-beats-expensive result measures "
+            "specification match against a known DGP and does not generalise to a "
+            "non-linear effect surface."
+        ),
         "items_unscored_by_s2": unscored,
         "SE6": se6,
+        "SE6_cheap_base": se6_cheap,
         "SE7": {**se7, "crossover_observed": se7_crossover},
         "CI7": ci7,
         "methodology": (
