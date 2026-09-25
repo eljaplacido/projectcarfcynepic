@@ -1,0 +1,95 @@
+{
+  "corpus_id": "C2",
+  "title": "Shared decision corpus: prediction vs intervention",
+  "seed": 20260925,
+  "n_items": 500,
+  "treatment_cost": 0.08,
+  "n_covariates": 6,
+  "s1_policy": {
+    "rule": "treat if true risk score > corpus median risk",
+    "threshold": 0.489336,
+    "note": "a purely predictive ranker; it has no representation of an action that is not taken"
+  },
+  "segments": [
+    {
+      "name": "persuadable_high_risk",
+      "baseline_risk": 0.72,
+      "ate": 0.34,
+      "share": 0.16,
+      "note": "high risk, large positive effect - treat"
+    },
+    {
+      "name": "persuadable_low_risk",
+      "baseline_risk": 0.24,
+      "ate": 0.31,
+      "share": 0.14,
+      "note": "low risk, large positive effect - treat, and a ranker never gets here"
+    },
+    {
+      "name": "lost_cause",
+      "baseline_risk": 0.81,
+      "ate": 0.02,
+      "share": 0.16,
+      "note": "high risk, no effect - a ranker spends its whole budget here"
+    },
+    {
+      "name": "sure_thing",
+      "baseline_risk": 0.19,
+      "ate": 0.01,
+      "share": 0.14,
+      "note": "low risk, no effect - correctly skipped by both"
+    },
+    {
+      "name": "sleeping_dog_high_risk",
+      "baseline_risk": 0.68,
+      "ate": -0.22,
+      "share": 0.1,
+      "note": "high risk, treating HARMS - the case a ranker cannot represent"
+    },
+    {
+      "name": "sleeping_dog_low_risk",
+      "baseline_risk": 0.22,
+      "ate": -0.18,
+      "share": 0.08,
+      "note": "low risk, treating harms"
+    },
+    {
+      "name": "marginal_positive",
+      "baseline_risk": 0.5,
+      "ate": 0.1,
+      "share": 0.12,
+      "note": "effect positive but near the cost line - the decision-margin case"
+    },
+    {
+      "name": "marginal_negative",
+      "baseline_risk": 0.46,
+      "ate": 0.05,
+      "share": 0.1,
+      "note": "effect positive but BELOW the cost line - do nothing is correct"
+    }
+  ],
+  "ground_truth_fields": [
+    "y0_value",
+    "y1_value",
+    "ite",
+    "segment_ate",
+    "best_action",
+    "value_treat",
+    "value_do_nothing",
+    "regret_if_treat",
+    "regret_if_do_nothing",
+    "s2_changes_action"
+  ],
+  "serves_hypotheses": [
+    "SE1",
+    "SE5",
+    "SE6",
+    "SE7",
+    "CI4",
+    "CI7"
+  ],
+  "does_not_serve": {
+    "SE2": "question text is templated; SE2 needs natural phrasing from real tickets and prompts, hand-labelled by two raters"
+  },
+  "phrasing": "templated"
+}

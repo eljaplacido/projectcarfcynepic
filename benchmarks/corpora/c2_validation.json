@@ -1,0 +1,102 @@
+{
+  "corpus_id": "C2",
+  "n_items": 500,
+  "seed": 20260925,
+  "checks": [
+    {
+      "check": "V1.decorrelation",
+      "corr_risk_effect": 0.0629,
+      "passed": true
+    },
+    {
+      "check": "V1.potential_outcomes",
+      "max_discrepancy": 1.0000000001120224e-06,
+      "passed": true
+    },
+    {
+      "check": "V1.do_nothing_present",
+      "share": 0.554,
+      "n": 277,
+      "passed": true
+    },
+    {
+      "check": "V1.confounding_is_real",
+      "naive_diff_in_means": -0.034,
+      "true_ate": 0.0908,
+      "bias": 0.1248,
+      "passed": true
+    },
+    {
+      "check": "V1.segment_ates_recover",
+      "segments": [
+        {
+          "segment": "persuadable_high_risk",
+          "declared_ate": 0.34,
+          "observed_mean_ite": 0.3482,
+          "n": 92
+        },
+        {
+          "segment": "persuadable_low_risk",
+          "declared_ate": 0.31,
+          "observed_mean_ite": 0.3053,
+          "n": 57
+        },
+        {
+          "segment": "lost_cause",
+          "declared_ate": 0.02,
+          "observed_mean_ite": 0.0125,
+          "n": 79
+        },
+        {
+          "segment": "sure_thing",
+          "declared_ate": 0.01,
+          "observed_mean_ite": 0.0149,
+          "n": 75
+        },
+        {
+          "segment": "sleeping_dog_high_risk",
+          "declared_ate": -0.22,
+          "observed_mean_ite": -0.2176,
+          "n": 41
+        },
+        {
+          "segment": "sleeping_dog_low_risk",
+          "declared_ate": -0.18,
+          "observed_mean_ite": -0.1791,
+          "n": 37
+        },
+        {
+          "segment": "marginal_positive",
+          "declared_ate": 0.1,
+          "observed_mean_ite": 0.1042,
+          "n": 65
+        },
+        {
+          "segment": "marginal_negative",
+          "declared_ate": 0.05,
+          "observed_mean_ite": 0.0485,
+          "n": 54
+        }
+      ],
+      "passed": true
+    },
+    {
+      "check": "V1.deterministic",
+      "n_items": 500,
+      "passed": true
+    },
+    {
+      "check": "V2.lalonde_anchor",
+      "randomised_effect_usd": 1794.3,
+      "published_band": [
+        1000.0,
+        2600.0
+      ],
+      "n_treated": 185,
+      "n_control": 260,
+      "passed": true
+    }
+  ],
+  "v1_v2_pass": true,
+  "skipped_count": 0
+}
