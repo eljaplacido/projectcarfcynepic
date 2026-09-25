@@ -1,0 +1,138 @@
+{
+  "benchmark": "implementations_on_c2",
+  "experiment": "#8",
+  "corpus": "C2",
+  "n_items": 500,
+  "true_ate": 0.090769136,
+  "true_att": 0.0848868188976378,
+  "results": [
+    {
+      "implementation": "cynepic-causal (Rust)",
+      "estimator": "difference_in_means",
+      "ate": -0.034036204884449694,
+      "ci95_low": -0.08191827286352238,
+      "ci95_high": 0.013845863094622983,
+      "estimand": "ATE",
+      "truth": 0.090769136,
+      "bias": -0.1248053408844497,
+      "covers_truth": false
+    },
+    {
+      "implementation": "cynepic-causal (Rust)",
+      "estimator": "ols_adjusted",
+      "ate": 0.08098726871047719,
+      "ci95_low": 0.03102090016064272,
+      "ci95_high": 0.13095363726031167,
+      "estimand": "ATE",
+      "truth": 0.090769136,
+      "bias": -0.009781867289522808,
+      "covers_truth": true
+    },
+    {
+      "implementation": "cynepic-causal (Rust)",
+      "estimator": "ipw",
+      "ate": 0.11241538543176205,
+      "ci95_low": 0.05207895740779951,
+      "ci95_high": 0.1727518134557246,
+      "estimand": "ATE",
+      "truth": 0.090769136,
+      "bias": 0.02164624943176205,
+      "covers_truth": true
+    },
+    {
+      "implementation": "cynepic-causal (Rust)",
+      "estimator": "ipw_cross_fitted_10",
+      "ate": 0.10660919887206155,
+      "ci95_low": 0.04933957302971546,
+      "ci95_high": 0.16387882471440765,
+      "estimand": "ATE",
+      "truth": 0.090769136,
+      "bias": 0.01584006287206155,
+      "covers_truth": true
+    },
+    {
+      "implementation": "cynepic-causal (Rust)",
+      "estimator": "ipw_in_sample_propensity",
+      "ate": 0.09896967200605306,
+      "ci95_low": 0.044695161417367055,
+      "ci95_high": 0.15324418259473904,
+      "estimand": "ATE",
+      "truth": 0.090769136,
+      "bias": 0.008200536006053055,
+      "covers_truth": true
+    },
+    {
+      "implementation": "cynepic-causal (Rust)",
+      "estimator": "att",
+      "ate": 0.12735843694824084,
+      "ci95_low": 0.050480958695093336,
+      "ci95_high": 0.20423591520138834,
+      "estimand": "ATT",
+      "truth": 0.0848868188976378,
+      "bias": 0.04247161805060304,
+      "covers_truth": true
+    },
+    {
+      "implementation": "CARF (DoWhy)",
+      "estimator": "backdoor.linear_regression",
+      "ate": 0.08098726871047668,
+      "ci95_low": 0.03034545218654254,
+      "ci95_high": 0.13162908523441086,
+      "robust": true,
+      "refutation_status": "passed",
+      "estimand": "ATE",
+      "truth": 0.090769136,
+      "bias": -0.009781867289523322,
+      "covers_truth": true
+    },
+    {
+      "implementation": "CARF (DoWhy)",
+      "estimator": "backdoor.propensity_score_weighting",
+      "ate": 0.09504127415174307,
+      "ci95_low": 0.04243123257593845,
+      "ci95_high": 0.15623997957318803,
+      "robust": true,
+      "refutation_status": "passed",
+      "estimand": "ATE",
+      "truth": 0.090769136,
+      "bias": 0.004272138151743071,
+      "covers_truth": true
+    },
+    {
+      "implementation": "sklearn (reference)",
+      "estimator": "t_learner_gbm_crossfit5",
+      "ate": 0.059895721134858734,
+      "ci95_low": 0.04352010029033554,
+      "ci95_high": 0.07627134197938193,
+      "note": "SE of the mean CATE, not a causal standard error; shown for scale only",
+      "estimand": "ATE",
+      "truth": 0.090769136,
+      "bias": -0.030873414865141266,
+      "covers_truth": false
+    }
+  ],
+  "n_scored": 9,
+  "n_missing_truth": 2,
+  "methodology": "Every implementation scored against C2's known ATE rather than against each other. Agreement between implementations that MISS is a shared defect, not corroboration. difference_in_means is the floor and is expected to miss on a corpus that confounds assignment deliberately.",
+  "generated_at": "2026-09-25T17:03:16.392508+00:00",
+  "benchmark_id": "implementations_on_c2",
+  "benchmark_config": {
+    "llm_provider": "unknown",
+    "llm_model": "unknown",
+    "git_hash": "805696b",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmarks/corpora/c2_corpus.jsonl",
+  "provenance": {
+    "source_reference": "benchmarks/corpora/c2_corpus.jsonl",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}

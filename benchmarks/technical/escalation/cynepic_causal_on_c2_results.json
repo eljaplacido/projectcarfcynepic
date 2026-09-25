@@ -1,0 +1,92 @@
+{
+  "benchmark": "cynepic_causal_on_c2",
+  "corpus": "C2",
+  "corpus_path": "/tmp/c2_corpus.jsonl",
+  "estimates": [
+    {
+      "abs_bias": 0.12480534088444975,
+      "ate": -0.034036204884449694,
+      "bias": -0.12480534088444975,
+      "ci95_high": 0.013845863094622983,
+      "ci95_low": -0.08191827286352238,
+      "covers_truth": false,
+      "estimand": "ATE",
+      "estimator": "difference_in_means",
+      "n_obs": 500,
+      "std_error": 0.0244300754086082,
+      "std_error_kind": "Classical"
+    },
+    {
+      "abs_bias": 0.009781867289522864,
+      "ate": 0.08098726871047719,
+      "bias": -0.009781867289522864,
+      "ci95_high": 0.13095363726031167,
+      "ci95_low": 0.03102090016064272,
+      "covers_truth": true,
+      "estimand": "ATE",
+      "estimator": "ols_adjusted",
+      "n_obs": 500,
+      "std_error": 0.025493513607229252,
+      "std_error_kind": "Hc1"
+    },
+    {
+      "abs_bias": 0.021646249431761994,
+      "ate": 0.11241538543176205,
+      "bias": 0.021646249431761994,
+      "ci95_high": 0.1727518134557246,
+      "ci95_low": 0.05207895740779951,
+      "covers_truth": true,
+      "estimand": "ATE",
+      "estimator": "ipw",
+      "n_obs": 500,
+      "std_error": 0.02907993047954076,
+      "std_error_kind": "InfluenceFunction"
+    },
+    {
+      "abs_bias": 0.015840062872061494,
+      "ate": 0.10660919887206155,
+      "bias": 0.015840062872061494,
+      "ci95_high": 0.16387882471440765,
+      "ci95_low": 0.04933957302971546,
+      "covers_truth": true,
+      "estimand": "ATE",
+      "estimator": "ipw_cross_fitted_10",
+      "n_obs": 500,
+      "std_error": 0.027975612223703605,
+      "std_error_kind": "InfluenceFunction"
+    },
+    {
+      "abs_bias": 0.008200536006053,
+      "ate": 0.09896967200605306,
+      "bias": 0.008200536006053,
+      "ci95_high": 0.15324418259473904,
+      "ci95_low": 0.044695161417367055,
+      "covers_truth": true,
+      "estimand": "ATE",
+      "estimator": "ipw_in_sample_propensity",
+      "n_obs": 500,
+      "std_error": 0.026891201277929173,
+      "std_error_kind": "InfluenceFunction"
+    },
+    {
+      "abs_bias": 0.04247161805060305,
+      "ate": 0.12735843694824084,
+      "bias": 0.04247161805060305,
+      "ci95_high": 0.20423591520138834,
+      "ci95_low": 0.050480958695093336,
+      "covers_truth": true,
+      "estimand": "ATT",
+      "estimator": "att",
+      "n_obs": 500,
+      "std_error": 0.03467295383470494,
+      "std_error_kind": "InfluenceFunction"
+    }
+  ],
+  "failures": [],
+  "n_covariates": 6,
+  "n_obs": 500,
+  "n_treated": 254,
+  "note": "C2 is confounded by construction (x0 and x1 drive both propensity and outcome, same direction), so difference_in_means is expected to miss. ATT is scored against the mean effect among the treated, not against the ATE. `ipw` already cross-fits at 5 folds via \n                 `default_propensity`, so it is compared against 10 folds and \n                 against a single in-sample fit rather than against itself.",
+  "true_ate": 0.09076913600000006,
+  "true_att": 0.08488681889763779
+}
