@@ -1,0 +1,249 @@
+{
+  "benchmark": "rt1_spine",
+  "five_class": {
+    "labels": [
+      "Clear",
+      "Complicated",
+      "Complex",
+      "Chaotic",
+      "Disorder"
+    ],
+    "n_items": 456,
+    "protocol": "all 456 items; Disorder is a class to predict",
+    "results": [
+      {
+        "accuracy": 0.5921052631578947,
+        "implementation": "keyword",
+        "macro_f1": 0.6083687360232093,
+        "n_scored": 456,
+        "per_domain_f1": [
+          {
+            "domain": "Clear",
+            "f1": 0.6354166666666666,
+            "precision": 0.6703296703296703,
+            "recall": 0.6039603960396039
+          },
+          {
+            "domain": "Complicated",
+            "f1": 0.543046357615894,
+            "precision": 0.8367346938775511,
+            "recall": 0.4019607843137255
+          },
+          {
+            "domain": "Complex",
+            "f1": 0.6415094339622641,
+            "precision": 0.8793103448275862,
+            "recall": 0.504950495049505
+          },
+          {
+            "domain": "Chaotic",
+            "f1": 0.6753246753246753,
+            "precision": 0.9629629629629629,
+            "recall": 0.52
+          },
+          {
+            "domain": "Disorder",
+            "f1": 0.5465465465465466,
+            "precision": 0.3939393939393939,
+            "recall": 0.8921568627450981
+          }
+        ]
+      },
+      {
+        "accuracy": 0.8377192982456141,
+        "implementation": "lexical_centroid",
+        "macro_f1": 0.8358750839594723,
+        "n_scored": 456,
+        "per_domain_f1": [
+          {
+            "domain": "Clear",
+            "f1": 0.839378238341969,
+            "precision": 0.8804347826086957,
+            "recall": 0.801980198019802
+          },
+          {
+            "domain": "Complicated",
+            "f1": 0.91005291005291,
+            "precision": 0.9885057471264368,
+            "recall": 0.8431372549019608
+          },
+          {
+            "domain": "Complex",
+            "f1": 0.8808290155440415,
+            "precision": 0.9239130434782609,
+            "recall": 0.8415841584158416
+          },
+          {
+            "domain": "Chaotic",
+            "f1": 0.7804878048780487,
+            "precision": 1.0,
+            "recall": 0.64
+          },
+          {
+            "domain": "Disorder",
+            "f1": 0.7686274509803921,
+            "precision": 0.6405228758169934,
+            "recall": 0.9607843137254902
+          }
+        ]
+      },
+      {
+        "accuracy": 0.8662280701754386,
+        "implementation": "discriminative_logreg",
+        "macro_f1": 0.8116289628265386,
+        "n_scored": 456,
+        "per_domain_f1": [
+          {
+            "domain": "Clear",
+            "f1": 0.8773584905660378,
+            "precision": 0.8378378378378378,
+            "recall": 0.9207920792079208
+          },
+          {
+            "domain": "Complicated",
+            "f1": 0.9411764705882353,
+            "precision": 0.9411764705882353,
+            "recall": 0.9411764705882353
+          },
+          {
+            "domain": "Complex",
+            "f1": 0.9246231155778896,
+            "precision": 0.9387755102040817,
+            "recall": 0.9108910891089109
+          },
+          {
+            "domain": "Chaotic",
+            "f1": 0.4615384615384615,
+            "precision": 1.0,
+            "recall": 0.3
+          },
+          {
+            "domain": "Disorder",
+            "f1": 0.8534482758620688,
+            "precision": 0.7615384615384615,
+            "recall": 0.9705882352941176
+          }
+        ]
+      }
+    ]
+  },
+  "folds": 4,
+  "four_class": {
+    "labels": [
+      "Clear",
+      "Complicated",
+      "Complex",
+      "Chaotic"
+    ],
+    "n_items": 354,
+    "protocol": "354 non-Disorder items; an abstention is an error",
+    "results": [
+      {
+        "accuracy": 0.5056497175141242,
+        "implementation": "keyword",
+        "macro_f1": 0.6342335195862256,
+        "n_scored": 354,
+        "per_domain_f1": [
+          {
+            "domain": "Clear",
+            "f1": 0.648936170212766,
+            "precision": 0.7011494252873564,
+            "recall": 0.6039603960396039
+          },
+          {
+            "domain": "Complicated",
+            "f1": 0.5503355704697988,
+            "precision": 0.8723404255319149,
+            "recall": 0.4019607843137255
+          },
+          {
+            "domain": "Complex",
+            "f1": 0.6623376623376623,
+            "precision": 0.9622641509433962,
+            "recall": 0.504950495049505
+          },
+          {
+            "domain": "Chaotic",
+            "f1": 0.6753246753246753,
+            "precision": 0.9629629629629629,
+            "recall": 0.52
+          }
+        ]
+      },
+      {
+        "accuracy": 0.8135593220338984,
+        "implementation": "lexical_centroid",
+        "macro_f1": 0.8671213880288957,
+        "n_scored": 354,
+        "per_domain_f1": [
+          {
+            "domain": "Clear",
+            "f1": 0.8333333333333334,
+            "precision": 0.8791208791208791,
+            "recall": 0.7920792079207921
+          },
+          {
+            "domain": "Complicated",
+            "f1": 0.9157894736842106,
+            "precision": 0.9886363636363636,
+            "recall": 0.8529411764705882
+          },
+          {
+            "domain": "Complex",
+            "f1": 0.8958333333333333,
+            "precision": 0.945054945054945,
+            "recall": 0.8514851485148515
+          },
+          {
+            "domain": "Chaotic",
+            "f1": 0.8235294117647058,
+            "precision": 1.0,
+            "recall": 0.7
+          }
+        ]
+      },
+      {
+        "accuracy": 0.8983050847457628,
+        "implementation": "discriminative_logreg",
+        "macro_f1": 0.8947259717252075,
+        "n_scored": 354,
+        "per_domain_f1": [
+          {
+            "domain": "Clear",
+            "f1": 0.8532110091743119,
+            "precision": 0.7948717948717948,
+            "recall": 0.9207920792079208
+          },
+          {
+            "domain": "Complicated",
+            "f1": 0.9504950495049505,
+            "precision": 0.96,
+            "recall": 0.9411764705882353
+          },
+          {
+            "domain": "Complex",
+            "f1": 0.9246231155778896,
+            "precision": 0.9387755102040817,
+            "recall": 0.9108910891089109
+          },
+          {
+            "domain": "Chaotic",
+            "f1": 0.8505747126436781,
+            "precision": 1.0,
+            "recall": 0.74
+          }
+        ]
+      }
+    ]
+  },
+  "hypothesis": "RT1",
+  "label_counts": {
+    "Chaotic": 50,
+    "Clear": 101,
+    "Complex": 101,
+    "Complicated": 102,
+    "Disorder": 102
+  },
+  "spine": "/tmp/rt1_test_set.jsonl",
+  "why_two_protocols": "cynepic-testkit's corpus excludes Disorder as a label by design; CARF's spine makes it 22% of the ground truth. An abstention is therefore a correct answer on one corpus and a wrong answer on the other, so one implementation can post two very different scores without changing."
+}
