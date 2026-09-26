@@ -1,0 +1,781 @@
+{
+  "benchmark": "escalation_frontier_c3",
+  "hypotheses": [
+    "SE6",
+    "SE7",
+    "CI7"
+  ],
+  "corpus": "C3",
+  "n_items": 500,
+  "n_folds": 5,
+  "treatment_cost": 0.08,
+  "cost_model": {
+    "s1": 1.0,
+    "s2": 20.0,
+    "note": "abstract units; the ratio is what the frontier reads"
+  },
+  "s2_is_estimated_not_oracle": true,
+  "specification_caveat": "C2 generates effects as segment_ate + 0.05*x4, which is linear. The cheap linear T-learner is therefore close to correctly specified and the boosted one is not, so the cheap-beats-expensive result measures specification match against a known DGP and does not generalise to a non-linear effect surface.",
+  "items_unscored_by_s2": 0,
+  "SE6": {
+    "curves": {
+      "s1_confidence": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10789,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.10617,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.10648,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.105,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.10465,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.10254,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.09917,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.09587,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.0933,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.09238,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.09063,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.08301,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ],
+      "cheap_margin": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10789,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.10665,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.10547,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.10448,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.10536,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.1033,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.09777,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.09473,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.09289,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.09096,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.08534,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.0842,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ],
+      "s2_margin": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10789,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.10783,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.10633,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.10713,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.10565,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.09924,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.09799,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.09273,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.09368,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.08929,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.09016,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.08555,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ],
+      "random": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10789,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.10694,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.10593,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.1018,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.09915,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.09579,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.09268,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.08833,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.08539,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.08499,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.08093,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.07879,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ],
+      "oracle": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10789,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.08522,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.07035,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.05933,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.05093,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.04289,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.04242,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.04242,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.04242,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.04242,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.04295,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.05266,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ]
+    },
+    "base_policy": "S1 predictive ranker",
+    "best_deployable": {
+      "trigger": "s1_confidence",
+      "rate": 1.0,
+      "mean_regret": 0.07744
+    },
+    "oracle_best": {
+      "rate": 0.4,
+      "mean_regret": 0.04242
+    },
+    "gap_to_oracle": 0.03502,
+    "s1_only_regret": 0.10789,
+    "s2_everywhere_regret": 0.07744,
+    "largest_deployable_span": 0.03045,
+    "span_relative_to_s1_only": 0.2822,
+    "flat_threshold": 0.05,
+    "frontier_is_flat": false
+  },
+  "SE6_cheap_base": {
+    "curves": {
+      "s1_confidence": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10176,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.10069,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.09927,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.09852,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.09742,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.09604,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.09078,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.08816,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.0867,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.08284,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.08085,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.07773,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ],
+      "cheap_margin": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10176,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.10168,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.0993,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.09994,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.09863,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.09822,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.09391,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.08834,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.08646,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.08448,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.08398,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.08311,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ],
+      "s2_margin": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10176,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.10029,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.09922,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.09834,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.09721,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.09212,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.09071,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.08763,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.08923,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.0868,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.08564,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.08267,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ],
+      "random": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10176,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.10125,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.09919,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.09624,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.09472,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.09123,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.09409,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.09167,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.08799,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.0868,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.08384,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.08145,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ],
+      "oracle": [
+        {
+          "rate": 0.0,
+          "mean_regret": 0.10176,
+          "mean_cost": 1.0
+        },
+        {
+          "rate": 0.05,
+          "mean_regret": 0.08081,
+          "mean_cost": 2.0
+        },
+        {
+          "rate": 0.1,
+          "mean_regret": 0.06793,
+          "mean_cost": 3.0
+        },
+        {
+          "rate": 0.15,
+          "mean_regret": 0.05892,
+          "mean_cost": 4.0
+        },
+        {
+          "rate": 0.2,
+          "mean_regret": 0.05348,
+          "mean_cost": 5.0
+        },
+        {
+          "rate": 0.3,
+          "mean_regret": 0.05061,
+          "mean_cost": 7.0
+        },
+        {
+          "rate": 0.4,
+          "mean_regret": 0.05061,
+          "mean_cost": 9.0
+        },
+        {
+          "rate": 0.5,
+          "mean_regret": 0.05061,
+          "mean_cost": 11.0
+        },
+        {
+          "rate": 0.6,
+          "mean_regret": 0.05061,
+          "mean_cost": 13.0
+        },
+        {
+          "rate": 0.7,
+          "mean_regret": 0.05061,
+          "mean_cost": 15.0
+        },
+        {
+          "rate": 0.8,
+          "mean_regret": 0.05061,
+          "mean_cost": 17.0
+        },
+        {
+          "rate": 0.9,
+          "mean_regret": 0.05455,
+          "mean_cost": 19.0
+        },
+        {
+          "rate": 1.0,
+          "mean_regret": 0.07744,
+          "mean_cost": 21.0
+        }
+      ]
+    },
+    "base_policy": "cheap linear CATE",
+    "best_deployable": {
+      "trigger": "s1_confidence",
+      "rate": 1.0,
+      "mean_regret": 0.07744
+    },
+    "oracle_best": {
+      "rate": 0.3,
+      "mean_regret": 0.05061
+    },
+    "gap_to_oracle": 0.02683,
+    "s1_only_regret": 0.10176,
+    "s2_everywhere_regret": 0.07744,
+    "largest_deployable_span": 0.02432,
+    "span_relative_to_s1_only": 0.239,
+    "flat_threshold": 0.05,
+    "frontier_is_flat": false
+  },
+  "SE7": {
+    "associational": {
+      "task": "predict the untreated outcome (RMSE, lower is better)",
+      "s1_rmse": 0.2648,
+      "s2_rmse": 0.4869,
+      "winner": "S1"
+    },
+    "interventional": {
+      "task": "choose the action (mean regret, lower is better)",
+      "s1_regret": 0.1079,
+      "s2_regret": 0.0774,
+      "winner": "S2"
+    },
+    "crossover_observed": true
+  },
+  "CI7": {
+    "s1_fitted_mean_regret": 0.10789,
+    "s1_oracle_risk_mean_regret": 0.08685,
+    "s2_mean_regret": 0.07744,
+    "absolute_reduction": 0.03045,
+    "relative_reduction": 0.2822,
+    "paired_t": 4.108,
+    "p_value": 4.672530622936203e-05,
+    "cost_s1": 1.0,
+    "cost_s2": 21.0,
+    "cost_multiple": 21.0
+  },
+  "methodology": "Both layers cross-fitted over 5 folds; every item scored by models that never saw it. S1 is a predictive regressor that never sees the treatment indicator; S2 is a T-learner on the observed confounded data. S2 is estimated, not oracle -- an oracle S2 would answer these hypotheses from the fixture rather than from the components.",
+  "generated_at": "2026-09-26T17:42:10.830219+00:00",
+  "benchmark_id": "escalation_frontier_c3",
+  "benchmark_config": {
+    "llm_provider": "openrouter",
+    "llm_model": "deepseek/deepseek-chat",
+    "git_hash": "6418792",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmarks/corpora/c3_corpus.jsonl",
+  "provenance": {
+    "source_reference": "benchmarks/corpora/c3_corpus.jsonl",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}
