@@ -9,13 +9,18 @@
       "n": 747,
       "true_ate": 4.016066896118338,
       "dowhy_linear": {
-        "ate": 3.9286717508727156,
-        "eps_ate": 0.08739514524562253,
+        "ate": 3.9286717508727143,
+        "eps_ate": 0.08739514524562386,
+        "pehe": null
+      },
+      "dowhy_ipw": {
+        "ate": 4.028653382811932,
+        "eps_ate": 0.012586486693593635,
         "pehe": null
       },
       "econml_causal_forest": {
-        "ate": 3.8791013765047495,
-        "eps_ate": 0.1369655196135886,
+        "ate": 3.87910137650475,
+        "eps_ate": 0.13696551961358816,
         "pehe": 0.5514140496086776
       },
       "cynepic_difference_in_means": {
@@ -44,8 +49,13 @@
       "n": 747,
       "true_ate": 4.050838760043126,
       "dowhy_linear": {
-        "ate": 3.8993524278370666,
-        "eps_ate": 0.15148633220605934,
+        "ate": 3.899352427837062,
+        "eps_ate": 0.15148633220606378,
+        "pehe": null
+      },
+      "dowhy_ipw": {
+        "ate": 4.072861012677046,
+        "eps_ate": 0.02202225263391977,
         "pehe": null
       },
       "econml_causal_forest": {
@@ -79,8 +89,13 @@
       "n": 747,
       "true_ate": 4.099163647971287,
       "dowhy_linear": {
-        "ate": 3.934976099573692,
-        "eps_ate": 0.16418754839759497,
+        "ate": 3.9349760995736887,
+        "eps_ate": 0.16418754839759853,
+        "pehe": null
+      },
+      "dowhy_ipw": {
+        "ate": 4.049339264441448,
+        "eps_ate": 0.04982438352983909,
         "pehe": null
       },
       "econml_causal_forest": {
@@ -118,9 +133,14 @@
         "eps_ate": 0.3669878721087825,
         "pehe": null
       },
+      "dowhy_ipw": {
+        "ate": 4.151633876478236,
+        "eps_ate": 0.12204458096025395,
+        "pehe": null
+      },
       "econml_causal_forest": {
-        "ate": 4.163476766692934,
-        "eps_ate": 0.11020169074555586,
+        "ate": 4.163476766692935,
+        "eps_ate": 0.11020169074555497,
         "pehe": 1.2690316500400094
       },
       "cynepic_difference_in_means": {
@@ -149,8 +169,13 @@
       "n": 747,
       "true_ate": 4.162439707706217,
       "dowhy_linear": {
-        "ate": 4.176538505657891,
-        "eps_ate": 0.014098797951674236,
+        "ate": 4.176538505657888,
+        "eps_ate": 0.014098797951670683,
+        "pehe": null
+      },
+      "dowhy_ipw": {
+        "ate": 4.2144042030050395,
+        "eps_ate": 0.0519644952988223,
         "pehe": null
       },
       "econml_causal_forest": {
@@ -201,6 +226,11 @@
       "mean_eps_ate": 0.1568,
       "mean_pehe": null
     },
+    "dowhy_ipw": {
+      "replicates_scored": 5,
+      "mean_eps_ate": 0.0517,
+      "mean_pehe": null
+    },
     "dowhy_linear": {
       "replicates_scored": 5,
       "mean_eps_ate": 0.1568,
@@ -213,13 +243,13 @@
     }
   },
   "note": "PEHE is absent for ATE-only estimators rather than penalised: an estimator that does not claim a per-unit effect has not got one wrong.",
-  "generated_at": "2026-09-26T09:12:44.738774+00:00",
+  "generated_at": "2026-09-26T17:32:55.798961+00:00",
   "benchmark_id": "ci1_external",
   "methodology": "scripted_benchmark_v1",
   "benchmark_config": {
     "llm_provider": "openrouter",
     "llm_model": "deepseek/deepseek-chat",
-    "git_hash": "bcd0c7a",
+    "git_hash": "1f5990d",
     "platform": "Windows-11-10.0.26200-SP0",
     "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
   },

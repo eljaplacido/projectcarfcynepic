@@ -119,6 +119,24 @@ def python_estimators(d: dict[str, np.ndarray]) -> dict[str, dict[str, float | N
     except Exception as exc:  # noqa: BLE001
         out["dowhy_linear"] = {"ate": None, "error": f"{type(exc).__name__}: {exc}"}
 
+    # ── DoWhy, propensity-score weighting ──
+    # The MATCHED counterpart to the crate's `ipw`. Omitting it was a real
+    # error: the first run compared the crate's IPW against DoWhy's LINEAR
+    # regression and read the difference as one implementation beating another,
+    # when it was one estimator family beating a different one.
+    try:
+        from dowhy import CausalModel
+
+        model = CausalModel(data=frame, treatment="treatment", outcome="y", common_causes=cols)
+        est = model.estimate_effect(
+            model.identify_effect(proceed_when_unidentifiable=True),
+            method_name="backdoor.propensity_score_weighting",
+        )
+        ate = float(est.value)
+        out["dowhy_ipw"] = {"ate": ate, "eps_ate": abs(ate - true_ate), "pehe": None}
+    except Exception as exc:  # noqa: BLE001
+        out["dowhy_ipw"] = {"ate": None, "error": f"{type(exc).__name__}: {exc}"}
+
     # ── EconML causal forest, which does produce per-unit effects ──
     try:
         from econml.dml import CausalForestDML
