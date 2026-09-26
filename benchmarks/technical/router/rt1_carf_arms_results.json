@@ -1,0 +1,219 @@
+{
+  "benchmark": "rt1_carf_arms",
+  "hypothesis": "RT1",
+  "spine": "test_set.jsonl",
+  "n_items": 456,
+  "carf_arms": [
+    {
+      "implementation": "carf_distilbert",
+      "requested_mode": "distilbert",
+      "actual_mode": "distilbert",
+      "errors": 0,
+      "seconds": 7.8,
+      "ms_per_query": 17.1,
+      "five_class": {
+        "macro_f1": 0.6719,
+        "accuracy": 0.7281,
+        "n_scored": 456,
+        "per_domain": {
+          "Clear": {
+            "f1": 0.9182,
+            "recall": 1.0,
+            "precision": 0.8487,
+            "support": 101
+          },
+          "Complicated": {
+            "f1": 0.7179,
+            "recall": 0.8235,
+            "precision": 0.6364,
+            "support": 102
+          },
+          "Complex": {
+            "f1": 0.8,
+            "recall": 0.8119,
+            "precision": 0.7885,
+            "support": 101
+          },
+          "Chaotic": {
+            "f1": 0.3607,
+            "recall": 0.22,
+            "precision": 1.0,
+            "support": 50
+          },
+          "Disorder": {
+            "f1": 0.5625,
+            "recall": 0.5294,
+            "precision": 0.6,
+            "support": 102
+          }
+        }
+      },
+      "four_class": {
+        "macro_f1": 0.745,
+        "accuracy": 0.7853,
+        "n_scored": 354,
+        "per_domain": {
+          "Clear": {
+            "f1": 0.9484,
+            "recall": 1.0,
+            "precision": 0.9018,
+            "support": 101
+          },
+          "Complicated": {
+            "f1": 0.8077,
+            "recall": 0.8235,
+            "precision": 0.7925,
+            "support": 102
+          },
+          "Complex": {
+            "f1": 0.8632,
+            "recall": 0.8119,
+            "precision": 0.9213,
+            "support": 101
+          },
+          "Chaotic": {
+            "f1": 0.3607,
+            "recall": 0.22,
+            "precision": 1.0,
+            "support": 50
+          }
+        }
+      },
+      "cross_validated": false,
+      "held_out_caveat": "arrives pre-trained; 2 of 456 spine items appear verbatim in its training file, and near-duplicates from a shared generator would not show in that count"
+    },
+    {
+      "implementation": "carf_llm_via_openrouter[deepseek/deepseek-chat]",
+      "requested_mode": "llm",
+      "actual_mode": "llm",
+      "errors": 0,
+      "seconds": 1545.7,
+      "ms_per_query": 3389.6,
+      "five_class": {
+        "macro_f1": 0.8788,
+        "accuracy": 0.864,
+        "n_scored": 456,
+        "per_domain": {
+          "Clear": {
+            "f1": 1.0,
+            "recall": 1.0,
+            "precision": 1.0,
+            "support": 101
+          },
+          "Complicated": {
+            "f1": 0.8804,
+            "recall": 0.902,
+            "precision": 0.8598,
+            "support": 102
+          },
+          "Complex": {
+            "f1": 0.735,
+            "recall": 0.8515,
+            "precision": 0.6466,
+            "support": 101
+          },
+          "Chaotic": {
+            "f1": 1.0,
+            "recall": 1.0,
+            "precision": 1.0,
+            "support": 50
+          },
+          "Disorder": {
+            "f1": 0.7784,
+            "recall": 0.6373,
+            "precision": 1.0,
+            "support": 102
+          }
+        }
+      },
+      "four_class": {
+        "macro_f1": 0.9384,
+        "accuracy": 0.9294,
+        "n_scored": 354,
+        "per_domain": {
+          "Clear": {
+            "f1": 1.0,
+            "recall": 1.0,
+            "precision": 1.0,
+            "support": 101
+          },
+          "Complicated": {
+            "f1": 0.8804,
+            "recall": 0.902,
+            "precision": 0.8598,
+            "support": 102
+          },
+          "Complex": {
+            "f1": 0.8731,
+            "recall": 0.8515,
+            "precision": 0.8958,
+            "support": 101
+          },
+          "Chaotic": {
+            "f1": 1.0,
+            "recall": 1.0,
+            "precision": 1.0,
+            "support": 50
+          }
+        }
+      },
+      "cross_validated": false,
+      "held_out_caveat": "arrives pre-trained; 2 of 456 spine items appear verbatim in its training file, and near-duplicates from a shared generator would not show in that count"
+    }
+  ],
+  "rust_arms": {
+    "keyword": {
+      "five_class": {
+        "macro_f1": 0.6084,
+        "accuracy": 0.5921
+      },
+      "four_class": {
+        "macro_f1": 0.6342,
+        "accuracy": 0.5056
+      }
+    },
+    "lexical_centroid": {
+      "five_class": {
+        "macro_f1": 0.8359,
+        "accuracy": 0.8377
+      },
+      "four_class": {
+        "macro_f1": 0.8671,
+        "accuracy": 0.8136
+      }
+    },
+    "discriminative_logreg": {
+      "five_class": {
+        "macro_f1": 0.8116,
+        "accuracy": 0.8662
+      },
+      "four_class": {
+        "macro_f1": 0.8947,
+        "accuracy": 0.8983
+      }
+    }
+  },
+  "protocol_note": "Rust arms are 4-fold cross-validated; CARF's DistilBERT arrives pre-trained and is not. The asymmetry favours DistilBERT and is recorded rather than corrected.",
+  "generated_at": "2026-09-26T08:04:15.753231+00:00",
+  "benchmark_id": "rt1_carf_arms",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "llm_provider": "openai",
+    "llm_model": "deepseek/deepseek-chat",
+    "git_hash": "9458be8",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\router\\test_set.jsonl",
+  "provenance": {
+    "source_reference": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\technical\\router\\test_set.jsonl",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}
