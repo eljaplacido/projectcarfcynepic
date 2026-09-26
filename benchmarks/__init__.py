@@ -2,6 +2,24 @@
 """CARF Benchmarks package.
 
 Provides shared utilities for reproducible benchmark execution.
+
+PROJECT CONFIG IS LOADED HERE, AND IT WAS NOT BEFORE
+====================================================
+
+`load_dotenv` was called only in `src/main.py`, the application entry point.
+Nothing under `benchmarks/` imported it, so every benchmark ran against
+whatever the ambient shell happened to export rather than against the project's
+own `.env`.
+
+That is the opposite of what the line above this one promises. It also hid a
+real failure: with `DEEPSEEK_API_KEY` exported by a shell and `LLM_PROVIDER`
+unset, the suite silently defaulted to DeepSeek and kept doing so after the
+project config had been pointed elsewhere -- so a provider change appeared to
+do nothing, and the only symptom was 402s.
+
+`override=True` matches `src/main.py`, so a benchmark and the application now
+resolve the same configuration from the same file. A shell variable can no
+longer quietly decide which model a published number was measured on.
 """
 
 from __future__ import annotations
@@ -13,6 +31,16 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+
+
+# Resolve the project's own configuration before any benchmark reads os.environ.
+try:
+    from dotenv import load_dotenv
+
+    _PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    load_dotenv(_PROJECT_ROOT / ".env", override=True)
+except Exception:  # noqa: BLE001 - a missing .env must not break a benchmark
+    pass
 
 
 def get_benchmark_metadata(seed: int | None = None) -> dict[str, Any]:

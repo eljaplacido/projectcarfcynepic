@@ -213,6 +213,7 @@ class LLMProvider(str, Enum):
     MISTRAL = "mistral"
     OLLAMA = "ollama"
     TOGETHER = "together"
+    OPENROUTER = "openrouter"
 
 
 class LLMConfig(BaseModel):
@@ -261,6 +262,18 @@ PROVIDER_CONFIGS = {
         "base_url": "http://localhost:11434/v1",
         "default_model": "llama3.1",
         "env_key": None,
+        "client_type": "openai_compat",
+    },
+    # OpenRouter fronts many providers behind one OpenAI-compatible endpoint,
+    # so `model` carries the vendor prefix ("deepseek/deepseek-chat",
+    # "anthropic/claude-sonnet-4-5"). Added because the DeepSeek endpoint began
+    # returning 402 Insufficient Balance, which made 11 of the 43 benchmark
+    # hypotheses impossible to regenerate on the backend that produced them --
+    # a suite you cannot re-run is a suite you cannot check.
+    LLMProvider.OPENROUTER: {
+        "base_url": "https://openrouter.ai/api/v1",
+        "default_model": "deepseek/deepseek-chat",
+        "env_key": "OPENROUTER_API_KEY",
         "client_type": "openai_compat",
     },
     LLMProvider.TOGETHER: {

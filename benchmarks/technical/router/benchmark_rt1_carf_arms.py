@@ -112,7 +112,7 @@ def score(pairs: list[tuple[str, str]], labels: list[str]) -> dict[str, Any]:
 
 
 def point_llm_at_openrouter(model: str) -> None:
-    """Route CARF's own `openai_compat` path at OpenRouter.
+    """Select the OpenRouter provider for CARF's LLM layer.
 
     The configured DeepSeek backend returns 402 Insufficient Balance, so the
     published DeepSeek figure cannot be reproduced at all right now. This
@@ -123,14 +123,13 @@ def point_llm_at_openrouter(model: str) -> None:
     model, and is labelled `carf_llm_via_openrouter` rather than `carf_llm` so
     it is never mistaken for a reproduction of the published number.
     """
-    from src.core import llm as carf_llm
-
-    carf_llm.PROVIDER_CONFIGS[carf_llm.LLMProvider.OPENAI]["base_url"] = (
-        "https://openrouter.ai/api/v1"
-    )
-    os.environ["LLM_PROVIDER"] = "openai"
+    # `openrouter` is now a first-class provider in src/core/llm.py, so this
+    # is a configuration choice rather than a patch. It was a monkeypatch on the
+    # OPENAI entry when this first ran, which worked and was the wrong shape:
+    # a benchmark that rewrites the code under test is measuring something it
+    # also authored.
+    os.environ["LLM_PROVIDER"] = "openrouter"
     os.environ["LLM_MODEL"] = model
-    os.environ["OPENAI_API_KEY"] = os.environ["OPENROUTER_API_KEY"]
 
 
 async def run_arm(mode: str, items: list[tuple[str, str]], label: str | None = None) -> dict[str, Any]:
