@@ -1,0 +1,238 @@
+{
+  "benchmark": "ci1_external",
+  "hypothesis": "CI1",
+  "dataset": "IHDP (semi-synthetic; real covariates, simulated outcomes, both arms known)",
+  "replicates": 5,
+  "per_replicate": [
+    {
+      "replicate": 1,
+      "n": 747,
+      "true_ate": 4.016066896118338,
+      "dowhy_linear": {
+        "ate": 3.9286717508727156,
+        "eps_ate": 0.08739514524562253,
+        "pehe": null
+      },
+      "econml_causal_forest": {
+        "ate": 3.8791013765047495,
+        "eps_ate": 0.1369655196135886,
+        "pehe": 0.5514140496086776
+      },
+      "cynepic_difference_in_means": {
+        "ate": 4.021121012430832,
+        "eps_ate": 0.005054116312494195,
+        "pehe": null
+      },
+      "cynepic_ols_adjusted": {
+        "ate": 3.928671750872718,
+        "eps_ate": 0.08739514524562031,
+        "pehe": null
+      },
+      "cynepic_ipw": {
+        "ate": 4.025710937956176,
+        "eps_ate": 0.009644041837837847,
+        "pehe": null
+      },
+      "cynepic_ipw_in_sample_propensity": {
+        "ate": 4.025710937956176,
+        "eps_ate": 0.009644041837837847,
+        "pehe": null
+      }
+    },
+    {
+      "replicate": 2,
+      "n": 747,
+      "true_ate": 4.050838760043126,
+      "dowhy_linear": {
+        "ate": 3.8993524278370666,
+        "eps_ate": 0.15148633220605934,
+        "pehe": null
+      },
+      "econml_causal_forest": {
+        "ate": 3.8959258952454734,
+        "eps_ate": 0.15491286479765254,
+        "pehe": 0.5185215455368856
+      },
+      "cynepic_difference_in_means": {
+        "ate": 4.0814213308520655,
+        "eps_ate": 0.030582570808939558,
+        "pehe": null
+      },
+      "cynepic_ols_adjusted": {
+        "ate": 3.8993524278370684,
+        "eps_ate": 0.15148633220605756,
+        "pehe": null
+      },
+      "cynepic_ipw": {
+        "ate": 4.033730990453092,
+        "eps_ate": 0.017107769590033683,
+        "pehe": null
+      },
+      "cynepic_ipw_in_sample_propensity": {
+        "ate": 4.033730990453092,
+        "eps_ate": 0.017107769590033683,
+        "pehe": null
+      }
+    },
+    {
+      "replicate": 3,
+      "n": 747,
+      "true_ate": 4.099163647971287,
+      "dowhy_linear": {
+        "ate": 3.934976099573692,
+        "eps_ate": 0.16418754839759497,
+        "pehe": null
+      },
+      "econml_causal_forest": {
+        "ate": 3.9105995590315885,
+        "eps_ate": 0.18856408893969867,
+        "pehe": 0.5740145275473277
+      },
+      "cynepic_difference_in_means": {
+        "ate": 4.194156800295259,
+        "eps_ate": 0.09499315232397176,
+        "pehe": null
+      },
+      "cynepic_ols_adjusted": {
+        "ate": 3.934976099573699,
+        "eps_ate": 0.1641875483975883,
+        "pehe": null
+      },
+      "cynepic_ipw": {
+        "ate": 4.041590392307027,
+        "eps_ate": 0.05757325566426008,
+        "pehe": null
+      },
+      "cynepic_ipw_in_sample_propensity": {
+        "ate": 4.041590392307027,
+        "eps_ate": 0.05757325566426008,
+        "pehe": null
+      }
+    },
+    {
+      "replicate": 4,
+      "n": 747,
+      "true_ate": 4.27367845743849,
+      "dowhy_linear": {
+        "ate": 3.9066905853297076,
+        "eps_ate": 0.3669878721087825,
+        "pehe": null
+      },
+      "econml_causal_forest": {
+        "ate": 4.163476766692934,
+        "eps_ate": 0.11020169074555586,
+        "pehe": 1.2690316500400094
+      },
+      "cynepic_difference_in_means": {
+        "ate": 4.271500871396494,
+        "eps_ate": 0.002177586041995916,
+        "pehe": null
+      },
+      "cynepic_ols_adjusted": {
+        "ate": 3.906690585329713,
+        "eps_ate": 0.36698787210877715,
+        "pehe": null
+      },
+      "cynepic_ipw": {
+        "ate": 4.148105507342166,
+        "eps_ate": 0.1255729500963243,
+        "pehe": null
+      },
+      "cynepic_ipw_in_sample_propensity": {
+        "ate": 4.148105507342166,
+        "eps_ate": 0.1255729500963243,
+        "pehe": null
+      }
+    },
+    {
+      "replicate": 5,
+      "n": 747,
+      "true_ate": 4.162439707706217,
+      "dowhy_linear": {
+        "ate": 4.176538505657891,
+        "eps_ate": 0.014098797951674236,
+        "pehe": null
+      },
+      "econml_causal_forest": {
+        "ate": 3.8783919784415457,
+        "eps_ate": 0.2840477292646715,
+        "pehe": 1.9462699003541781
+      },
+      "cynepic_difference_in_means": {
+        "ate": 4.229225318795937,
+        "eps_ate": 0.06678561108971959,
+        "pehe": null
+      },
+      "cynepic_ols_adjusted": {
+        "ate": 4.176538505657885,
+        "eps_ate": 0.014098797951668018,
+        "pehe": null
+      },
+      "cynepic_ipw": {
+        "ate": 4.185915626853974,
+        "eps_ate": 0.023475919147756485,
+        "pehe": null
+      },
+      "cynepic_ipw_in_sample_propensity": {
+        "ate": 4.185915626853974,
+        "eps_ate": 0.023475919147756485,
+        "pehe": null
+      }
+    }
+  ],
+  "summary": {
+    "cynepic_difference_in_means": {
+      "replicates_scored": 5,
+      "mean_eps_ate": 0.0399,
+      "mean_pehe": null
+    },
+    "cynepic_ipw": {
+      "replicates_scored": 5,
+      "mean_eps_ate": 0.0467,
+      "mean_pehe": null
+    },
+    "cynepic_ipw_in_sample_propensity": {
+      "replicates_scored": 5,
+      "mean_eps_ate": 0.0467,
+      "mean_pehe": null
+    },
+    "cynepic_ols_adjusted": {
+      "replicates_scored": 5,
+      "mean_eps_ate": 0.1568,
+      "mean_pehe": null
+    },
+    "dowhy_linear": {
+      "replicates_scored": 5,
+      "mean_eps_ate": 0.1568,
+      "mean_pehe": null
+    },
+    "econml_causal_forest": {
+      "replicates_scored": 5,
+      "mean_eps_ate": 0.1749,
+      "mean_pehe": 0.9719
+    }
+  },
+  "note": "PEHE is absent for ATE-only estimators rather than penalised: an estimator that does not claim a per-unit effect has not got one wrong.",
+  "generated_at": "2026-09-26T09:12:44.738774+00:00",
+  "benchmark_id": "ci1_external",
+  "methodology": "scripted_benchmark_v1",
+  "benchmark_config": {
+    "llm_provider": "openrouter",
+    "llm_model": "deepseek/deepseek-chat",
+    "git_hash": "bcd0c7a",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "dataset_context": {
+    "dataset_profile": "unknown",
+    "data_source": "benchmark_dataset"
+  },
+  "sample_context": {},
+  "source_reference": "benchmark:ci1_external",
+  "provenance": {
+    "source_reference": "benchmark:ci1_external",
+    "generated_by": "carf_benchmark_runner",
+    "result_schema": "benchmark_result_v2",
+    "script": "C:\\Users\\35845\\Desktop\\DIGICISU\\projectcarf\\benchmarks\\__init__.py"
+  }
+}
