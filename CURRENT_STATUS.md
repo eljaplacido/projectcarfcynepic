@@ -267,6 +267,50 @@ TLA+ Specs: 2 (StateGraph, EscalationProtocol)
 
 ## Recent Improvements
 
+### Decision-Model Router Shadow, Log-Only (2026-10-31)
+
+On branch `feat/decision-shadow`. Off by default (`CARF_ROUTER_SHADOW=1` enables). It never
+changes routing.
+
+1. **New `src/services/router_shadow.py`.** After the router's final decision (all gates and
+   overrides applied), it asks a local decision model on a llama.cpp `/v1/systemone` server
+   the same Cynefin question the external decision bench calibrated. The defaults are
+   `http://127.0.0.1:18195` and model `vllm-d3`; a comma list asks several models. It appends
+   one JSON line per model to `$DECISION_SHADOW_DIR/carf.jsonl` (default
+   `var/decision-shadow/`), in the shared decision-shadow record format (v1). Each line holds
+   the model's probabilities beside CARF's final domain (`live`), with the router's raw
+   domain and confidence, forced-Disorder and parse-error flags, and entropies. `subject_id`
+   is `<session_id>:<router pass>`, because the graph re-enters the router after a Guardian
+   rejection or a human edit; the session id is what the feedback store's domain overrides
+   key on.
+2. **Fail-open and off the critical path.** The shadow runs as a background task (references
+   kept; past 64 in flight no model is asked, but an error row is still written) and makes
+   one attempt per model with a total timeout of 1.5 s. A failure, including a reply whose
+   probabilities are not all in [0, 1], writes an `error` row and is swallowed. Tasks left
+   on an event loop that was closed are forgotten, so they cannot fill the cap.
+   `CARF_ROUTER_SHADOW_AWAIT=1` waits inside `classify()` for batch and benchmark runs. Not
+   retrying is a documented exception to the tenacity rule (AGENTS.md, "Router shadow").
+3. **Privacy.** Nothing goes into `EpistemicState` or `state.context`. Text is
+   secret-scrubbed before it is sent (prefixed env-style names such as `NEO4J_PASSWORD=`,
+   quoted JSON/YAML values, URL credentials, private keys cut at the length limit), and so
+   is any error text. The log keeps a sha256, and a scrubbed 200-character excerpt only
+   with `CARF_ROUTER_SHADOW_LOG_TEXT=1`.
+4. **`router.py`:** 32 added lines (the raw classification is kept; a Step 8 hook runs before
+   `return`).
+
+**Testing:** `tests/unit/test_router_shadow.py` has 46 tests:
+- flag off: no HTTP call and no file;
+- server down, timeout, HTTP 500 or malformed reply, awaited and in the background: routing
+  output identical, no exception, error row written;
+- flag on vs off: identical routing output on the test-mode stub;
+- record schema, one row per model, opt-in scrubbed excerpt, long text cut before sending;
+- out-of-range or NaN probabilities, a call past the in-flight cap, tasks stranded on a
+  closed event loop, a torn last line: each still leaves one valid row per call;
+- one `subject_id` per router pass; a parse-error Disorder is flagged;
+- the question text pinned to the bench by hash.
+
+All router unit tests pass. The new files are clean under ruff and `mypy --strict`.
+
 ### R1: Calibration & Honest-Routing Quick Wins (2026-06-29)
 
 First slice of the deep-research integration roadmap
