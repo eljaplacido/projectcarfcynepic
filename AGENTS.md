@@ -85,6 +85,10 @@ CARF_MEMORY_DIR=data/memory     # Persistent agent memory storage
 CARF_EMBEDDINGS_DIR=data/embeddings  # Numpy embedding cache
 CARF_INFERENCE_MODE=full        # Bayesian inference: full | approximate | cached
 CARF_INFERENCE_CACHE_TTL=3600   # Posterior cache TTL in seconds (0 = disable)
+CARF_ROUTER_SHADOW=1            # Log-only decision-model router shadow (see "Router shadow")
+CARF_ROUTER_SHADOW_URL=http://127.0.0.1:18195  # llama.cpp /v1/systemone server
+CARF_ROUTER_SHADOW_MODELS=vllm-d3  # Comma list; one log row per model
+DECISION_SHADOW_DIR=            # Shadow log dir (default $CARF_DATA_DIR/decision-shadow)
 ```
 
 Phase 3/4 (optional):
@@ -232,6 +236,33 @@ projectcarf/
 | Complex | > 0.7 | 0.5-0.8 | `bayesian_explorer` |
 | Chaotic | Any | > 0.9 | `circuit_breaker` |
 | Disorder | < 0.85 | Any | `human_escalation` |
+
+### Router shadow (log-only, opt-in)
+
+`src/services/router_shadow.py` is a log-only shadow of the router decision, off unless
+`CARF_ROUTER_SHADOW=1`. After `classify()` has made its final decision (all gates and
+overrides applied), it asks a local decision model (llama.cpp `/v1/systemone`, default
+`http://127.0.0.1:18195`, model `vllm-d3`) the same Cynefin question, and appends one JSON
+line per model to `$DECISION_SHADOW_DIR/carf.jsonl` (default `var/decision-shadow/`): the
+model's probabilities beside CARF's final domain (`live`), raw domain and confidence,
+forced-Disorder flag and entropies.
+
+Rules for anyone touching it:
+- It must never change routing. It writes nothing to `EpistemicState` or `state.context`,
+  and CARF never reads its answer back.
+- It fails open. A background task makes one attempt per model with a total timeout of
+  `CARF_ROUTER_SHADOW_TIMEOUT_S` (default 1.5 s). Any failure becomes an `error` row and
+  is swallowed. `CARF_ROUTER_SHADOW_AWAIT=1` waits inside `classify()`; use it in batch and
+  benchmark runs only.
+- **Exception to the tenacity rule:** the call is deliberately not retried. A retry adds
+  load for an answer nothing waits on, and a missing answer is itself the availability
+  measurement.
+- `SHADOW_QUESTION` is byte-identical to the decision bench's calibrated question. Do not
+  reword it or reorder its options; `tests/unit/test_router_shadow.py` pins it by hash.
+- Text is secret-scrubbed before it is sent. The log keeps a sha256, and a scrubbed
+  200-character excerpt only with `CARF_ROUTER_SHADOW_LOG_TEXT=1`.
+- `subject_id` is `<session_id>:<router pass>`: one per routing decision, since the graph
+  re-enters the router after a Guardian rejection or a human edit.
 
 ---
 

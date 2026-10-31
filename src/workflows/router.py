@@ -760,6 +760,7 @@ Respond with a JSON object only, no other text:
             classification = await self._classify_with_model(state.user_input)
         else:
             classification = await self._classify_with_llm(state.user_input)
+        raw_classification = classification  # boost and hint build new objects
 
         # Step 3b: Apply causal language boost (Complex → Complicated)
         classification = self._apply_causal_language_boost(state.user_input, classification)
@@ -907,6 +908,37 @@ Respond with a JSON object only, no other text:
             f"Classification complete: {final_domain.value} "
             f"(confidence: {final_confidence:.2f}, entropy: {entropy:.2f})"
         )
+
+        # Step 8: Log-only decision-model shadow (opt-in, CARF_ROUTER_SHADOW=1). It reads
+        # the final decision and never writes to state; see src/services/router_shadow.py.
+        if os.getenv("CARF_ROUTER_SHADOW") == "1":
+            try:
+                from src.services.router_shadow import observe
+
+                # The graph re-enters the router (reflector, human edit): one id per pass.
+                router_pass = sum(1 for s in state.reasoning_chain if s.node_name == "router")
+                await observe(
+                    text=state.user_input,
+                    subject_id=f"{state.session_id}:{router_pass}",
+                    live=final_domain.value,
+                    carf={
+                        "mode": self.mode,
+                        "raw_domain": raw_classification.domain.value,
+                        "raw_confidence": raw_classification.confidence,
+                        "pre_gate_domain": classification.domain.value,
+                        "final_confidence": final_confidence,
+                        "threshold": self.confidence_threshold,
+                        "forced_disorder": final_domain == CynefinDomain.DISORDER
+                        and classification.domain != CynefinDomain.DISORDER,
+                        "chaotic_gate": chaotic_by_gate,
+                        "parse_error": "parse_error" in raw_classification.key_indicators,
+                        "hinted": bool(domain_hint),
+                        "entropy": entropy,
+                        "distribution_entropy": round(distribution_entropy, 4),
+                    },
+                )
+            except Exception as exc:  # fail open: the shadow never affects routing
+                logger.debug("Router shadow skipped: %s", exc)
 
         return state
 
